@@ -14,12 +14,13 @@ Route::get('/test', function () {
     return view('Admin/test');
 });
 
-<<<<<<< HEAD
 
 Route::prefix('admin')->group(function () {
     Route::resource('discounts', DiscountController::class);
     Route::get('discounts-report', [DiscountController::class, 'report'])->name('discounts.report');
-=======
+});
+
+
 Route::resource('posts', PostController::class);
 Route::prefix('admin')->name('Admin.')->group(function () {
 
@@ -48,5 +49,4 @@ Route::prefix('admin')->name('Admin.')->group(function () {
     Route::put('/comments/{id}', [CommentController::class, 'update'])->name('comments.update');
     Route::post('admin/comments/{id}/approve', [CommentController::class, 'approve'])->name('comments.approve');
     Route::delete('/comments/{id}', [CommentController::class, 'destroy'])->name('comments.destroy');
->>>>>>> e94c0f34f8695bab5fcae18c96e468d779e25dad
 });
