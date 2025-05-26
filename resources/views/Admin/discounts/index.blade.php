@@ -1,10 +1,10 @@
 @extends('Admin.Layouts.AdminLayout')
 @section('main')
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
 @section('main')
-    <div class="app-title">
+<div class="app-title">
+        @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
         <ul class="app-breadcrumb breadcrumb side">
             <li class="breadcrumb-item active"><a href="#"><b>Danh sách mã giảm giá</b></a></li>
         </ul>
@@ -27,6 +27,24 @@
                     @if(session('success'))
                         <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
+                     <form method="GET" action="{{ route('discounts.index') }}" class="mb-4">
+                    <div class="row justify-content-between align-items-center">
+                        <div class="col-md-6">
+                            <div class="input-group shadow-sm">
+                                <input type="text" name="search" class="form-control rounded-start" placeholder="🔍 Tìm kiếm mã giảm giá..."
+                                    value="{{ request('search') }}">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="fas fa-search me-1"></i> Tìm kiếm
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-auto mt-2 mt-md-0">
+                            <a href="{{ route('discounts.index') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i> Xóa bộ lọc
+                            </a>
+                        </div>
+                    </div>
+            </form>
 
                     <table class="table table-hover table-bordered" id="discountTable">
                         <thead>
