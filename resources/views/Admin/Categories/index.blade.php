@@ -14,7 +14,6 @@
         <div class="tile-body">
           <div class="row element-button">
             <div class="col-sm-2">
-
               <a class="btn btn-add btn-sm" href="{{ route('Admin.categories.create') }}" title="Thêm"><i
                   class="fas fa-plus"></i>
                 Tạo mới danh mục</a>
@@ -22,10 +21,15 @@
                 <i class="fa fa-trash"></i> Danh mục đã xóa</a>
             </div>
           </div>
-              <form method="GET" action="{{ route('Admin.categories.index') }}" class="d-flex">
-                <input type="text" name="keyword" placeholder="Tìm kiếm..." value="{{ $search ?? '' }}"  class="form-control">
-                <button class="btn btn-add btn-sm" type="submit">  Tìm</button>
-              </form>
+
+          <form method="GET" action="{{ route('Admin.categories.index') }}" class="input-group mb-3"
+            style="max-width: 300px;">
+            <input type="text" name="keyword" placeholder="Tìm kiếm..." value="{{ $search ?? '' }}" class="form-control"
+              aria-label="Tìm kiếm">
+            <button class="btn btn-outline" type="submit" style="height: calc(2.7rem + 2px);">
+              <i class="bi bi-search"></i>
+            </button>
+          </form>
           <table class="table table-hover table-bordered" id="sampleTable">
             <thead>
               <tr>
@@ -52,12 +56,14 @@
             </td>
             <td>{{ $cat->tinh_trang ? 'Hiện' : 'Ẩn' }}</td>
             <td>
-              <a class="btn btn-primary btn-sm edit" href="{{ route('Admin.categories.edit', $cat->id) }}"  ><i class="fas fa-edit"></i></a>
+              <a class="btn btn-primary btn-sm edit" href="{{ route('Admin.categories.edit', $cat->id) }}"><i
+                class="fas fa-edit"></i></a>
               <form action="{{ route('Admin.categories.destroy', $cat->id) }}" method="POST" style="display:inline"
               onsubmit="return confirm('Bạn có chắc muốn xóa?')">
               @csrf
               @method('DELETE')
-              <button type="submit" class="btn btn-primary btn-sm trash"><i class="fas fa-trash-alt"></i> </button>
+              <button type="submit" class="btn btn-primary btn-sm trash"><i class="fas fa-trash-alt"></i>
+              </button>
               </form>
             </td>
             </tr>
