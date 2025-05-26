@@ -20,6 +20,7 @@ Route::prefix('admin')->group(function () {
     Route::get('discounts-report', [DiscountController::class, 'report'])->name('discounts.report');
 });
 
+Auth::routes(['register' => false]);
 
 Route::prefix('admin')->group(function () {
 Route::resource('posts', PostController::class);
