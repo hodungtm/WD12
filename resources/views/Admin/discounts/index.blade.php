@@ -56,6 +56,7 @@
                                 <th>Ngày kết thúc</th>
                                 <th>Lượt tối đa</th>
                                 <th>Đơn tối thiểu</th>
+                                <th>Phân loại</th>
                                 <th>Chức năng</th>
                             </tr>
                         </thead>
@@ -76,8 +77,27 @@
                                     <td>{{ $discount->max_usage }}</td>
                                     <td>{{ number_format($discount->min_order_amount) }} VNĐ</td>
                                     <td>
+                                    @switch($discount->type)
+                                        @case('order')
+                                            <span class="badge bg-primary">Theo đơn hàng</span>
+                                            @break
+
+                                        @case('shipping')
+                                            <span class="badge bg-success">Giảm phí ship</span>
+                                            @break
+
+                                        @case('product')
+                                            <span class="badge bg-warning text-dark">Theo sản phẩm</span>
+                                            @break
+
+                                        @default
+                                            <span class="badge bg-secondary">Không xác định</span>
+                                    @endswitch
+                                            </td>
+
+                                    <td>
                                         <a href="{{ route('discounts.edit', $discount) }}" class="btn btn-primary btn-sm" title="Sửa">
-<i class="fas fa-edit"></i>
+                                            <i class="fas fa-edit"></i>
                                         </a>
                                         <form action="{{ route('discounts.destroy', $discount) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Bạn có chắc chắn muốn xóa?')">
                                             @csrf

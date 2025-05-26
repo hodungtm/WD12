@@ -30,21 +30,21 @@ class DiscountController extends Controller
 
     public function store(Request $request)
 {
-    $request->validate([
-        'code' => 'required|unique:discounts,code',
-        'description' => 'nullable|string|max:255',
-        'type' => 'required|in:order,shipping,product',
+    $validated = $request->validate([
+        'code' => 'required|unique:discounts,code|max:255',
+        'description' => 'nullable|max:255',
+        'type' => 'required|in:order,product,shipping',
         'discount_amount' => 'nullable|numeric|min:0',
         'discount_percent' => 'nullable|numeric|min:0|max:100',
         'start_date' => 'required|date',
         'end_date' => 'required|date|after_or_equal:start_date',
-        'max_usage' => 'nullable|integer|min:1',
+        'max_usage' => 'nullable|integer|min:0',
         'min_order_amount' => 'nullable|numeric|min:0',
     ]);
 
-    Discount::create($request->all());
+    Discount::create($validated);
 
-    return redirect()->route('discounts.index')->with('success', 'Đã tạo mã giảm giá thành công!');
+    return redirect()->route('discounts.index')->with('success', 'Tạo mã giảm giá thành công!');
 }
 
 
@@ -53,24 +53,27 @@ class DiscountController extends Controller
         return view('admin.discounts.edit', compact('discount'));
     }
 
-    public function update(Request $request, Discount $discount)
+    public function update(Request $request, $id)
 {
-    $request->validate([
-        'code' => 'required|unique:discounts,code,' . $discount->id,
-        'description' => 'nullable|string|max:255',
-        'type' => 'required|in:order,shipping,product',
+    $discount = Discount::findOrFail($id);
+
+    $validated = $request->validate([
+        'code' => 'required|max:255|unique:discounts,code,' . $discount->id,
+        'description' => 'nullable|max:255',
+        'type' => 'required|in:order,product,shipping',
         'discount_amount' => 'nullable|numeric|min:0',
         'discount_percent' => 'nullable|numeric|min:0|max:100',
         'start_date' => 'required|date',
         'end_date' => 'required|date|after_or_equal:start_date',
-        'max_usage' => 'nullable|integer|min:1',
+        'max_usage' => 'nullable|integer|min:0',
         'min_order_amount' => 'nullable|numeric|min:0',
     ]);
 
-    $discount->update($request->all());
+    $discount->update($validated);
 
     return redirect()->route('discounts.index')->with('success', 'Cập nhật mã giảm giá thành công!');
 }
+
 
 
     public function destroy(Discount $discount)
