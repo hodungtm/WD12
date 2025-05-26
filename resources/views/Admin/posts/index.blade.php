@@ -14,7 +14,7 @@
     <div class="col-md-12">
       <div class="tile">
         <h3 class="tile-title">Danh sách bài viết</h3>
-
+        <a href="{{ route('posts.create') }}" class="btn btn-primary mb-3">+ Thêm bài viết</a>
         @if (session('success'))
           <div class="alert alert-success">{{ session('success') }}</div>
         @endif
@@ -31,7 +31,7 @@
             </tr>
           </thead>
           <tbody>
-            @forelse ($posts as $post)  
+            @forelse ($posts as $post)
               <tr>
                 <td>{{ $post->id }}</td>
                 <td>{{ $post->title }}</td>

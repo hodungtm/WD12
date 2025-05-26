@@ -69,7 +69,7 @@
             class='app-menu__icon bx bx-task'></i><span class="app-menu__label">Quản lý đánh giá</span></a></li>
       <li><a class="app-menu__item" href="{{ route('Admin.comments.index') }}"><i class='app-menu__icon bx bx-user-voice'></i><span
             class="app-menu__label">Quản lý bình luận</span></a></li>
-            <li><a class="app-menu__item" href="posts"><i class='app-menu__icon bx bx-edit'></i><span 
+      <li><a class="app-menu__item" href="{{ route('posts.index') }}"><i class='app-menu__icon bx bx-edit'></i><span
             class="app-menu__label">Quản lý Bài Viết</span></a></li>
       <li><a class="app-menu__item " href="table-data-table.html"><i class='app-menu__icon bx bx-id-card'></i> <span
             class="app-menu__label">Quản lý nhân viên</span></a></li>

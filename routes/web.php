@@ -21,7 +21,9 @@ Route::prefix('admin')->group(function () {
 });
 
 
+Route::prefix('admin')->group(function () {
 Route::resource('posts', PostController::class);
+});
 Route::prefix('admin')->name('Admin.')->group(function () {
 
     // ===== CATEGORIES =====
