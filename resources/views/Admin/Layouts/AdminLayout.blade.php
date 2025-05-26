@@ -22,7 +22,7 @@
 
 <body onload="time()" class="app sidebar-mini rtl">
   <!-- Navbar-->
-  
+
   {{-- hearder --}}
   <header class="app-header">
     <!-- Sidebar toggle button--><a class="app-sidebar__toggle" href="#" data-toggle="sidebar"
@@ -61,6 +61,8 @@
             class="app-menu__label">Bảng điều khiển</span></a></li>
       <li><a class="app-menu__item " href="table-data-table.html"><i class='app-menu__icon bx bx-id-card'></i> <span
             class="app-menu__label">Quản lý nhân viên</span></a></li>
+      <li><a class="app-menu__item " href="{{ route('discounts.index') }}"><i class='app-menu__icon bx bx-id-card'></i> <span
+            class="app-menu__label">Quản lý Mã Giảm Giá</span></a></li>
       <li><a class="app-menu__item" href="#"><i class='app-menu__icon bx bx-user-voice'></i><span
             class="app-menu__label">Quản lý khách hàng</span></a></li>
       <li><a class="app-menu__item" href="table-data-product.html"><i
@@ -89,7 +91,7 @@
 
   <main class="app-content">
       @yield('main')
-        
+
   </main>
 
 
