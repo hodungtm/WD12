@@ -21,6 +21,8 @@ return new class extends Migration
             $table->date('end_date');
             $table->integer('max_usage')->nullable();
             $table->decimal('min_order_amount', 10, 2)->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->string('role_required')->nullable();
             $table->timestamps();
         });
     }

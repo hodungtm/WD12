@@ -50,8 +50,18 @@
             <input type="number" name="min_order_amount" id="min_order_amount" class="form-control" value="{{ old('min_order_amount', $discount->min_order_amount) }}">
         </div>
 
+        <div class="mb-3">
+    <label for="type" class="form-label">Loại mã</label>
+    <select name="type" id="type" class="form-control">
+        <option value="order" {{ old('type', $discount->type ?? '') == 'order' ? 'selected' : '' }}>Theo đơn hàng</option>
+        <option value="product" {{ old('type', $discount->type ?? '') == 'product' ? 'selected' : '' }}>Theo sản phẩm</option>
+        <option value="shipping" {{ old('type', $discount->type ?? '') == 'shipping' ? 'selected' : '' }}>Giảm phí ship</option>
+    </select>
+    </div>
+
         <button type="submit" class="btn btn-success">Cập nhật</button>
         <a href="{{ route('discounts.index') }}" class="btn btn-secondary">Quay lại</a>
+
     </form>
 </div>
 @endsection

@@ -50,4 +50,9 @@ class DiscountController extends Controller
 
         return redirect()->route('discounts.index')->with('success', 'Đã xóa');
     }
+    public function report()
+{
+    $discounts = Discount::withCount('usages')->get();
+    return view('admin.discounts.report', compact('discounts'));
+}
 }
