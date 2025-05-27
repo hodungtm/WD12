@@ -17,12 +17,32 @@
                 <div class="tile-body">
 
                     <div class="row element-button mb-3">
-                        <div class="col-sm-2">
-                            <a class="btn btn-add btn-sm" href="{{ route('discounts.create') }}" title="Thêm">
-                                <i class="fas fa-plus"></i> Tạo mã giảm giá
-                            </a>
-                        </div>
-                    </div>
+                            <div class="col-sm-2">
+                              <a class="btn btn-add btn-sm" href="{{ route('discounts.create') }}" title="Thêm"><i class="fas fa-plus"></i>
+                                Tạo mới Mã Giảm Giá</a>
+                            </div>
+                            <div class="col-sm-2">
+                              <a class="btn btn-add btn-sm" href="{{ route('discounts.report') }}" title="Thêm"><i class="fas fa-plus"></i>
+                                Báo Cáo Sử Dụng Mã Giảm Giá</a>
+                            </div>
+                            <div class="col-sm-2">
+                              <a class="btn btn-delete btn-sm nhap-tu-file" type="button" title="Nhập" onclick="myFunction(this)"><i
+                                  class="fas fa-file-upload"></i> Tải từ file</a>
+                            </div>
+
+                            <div class="col-sm-2">
+                              <a class="btn btn-delete btn-sm print-file" type="button" title="In" onclick="myApp.printTable()"><i
+                                  class="fas fa-print"></i> In dữ liệu</a>
+                            </div>
+                            <div class="col-sm-2">
+                              <a class="btn btn-excel btn-sm" href="{{ route('discounts.report.excel') }}" title="In"><i class="fas fa-file-excel"></i> Xuất Excel</a>
+                            </div>
+                            <div class="col-sm-2">
+                              <a class="btn btn-delete btn-sm" type="button" title="Xóa" onclick="myFunction(this)"><i
+                                  class="fas fa-trash-alt"></i> Xóa tất cả </a>
+                            </div>
+                          </div>
+
 
                     @if(session('success'))
                         <div class="alert alert-success">{{ session('success') }}</div>

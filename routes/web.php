@@ -20,6 +20,8 @@ Route::prefix('admin')->group(function () {
     Route::get('discounts-report', [DiscountController::class, 'report'])->name('discounts.report');
 });
 
+Route::get('admin/discounts-report/excel', [DiscountController::class, 'exportExcel'])->name('discounts.report.excel');
+
 
 Route::prefix('admin')->group(function () {
 Route::resource('posts', PostController::class);

@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Discount;
 use Illuminate\Http\Request;
+use App\Models\DiscountUsage;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\DiscountUsageExport;
 
 class DiscountController extends Controller
 {
@@ -124,8 +128,15 @@ class DiscountController extends Controller
     }
 
     public function report()
-    {
-        $discounts = Discount::withCount('usages')->get();
-        return view('admin.discounts.report', compact('discounts'));
-    }
+{
+    $usages = DiscountUsage::with(['discount', 'user'])
+        ->latest()
+        ->paginate(20);
+
+    return view('admin.discounts.report', compact('usages'));
+}
+public function exportExcel()
+{
+    return Excel::download(new DiscountUsageExport, 'discount-usage-report.xlsx');
+}
 }
