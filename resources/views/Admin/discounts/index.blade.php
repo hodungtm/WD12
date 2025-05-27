@@ -69,6 +69,7 @@
                     <table class="table table-hover table-bordered" id="discountTable">
                         <thead>
                             <tr>
+                                <th>STT</th>
                                 <th>Mã</th>
                                 <th>Mô tả</th>
                                 <th>Loại giảm</th>
@@ -83,6 +84,7 @@
                         <tbody>
                             @foreach($discounts as $discount)
                                 <tr>
+                                    <td>{{ $discount->id }}</td>
                                     <td>{{ $discount->code }}</td>
                                     <td>{{ $discount->description }}</td>
                                     <td>
@@ -133,6 +135,7 @@
                     </table>
 
                 </div>
+                {{ $discounts->links('pagination::bootstrap-5') }}
             </div>
         </div>
     </div>

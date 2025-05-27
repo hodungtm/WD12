@@ -13,19 +13,20 @@ use Maatwebsite\Excel\Facades\Excel;
 class DiscountController extends Controller
 {
     public function index(Request $request)
-    {
-        $query = Discount::query();
+{
+    $query = Discount::query();
 
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where('code', 'like', '%' . $search . '%')
-                  ->orWhere('description', 'like', '%' . $search . '%');
-        }
-
-        $discounts = $query->orderBy('created_at', 'desc')->paginate(10);
-
-        return view('admin.discounts.index', compact('discounts'));
+    if ($request->filled('search')) {
+        $search = $request->input('search');
+        $query->where('code', 'like', '%' . $search . '%')
+              ->orWhere('description', 'like', '%' . $search . '%');
     }
+
+    $discounts = $query->orderBy('id', 'desc')->paginate(10);
+
+    return view('admin.discounts.index', compact('discounts'));
+}
+
 
     public function create()
     {
