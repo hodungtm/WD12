@@ -7,11 +7,19 @@ use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
-    public function index()
-    {
-        $posts = Post::latest()->paginate(10);
-        return view('Admin.posts.index', compact('posts'));
+    public function index(Request $request)
+{
+    $query = Post::query();
+
+    if ($request->filled('keyword')) {
+        $query->where('title', 'like', '%' . $request->keyword . '%');
     }
+
+    $posts = $query->orderBy('created_at', 'desc')->paginate(10);
+
+    return view('Admin.Posts.index', compact('posts'));
+}
+
 
     public function create()
     {
