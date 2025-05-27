@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Discount;
 use Illuminate\Http\Request;
 use App\Models\DiscountUsage;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\DiscountsExport;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\DiscountUsageExport;
+
 
 class DiscountController extends Controller
 {
@@ -137,6 +137,12 @@ class DiscountController extends Controller
 }
 public function exportExcel()
 {
-    return Excel::download(new DiscountUsageExport, 'discount-usage-report.xlsx');
+    return Excel::download(new DiscountsExport, 'discounts.xlsx');
 }
+public function show($id)
+{
+    $discount = Discount::findOrFail($id);
+    return view('admin.discounts.show', compact('discount'));
+}
+
 }

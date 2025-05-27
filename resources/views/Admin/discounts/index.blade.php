@@ -35,7 +35,7 @@
                                   class="fas fa-print"></i> In dữ liệu</a>
                             </div>
                             <div class="col-sm-2">
-                              <a class="btn btn-excel btn-sm" href="{{ route('discounts.report.excel') }}" title="In"><i class="fas fa-file-excel"></i> Xuất Excel</a>
+                              <a class="btn btn-excel btn-sm" href="{{ route('discounts.exportExcel') }}" title="In"><i class="fas fa-file-excel"></i> Xuất Excel</a>
                             </div>
                             <div class="col-sm-2">
                               <a class="btn btn-delete btn-sm" type="button" title="Xóa" onclick="myFunction(this)"><i

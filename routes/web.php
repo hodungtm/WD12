@@ -1,6 +1,8 @@
 <?php
 use App\Http\Controllers\Admin\DiscountController;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\DiscountsExport;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ReviewController;
@@ -16,12 +18,20 @@ Route::get('/test', function () {
 
 
 Route::prefix('admin')->group(function () {
-    Route::resource('discounts', DiscountController::class);
+    Route::resource('discounts', DiscountController::class)->except(['show']);
+    Route::get('discounts/export-excel', [DiscountController::class, 'exportExcel'])->name('discounts.exportExcel');
     Route::get('discounts-report', [DiscountController::class, 'report'])->name('discounts.report');
 });
 
-Route::get('admin/discounts-report/excel', [DiscountController::class, 'exportExcel'])->name('discounts.report.excel');
 
+
+
+
+
+
+Route::get('/test-export', function() {
+    return Excel::download(new DiscountsExport, 'test.xlsx');
+});
 
 Route::prefix('admin')->group(function () {
 Route::resource('posts', PostController::class);
