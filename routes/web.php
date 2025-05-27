@@ -23,15 +23,7 @@ Route::prefix('admin')->group(function () {
     Route::get('discounts-report', [DiscountController::class, 'report'])->name('discounts.report');
 });
 
-
-
-
-
-
-
-Route::get('/test-export', function() {
-    return Excel::download(new DiscountsExport, 'test.xlsx');
-});
+Route::post('admin/discounts/import-excel', [DiscountController::class, 'importExcel'])->name('discounts.importExcel');
 
 Route::prefix('admin')->group(function () {
 Route::resource('posts', PostController::class);

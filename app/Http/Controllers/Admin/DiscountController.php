@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\DiscountUsage;
 use App\Exports\DiscountsExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\DiscountsImport;
 
 
 class DiscountController extends Controller
@@ -144,6 +145,20 @@ public function show($id)
 {
     $discount = Discount::findOrFail($id);
     return view('admin.discounts.show', compact('discount'));
+}
+public function importExcel(Request $request)
+{
+    $request->validate([
+        'import_file' => 'required|mimes:xlsx,xls'
+    ]);
+
+    try {
+        Excel::import(new DiscountsImport, $request->file('import_file'));
+
+        return redirect()->route('discounts.index')->with('success', 'Import dữ liệu thành công!');
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'Lỗi khi import: ' . $e->getMessage());
+    }
 }
 
 }
