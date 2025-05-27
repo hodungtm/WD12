@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\Admin\DiscountController;
+use App\Http\Controllers\Admin\WishlistController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
@@ -14,14 +15,15 @@ Route::get('/test', function () {
     return view('Admin/test');
 });
 
+// Wishlist
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('wishlists', WishlistController::class)->only(['index', 'show', 'destroy']);
+});
 
 Route::prefix('admin')->group(function () {
     Route::resource('discounts', DiscountController::class);
     Route::get('discounts-report', [DiscountController::class, 'report'])->name('discounts.report');
 });
-
-Auth::routes(['register' => false]);
-
 Route::prefix('admin')->group(function () {
 Route::resource('posts', PostController::class);
 });
