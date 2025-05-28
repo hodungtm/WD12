@@ -1,12 +1,15 @@
 <?php
 use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\WishlistController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuditLogController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\RoleController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -25,7 +28,7 @@ Route::prefix('admin')->group(function () {
     Route::get('discounts-report', [DiscountController::class, 'report'])->name('discounts.report');
 });
 Route::prefix('admin')->group(function () {
-Route::resource('posts', PostController::class);
+    Route::resource('posts', PostController::class);
 });
 Route::prefix('admin')->name('Admin.')->group(function () {
 
@@ -55,3 +58,14 @@ Route::prefix('admin')->name('Admin.')->group(function () {
     Route::post('admin/comments/{id}/approve', [CommentController::class, 'approve'])->name('comments.approve');
     Route::delete('/comments/{id}', [CommentController::class, 'destroy'])->name('comments.destroy');
 });
+
+// Quản lý tài khoản Admin và Role
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('admins', AdminController::class)->except(['show']);
+    Route::resource('roles', RoleController::class)->except(['show']);
+});
+Route::get('admin/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit_logs.index');
+
+
+
+
