@@ -17,12 +17,35 @@
                 <div class="tile-body">
 
                     <div class="row element-button mb-3">
-                        <div class="col-sm-2">
-                            <a class="btn btn-add btn-sm" href="{{ route('discounts.create') }}" title="Thêm">
-                                <i class="fas fa-plus"></i> Tạo mã giảm giá
-                            </a>
-                        </div>
+                            <div class="col-sm-2">
+                              <a class="btn btn-add btn-sm" href="{{ route('discounts.create') }}" title="Thêm"><i class="fas fa-plus"></i>
+                                Tạo mới Mã Giảm Giá</a>
+                            </div>
+                            <div class="col-sm-2">
+                              <a class="btn btn-add btn-sm" href="{{ route('discounts.report') }}" title="Thêm"><i class="fas fa-plus"></i>
+                                Báo Cáo Sử Dụng Mã Giảm Giá</a>
+                            </div>
+                                <div class="col-sm-2">
+                                    <a class="btn btn-excel btn-sm" href="{{ route('discounts.exportExcel') }}" title="In"><i class="fas fa-file-excel"></i> Xuất Excel</a>
+                                </div>
+                                <div class="col-sm-2">
+                                    <form id="uploadForm" action="{{ route('discounts.importExcel') }}" method="POST" enctype="multipart/form-data">
+                                        @csrf
+                                        <input type="file" name="import_file" id="import_file" accept=".xlsx" style="display: none;" onchange="document.getElementById('uploadForm').submit();">
+                                        <button type="button" class="btn btn-primary" onclick="document.getElementById('import_file').click();">
+                                            <i class="fas fa-upload mr-1"></i> Tải file lên
+                                        </button>
+                                    </form>
+
+
+                                </div>
+                                <div class="col-sm-2">
+                              <a class="btn btn-delete btn-sm" type="button" title="Xóa" onclick="myFunction(this)"><i
+                                  class="fas fa-trash-alt"></i> Xóa tất cả </a>
+                            </div>
+
                     </div>
+
 
                     @if(session('success'))
                         <div class="alert alert-success">{{ session('success') }}</div>
@@ -49,6 +72,8 @@
                     <table class="table table-hover table-bordered" id="discountTable">
                         <thead>
                             <tr>
+                                <th><input type="checkbox" id="selectAll"></th>
+                                <th>STT</th>
                                 <th>Mã</th>
                                 <th>Mô tả</th>
                                 <th>Loại giảm</th>
@@ -63,6 +88,8 @@
                         <tbody>
                             @foreach($discounts as $discount)
                                 <tr>
+                                    <td><input type="checkbox" name="ids[]" value="{{ $discount->id }}"></td>
+                                    <td>{{ $discount->id }}</td>
                                     <td>{{ $discount->code }}</td>
                                     <td>{{ $discount->description }}</td>
                                     <td>
@@ -113,6 +140,7 @@
                     </table>
 
                 </div>
+                {{ $discounts->links('pagination::bootstrap-5') }}
             </div>
         </div>
     </div>

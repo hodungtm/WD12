@@ -4,6 +4,8 @@ use App\Http\Controllers\Admin\WishlistController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuditLogController;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\DiscountsExport;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ReviewController;
@@ -24,9 +26,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 Route::prefix('admin')->group(function () {
-    Route::resource('discounts', DiscountController::class);
+    Route::resource('discounts', DiscountController::class)->except(['show']);
+    Route::get('discounts/export-excel', [DiscountController::class, 'exportExcel'])->name('discounts.exportExcel');
     Route::get('discounts-report', [DiscountController::class, 'report'])->name('discounts.report');
 });
+
+
+Route::post('admin/discounts/import-excel', [DiscountController::class, 'importExcel'])->name('discounts.importExcel');
 Route::prefix('admin')->group(function () {
     Route::resource('posts', PostController::class);
 });

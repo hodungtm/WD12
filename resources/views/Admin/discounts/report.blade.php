@@ -1,25 +1,29 @@
 @extends('Admin.Layouts.AdminLayout')
 
-@section('title', 'Báo cáo sử dụng mã giảm giá')
-
 @section('main')
-    <h2>Báo cáo sử dụng mã giảm giá</h2>
+<div class="container">
+    <h2>Báo cáo lượt sử dụng mã giảm giá</h2>
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Mã</th>
-                <th>Mô tả</th>
-                <th>Số lượt đã sử dụng</th>
+                <th>Mã giảm giá</th>
+                <th>Người dùng</th>
+                <th>Mã đơn hàng</th>
+                <th>Thời gian sử dụng</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($discounts as $discount)
+            @foreach($usages as $usage)
                 <tr>
-                    <td>{{ $discount->code }}</td>
-                    <td>{{ $discount->description }}</td>
-                    <td>{{ $discount->usages_count }}</td>
+                    <td>{{ $usage->discount->code }}</td>
+                    <td>{{ $usage->user->name ?? 'Khách' }}</td>
+                    <td>{{ $usage->order_code ?? 'N/A' }}</td>
+                    <td>{{ $usage->used_at }}</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
+
+    {{ $usages->links() }}
+</div>
 @endsection
