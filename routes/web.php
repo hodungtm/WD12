@@ -19,11 +19,17 @@ Route::get('/', function () {
 Route::get('/test', function () {
     return view('Admin/test');
 });
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('discounts', DiscountController::class)->except(['show']);
     Route::get('discounts/export-excel', [DiscountController::class, 'exportExcel'])->name('discounts.exportExcel');
     Route::get('discounts-report', [DiscountController::class, 'report'])->name('discounts.report');
+
+    Route::get('discounts/trashed', [DiscountController::class, 'trashed'])->name('discounts.trashed');
+    Route::post('discounts/{id}/restore', [DiscountController::class, 'restore'])->name('discounts.restore');
+    Route::delete('discounts/delete-all', [DiscountController::class, 'deleteAll'])->name('discounts.deleteAll');
+    Route::delete('discounts/{id}/force-delete', [DiscountController::class, 'forceDelete'])->name('discounts.forceDelete');
 });
+
 
 
 Route::post('admin/discounts/import-excel', [DiscountController::class, 'importExcel'])->name('discounts.importExcel');

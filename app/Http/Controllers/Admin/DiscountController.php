@@ -93,7 +93,7 @@ class DiscountController extends Controller
         );
 
         if (Discount::create($validated)) {
-            return redirect()->route('discounts.index')->with('success', 'Tạo mã giảm giá thành công!');
+            return redirect()->route('admin.discounts.index')->with('success', 'Tạo mã giảm giá thành công!');
         } else {
             return redirect()->back()->with('error', 'Có lỗi xảy ra khi tạo mã giảm giá!');
         }
@@ -114,7 +114,7 @@ class DiscountController extends Controller
         );
 
         if ($discount->update($validated)) {
-            return redirect()->route('discounts.index')->with('success', 'Cập nhật mã giảm giá thành công!');
+            return redirect()->route('admin.discounts.index')->with('success', 'Cập nhật mã giảm giá thành công!');
         } else {
             return redirect()->back()->with('error', 'Có lỗi xảy ra khi cập nhật mã giảm giá!');
         }
@@ -123,7 +123,7 @@ class DiscountController extends Controller
     public function destroy(Discount $discount)
     {
         if ($discount->delete()) {
-            return redirect()->route('discounts.index')->with('success', 'Xóa mã giảm giá thành công!');
+            return redirect()->route('admin.discounts.index')->with('success', 'Xóa mã giảm giá thành công!');
         } else {
             return redirect()->back()->with('error', 'Có lỗi xảy ra khi xóa mã giảm giá!');
         }
@@ -155,10 +155,39 @@ public function importExcel(Request $request)
     try {
         Excel::import(new DiscountsImport, $request->file('import_file'));
 
-        return redirect()->route('discounts.index')->with('success', 'Import dữ liệu thành công!');
+        return redirect()->route('admin.discounts.index')->with('success', 'Import dữ liệu thành công!');
     } catch (\Exception $e) {
         return redirect()->back()->with('error', 'Lỗi khi import: ' . $e->getMessage());
     }
 }
+    // Xóa mềm tất cả
+    public function deleteAll()
+    {
+        Discount::query()->delete(); // xóa mềm tất cả
+        return redirect()->route('admin.discounts.index')->with('success', 'Đã xóa tất cả mã giảm giá');
+    }
+
+    // Hiển thị danh sách bản ghi đã xóa mềm (trashed)
+    public function trashed()
+    {
+        $discounts = Discount::onlyTrashed()->get();
+        return view('admin.discounts.trashed', compact('discounts'));
+    }
+
+    // Khôi phục 1 bản ghi đã xóa mềm
+    public function restore($id)
+    {
+        $discount = Discount::onlyTrashed()->findOrFail($id);
+        $discount->restore();
+        return redirect()->route('admin.discounts.trashed')->with('success', 'Khôi phục mã giảm giá thành công');
+    }
+
+    // Xóa vĩnh viễn 1 bản ghi đã xóa mềm
+    public function forceDelete($id)
+    {
+        $discount = Discount::onlyTrashed()->findOrFail($id);
+        $discount->forceDelete();
+        return redirect()->route('admin.discounts.trashed')->with('success', 'Đã xóa mã giảm giá vĩnh viễn');
+    }
 
 }

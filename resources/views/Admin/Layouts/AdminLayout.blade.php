@@ -73,7 +73,7 @@
       <li><a class="app-menu__item " href="table-data-table.html"><i class='app-menu__icon bx bx-id-card'></i> <span
             class="app-menu__label">Quản lý nhân viên</span></a></li>
       <li>
-    <a class="app-menu__item" href="{{ route('discounts.index') }}">
+    <a class="app-menu__item" href="{{ route('admin.discounts.index') }}">
         <i class='app-menu__icon bx bx-purchase-tag-alt'></i>
         <span class="app-menu__label">Quản lý Mã Giảm Giá</span>
     </a>
