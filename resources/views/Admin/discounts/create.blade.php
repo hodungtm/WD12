@@ -1,16 +1,31 @@
 @extends('Admin.Layouts.AdminLayout')
 
+@section('title', isset($discount) ? 'Chỉnh sửa mã giảm giá' : 'Thêm mã giảm giá')
+
 @section('main')
-<div class="container mt-4">
-    <h2>Thêm mã giảm giá</h2>
+<div class="app-title">
+    <ul class="app-breadcrumb breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('discounts.index') }}">Danh sách mã giảm giá</a></li>
+        <li class="breadcrumb-item active">{{ isset($discount) ? 'Chỉnh sửa' : 'Thêm mới' }}</li>
+    </ul>
+</div>
 
-    <form action="{{ route('discounts.store') }}" method="POST">
-        @csrf
+<div class="row">
+    <div class="col-md-12">
+        <div class="tile">
+            <h3 class="tile-title">{{ isset($discount) ? 'Chỉnh sửa mã giảm giá' : 'Thêm mã giảm giá' }}</h3>
+            <div class="tile-body">
+                <form action="{{ isset($discount) ? route('discounts.update', $discount->id) : route('discounts.store') }}" method="POST">
+                    @csrf
+                    @if(isset($discount)) @method('PUT') @endif
 
-        @include('admin.discounts.form')
+                    @include('admin.discounts.form')
 
-        <button type="submit" class="btn btn-success">Lưu</button>
-        <a href="{{ route('discounts.index') }}" class="btn btn-secondary">Quay lại</a>
-    </form>
+                    <button type="submit" class="btn btn-primary">Lưu lại</button>
+                    <a href="{{ route('discounts.index') }}" class="btn btn-secondary">Hủy bỏ</a>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
