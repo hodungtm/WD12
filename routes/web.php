@@ -19,12 +19,6 @@ Route::get('/', function () {
 Route::get('/test', function () {
     return view('Admin/test');
 });
-
-// Wishlist
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::resource('wishlists', WishlistController::class)->only(['index', 'show', 'destroy']);
-});
-
 Route::prefix('admin')->group(function () {
     Route::resource('discounts', DiscountController::class)->except(['show']);
     Route::get('discounts/export-excel', [DiscountController::class, 'exportExcel'])->name('discounts.exportExcel');
