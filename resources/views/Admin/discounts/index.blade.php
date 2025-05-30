@@ -2,9 +2,6 @@
 @section('main')
 @section('main')
 <div class="app-title">
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
         <ul class="app-breadcrumb breadcrumb side">
             <li class="breadcrumb-item active"><a href="#"><b>Danh sách mã giảm giá</b></a></li>
         </ul>
@@ -17,17 +14,36 @@
                 <div class="tile-body">
 
                     <div class="row element-button mb-3">
-                        <div class="col-sm-2">
-                            <a class="btn btn-add btn-sm" href="{{ route('discounts.create') }}" title="Thêm">
-                                <i class="fas fa-plus"></i> Tạo mã giảm giá
-                            </a>
-                        </div>
+                            <div class="col-sm-2">
+                              <a class="btn btn-add btn-sm" href="{{ route('admin.discounts.create') }}" title="Thêm"><i class="fas fa-plus"></i>
+                                Tạo mới Mã Giảm Giá</a>
+                            </div>
+                            <div class="col-sm-2">
+                              <a class="btn btn-add btn-sm" href="{{ route('admin.discounts.report') }}" title="Thêm"><i class="fas fa-plus"></i>
+                                Báo Cáo Sử Dụng Mã Giảm Giá</a>
+                            </div>
+                                <div class="col-sm-2">
+                                    <a class="btn btn-excel btn-sm" href="{{ route('admin.discounts.exportExcel') }}" title="In"><i class="fas fa-file-excel"></i> Xuất Excel</a>
+                                </div>
+                                <div class="col-sm-2">
+                                    <form id="uploadForm" action="{{ route('discounts.importExcel') }}" method="POST" enctype="multipart/form-data">
+                                        @csrf
+                                        <input type="file" name="import_file" id="import_file" accept=".xlsx" style="display: none;" onchange="document.getElementById('uploadForm').submit();">
+                                        <button type="button" class="btn btn-primary" onclick="document.getElementById('import_file').click();">
+                                            <i class="fas fa-upload mr-1"></i> Tải file lên
+                                        </button>
+                                    </form>
+                                </div>
+                                <div class="col-sm-2">
+                                    <a href="{{ route('admin.discounts.trashed') }}" class="btn btn-warning">
+                                        <i class="fas fa-trash-restore"></i> Thùng rác
+                                    </a>
+                            </div>
                     </div>
-
                     @if(session('success'))
                         <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
-                     <form method="GET" action="{{ route('discounts.index') }}" class="mb-4">
+                     <form method="GET" action="{{ route('admin.discounts.index') }}" class="mb-4">
                     <div class="row justify-content-between align-items-center">
                         <div class="col-md-6">
                             <div class="input-group shadow-sm">
@@ -39,7 +55,7 @@
                             </div>
                         </div>
                         <div class="col-md-auto mt-2 mt-md-0">
-                            <a href="{{ route('discounts.index') }}" class="btn btn-outline-secondary">
+                            <a href="{{ route('admin.discounts.index') }}" class="btn btn-outline-secondary">
                                 <i class="fas fa-times me-1"></i> Xóa bộ lọc
                             </a>
                         </div>
@@ -49,6 +65,8 @@
                     <table class="table table-hover table-bordered" id="discountTable">
                         <thead>
                             <tr>
+                                <th><input type="checkbox" id="selectAll"></th>
+                                <th>STT</th>
                                 <th>Mã</th>
                                 <th>Mô tả</th>
                                 <th>Loại giảm</th>
@@ -63,6 +81,8 @@
                         <tbody>
                             @foreach($discounts as $discount)
                                 <tr>
+                                    <td><input type="checkbox" name="ids[]" value="{{ $discount->id }}"></td>
+                                    <td>{{ $discount->id }}</td>
                                     <td>{{ $discount->code }}</td>
                                     <td>{{ $discount->description }}</td>
                                     <td>
@@ -96,10 +116,10 @@
                                             </td>
 
                                     <td>
-                                        <a href="{{ route('discounts.edit', $discount) }}" class="btn btn-primary btn-sm" title="Sửa">
+                                        <a href="{{ route('admin.discounts.edit', $discount) }}" class="btn btn-primary btn-sm" title="Sửa">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form action="{{ route('discounts.destroy', $discount) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Bạn có chắc chắn muốn xóa?')">
+                                        <form action="{{ route('admin.discounts.destroy', $discount) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Bạn có chắc chắn muốn xóa?')">
                                             @csrf
                                             @method('DELETE')
                                             <button class="btn btn-danger btn-sm" title="Xóa">
@@ -113,6 +133,7 @@
                     </table>
 
                 </div>
+                {{ $discounts->links('pagination::bootstrap-5') }}
             </div>
         </div>
     </div>

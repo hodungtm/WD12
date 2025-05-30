@@ -17,8 +17,6 @@
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-
-
 </head>
 
 <body onload="time()" class="app sidebar-mini rtl">
@@ -75,7 +73,7 @@
       <li><a class="app-menu__item " href="table-data-table.html"><i class='app-menu__icon bx bx-id-card'></i> <span
             class="app-menu__label">Quản lý nhân viên</span></a></li>
       <li>
-    <a class="app-menu__item" href="{{ route('discounts.index') }}">
+    <a class="app-menu__item" href="{{ route('admin.discounts.index') }}">
         <i class='app-menu__icon bx bx-purchase-tag-alt'></i>
         <span class="app-menu__label">Quản lý Mã Giảm Giá</span>
     </a>
@@ -87,8 +85,8 @@
       </li>
       <li><a class="app-menu__item" href="table-data-oder.html"><i class='app-menu__icon bx bx-task'></i><span
             class="app-menu__label">Quản lý đơn hàng</span></a></li>
-      <li><a class="app-menu__item" href="table-data-banned.html"><i class='app-menu__icon bx bx-run'></i><span
-            class="app-menu__label">Quản lý nội bộ
+      <li><a class="app-menu__item" href="{{ route('admin.admins.index') }}"><i class='app-menu__icon bx bx-user'></i><span
+            class="app-menu__label">Quản lý tài khoản admin
           </span></a></li>
       <li>
         <a class="app-menu__item" href="{{ route('admin.banners.index') }}">

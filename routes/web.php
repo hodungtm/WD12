@@ -2,12 +2,18 @@
 
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\DiscountController;
+use App\Http\Controllers\Admin\WishlistController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuditLogController;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\DiscountsExport;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\RoleController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -15,16 +21,22 @@ Route::get('/', function () {
 Route::get('/test', function () {
     return view('Admin/test');
 });
-
-
-Route::prefix('admin')->group(function () {
-    Route::resource('discounts', DiscountController::class);
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('discounts', DiscountController::class)->except(['show']);
+    Route::get('discounts/export-excel', [DiscountController::class, 'exportExcel'])->name('discounts.exportExcel');
     Route::get('discounts-report', [DiscountController::class, 'report'])->name('discounts.report');
+
+    Route::get('discounts/trashed', [DiscountController::class, 'trashed'])->name('discounts.trashed');
+    Route::post('discounts/{id}/restore', [DiscountController::class, 'restore'])->name('discounts.restore');
+    Route::delete('discounts/delete-all', [DiscountController::class, 'deleteAll'])->name('discounts.deleteAll');
+    Route::delete('discounts/{id}/force-delete', [DiscountController::class, 'forceDelete'])->name('discounts.forceDelete');
 });
 
 
+
+Route::post('admin/discounts/import-excel', [DiscountController::class, 'importExcel'])->name('discounts.importExcel');
 Route::prefix('admin')->group(function () {
-Route::resource('posts', PostController::class);
+    Route::resource('posts', PostController::class);
 });
 Route::prefix('admin')->name('Admin.')->group(function () {
 
@@ -58,4 +70,9 @@ Route::prefix('admin')->name('Admin.')->group(function () {
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('banners', BannerController::class);
 });
-
+// Quản lý tài khoản Admin và Role
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('admins', AdminController::class)->except(['show']);
+    Route::resource('roles', RoleController::class)->except(['show']);
+});
+Route::get('admin/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit_logs.index');
