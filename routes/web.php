@@ -1,4 +1,6 @@
 <?php
+
+use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\DiscountController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -52,3 +54,8 @@ Route::prefix('admin')->name('Admin.')->group(function () {
     Route::post('admin/comments/{id}/approve', [CommentController::class, 'approve'])->name('comments.approve');
     Route::delete('/comments/{id}', [CommentController::class, 'destroy'])->name('comments.destroy');
 });
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('banners', BannerController::class);
+});
+
