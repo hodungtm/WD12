@@ -2,18 +2,64 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Wishlist;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
 
 class Product extends Model
 {
-    use HasFactory; 
-    protected $fillable = ['name', 'description', 'price', 'image'];
+    use HasFactory;
 
-    // Quan hệ với Wishlist
-    public function wishlists()
+    // Nếu bạn dùng tên bảng mặc định 'products' thì không cần khai báo
+    // protected $table = 'products';
+
+    protected $fillable = [
+        'name',
+        'image_product',
+        'type',
+        'description',
+        'price',
+        'sku',
+        'brand',
+        'slug',
+        'status',
+        'category_id',
+    ];
+
+    public function category()
     {
-        return $this->hasMany(Wishlist::class);
+        return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    public function productImages()
+    {
+        return $this->hasMany(ProductImage::class, 'product_id');
+    }
+
+
+    // app/Models/Product.php
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($product) {
+            do {
+                $randomNumber = mt_rand(100000, 999999); // số 6 chữ số ngẫu nhiên
+                $sku = 'SP' . $randomNumber;
+            } while (self::where('sku', $sku)->exists()); // kiểm tra trùng
+
+            $product->sku = $sku;
+        });
+    }
+
+    public function dimensions()
+    {
+        return $this->hasMany(ProductDimension::class);
+    }
+
+    public function colors()
+    {
+        return $this->belongsToMany(Color::class, 'product_color')->withPivot('image')->withTimestamps();
     }
 }
