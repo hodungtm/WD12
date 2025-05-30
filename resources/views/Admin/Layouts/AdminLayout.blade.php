@@ -88,6 +88,12 @@
       <li><a class="app-menu__item" href="{{ route('admin.admins.index') }}"><i class='app-menu__icon bx bx-user'></i><span
             class="app-menu__label">Quản lý tài khoản admin
           </span></a></li>
+      <li>
+        <a class="app-menu__item" href="{{ route('admin.banners.index') }}">
+          <i class='app-menu__icon bx bx-image'></i>
+            <span class="app-menu__label">Quản lý banner</span>
+        </a>
+      </li>
       <li><a class="app-menu__item" href="table-data-money.html"><i class='app-menu__icon bx bx-dollar'></i><span
             class="app-menu__label">Bảng kê lương</span></a></li>
       <li><a class="app-menu__item" href="quan-ly-bao-cao.html"><i

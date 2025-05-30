@@ -20,6 +20,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-         Paginator::useBootstrapFive(); // hoặc useBootstrapFour() tùy version bootstrap bạn dùng
+        Paginator::useBootstrapFive();
     }
 }

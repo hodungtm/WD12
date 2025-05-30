@@ -1,4 +1,6 @@
 <?php
+
+use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\WishlistController;
 use App\Http\Controllers\AdminController;
@@ -65,13 +67,12 @@ Route::prefix('admin')->name('Admin.')->group(function () {
     Route::delete('/comments/{id}', [CommentController::class, 'destroy'])->name('comments.destroy');
 });
 
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('banners', BannerController::class);
+});
 // Quản lý tài khoản Admin và Role
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('admins', AdminController::class)->except(['show']);
     Route::resource('roles', RoleController::class)->except(['show']);
 });
 Route::get('admin/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit_logs.index');
-
-
-
-
