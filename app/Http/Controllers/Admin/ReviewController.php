@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;;
 
+use App\Http\Controllers\Controller;
 use App\Models\Review;
 use Illuminate\Http\Request;
 
@@ -109,7 +110,29 @@ class ReviewController extends Controller
     {
         $review = Review::findOrFail($id);
         $review->delete();
+        return redirect()->route('Admin.reviews.index')->with('success', 'Xóa đánh giá thành công (xóa mềm).');
+    }
 
-        return redirect()->route('Admin.reviews.index')->with('success', 'Xóa đánh giá thành công!');
+    // Danh sách bản ghi đã xóa mềm
+    public function trash()
+    {
+        $reviews = Review::onlyTrashed()->paginate(10);
+        return view('Admin.reviews.trash', compact('reviews'));
+    }
+
+    // Khôi phục
+    public function restore($id)
+    {
+        $review = Review::onlyTrashed()->where('id', $id)->firstOrFail();
+        $review->restore();
+        return redirect()->route('Admin.reviews.trash')->with('success', 'Khôi phục đánh giá thành công.');
+    }
+
+    // Xóa vĩnh viễn
+    public function forceDelete($id)
+    {
+        $review = Review::onlyTrashed()->where('id', $id)->firstOrFail();
+        $review->forceDelete();
+        return redirect()->route('Admin.reviews.trash')->with('success', 'Xóa đánh giá vĩnh viễn thành công.');
     }
 }

@@ -8,9 +8,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Review extends Model
 {
+    use SoftDeletes;
     use HasFactory;
     protected $table = 'reviews';
-
+    protected $dates = ['deleted_at'];
     protected $fillable = [
         'ma_nguoi_dung',
         'product_id',

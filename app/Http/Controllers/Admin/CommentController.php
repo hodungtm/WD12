@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;;
 
-use App\Models\Review;
+use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 
@@ -80,11 +80,33 @@ class CommentController extends Controller
         ])->with('success', 'Đã duyệt bình luận.');
     }
 
-    public function destroy($id)
+     public function destroy($id)
     {
         $comment = Comment::findOrFail($id);
         $comment->delete();
+        return redirect()->route('Admin.comments.index')->with('success', 'Xóa bình luận thành công (xóa mềm).');
+    }
 
-        return redirect()->route('Admin.comments.index')->with('success', 'Xóa bình luận thành công!');
+    // Thùng rác bình luận
+    public function trash()
+    {
+        $comments = Comment::onlyTrashed()->paginate(10);
+        return view('Admin.comments.trash', compact('comments'));
+    }
+
+    // Khôi phục bình luận
+    public function restore($id)
+    {
+        $comment = Comment::onlyTrashed()->where('id', $id)->firstOrFail();
+        $comment->restore();
+        return redirect()->route('Admin.comments.trash')->with('success', 'Khôi phục bình luận thành công.');
+    }
+
+    // Xóa vĩnh viễn bình luận
+    public function forceDelete($id)
+    {
+        $comment = Comment::onlyTrashed()->where('id', $id)->firstOrFail();
+        $comment->forceDelete();
+        return redirect()->route('Admin.comments.trash')->with('success', 'Xóa bình luận vĩnh viễn thành công.');
     }
 }

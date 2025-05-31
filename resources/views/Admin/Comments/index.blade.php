@@ -19,7 +19,9 @@
                 <div class="tile-body">
                     <div class="row element-button">
                         <div class="col-sm-2">
-                           {{-- <a href="{{ route('Admin.comments.trash') }}" class="btn btn-danger mb-3"><i class="fa fa-trash"></i> Thùng rác</a> --}}
+                            <a href="{{ route('Admin.comments.trash') }}" class="btn btn-warning">
+                                <i class="fas fa-trash-restore"></i> Thùng rác
+                            </a>
                         </div>
                     </div>
 
