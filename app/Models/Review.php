@@ -2,17 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Review extends Model
-{use HasFactory;
-
+{
+    use HasFactory;
     protected $table = 'reviews';
 
     protected $fillable = [
         'ma_nguoi_dung',
-        'ma_san_pham',
+        'product_id',
         'so_sao',
         'noi_dung',
         'trang_thai',
@@ -24,8 +25,8 @@ class Review extends Model
     //     return $this->belongsTo(User::class, 'ma_nguoi_dung');
     // }
 
-    // public function product()
-    // {
-    //     return $this->belongsTo(Product::class, 'ma_san_pham');
-    // }
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id');
+    }
 }

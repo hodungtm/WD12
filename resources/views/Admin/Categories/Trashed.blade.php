@@ -32,8 +32,9 @@
         <thead>
           <tr>
             <th>ID</th>
-            <th>Mã danh mục</th>
+            {{-- Bỏ cột Mã danh mục --}}
             <th>Tên danh mục</th>
+            <th>Mô tả</th> {{-- Thêm cột Mô tả --}}
             <th>Ảnh</th>
             <th>Thao tác</th>
           </tr>
@@ -42,8 +43,9 @@
           @foreach($trashed as $cat)
           <tr>
             <td>{{ $cat->id }}</td>
-            <td>{{ $cat->ma_danh_muc }}</td>
+            {{-- Bỏ hiển thị mã danh mục --}}
             <td>{{ $cat->ten_danh_muc }}</td>
+            <td>{{ $cat->mo_ta }}</td> {{-- Hiển thị mô tả --}}
             <td>
               @if($cat->anh)
                 <img src="{{ asset('storage/' . $cat->anh) }}" width="60" alt="Ảnh danh mục">
