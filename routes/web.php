@@ -33,7 +33,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('discounts/{id}/force-delete', [DiscountController::class, 'forceDelete'])->name('discounts.forceDelete');
 });
 
-
+Route::get('/test', function () {
+    return view('Admin/test');
+});
 
 Route::post('admin/discounts/import-excel', [DiscountController::class, 'importExcel'])->name('discounts.importExcel');
 Route::prefix('admin')->group(function () {
