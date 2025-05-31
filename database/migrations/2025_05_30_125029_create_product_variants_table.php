@@ -15,12 +15,8 @@ class CreateProductVariantsTable extends Migration
             $table->string('size')->nullable();       // size quần áo hoặc giày
             $table->string('color')->nullable();      // màu sắc
             $table->integer('quantity')->default(0);  // số lượng
-
-            $table->float('foot_length')->nullable(); // chiều dài bàn chân (cm)
-            $table->float('chest_size')->nullable();  // cỡ ngực (cm)
-            $table->float('waist_size')->nullable();  // cỡ eo (cm)
-            $table->float('hip_size')->nullable();    // cỡ hông (cm)
-
+            $table->decimal('variant_price', 15, 2)->default(0);       // giá biến thể
+            $table->decimal('variant_sale_price', 15, 2)->nullable();
             $table->timestamps();
         });
     }

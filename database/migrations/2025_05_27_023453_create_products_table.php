@@ -17,7 +17,8 @@ return new class extends Migration
             $table->enum('type', ['clothes', 'shoes', 'shirt', 'pants', 'dress', 'socks']);
             $table->text('description')->nullable();
             $table->string('image_product', 255)->nullable();
-            $table->decimal('price', 10, 2)->default(0);
+            $table->decimal('price', 10, 2)->default(0);     
+            $table->decimal('sale_price', 15, 2)->nullable();
             $table->string('sku')->nullable()->unique();
             $table->string('brand')->nullable();
             $table->string('slug')->nullable()->unique();

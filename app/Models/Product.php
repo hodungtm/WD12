@@ -19,6 +19,7 @@ class Product extends Model
         'type',
         'description',
         'price',
+        'sale_price',
         'sku',
         'brand',
         'slug',
@@ -31,13 +32,18 @@ class Product extends Model
         return $this->belongsTo(Category::class, 'category_id');
     }
 
-    public function productImages()
+    public function images()
     {
         return $this->hasMany(ProductImage::class, 'product_id');
     }
 
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class, 'product_id');
+    }
 
-    // app/Models/Product.php
+
+
 
     protected static function boot()
     {
@@ -51,15 +57,5 @@ class Product extends Model
 
             $product->sku = $sku;
         });
-    }
-
-    public function dimensions()
-    {
-        return $this->hasMany(ProductDimension::class);
-    }
-
-    public function colors()
-    {
-        return $this->belongsToMany(Color::class, 'product_color')->withPivot('image')->withTimestamps();
     }
 }

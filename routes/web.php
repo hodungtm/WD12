@@ -59,6 +59,7 @@ Route::prefix('admin')->name('Admin.')->group(function () {
     Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
     Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');
     Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.delete');
+    Route::get('admin/products/{id}', [ProductController::class, 'show'])->name('products.show');
 
     // ===== REVIEWS =====
     Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');

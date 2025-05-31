@@ -49,14 +49,15 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Mã sản phẩm</th>
                             <th>Tên sản phẩm</th>
-                            <th>Ảnh sản phẩm</th>
-                            <th>Loại</th>
+                            <th>Ảnh</th>
                             <th>Giá</th>
+                            <th>Giá KM</th>
                             <th>Thương hiệu</th>
-                            <th>Trạng thái</th>
+                            <th>Loại</th>
                             <th>Danh mục</th>
+                            <th>Trạng thái</th>
+                            <th>Tồn kho</th>
                             <th>Ngày tạo</th>
                             <th>Chức năng</th>
                         </tr>
@@ -65,17 +66,24 @@
                         @foreach ($products as $p)
                         <tr>
                             <td>{{ $p->id }}</td>
-                            <td>{{ $p->sku }}</td>
                             <td>{{ $p->name }}</td>
-                            <td><img src="{{Storage::URL($p->image_product)}}" alt="" width="40px" height="30px"></td>
-                            <td>{{ ucfirst($p->type) }}</td>
+                            <td>
+                                <img src="{{ Storage::url($p->image_product) }}" width="40" height="30">
+                            </td>
                             <td>{{ number_format($p->price, 0, ',', '.') }} VNĐ</td>
+                            <td>
+                                @if($p->sale_price > 0)
+                                    <span class="text-danger">{{ number_format($p->sale_price, 0, ',', '.') }} VNĐ</span>
+                                @endif
+                            </td>
                             <td>{{ $p->brand }}</td>
-                            <td>{{ $p->status == 'active' ? 'Hoạt động' : 'Không hoạt động' }}</td>
+                            <td>{{ ucfirst($p->type) }}</td>
                             <td>{{ optional($p->category)->ten_danh_muc ?? 'Không có danh mục' }}</td>
+                            <td>{{ $p->status == 'active' ? 'Hoạt động' : 'Không hoạt động' }}</td>
+                            <td>{{ $p->variants->sum('quantity') }}</td>
                             <td>{{ $p->created_at->format('d/m/Y') }}</td>
                             <td>
-                                <a class="btn btn-info btn-sm" href="">Xem</a>
+                                <a class="btn btn-info btn-sm" href="{{ route("Admin.products.show", $p->id) }}">Xem</a>
                                 <a class="btn btn-primary btn-sm" href="{{ route("Admin.products.edit", $p->id) }}">Sửa</a>
                                 <form action="{{ route("Admin.products.delete", $p->id) }}" method="POST"
                                     style="display:inline-block;" onsubmit="return confirm('Bạn có chắc muốn xóa?');">
