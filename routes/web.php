@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\DiscountController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\WishlistController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuditLogController;
@@ -22,6 +23,10 @@ Route::get('/', function () {
 Route::get('/test', function () {
     return view('Admin/test');
 });
+Route::prefix('admin')->group(function () {
+    Route::resource('orders', OrderController::class)->names('admin.orders');
+
+});
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('discounts', DiscountController::class)->except(['show']);
     Route::get('discounts/export-excel', [DiscountController::class, 'exportExcel'])->name('discounts.exportExcel');
@@ -32,7 +37,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('discounts/delete-all', [DiscountController::class, 'deleteAll'])->name('discounts.deleteAll');
     Route::delete('discounts/{id}/force-delete', [DiscountController::class, 'forceDelete'])->name('discounts.forceDelete');
 });
-
 
 
 Route::post('admin/discounts/import-excel', [DiscountController::class, 'importExcel'])->name('discounts.importExcel');
