@@ -16,10 +16,8 @@ class ProductVariant extends Model
         'size',
         'color',
         'quantity',
-        'foot_length',
-        'chest_size',
-        'waist_size',
-        'hip_size',
+        'variant_price',
+        'variant_sale_price',
     ];
 
     // Quan hệ với product

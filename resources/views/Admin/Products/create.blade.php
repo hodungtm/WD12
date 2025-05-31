@@ -14,17 +14,6 @@
 <div class="container">
     <h2>Thêm sản phẩm mới</h2>
 
-    @if ($errors->any())
-    <div class="alert alert-danger">
-        <strong>Lỗi:</strong>
-        <ul>
-            @foreach ($errors->all() as $e)
-            <li>{{ $e }}</li>
-            @endforeach
-        </ul>
-    </div>
-    @endif
-
     <form action="{{ route('Admin.products.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
@@ -32,59 +21,104 @@
             <div class="col-md-6">
                 <div class="mb-3">
                     <label>Tên sản phẩm</label>
-                    <input type="text" name="name" class="form-control" required>
+                    <input type="text" name="name" class="form-control" value="{{ old('name') }}">
+                    @error('name')
+                    <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label>Giá</label>
-                    <input type="number" name="price" class="form-control" required>
+                    <input type="number" name="price" class="form-control" value="{{ old('price') }}">
+                    @error('price')
+                    <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
+                    <label>Giá khuyến mãi</label>
+                    <input type="number" name="sale_price" class="form-control" value="{{ old('sale_price') }}">
+                    @error('sale_price')
+                    <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label>Loại</label>
-                    <select name="type" class="form-control" id="product_type" required>
+                    <select name="type" class="form-control" id="product_type">
                         <option value=""> -- Loại sản phẩm --</option>
-                        <option value="shoes">Giày thể thao</option>
-                        <option value="shirt">Áo</option>
-                        <option value="pants">Quần</option>
+                        <option value="shoes" {{ old('type')=='shoes' ? 'selected' : '' }}>Giày thể thao</option>
+                        <option value="shirt" {{ old('type')=='shirt' ? 'selected' : '' }}>Áo</option>
+                        <option value="pants" {{ old('type')=='pants' ? 'selected' : '' }}>Quần</option>
                     </select>
+                    @error('type')
+                    <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label>Thương hiệu</label>
-                    <input type="text" name="brand" class="form-control">
+                    <input type="text" name="brand" class="form-control" value="{{ old('brand') }}">
+                    @error('brand')
+                    <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
             </div>
 
             <div class="col-md-6">
                 <div class="mb-3">
+                    <label>Slug</label>
+                    <input type="text" name="slug" class="form-control" value="{{ old('slug') }}">
+                    @error('slug')
+                    <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="mb-3">
                     <label>Danh mục</label>
                     <select name="category_id" class="form-control">
                         <option value="">-- Chọn danh mục --</option>
                         @foreach ($categories as $cat)
-                        <option value="{{ $cat->id }}">{{ $cat->ten_danh_muc }}</option>
+                        <option value="{{ $cat->id }}" {{ old('category_id')==$cat->id ? 'selected' : '' }}>{{
+                            $cat->ten_danh_muc }}</option>
                         @endforeach
                     </select>
+                    @error('category_id')
+                    <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label>Trạng thái</label>
                     <select name="status" class="form-control">
-                        <option value="active">Hoạt động</option>
-                        <option value="inactive">Không hoạt động</option>
+                        <option value="active" {{ old('status')=='active' ? 'selected' : '' }}>Hoạt động</option>
+                        <option value="inactive" {{ old('status')=='inactive' ? 'selected' : '' }}>Không hoạt động
+                        </option>
                     </select>
+                    @error('status')
+                    <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label>Ảnh chính</label>
-                    <input type="file" name="image_product" class="form-control" required>
+                    <input type="file" name="image_product" class="form-control">
+                    @error('image_product')
+                    <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label>Ảnh phụ</label>
-                    <input class="form-control" type="file" name="image_details[]" multiple>
+                    <input class="form-control" type="file" name="image_path[]" multiple>
+                    @if($errors->has('image_path'))
+                    <div class="text-danger">{{ $errors->first('image_path') }}</div>
+                    @endif
+                    @foreach($errors->get('image_path.*') as $messages)
+                    @foreach($messages as $msg)
+                    <div class="text-danger">{{ $msg }}</div>
+                    @endforeach
+                    @endforeach
                 </div>
-
             </div>
         </div>
         <div class="mb-3">
@@ -145,45 +179,44 @@
                     <input type="hidden" name="selected_size[]" class="selected_size">
                     <input type="hidden" name="selected_color[]" class="selected_color">
                     <!-- Số lượng -->
+                    @php $variantIndex = 0; @endphp
                     <div id="variant-quantity" class="col-md-4 mb-2">
                         <label><strong>Số lượng</strong></label>
                         <input type="number" name="variant_quantity[]" class="variant_quantity form-control mt-1"
-                            value="" min="1">
+                            value="{{ old('variant_quantity.' . $variantIndex) }}" min="1">
+                        @error('variant_quantity.' . $variantIndex)
+                        <div class="text-danger">{{ $message }}</div>
+                        @enderror
                     </div>
-                    <!-- Chiều dài bàn chân -->
-                    <div id="variant-foot-length" class="col-md-6 foot-length" style="display: none">
-                        <div class="mb-3">
-                            <label>Chiều dài bàn chân (cm):</label>
-                            <input type="number" name="foot_length" class="form-control">
-                        </div>
-                    </div>
-
-                    <!-- Cỡ ngực, eo -->
                     <div id="variant-chest-waist" class="col-md-6 chest-waist-group" style="gap: 15px">
                         <div class="mb-3 chest-size" style="display: none">
-                            <label>Cỡ ngực (cm):</label>
-                            <input type="number" name="chest_size" class="form-control">
+                            <label><strong>Giá biến thể</strong></label>
+                            <input type="number" name="variant_price[]" class="form-control"
+                                value="{{ old('variant_price.' . $variantIndex) }}">
+                            @error('variant_price.' . $variantIndex)
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="mb-3 waist-size" style="display: none">
-                            <label>Cỡ eo (cm):</label>
-                            <input type="number" name="waist_size" class="form-control">
+                            <label><strong>Giá khuyến mã biến thể</strong></label>
+                            <input type="number" name="variant_sale_price[]" class="form-control"
+                                value="{{ old('variant_sale_price.' . $variantIndex) }}">
+                            @error('variant_sale_price.' . $variantIndex)
+                            <div class="text-danger">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
-                    <!-- Cỡ hông -->
-                    <div id="variant-hip" class="col-md-6 hip-size" style="display: none">
-                        <div class="mb-3">
-                            <label>Cỡ hông (cm):</label>
-                            <input type="number" name="hip_size" class="form-control">
-                        </div>
-                    </div>
-
+                    @php $variantIndex++; @endphp
                 </div>
             </div>
             <button type="button" id="add-variant-btn" class="btn btn-primary mb-3">Thêm biến thể</button>
         </div>
         <div class="mb-3">
             <label>Mô tả</label>
-            <textarea name="description" class="form-control" rows="4"></textarea>
+            <textarea name="description" class="form-control" rows="4">{{ old('description') }}</textarea>
+            @error('description')
+            <div class="text-danger">{{ $message }}</div>
+            @enderror
         </div>
         <div class="mt-4">
             <button type="submit" class="btn btn-primary">Lưu</button>
@@ -270,7 +303,8 @@
             switch (type) {
                 case "shoes":
                     setDisplay(elements.shoeSizeGroup, "block");
-                    setDisplay(elements.footLength, "flex");
+                    setDisplay(elements.chestSize, "block");
+                    setDisplay(elements.waistSize, "block");
                     break;
                 case "shirt":
                     setDisplay(elements.shirtSizeGroup, "block");
@@ -279,7 +313,8 @@
                     break;
                 case "pants":
                     setDisplay(elements.shirtSizeGroup, "block");
-                    setDisplay(elements.hipSize, "flex");
+                    setDisplay(elements.chestSize, "block");
+                    setDisplay(elements.waistSize, "block");
                     break;
             }
         }
@@ -316,8 +351,22 @@
 });
 </script>
 
-
-
-
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nameInput = document.querySelector('input[name="name"]');
+    const slugInput = document.querySelector('input[name="slug"]');
+    if(nameInput && slugInput) {
+        nameInput.addEventListener('input', function() {
+            let slug = nameInput.value.toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-') 
+                .replace(/-+/g, '-')
+                .replace(/^-+|-+$/g, '');
+            slugInput.value = slug;
+        });
+    }
+});
+</script>
 
 @endsection

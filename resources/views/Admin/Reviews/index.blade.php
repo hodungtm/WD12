@@ -10,7 +10,7 @@
     </div>
 
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+    <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
     <div class="row">
@@ -50,31 +50,31 @@
                         </thead>
                         <tbody>
                             @foreach ($reviews as $review)
-                                                    <tr>
-                                                        <td>{{ $review->id }}</td>
-                                                        <td>{{ $review->user->name ?? 'N/A' }}</td>
-                                                        <td>{{ $review->product->name ?? 'N/A' }}</td>
-                                                        <td>{{ $review->so_sao }}</td>
-                                                        <td>{{ Str::limit($review->noi_dung, 50) }}</td>
-                                                        <td>
-                                                            {!! $review->trang_thai
-                                ? '<span class="badge bg-success">Hiển thị</span>'
-                                : '<span class="badge bg-secondary">Ẩn</span>' 
-                                          !!}
-                                                        </td>
-                                                        <td>{{ $review->created_at->format('d/m/Y') }}</td>
-                                                        <td>
-                                                            <a href="{{ route('Admin.reviews.edit', $review->id) }}"
-                                                                class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
-                                                            <form action="{{ route('Admin.reviews.destroy', $review->id) }}" method="POST"
-                                                                style="display:inline-block" onsubmit="return confirm('Bạn có chắc muốn xóa?')">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button class="btn btn-danger btn-sm" type="submit"><i
-                                                                        class="fas fa-trash-alt"></i></button>
-                                                            </form>
-                                                        </td>
-                                                    </tr>
+                            <tr>
+                                <td>{{ $review->id }}</td>
+                                <td>{{ $review->user->name ?? 'N/A' }}</td>
+                                <td>{{ $review->product->name ?? 'N/A' }}</td>
+                                <td>{{ $review->so_sao }}</td>
+                                <td>{{ Str::limit($review->noi_dung, 50) }}</td>
+                                <td>
+                                    {!! $review->trang_thai
+                                    ? '<span class="badge bg-success">Hiển thị</span>'
+                                    : '<span class="badge bg-secondary">Ẩn</span>'
+                                    !!}
+                                </td>
+                                <td>{{ $review->created_at->format('d/m/Y') }}</td>
+                                <td>
+                                    <a href="{{ route('Admin.reviews.edit', $review->id) }}"
+                                        class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+                                    <form action="{{ route('Admin.reviews.destroy', $review->id) }}" method="POST"
+                                        style="display:inline-block" onsubmit="return confirm('Bạn có chắc muốn xóa?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-danger btn-sm" type="submit"><i
+                                                class="fas fa-trash-alt"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
                             @endforeach
                         </tbody>
                     </table>
