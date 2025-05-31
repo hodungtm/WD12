@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -137,7 +138,30 @@ class CategoryController extends Controller
     public function destroy($id)
     {
         $category = Category::findOrFail($id);
-        $category->delete(); // Xóa mềm
-        return redirect()->route('Admin.categories.index')->with('success', 'Đã xóa tạm thời danh mục');
+        $category->delete();
+
+        return redirect()->route('Admin.categories.index')->with('success', 'Đã chuyển danh mục vào thùng rác.');
+    }
+
+    public function trash()
+    {
+        $categories = Category::onlyTrashed()->orderBy('deleted_at', 'desc')->paginate(10);
+        return view('Admin.categories.trash', compact('categories'));
+    }
+
+    public function restore($id)
+    {
+        $category = Category::withTrashed()->findOrFail($id);
+        $category->restore();
+
+        return redirect()->route('Admin.categories.trash')->with('success', 'Khôi phục danh mục thành công.');
+    }
+
+    public function forceDelete($id)
+    {
+        $category = Category::withTrashed()->findOrFail($id);
+        $category->forceDelete();
+
+        return redirect()->route('Admin.categories.trash')->with('success', 'Đã xóa vĩnh viễn danh mục.');
     }
 }

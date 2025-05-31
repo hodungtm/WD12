@@ -22,6 +22,9 @@
                         <div class="col-sm-2">
                             <a href="{{ route('Admin.reviews.create') }}" class="btn btn-add btn-sm"><i
                                     class="fas fa-plus"></i> Thêm đánh giá mới</a>
+                            <a href="{{ route('Admin.reviews.trash') }}" class="btn btn-warning">
+                                <i class="fas fa-trash-restore"></i> Thùng rác
+                            </a>
                         </div>
                     </div>
 
@@ -60,7 +63,7 @@
                                                             {!! $review->trang_thai
                                 ? '<span class="badge bg-success">Hiển thị</span>'
                                 : '<span class="badge bg-secondary">Ẩn</span>'
-                                                                                                                                                                                                            !!}
+                                                                                                                                                                                                                                    !!}
                                                         </td>
                                                         <td>{{ $review->created_at->format('d/m/Y') }}</td>
                                                         <td>
