@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Category extends Model
 {
     use HasFactory;
-     use SoftDeletes;
 
     // Mdel muốn thao tác với bảng nào thì sẽ cần quy định ở biến table
     protected $table = 'categories';

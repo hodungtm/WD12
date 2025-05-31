@@ -16,10 +16,11 @@ class CategoryController extends Controller
         $search = $request->input('keyword');
         $categories = Category::when($search, function ($query, $search) {
             return $query->where('ten_danh_muc', 'like', "%$search%")
-                ->orWhere('ma_danh_muc', 'like', "%$search%");
+                ->orWhere('mo_ta', 'like', "%$search%"); // Tìm kiếm thêm mô tả
         })->get();
-        $trashed = Category::onlyTrashed()->get(); // Lấy danh mục đã xóa mềm
-        return view('Admin.categories.index', compact('categories', 'trashed'));
+
+
+        return view('Admin.categories.index', compact('categories'));
     }
 
     /**
@@ -36,15 +37,30 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'ma_danh_muc' => 'required|unique:categories,ma_danh_muc',
-            'ten_danh_muc' => 'required',
-            'anh' => 'nullable|image',
+            'ten_danh_muc' => 'required|string|max:255',
+            'mo_ta' => 'nullable|string|max:1000',
+            'anh' => 'required|image|mimes:jpeg,png,bmp,gif,svg|max:2048',
             'tinh_trang' => 'required|in:0,1',
+        ], [
+            'ten_danh_muc.required' => 'Vui lòng nhập tên danh mục.',
+            'ten_danh_muc.string' => 'Tên danh mục phải là chuỗi ký tự.',
+            'ten_danh_muc.max' => 'Tên danh mục không được vượt quá 255 ký tự.',
+
+            'mo_ta.string' => 'Mô tả phải là chuỗi ký tự.',
+            'mo_ta.max' => 'Mô tả không được vượt quá 1000 ký tự.',
+
+            'anh.required' => 'Vui lòng thêm ảnh cho danh mục.',
+            'anh.image' => 'Ảnh phải là file hình ảnh hợp lệ.',
+            'anh.mimes' => 'Ảnh chỉ được phép định dạng: jpeg, png, bmp, gif, svg.',
+            'anh.max' => 'Ảnh dung lượng tối đa là 2MB.',
+
+            'tinh_trang.required' => 'Vui lòng chọn tình trạng.',
+            'tinh_trang.in' => 'Tình trạng không hợp lệ.',
         ]);
 
         $category = new Category();
-        $category->ma_danh_muc = $request->ma_danh_muc;
         $category->ten_danh_muc = $request->ten_danh_muc;
+        $category->mo_ta = $request->mo_ta;
         $category->tinh_trang = $request->tinh_trang;
 
         if ($request->hasFile('anh')) {
@@ -55,14 +71,6 @@ class CategoryController extends Controller
         $category->save();
 
         return redirect()->route('Admin.categories.index')->with('success', 'Thêm danh mục thành công');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
     }
 
     /**
@@ -82,14 +90,28 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
 
         $request->validate([
-            'ma_danh_muc' => 'required|unique:categories,ma_danh_muc,' . $category->id,
-            'ten_danh_muc' => 'required',
-            'anh' => 'nullable|image',
+            'ten_danh_muc' => 'required|string|max:255',
+            'mo_ta' => 'nullable|string|max:1000',
+            'anh' => 'nullable|image|mimes:jpeg,png,bmp,gif,svg|max:2048',
             'tinh_trang' => 'required|in:0,1',
+        ], [
+            'ten_danh_muc.required' => 'Vui lòng nhập tên danh mục.',
+            'ten_danh_muc.string' => 'Tên danh mục phải là chuỗi ký tự.',
+            'ten_danh_muc.max' => 'Tên danh mục không được vượt quá 255 ký tự.',
+
+            'mo_ta.string' => 'Mô tả phải là chuỗi ký tự.',
+            'mo_ta.max' => 'Mô tả không được vượt quá 1000 ký tự.',
+
+            'anh.image' => 'Ảnh phải là file hình ảnh hợp lệ.',
+            'anh.mimes' => 'Ảnh chỉ được phép định dạng: jpeg, png, bmp, gif, svg.',
+            'anh.max' => 'Ảnh dung lượng tối đa là 2MB.',
+
+            'tinh_trang.required' => 'Vui lòng chọn tình trạng.',
+            'tinh_trang.in' => 'Tình trạng không hợp lệ.',
         ]);
 
-        $category->ma_danh_muc = $request->ma_danh_muc;
         $category->ten_danh_muc = $request->ten_danh_muc;
+        $category->mo_ta = $request->mo_ta;
         $category->tinh_trang = $request->tinh_trang;
 
         if ($request->hasFile('anh')) {
@@ -104,7 +126,11 @@ class CategoryController extends Controller
 
         return redirect()->route('Admin.categories.index')->with('success', 'Cập nhật danh mục thành công');
     }
-
+    public function show($id)
+    {
+        $category = Category::findOrFail($id);
+        return view('Admin.categories.show', compact('category'));
+    }
     /**
      * Remove the specified resource from storage.
      */
@@ -113,37 +139,5 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
         $category->delete(); // Xóa mềm
         return redirect()->route('Admin.categories.index')->with('success', 'Đã xóa tạm thời danh mục');
-    }
-    public function trashed(Request $request)
-    {
-        $search = $request->input('keyword');
-        $trashed = Category::onlyTrashed()
-            ->when($search, function ($query, $search) {
-                return $query->where('ten_danh_muc', 'like', "%$search%")
-                    ->orWhere('ma_danh_muc', 'like', "%$search%");
-            })
-            ->get();
-        return view('Admin.categories.trashed', compact('trashed'));
-    }
-
-    // Khôi phục danh mục
-    public function restore($id)
-    {
-        $category = Category::onlyTrashed()->findOrFail($id);
-        $category->restore();
-        return redirect()->route('Admin.categories.trashed')->with('success', 'Khôi phục thành công');
-    }
-
-    // Xóa vĩnh viễn danh mục
-    public function forceDelete($id)
-    {
-        $category = Category::onlyTrashed()->findOrFail($id);
-
-        if ($category->anh) {
-            Storage::disk('public')->delete($category->anh);
-        }
-
-        $category->forceDelete();
-        return redirect()->route('Admin.categories.trashed')->with('success', 'Đã xóa vĩnh viễn');
     }
 }

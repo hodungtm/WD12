@@ -10,9 +10,11 @@ class ReviewController extends Controller
     public function index(Request $request)
     {
         $keyword = $request->keyword;
-        $reviews = Review::when($keyword, function ($q) use ($keyword) {
-            $q->where('noi_dung', 'like', '%' . $keyword . '%');
-        })
+
+        $reviews = Review::with('product') // Nạp quan hệ product
+            ->when($keyword, function ($q) use ($keyword) {
+                $q->where('noi_dung', 'like', '%' . $keyword . '%');
+            })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -28,13 +30,29 @@ class ReviewController extends Controller
     {
         $validated = $request->validate([
             'user_id' => 'nullable|integer|exists:users,id',
-            'product_id' => 'nullable|integer|exists:products,id',
+            'product_id' => 'required|integer|exists:products,id',
             'so_sao' => 'required|integer|min:1|max:5',
             'noi_dung' => 'required|string',
             'trang_thai' => 'nullable|boolean',
+        ], [
+            'user_id.integer' => 'User ID phải là số nguyên.',
+            'user_id.exists' => 'User không tồn tại.',
+
+            'product_id.integer' => 'Product ID phải là số nguyên.',
+            'product_id.exists' => 'Sản phẩm không tồn tại.',
+
+            'so_sao.required' => 'Vui lòng nhập số sao đánh giá.',
+            'so_sao.integer' => 'Số sao phải là số nguyên.',
+            'so_sao.min' => 'Số sao tối thiểu là 1.',
+            'so_sao.max' => 'Số sao tối đa là 5.',
+
+            'noi_dung.required' => 'Vui lòng nhập nội dung đánh giá.',
+            'noi_dung.string' => 'Nội dung đánh giá phải là chuỗi ký tự.',
+
+            'trang_thai.boolean' => 'Trạng thái không hợp lệ.',
         ]);
 
-        $validated['trang_thai'] = $request->has('trang_thai') ? 1 : 0;
+        $validated['trang_thai'] = $request->input('trang_thai', 0);
 
         Review::create($validated);
 
@@ -52,16 +70,39 @@ class ReviewController extends Controller
         $review = Review::findOrFail($id);
 
         $request->validate([
-            'user_id' => 'nullable|exists:users,id',
-            'product_id' => 'nullable|exists:products,id',
+            'user_id' => 'nullable|integer|exists:users,id',
+            'product_id' => 'nullable|integer|exists:products,id',
             'so_sao' => 'required|integer|min:1|max:5',
             'noi_dung' => 'required|string',
             'trang_thai' => 'required|boolean',
+        ], [
+            'user_id.integer' => 'User ID phải là số nguyên.',
+            'user_id.exists' => 'User không tồn tại.',
+
+            'product_id.integer' => 'Product ID phải là số nguyên.',
+            'product_id.exists' => 'Sản phẩm không tồn tại.',
+
+            'so_sao.required' => 'Vui lòng nhập số sao đánh giá.',
+            'so_sao.integer' => 'Số sao phải là số nguyên.',
+            'so_sao.min' => 'Số sao tối thiểu là 1.',
+            'so_sao.max' => 'Số sao tối đa là 5.',
+
+            'noi_dung.required' => 'Vui lòng nhập nội dung đánh giá.',
+            'noi_dung.string' => 'Nội dung đánh giá phải là chuỗi ký tự.',
+
+            'trang_thai.required' => 'Vui lòng chọn trạng thái.',
+            'trang_thai.boolean' => 'Trạng thái không hợp lệ.',
         ]);
 
         $review->update($request->all());
 
         return redirect()->route('Admin.reviews.index')->with('success', 'Cập nhật đánh giá thành công!');
+    }
+
+    public function show($id)
+    {
+        $review = Review::with('product')->findOrFail($id);
+        return view('Admin.reviews.show', compact('review'));
     }
 
     public function destroy($id)

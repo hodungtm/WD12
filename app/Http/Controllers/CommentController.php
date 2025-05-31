@@ -35,10 +35,19 @@ class CommentController extends Controller
         $comment = Comment::findOrFail($id);
 
         $request->validate([
-            // 'product_id' => 'required|exists:products,id', // comment tạm
+            // 'product_id' => 'required|exists:products,id', // comment tạm nếu cần kiểm tra
             'tac_gia' => 'required|string|max:255',
             'noi_dung' => 'required|string',
             'trang_thai' => 'nullable|boolean',
+        ], [
+            'tac_gia.required' => 'Vui lòng nhập tác giả.',
+            'tac_gia.string' => 'Tác giả phải là chuỗi ký tự.',
+            'tac_gia.max' => 'Tác giả không được vượt quá 255 ký tự.',
+
+            'noi_dung.required' => 'Vui lòng nhập nội dung bình luận.',
+            'noi_dung.string' => 'Nội dung phải là chuỗi ký tự.',
+
+            'trang_thai.boolean' => 'Trạng thái không hợp lệ.',
         ]);
 
         $data = $request->all();
@@ -48,6 +57,13 @@ class CommentController extends Controller
 
         return redirect()->route('Admin.comments.index')->with('success', 'Cập nhật bình luận thành công!');
     }
+
+    public function show($id)
+    {
+        $comment = Comment::with('product')->findOrFail($id); // nếu có quan hệ product
+        return view('admin.comments.show', compact('comment'));
+    }
+
     public function approve(Request $request, $id)
     {
         $comment = Comment::findOrFail($id);
@@ -63,6 +79,7 @@ class CommentController extends Controller
             'keyword' => $request->input('keyword')
         ])->with('success', 'Đã duyệt bình luận.');
     }
+
     public function destroy($id)
     {
         $comment = Comment::findOrFail($id);
