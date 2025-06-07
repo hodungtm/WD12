@@ -26,16 +26,20 @@ public function show($id)
     return view('admin.orders.show', compact('order'));
 }
 
- public function create()
-    {
-        $users = User::all();
-        $products = Product::with(['variants' => function($query) {
-            // Lấy tất cả các cột cần thiết cho biến thể, bao gồm cả giá gốc và giá khuyến mãi
-            $query->select('id', 'product_id', 'size', 'color', 'quantity', 'variant_price', 'variant_sale_price');
-        }])->get();
+public function create()
+{
+    $users = User::all();
+    $products = Product::with([
+        'variants' => function($query) {
+            $query->select('id', 'product_id', 'size_id', 'color_id', 'quantity', 'variant_price', 'variant_sale_price');
+        },
+        'variants.size',
+        'variants.color'
+    ])->get();
 
-        return view('admin.orders.create', compact('users', 'products'));
-    }
+    return view('admin.orders.create', compact('users', 'products'));
+}
+
 
     /**
      * Xử lý lưu đơn hàng mới vào cơ sở dữ liệu.
