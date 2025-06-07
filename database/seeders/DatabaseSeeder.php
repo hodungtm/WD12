@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+
         // Tạo user test
         User::factory()->create([
             'name' => 'Test User',
@@ -42,5 +43,20 @@ class DatabaseSeeder extends Seeder
             ['name' => 'L'],
             ['name' => 'XL'],
         ]);
+
+        // User::factory(10)->create();
+$this->call(CommentSeeder::class);
+        // User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
+        // $this->call([
+        //     BannerSeeder::class,
+        //     HinhAnhBannerSeeder::class,
+        //     // Add other seeders here
+        // ]);
+            
+        
+
     }
 }
