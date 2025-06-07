@@ -88,42 +88,50 @@
                     </table>
                 </div>
             </div>
-            <div class="card shadow-sm">
-                <div class="card-header bg-light">
-                    <strong>Biến thể sản phẩm</strong>
-                </div>
-                <div class="card-body p-0">
-                    <table class="table table-striped table-bordered mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Size</th>
-                                <th>Màu</th>
-                                <th>Số lượng</th>
-                                <th>Giá biến thể</th>
-                                <th>Giá khuyến mãi biến thể</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($product->variants as $v)
-                                <tr>
-                                    <td>{{ $v->size }}</td>
-                                    <td>
-                                        <span class="d-inline-block rounded-circle border" style="width:22px; height:22px; background:{{ $v->color }}; border:1px solid #ccc;" title="{{ $v->color }}"></span>
-                                        <span class="ms-1">{{ ucfirst($v->color) }}</span>
-                                    </td>
-                                    <td>{{ $v->quantity }}</td>
-                                    <td>{{ number_format($v->variant_price, 0, ',', '.') }} VNĐ</td>
-                                    <td>{{ number_format($v->variant_sale_price, 0, ',', '.') }} VNĐ</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted">Không có biến thể</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+           <div class="card shadow-sm">
+    <div class="card-header bg-light">
+        <strong>Biến thể sản phẩm</strong>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-striped table-bordered mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Size</th>
+                    <th>Màu</th>
+                    <th>Số lượng</th>
+                    <th>Giá biến thể</th>
+                    <th>Giá khuyến mãi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($product->variants as $v)
+                    <tr>
+                        <td>{{ $v->size->name ?? '—' }}</td>
+                        <td>
+                            @if($v->color)
+                                <span class="d-inline-block rounded-circle border" 
+                                      style="width:22px; height:22px; background:{{ $v->color->code }}; border:1px solid #ccc;" 
+                                      title="{{ $v->color->name }}">
+                                </span>
+                                <span class="ms-1">{{ $v->color->name }}</span>
+                            @else
+                                <span class="text-muted">—</span>
+                            @endif
+                        </td>
+                        <td>{{ $v->quantity }}</td>
+                        <td>{{ number_format($v->variant_price, 0, ',', '.') }} VNĐ</td>
+                        <td>{{ number_format($v->variant_sale_price, 0, ',', '.') }} VNĐ</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">Không có biến thể</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
             <div class="mt-4">
                 <a href="{{ route('Admin.products.index') }}" class="btn btn-secondary me-2">
                     <i class="fas fa-arrow-left"></i> Quay lại
