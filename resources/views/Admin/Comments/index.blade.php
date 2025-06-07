@@ -19,7 +19,9 @@
                 <div class="tile-body">
                     <div class="row element-button">
                         <div class="col-sm-2">
-                            <!-- Nếu cần thêm chức năng như thêm mới hoặc chuyển đến comment đã xóa -->
+                            <a href="{{ route('Admin.comments.trash') }}" class="btn btn-warning">
+                                <i class="fas fa-trash-restore"></i> Thùng rác
+                            </a>
                         </div>
                     </div>
 
@@ -27,7 +29,7 @@
                         style="max-width: 400px;">
                         <input type="text" name="keyword" class="form-control me-2" placeholder="Tìm kiếm nội dung"
                             value="{{ request('keyword') }}" aria-label="Tìm kiếm nội dung">
-                       <button class="btn btn-outline" type="submit" style="height: calc(2.7rem + 2px);">
+                        <button class="btn btn-outline" type="submit" style="height: calc(2.7rem + 2px);">
                             <i class="bi bi-search"></i>
                         </button>
                     </form>
@@ -73,6 +75,10 @@
                                             <button type="submit" class="btn btn-danger btn-sm"><i
                                                     class="fas fa-trash-alt"></i></button>
                                         </form>
+                                        <a href="{{ route('Admin.comments.show', $comment->id) }}"
+                                            class="btn btn-info btn-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             @endforeach
