@@ -51,7 +51,6 @@ Route::prefix('admin')->name('Admin.')->group(function () {
 
     // ===== REVIEWS =====
     Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
-    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
     Route::get('/reviews/trash', [ReviewController::class, 'trash'])->name('reviews.trash');
     Route::post('/reviews/restore/{id}', [ReviewController::class, 'restore'])->name('reviews.restore');
     Route::delete('/reviews/force-delete/{id}', [ReviewController::class, 'forceDelete'])->name('reviews.forceDelete');

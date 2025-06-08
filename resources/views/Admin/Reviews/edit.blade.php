@@ -20,24 +20,8 @@
         @method('PUT')
 
         <div class="mb-3">
-          <label for="user_id" class="form-label">ID Người dùng</label>
-          <input type="number" name="user_id" id="user_id" value="{{ old('user_id', $review->user_id) }}" class="form-control" placeholder="ID người dùng (có thể để trống)">
-          @error('user_id')
-            <div style="color: red;">{{ $message }}</div>
-          @enderror
-        </div>
-
-        <div class="mb-3">
-          <label for="product_id" class="form-label">ID Sản phẩm</label>
-          <input type="number" name="product_id" id="product_id" value="{{ old('product_id', $review->product_id) }}" class="form-control" placeholder="ID sản phẩm (có thể để trống)">
-          @error('product_id')
-            <div style="color: red;">{{ $message }}</div>
-          @enderror
-        </div>
-
-        <div class="mb-3">
           <label for="so_sao" class="form-label">Số sao (1-5)</label>
-          <input type="number" name="so_sao" id="so_sao" value="{{ old('so_sao', $review->so_sao) }}" class="form-control" min="1" max="5" >
+          <input type="number" name="so_sao" id="so_sao" value="{{ old('so_sao', $review->so_sao) }}" class="form-control" min="1" max="5">
           @error('so_sao')
             <div style="color: red;">{{ $message }}</div>
           @enderror
@@ -45,16 +29,18 @@
 
         <div class="mb-3">
           <label for="noi_dung" class="form-label">Nội dung đánh giá</label>
-          <textarea name="noi_dung" id="noi_dung" class="form-control" rows="5" >{{ old('noi_dung', $review->noi_dung) }}</textarea>
+          <textarea name="noi_dung" id="noi_dung" class="form-control" rows="5">{{ old('noi_dung', $review->noi_dung) }}</textarea>
           @error('noi_dung')
             <div style="color: red;">{{ $message }}</div>
           @enderror
         </div>
 
-        <div class="form-check mb-3">
-          <input type="hidden" name="trang_thai" value="0">
-          <input type="checkbox" name="trang_thai" value="1" {{ old('trang_thai', $review->trang_thai ?? false) ? 'checked' : '' }}>
-          <label for="trang_thai" class="form-check-label">Hiển thị đánh giá</label>
+        <div class="form-group mb-3">
+          <label for="trang_thai" class="form-label">Trạng thái hiển thị</label>
+          <select name="trang_thai" id="trang_thai" class="form-control @error('trang_thai') is-invalid @enderror">
+            <option value="0" {{ old('trang_thai', $review->trang_thai) == 0 ? 'selected' : '' }}>Ẩn</option>
+            <option value="1" {{ old('trang_thai', $review->trang_thai) == 1 ? 'selected' : '' }}>Hiển thị</option>
+          </select>
           @error('trang_thai')
             <div style="color: red;">{{ $message }}</div>
           @enderror
@@ -66,5 +52,4 @@
     </div>
   </div>
 </main>
-
 

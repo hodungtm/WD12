@@ -13,29 +13,11 @@
     </div>
   </div>
 
-  {{-- Hiển thị lỗi chung nếu có --}}
- 
-
   <div class="tile">
     <div class="tile-body">
       <form action="{{ route('Admin.comments.update', $comment->id) }}" method="POST">
         @csrf
         @method('PUT')
-
-        <div class="form-group mb-3">
-          <label for="tac_gia">Tác Giả</label>
-          <input
-            type="text"
-            name="tac_gia"
-            id="tac_gia"
-            class="form-control @error('tac_gia') is-invalid @enderror"
-            value="{{ old('tac_gia', $comment->tac_gia) }}"
-          
-          >
-          @error('tac_gia')
-            <div class="text-danger mt-1">{{ $message }}</div>
-          @enderror
-        </div>
 
         <div class="form-group mb-3">
           <label for="noi_dung">Nội Dung</label>
@@ -44,9 +26,19 @@
             id="noi_dung"
             class="form-control @error('noi_dung') is-invalid @enderror"
             rows="4"
-           
           >{{ old('noi_dung', $comment->noi_dung) }}</textarea>
           @error('noi_dung')
+            <div class="text-danger mt-1">{{ $message }}</div>
+          @enderror
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="trang_thai">Trạng Thái</label>
+          <select name="trang_thai" id="trang_thai" class="form-control @error('trang_thai') is-invalid @enderror">
+            <option value="0" {{ old('trang_thai', $comment->trang_thai) == 0 ? 'selected' : '' }}>Chưa duyệt</option>
+            <option value="1" {{ old('trang_thai', $comment->trang_thai) == 1 ? 'selected' : '' }}>Đã duyệt</option>
+          </select>
+          @error('trang_thai')
             <div class="text-danger mt-1">{{ $message }}</div>
           @enderror
         </div>
@@ -57,5 +49,4 @@
     </div>
   </div>
 </main>
-
 

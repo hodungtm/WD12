@@ -30,4 +30,8 @@ class Review extends Model
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'ma_nguoi_dung'); // 'user_id' là khóa ngoại trong bảng reviews
+    }
 }

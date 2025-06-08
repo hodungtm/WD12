@@ -26,9 +26,21 @@
                     </div>
 
                     <form method="GET" action="{{ route('Admin.comments.index') }}" class="d-flex mb-3"
-                        style="max-width: 400px;">
-                        <input type="text" name="keyword" class="form-control me-2" placeholder="Tìm kiếm nội dung"
-                            value="{{ request('keyword') }}" aria-label="Tìm kiếm nội dung">
+                        style="max-width: 600px;">
+                        <input type="text" name="keyword" class="form-control me-2" placeholder="Tìm kiếm sản phẩm"
+                            value="{{ request('keyword') }}" aria-label="Tìm kiếm sản phẩm">
+
+                        <select name="trang_thai" class="form-control me-2" style="width: 150px;">
+                            <option value="">-- Trạng thái --</option>
+                            <option value="1" {{ request('trang_thai') === '1' ? 'selected' : '' }}>Đã duyệt</option>
+                            <option value="0" {{ request('trang_thai') === '0' ? 'selected' : '' }}>Chưa duyệt</option>
+                        </select>
+
+                        <select name="sort" class="form-control me-2" style="width: 150px;">
+                            <option value="desc" {{ request('sort') === 'desc' ? 'selected' : '' }}>Mới nhất</option>
+                            <option value="asc" {{ request('sort') === 'asc' ? 'selected' : '' }}>Cũ nhất</option>
+                        </select>
+
                         <button class="btn btn-outline" type="submit" style="height: calc(2.7rem + 2px);">
                             <i class="bi bi-search"></i>
                         </button>
@@ -43,6 +55,7 @@
                                 <th>Tác giả</th>
                                 <th>Nội dung</th>
                                 <th>Trạng thái</th>
+                                <th>Ngày tạo</th>
                                 <th>Hành động</th>
                             </tr>
                         </thead>
@@ -65,6 +78,7 @@
                                             <span class="badge bg-success">Đã duyệt</span>
                                         @endif
                                     </td>
+                                    <td>{{ $comment->created_at->format('d/m/Y') }}</td>
                                     <td>
                                         <a href="{{ route('Admin.comments.edit', $comment->id) }}"
                                             class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
