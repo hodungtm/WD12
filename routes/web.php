@@ -84,10 +84,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
 Route::post('admin/discounts/import-excel', [DiscountController::class, 'importExcel'])->name('discounts.importExcel');
+
+//// ADMIM POST----------------------------------------------------////////////
 Route::prefix('admin')->group(function () {
     Route::resource('posts', PostController::class);
 });
-
+Route::delete('/posts/delete-selected', [PostController::class, 'deleteSelected'])->name('posts.delete.selected');
+///----------------------------------------------------------------/////////////////
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('banners', BannerController::class);

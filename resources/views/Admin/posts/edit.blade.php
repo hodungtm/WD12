@@ -53,10 +53,10 @@
           </select>
         </div>
 
-        <div class="form-group col-md-12">
-          <label class="control-label">Nội dung</label>
-          <textarea class="form-control" name="content" rows="5" required>{{ old('content', $post->content) }}</textarea>
-        </div>
+       <div class="form-group col-md-12">
+  <label class="control-label">Nội dung</label>
+  <textarea class="form-control" name="content" id="editor" rows="10" required>{{ old('content', $post->content ?? '') }}</textarea>
+</div>
 
         <div class="form-group col-md-6">
           <label class="control-label">Ảnh đại diện</label>
@@ -77,4 +77,17 @@
   </div>
 </div>
 
+@endsection
+
+@section('scripts')
+  <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      ClassicEditor
+        .create(document.querySelector('#editor'))
+        .catch(error => {
+          console.error('CKEditor lỗi:', error);
+        });
+    });
+  </script>
 @endsection

@@ -7,11 +7,45 @@ use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
-    public function index()
-    {
-        $posts = Post::latest()->paginate(10);
-        return view('Admin.posts.index', compact('posts'));
+
+    public function deleteSelected(Request $request)
+{
+    $ids = $request->input('selected_posts');
+
+    if (!$ids || count($ids) == 0) {
+        return redirect()->back()->with('error', 'Bạn chưa chọn bài viết nào để xóa.');
     }
+
+    Post::whereIn('id', $ids)->delete();
+
+    return redirect()->route('posts.index')->with('success', 'Đã xóa các bài viết đã chọn thành công.');
+}
+
+   public function index(Request $request)
+{
+    $query = Post::query();
+
+    // Lọc theo từ khóa trong tiêu đề nếu có
+    if ($request->filled('keyword')) {
+        $query->where('title', 'like', '%' . $request->keyword . '%');
+    }
+
+    // Lọc theo trạng thái nếu có
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
+    }
+
+    // Số lượng hiển thị mỗi trang, mặc định là 10
+    $perPage = $request->input('per_page', 10);
+
+    // Lấy danh sách bài viết với phân trang
+    $posts = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
+
+    // Trả về view với biến $posts
+    return view('Admin.Posts.index', compact('posts'));
+}
+
+
 
     public function create()
     {
