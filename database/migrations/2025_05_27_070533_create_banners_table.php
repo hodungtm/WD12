@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('comments', function (Blueprint $table) {
+        Schema::create('banners', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('product_id')->nullable();
-            $table->string('tac_gia');
+            $table->string('tieu_de');
             $table->text('noi_dung');
-            $table->boolean('trang_thai')->default(1); // trạng thái hiển thị
+            $table->enum('loai_banner',['slider','footer']);
+            $table->enum('trang_thai',['an','hien']);
             $table->timestamps();
-
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
         });
     }
 
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('comments');
+        Schema::dropIfExists('banners');
     }
 };

@@ -13,15 +13,8 @@
     </div>
   </div>
 
-  @if ($errors->any())
-    <div class="alert alert-danger">
-      <ul class="mb-0">
-        @foreach ($errors->all() as $error)
-          <li>{{ $error }}</li>
-        @endforeach
-      </ul>
-    </div>
-  @endif
+  {{-- Hiển thị lỗi chung nếu có --}}
+ 
 
   <div class="tile">
     <div class="tile-body">
@@ -31,17 +24,31 @@
 
         <div class="form-group mb-3">
           <label for="tac_gia">Tác Giả</label>
-          <input type="text" name="tac_gia" id="tac_gia" class="form-control" value="{{ old('tac_gia', $comment->tac_gia) }}" required>
+          <input
+            type="text"
+            name="tac_gia"
+            id="tac_gia"
+            class="form-control @error('tac_gia') is-invalid @enderror"
+            value="{{ old('tac_gia', $comment->tac_gia) }}"
+          
+          >
+          @error('tac_gia')
+            <div class="text-danger mt-1">{{ $message }}</div>
+          @enderror
         </div>
 
         <div class="form-group mb-3">
           <label for="noi_dung">Nội Dung</label>
-          <textarea name="noi_dung" id="noi_dung" class="form-control" rows="4" required>{{ old('noi_dung', $comment->noi_dung) }}</textarea>
-        </div>
-
-        <div class="form-check mb-3">
-          <input type="checkbox" name="trang_thai" id="trang_thai" class="form-check-input" {{ old('trang_thai', $comment->trang_thai) ? 'checked' : '' }}>
-          <label for="trang_thai" class="form-check-label">Hiển Thị</label>
+          <textarea
+            name="noi_dung"
+            id="noi_dung"
+            class="form-control @error('noi_dung') is-invalid @enderror"
+            rows="4"
+           
+          >{{ old('noi_dung', $comment->noi_dung) }}</textarea>
+          @error('noi_dung')
+            <div class="text-danger mt-1">{{ $message }}</div>
+          @enderror
         </div>
 
         <button type="submit" class="btn btn-primary me-2">Cập Nhật Bình Luận</button>

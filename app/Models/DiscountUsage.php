@@ -9,6 +9,7 @@ class DiscountUsage extends Model
     protected $fillable = [
         'discount_id',
         'user_id',
+        'order_code',
         'used_at',
     ];
 

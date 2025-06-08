@@ -12,7 +12,7 @@ return new class extends Migration
     public function up()
 {
     Schema::table('discounts', function (Blueprint $table) {
-        $table->string('type')->default('order')->after('description'); // hoặc đặt sau cột phù hợp
+        $table->enum('type', ['order', 'product', 'shipping'])->default('order')->after('min_order_amount');
     });
 }
 
@@ -22,5 +22,4 @@ public function down()
         $table->dropColumn('type');
     });
 }
-
 };
