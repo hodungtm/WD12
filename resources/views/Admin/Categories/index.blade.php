@@ -22,7 +22,31 @@
               </a>
             </div>
           </div>
+          <form method="GET" action="{{ route('Admin.categories.index') }}" class="row g-3 align-items-center mb-3">
+            <div class="col-auto">
+    <label class="btn btn-primary">
+      <i class="fas fa-filter"></i> Lọc
+    </label>
+  </div>
 
+            <div class="col-auto">
+              <select name="tinh_trang" class="form-control" onchange="this.form.submit()">
+                <option value="">-- Tất cả tình trạng --</option>
+                <option value="1" {{ request('tinh_trang') == '1' ? 'selected' : '' }}>Hoạt động</option>
+                <option value="0" {{ request('tinh_trang') == '0' ? 'selected' : '' }}>Không hoạt động</option>
+              </select>
+            </div>
+
+            <div class="col-auto">
+              <select name="sort" class="form-control" onchange="this.form.submit()">
+                <option value="">-- Sắp xếp theo --</option>
+                <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Mới nhất</option>
+                <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Cũ nhất</option>
+              </select>
+            </div>
+
+            
+          </form>
           <form method="GET" action="{{ route('Admin.categories.index') }}" class="input-group mb-3"
             style="max-width: 300px;">
             <input type="text" name="keyword" placeholder="Tìm kiếm..." value="{{ $search ?? '' }}" class="form-control"

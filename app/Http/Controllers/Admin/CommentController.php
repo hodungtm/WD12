@@ -11,16 +11,26 @@ class CommentController extends Controller
     public function index(Request $request)
     {
         $keyword = $request->keyword;
+        $trang_thai = $request->trang_thai;
+        $sort = $request->sort ?? 'desc';
 
-        $comments = Comment::query()
+        $comments = Comment::with('product') // nạp quan hệ product để tìm sản phẩm
             ->when($keyword, function ($query) use ($keyword) {
-                $query->where('noi_dung', 'like', "%$keyword%");
+                // Tìm bình luận theo tên sản phẩm chứa từ khóa
+                $query->whereHas('product', function ($q) use ($keyword) {
+                    $q->where('name', 'like', '%' . $keyword . '%');
+                });
             })
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->when($trang_thai !== null && $trang_thai !== '', function ($query) use ($trang_thai) {
+                $query->where('trang_thai', $trang_thai);
+            })
+            ->orderBy('created_at', $sort)
+            ->paginate(10)
+            ->appends($request->all());
 
-        return view('admin.comments.index', compact('comments', 'keyword'));
+        return view('admin.comments.index', compact('comments', 'keyword', 'trang_thai', 'sort'));
     }
+
 
     public function edit($id)
     {
@@ -35,25 +45,20 @@ class CommentController extends Controller
         $comment = Comment::findOrFail($id);
 
         $request->validate([
-            // 'product_id' => 'required|exists:products,id', // comment tạm nếu cần kiểm tra
-            'tac_gia' => 'required|string|max:255',
             'noi_dung' => 'required|string',
-            'trang_thai' => 'nullable|boolean',
+            'trang_thai' => 'required|boolean',
         ], [
-            'tac_gia.required' => 'Vui lòng nhập tác giả.',
-            'tac_gia.string' => 'Tác giả phải là chuỗi ký tự.',
-            'tac_gia.max' => 'Tác giả không được vượt quá 255 ký tự.',
-
             'noi_dung.required' => 'Vui lòng nhập nội dung bình luận.',
             'noi_dung.string' => 'Nội dung phải là chuỗi ký tự.',
 
+            'trang_thai.required' => 'Vui lòng chọn trạng thái.',
             'trang_thai.boolean' => 'Trạng thái không hợp lệ.',
         ]);
 
-        $data = $request->all();
-        $data['trang_thai'] = $request->has('trang_thai') ? 1 : 0;
+        $comment->noi_dung = $request->noi_dung;
+        $comment->trang_thai = $request->trang_thai;
 
-        $comment->update($data);
+        $comment->save();
 
         return redirect()->route('Admin.comments.index')->with('success', 'Cập nhật bình luận thành công!');
     }
@@ -80,7 +85,7 @@ class CommentController extends Controller
         ])->with('success', 'Đã duyệt bình luận.');
     }
 
-     public function destroy($id)
+    public function destroy($id)
     {
         $comment = Comment::findOrFail($id);
         $comment->delete();
