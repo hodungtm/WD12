@@ -13,16 +13,28 @@ class CategoryController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-    {
-        $search = $request->input('keyword');
-        $categories = Category::when($search, function ($query, $search) {
+{
+    $search = $request->input('keyword');
+    $status = $request->input('tinh_trang');
+    $sort = $request->input('sort');
+
+    $categories = Category::query()
+        ->when($search, function ($query, $search) {
             return $query->where('ten_danh_muc', 'like', "%$search%")
-                ->orWhere('mo_ta', 'like', "%$search%"); // Tìm kiếm thêm mô tả
-        })->get();
+                         ->orWhere('mo_ta', 'like', "%$search%");
+        })
+        ->when($status !== null, function ($query) use ($status) {
+            return $query->where('tinh_trang', $status);
+        })
+        ->when($sort, function ($query, $sort) {
+            return $query->orderBy('created_at', $sort);
+        }, function ($query) {
+            return $query->latest(); // mặc định: mới nhất
+        })
+        ->get();
 
-
-        return view('Admin.categories.index', compact('categories'));
-    }
+    return view('Admin.categories.index', compact('categories'));
+}
 
     /**
      * Show the form for creating a new resource.
