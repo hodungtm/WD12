@@ -92,6 +92,35 @@ class DiscountController extends Controller
             $this->getValidationMessages()
         );
 
+
+        $request->validate([
+    'discount_amount' => [
+        'nullable',
+        'numeric',
+        'min:0',
+        'max:1000000', // ✅ Ví dụ: tối đa 1 triệu VNĐ
+        function ($attribute, $value, $fail) use ($request) {
+            if ($value && $request->discount_percent) {
+                $fail('Chỉ được chọn một trong hai: giảm theo tiền hoặc giảm theo phần trăm.');
+            }
+        },
+    ],
+    'discount_percent' => [
+        'nullable',
+        'numeric',
+        'min:0',
+        'max:100', // ✅ Ví dụ: tối đa 100%
+        function ($attribute, $value, $fail) use ($request) {
+            if ($value && $request->discount_amount) {
+                $fail('Chỉ được chọn một trong hai: giảm theo phần trăm hoặc giảm theo tiền.');
+            }
+        },
+    ],
+    'type' => 'required|in:order,shipping,product',
+]);
+
+
+
         if (Discount::create($validated)) {
             return redirect()->route('admin.discounts.index')->with('success', 'Tạo mã giảm giá thành công!');
         } else {

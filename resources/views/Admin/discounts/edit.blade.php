@@ -50,7 +50,7 @@
                                 @enderror
                             </div>
 
-                            <div class="form-group col-md-3">
+                            {{-- <div class="form-group col-md-3">
                                 <label class="control-label">Giảm theo tiền (VNĐ)</label>
                                 <input type="number" step="0.01" name="discount_amount"
                                     class="form-control @error('discount_amount') is-invalid @enderror"
@@ -58,7 +58,7 @@
                                 @error('discount_amount')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
-                            </div>
+                            </div> --}}
 
                             <div class="form-group col-md-3">
                                 <label class="control-label">Giảm theo %</label>

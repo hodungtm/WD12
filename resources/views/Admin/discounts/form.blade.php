@@ -24,7 +24,7 @@
         @error('description') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
 
-    <div class="form-group col-md-6">
+    {{-- <div class="form-group col-md-6">
         <label>Giảm theo tiền (VNĐ)</label>
         <input type="number" name="discount_amount" step="1000" min="0"
             class="form-control @error('discount_amount') is-invalid @enderror"
@@ -32,7 +32,7 @@
             placeholder="0">
         @error('discount_amount') <div class="invalid-feedback">{{ $message }}</div> @enderror
         <small class="form-text text-muted">Để trống nếu sử dụng giảm theo %</small>
-    </div>
+    </div> --}}
 
     <div class="form-group col-md-6">
         <label>Giảm theo % (0-100%)</label>
