@@ -80,6 +80,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('discounts/{id}/restore', [DiscountController::class, 'restore'])->name('discounts.restore');
     Route::delete('discounts/delete-all', [DiscountController::class, 'deleteAll'])->name('discounts.deleteAll');
     Route::delete('discounts/{id}/force-delete', [DiscountController::class, 'forceDelete'])->name('discounts.forceDelete');
+    Route::get('/admin/discounts/{id}', [DiscountController::class, 'show'])->name('discounts.show');
 });
 
 

@@ -196,7 +196,28 @@
         return i;
       }
     }
+
   </script>@yield('scripts')
+
+@section('scripts')
+<script>
+    function toggleDiscountInput() {
+        const selected = document.querySelector('input[name="discount_type"]:checked')?.value;
+        document.getElementById('amount_input').style.display = selected === 'amount' ? 'block' : 'none';
+        document.getElementById('percent_input').style.display = selected === 'percent' ? 'block' : 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        toggleDiscountInput(); // Khi load trang
+        document.querySelectorAll('input[name="discount_type"]').forEach(function (input) {
+            input.addEventListener('change', toggleDiscountInput);
+        });
+    });
+</script>
+@endsection
+
+
+
 </body>
 
 </html>

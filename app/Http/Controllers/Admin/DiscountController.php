@@ -139,11 +139,21 @@ class DiscountController extends Controller
     } else {
         return redirect()->back()->with('error', 'Có lỗi xảy ra khi tạo mã giảm giá!');
     }
+
+    if ($request->discount_type === 'amount') {
+    $data['discount_amount'] = $request->discount_amount;
+    $data['discount_percent'] = null;
+} elseif ($request->discount_type === 'percent') {
+    $data['discount_percent'] = $request->discount_percent;
+    $data['discount_amount'] = null;
+}
+
 }
 
 
     public function edit(Discount $discount)
     {
+        $discount->discount_type = $discount->discount_percent ? 'percent' : 'amount';
         return view('admin.discounts.edit', compact('discount'));
     }
 
@@ -199,6 +209,15 @@ $discount->max_discount_amount = $request->input('max_discount_amount');
         } else {
             return redirect()->back()->with('error', 'Có lỗi xảy ra khi cập nhật mã giảm giá!');
         }
+
+        if ($request->discount_type === 'amount') {
+    $data['discount_amount'] = $request->discount_amount;
+    $data['discount_percent'] = null;
+} elseif ($request->discount_type === 'percent') {
+    $data['discount_percent'] = $request->discount_percent;
+    $data['discount_amount'] = null;
+}
+
     }
 
     public function destroy(Discount $discount)

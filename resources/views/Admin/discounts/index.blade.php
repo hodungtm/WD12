@@ -143,6 +143,9 @@
                                             </td>
 
                                     <td>
+                                        <a href="{{ route('admin.discounts.show', $discount->id) }}" class="btn btn-info btn-sm">
+                                            <i class="fa fa-eye"></i>
+                                        </a>
                                         <a href="{{ route('admin.discounts.edit', $discount) }}" class="btn btn-primary btn-sm" title="Sửa">
                                             <i class="fas fa-edit"></i>
                                         </a>
