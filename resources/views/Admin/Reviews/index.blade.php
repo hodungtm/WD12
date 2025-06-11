@@ -17,21 +17,45 @@
         <div class="col-md-12">
             <div class="tile">
                 <div class="tile-body">
-
-                    <div class="row element-button mb-3">
+                    <div class="row element-button">
                         <div class="col-sm-2">
-                            <a href="{{ route('Admin.reviews.create') }}" class="btn btn-add btn-sm"><i
-                                    class="fas fa-plus"></i> Thêm đánh giá mới</a>
                             <a href="{{ route('Admin.reviews.trash') }}" class="btn btn-warning">
                                 <i class="fas fa-trash-restore"></i> Thùng rác
                             </a>
                         </div>
                     </div>
 
+
                     <form action="{{ route('Admin.reviews.index') }}" method="GET" class="d-flex mb-3"
-                        style="max-width: 400px;">
-                        <input type="text" name="keyword" class="form-control me-2" placeholder="Tìm nội dung..."
-                            value="{{ $keyword ?? '' }}" aria-label="Tìm nội dung">
+                        style="max-width: 700px; gap: 10px;">
+
+                        <!-- Input tìm kiếm sản phẩm -->
+                        <input type="text" name="product_name" class="form-control" placeholder="Tìm theo sản phẩm..."
+                            value="{{ request('product_name') }}" style="max-width: 250px;" autocomplete="off">
+
+                        <!-- Lọc theo số sao -->
+                        <select name="so_sao" class="form-control" style="max-width: 120px;">
+                            <option value="">-- Số sao --</option>
+                            @for ($i = 1; $i <= 5; $i++)
+                                <option value="{{ $i }}" {{ (request('so_sao') == $i) ? 'selected' : '' }}>{{ $i }} sao
+                                </option>
+                            @endfor
+                        </select>
+
+                        <!-- Lọc theo trạng thái -->
+                        <select name="trang_thai" class="form-control" style="max-width: 140px;">
+                            <option value="">-- Trạng thái --</option>
+                            <option value="1" {{ (request('trang_thai') === '1') ? 'selected' : '' }}>Hiển thị</option>
+                            <option value="0" {{ (request('trang_thai') === '0') ? 'selected' : '' }}>Ẩn</option>
+                        </select>
+
+                        <!-- Sắp xếp đánh giá -->
+                        <select name="sort" class="form-control" style="max-width: 180px;">
+                            <option value="">-- Sắp xếp --</option>
+                            <option value="newest" {{ (request('sort') == 'newest') ? 'selected' : '' }}>Mới nhất</option>
+                            <option value="oldest" {{ (request('sort') == 'oldest') ? 'selected' : '' }}>Cũ nhất</option>
+                        </select>
+
                         <button class="btn btn-outline" type="submit" style="height: calc(2.7rem + 2px);">
                             <i class="bi bi-search"></i>
                         </button>
@@ -63,7 +87,7 @@
                                                             {!! $review->trang_thai
                                 ? '<span class="badge bg-success">Hiển thị</span>'
                                 : '<span class="badge bg-secondary">Ẩn</span>'
-                                                                                                                                                                                                                                    !!}
+                                                                                                                                                                                                                                                                                    !!}
                                                         </td>
                                                         <td>{{ $review->created_at->format('d/m/Y') }}</td>
                                                         <td>
