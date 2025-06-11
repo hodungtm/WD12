@@ -17,6 +17,9 @@
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<!-- Bootstrap JS (v5) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </head>
 
 <body onload="time()" class="app sidebar-mini rtl">
@@ -54,7 +57,7 @@
     </div>
     <hr>
     <ul class="app-menu">
-     
+
         <a class="app-menu__item" href="{{ route('Admin.categories.index') }}">
           <i class='app-menu__icon bx bx-purchase-tag-alt'></i>
           <span class="app-menu__label">Quản lý danh mục</span>
@@ -90,7 +93,7 @@
             <span class="app-menu__label">Quản lý banner</span>
         </a>
       </li>
-    
+
   </aside>
 
 {{-- -----------------------------------------------END ----------------------------------}}

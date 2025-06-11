@@ -109,6 +109,20 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+
+                            <div class="form-group col-md-6">
+                                <label for="max_discount_amount">Giá trị giảm tối đa (VNĐ)</label>
+                                <input type="number" name="max_discount_amount" step="1000" min="0"
+                                    class="form-control @error('max_discount_amount') is-invalid @enderror"
+                                    value="{{ old('max_discount_amount', $discount->max_discount_amount ?? '') }}"
+                                    placeholder="Không giới hạn">
+                                @error('max_discount_amount')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <small class="form-text text-muted">Giá trị tối đa được giảm từ mã này. Bỏ trống nếu không giới hạn.</small>
+                            </div>
+
+
                         </div>
 
                         <button type="submit" class="btn btn-save">Lưu lại</button>

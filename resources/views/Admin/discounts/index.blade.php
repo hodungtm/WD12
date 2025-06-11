@@ -54,13 +54,31 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="col-md-auto mt-2 mt-md-0">
-                            <a href="{{ route('admin.discounts.index') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-times me-1"></i> Xóa bộ lọc
-                            </a>
+                        <div class="d-flex flex-wrap align-items-start">
+
+                            <div class="mb-4">
+                                <button class="btn btn-outline-info dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-filter me-1"></i> Bộ lọc
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                                    <li><a class="dropdown-item" href="{{ route('admin.discounts.index') }}">Tất cả</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.discounts.index', ['type' => 'order']) }}">Theo đơn hàng</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.discounts.index', ['type' => 'product']) }}">Theo sản phẩm</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.discounts.index', ['type' => 'shipping']) }}">Giảm phí ship</a></li>
+                                </ul>
+                            </div>
+                            <div class="me-2 mb-2">
+                                <a href="{{ route('admin.discounts.index') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times me-1"></i> Xóa bộ lọc
+                                </a>
+                            </div>
                         </div>
-                    </div>
+
+
             </form>
+
+
+
 
                     <table class="table table-hover table-bordered" id="discountTable">
                         <thead>
@@ -74,6 +92,7 @@
                                 <th>Ngày kết thúc</th>
                                 <th>Lượt tối đa</th>
                                 <th>Đơn tối thiểu</th>
+                                <th>Đơn tối Đa</th>
                                 <th>Phân loại</th>
                                 <th>Chức năng</th>
                             </tr>
@@ -96,6 +115,14 @@
                                     <td>{{ $discount->end_date }}</td>
                                     <td>{{ $discount->max_usage }}</td>
                                     <td>{{ number_format($discount->min_order_amount) }} VNĐ</td>
+                                    <td>
+                                        @if ($discount->max_discount_amount)
+                                            {{ number_format($discount->max_discount_amount) }} VNĐ
+                                        @else
+                                            <span class="text-muted">Không giới hạn</span>
+                                        @endif
+                                    </td>
+
                                     <td>
                                     @switch($discount->type)
                                         @case('order')
