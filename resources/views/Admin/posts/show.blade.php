@@ -30,14 +30,24 @@
               @endif
             </p>
           </div>
-
           <div class="form-group col-md-12">
             <label class="control-label">Nội dung:</label>
             <div class="border p-3" style="background: #f9f9f9;">
-              {!! nl2br(e($post->content)) !!}
-            </div>
+             @php
+              // Tách nội dung trong <h2> và hiển thị nó như một dòng chữ thường
+              $content = $post->content;
+              // Lấy nội dung trong <h2> (nếu có) và làm sạch thẻ HTML như <br>, &nbsp;
+              if (preg_match('/<h2[^>]*>(.*?)<\/h2>/is', $content, $matches)) {
+                  $titleLine = strip_tags(str_replace(['<br>', '<br/>', '&nbsp;'], '', $matches[1]));
+              } else {
+                  $titleLine = '';
+              }
+              // Xoá toàn bộ thẻ <h2> khỏi content
+              $content = preg_replace('/<h2[^>]*>.*?<\/h2>/is', '', $content);
+          @endphp
+              <div>{{ $titleLine }}</div>
+              {!! $content !!}
           </div>
-
           <div class="form-group col-md-6 mt-3">
             <label class="control-label">Ảnh đại diện:</label><br>
             @if ($post->image)

@@ -55,11 +55,26 @@ class PostController extends Controller
    public function store(Request $request)
 {
     // Validate dữ liệu đầu vào
-    $data = $request->validate([
+    // $data = $request->validate([
+    //     'title'   => 'required|max:255',
+    //     'content' => 'required',
+    //     'image'   => 'nullable|image|max:2048',
+    //     'status'  => 'required|in:draft,published,hidden',
+    // ]);
+   $data = $request->validate([
         'title'   => 'required|max:255',
+        'status'  => 'required|in:published,draft,hidden',
         'content' => 'required',
         'image'   => 'nullable|image|max:2048',
-        'status'  => 'required|in:draft,published,hidden',
+    ], [
+        // Thông báo lỗi tự viết:
+        'title.required'   => 'Bạn chưa nhập tiêu đề bài viết.',
+        'title.max'        => 'Tiêu đề không được dài quá 255 ký tự.',
+        'status.required'  => 'Bạn phải chọn trạng thái.',
+        'status.in'        => 'Trạng thái không hợp lệ.',
+        'content.required' => 'Bạn chưa nhập nội dung bài viết.',
+        'image.image'      => 'File tải lên phải là ảnh.',
+        'image.max'        => 'Ảnh không được lớn hơn 2MB.',
     ]);
 
     // Nếu có ảnh thì lưu và gán đường dẫn
