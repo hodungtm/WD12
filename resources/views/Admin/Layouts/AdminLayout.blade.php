@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <title>Danh sách nhân viên | Quản trị Admin</title>
   <meta charset="utf-8">
