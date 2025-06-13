@@ -23,6 +23,9 @@ Route::get('/', function () {
 Route::get('/test', function () {
     return view('Admin/test');
 });
+Route::get('/test1', function () {
+    return view('Client/index');
+});
 Route::prefix('admin')->group(function () {
     Route::resource('orders', OrderController::class)->names('admin.orders');
 });
