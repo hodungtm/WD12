@@ -19,27 +19,39 @@
 
         <div class="form-group col-md-6">
           <label class="control-label">Tiêu đề</label>
-          <input class="form-control" type="text" name="title" required>
+          <input class="form-control" type="text" name="title">
+          @error('title')
+            <div class="text-danger">{{ $message }}</div>
+          @enderror
         </div>
 
         <div class="form-group col-md-6">
           <label class="control-label">Trạng thái</label>
-          <select class="form-control" name="status" required>
+          <select class="form-control" name="status">
             <option value="">-- Chọn trạng thái --</option>
             <option value="published">Đã đăng</option>
             <option value="draft">Nháp</option>
             <option value="hidden">Ẩn</option>
           </select>
+          @error('status')
+            <div class="text-danger">{{ $message }}</div>
+          @enderror
         </div>
 
         <div class="form-group col-md-12">
           <label class="control-label">Nội dung</label>
           <textarea class="form-control" name="content" id="editor" rows="10" ></textarea>
+          @error('content')
+            <div class="text-danger">{{ $message }}</div>
+          @enderror
         </div>
 
         <div class="form-group col-md-6">
           <label class="control-label">Ảnh đại diện</label>
           <input class="form-control" type="file" name="image">
+          @error('image')
+            <div class="text-danger">{{ $message }}</div>
+          @enderror
         </div>
 
         <div class="form-group col-md-12 mt-3">

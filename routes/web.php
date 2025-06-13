@@ -1,21 +1,30 @@
 <?php
 
-use App\Http\Controllers\Admin\BannerController;
-use App\Http\Controllers\Admin\DiscountController;
-use App\Http\Controllers\Admin\OrderController;
-use App\Http\Controllers\Admin\WishlistController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AuditLogController;
+use App\Exports\DiscountsExport;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\DiscountsExport;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\RoleController;
+use App\Http\Controllers\Admin\DiscountController;
+use App\Http\Controllers\Admin\WishlistController;
+
+
+// ->middleware(['auth'])
+
+Route::prefix('admin')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+});
+
 
 Route::get('/', function () {
     return view('welcome');
