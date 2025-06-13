@@ -92,6 +92,12 @@
             <span class="app-menu__label">Quản lý banner</span>
         </a>
       </li>
+     <li>
+  <a class="app-menu__item" href="{{ route('admin.dashboard') }}">
+    <i class='app-menu__icon bx bx-bar-chart-alt-2'></i>
+    <span class="app-menu__label">Trang Thống Kê</span>
+  </a>
+</li>
 
   </aside>
 
