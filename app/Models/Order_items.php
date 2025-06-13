@@ -11,10 +11,12 @@ class Order_items extends Model
 
     protected $fillable = [
         'order_id',
-        'order_code',
         'product_id',
+        'discount_id',
         'quantity',
         'price',  
+        'discount_price', // THÊM: Cột này có trong bảng và có thể được gán.
+        'final_price',  
         'total_price',
     ];
 
@@ -37,11 +39,5 @@ class Order_items extends Model
     /**
      * Tính tổng tiền (nếu muốn tính tự động)
      */
-     public function calculateTotal()
-     {
-         if ($this->product && $this->quantity) {
-             return $this->product->price * $this->quantity;
-         }
-         return 0;
-     }
+    
 }
