@@ -113,6 +113,4 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::get('admin/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit_logs.index');
 
 
-// Route::middleware('auth')->group(function () {
-//     Route::get('/user/overview', [UserController::class, 'overview'])->name('user.overview');
-// });
+
