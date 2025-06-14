@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Review;
@@ -20,14 +21,17 @@ class DashboardController extends Controller
         $orderQuery = Order::query();
         $reviewQuery = Review::query();
 
+
         if ($from && $to) {
             $orderQuery->whereBetween('created_at', [$from, $to]);
             $reviewQuery->whereBetween('created_at', [$from, $to]);
+           
         }
 
         $totalOrders = $orderQuery->count();
         $totalUsers = User::count();
         $totalReviews = $reviewQuery->count();
+
 
         // Biểu đồ đơn hàng theo thời gian
         $ordersByDate = $orderQuery->selectRaw("DATE(created_at) as date, COUNT(*) as count")
@@ -36,8 +40,10 @@ class DashboardController extends Controller
             ->get();
 
         // Thống kê theo trạng thái đơn hàng
-        $orderStatus = $orderQuery->selectRaw("status, COUNT(*) as count")
-            ->groupBy('status')->get();
+       $orderStatus = DB::table('orders')
+    ->select('status', DB::raw('COUNT(*) as count'))
+    ->groupBy('status')
+    ->get();
 
         // Top sản phẩm bán chạy
         $topProducts = DB::table('order_items')
@@ -47,11 +53,14 @@ class DashboardController extends Controller
             ->orderByDesc('total_orders')
             ->limit(5)
             ->get();
-
+ $totalComments = Comment::when($from && $to, function ($query) use ($from, $to) {
+                return $query->whereBetween('created_at', [$from, $to]);
+            })->count();
         return view('admin.dashboard.index', compact(
-            'totalOrders', 'totalUsers', 'totalReviews',
-            'ordersByDate', 'orderStatus', 'topProducts',
-            'from', 'to'
-        ));
+    'totalOrders', 'totalUsers', 'totalReviews', 'totalComments',
+    'ordersByDate', 'orderStatus', 'topProducts',
+    'from', 'to'
+));
+
     }
 }

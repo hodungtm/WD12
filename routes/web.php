@@ -1,6 +1,7 @@
 <?php
 
 use App\Exports\DiscountsExport;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
@@ -57,8 +58,7 @@ Route::prefix('admin')->name('Admin.')->group(function () {
     Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
     Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
-    Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');
-    Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.delete');
+    Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.delete');
     Route::get('admin/products/{id}', [ProductController::class, 'show'])->name('products.show');
 
     // ===== REVIEWS =====
@@ -93,10 +93,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('discounts/delete-all', [DiscountController::class, 'deleteAll'])->name('discounts.deleteAll');
     Route::delete('discounts/{id}/force-delete', [DiscountController::class, 'forceDelete'])->name('discounts.forceDelete');
     Route::get('/admin/discounts/{id}', [DiscountController::class, 'show'])->name('discounts.show');
-});
-
-
-Route::post('admin/discounts/import-excel', [DiscountController::class, 'importExcel'])->name('discounts.importExcel');
+});Route::post('admin/discounts/import-excel', [DiscountController::class, 'importExcel'])->name('discounts.importExcel');
 
 //// ADMIM POST----------------------------------------------------////////////
 Route::prefix('admin')->group(function () {
@@ -114,3 +111,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('roles', RoleController::class)->except(['show']);
 });
 Route::get('admin/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit_logs.index');
+
+
+// Route::middleware('auth')->group(function () {
+//     Route::get('/user/overview', [UserController::class, 'overview'])->name('user.overview');
+// });
