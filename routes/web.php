@@ -1,6 +1,7 @@
 <?php
 
 use App\Exports\DiscountsExport;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
@@ -114,3 +115,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('roles', RoleController::class)->except(['show']);
 });
 Route::get('admin/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit_logs.index');
+
+
+Route::middleware('auth')->group(function () {
+    Route::get('/user/overview', [UserController::class, 'overview'])->name('user.overview');
+});
