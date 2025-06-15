@@ -58,4 +58,18 @@ class Product extends Model
             $product->sku = $sku;
         });
     }
+
+    // client
+
+   
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class)->whereNull('deleted_at');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->whereNull('deleted_at');
+    }
 }

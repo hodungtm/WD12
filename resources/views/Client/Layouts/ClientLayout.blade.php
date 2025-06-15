@@ -10,24 +10,15 @@
     <meta name="description" content="" />
     <title>Junno – Multipurpose eCommerce HTML Template</title>
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico" />
+   <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/img/favicon.ico') }}" />
 
-    <!--********************************** 
-        all css files 
-    *************************************-->
-
-    <!--*************************************************** 
-       fontawesome,bootstrap,plugins and main style css
-     ***************************************************-->
-    <!-- cdn links -->
-
-    <link rel="stylesheet" href="assets/css/fontawesome.min.css" />
-    <link rel="stylesheet" href="assets/css/ionicons.min.css" />
-    <link rel="stylesheet" href="assets/css/simple-line-icons.css" />
-    <link rel="stylesheet" href="assets/css/plugins/jquery-ui.min.css">
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="assets/css/plugins/plugins.css" />
-    <link rel="stylesheet" href="assets/css/style.min.css" />
+<link rel="stylesheet" href="{{ asset('assets/css/fontawesome.min.css') }}" />
+<link rel="stylesheet" href="{{ asset('assets/css/ionicons.min.css') }}" />
+<link rel="stylesheet" href="{{ asset('assets/css/simple-line-icons.css') }}" />
+<link rel="stylesheet" href="{{ asset('assets/css/plugins/jquery-ui.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}" />
+<link rel="stylesheet" href="{{ asset('assets/css/plugins/plugins.css') }}" />
+<link rel="stylesheet" href="{{ asset('assets/css/style.min.css') }}" />
 
     <!-- Use the minified version files listed below for better performance and remove the files listed above -->
 
@@ -631,55 +622,7 @@
     </div>
 
     <!--=======  End of category menu =======-->
-    <section class="bg-light position-relative">
-    <div class="main-slider dots-style theme1">
-        <div class="slider-item bg-img bg-img1">
-            <div class="container">
-                <div class="row align-items-center slider-height">
-                    <div class="col-12">
-                        <div class="slider-content">
-                            <p class="text text-white text-uppercase animated mb-25" data-animation-in="fadeInDown">
-                                nike running shoes</p>
-                            <h4 class="title text-white animated text-capitalize mb-20" data-animation-in="fadeInLeft"
-                                data-delay-in="1">Sport Shoes</h4>
-                            <h2 class="sub-title text-white animated" data-animation-in="fadeInRight" data-delay-in="2">
-                                Sale 40% Off</h2>
-                            <a href="shop-grid-4-column.html"
-                                class="btn theme--btn1 btn--lg text-uppercase rounded-5 animated mt-45 mt-sm-25"
-                                data-animation-in="zoomIn" data-delay-in="3">Shop now</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- slider-item end -->
-        <div class="slider-item bg-img bg-img2">
-            <div class="container">
-                <div class="row align-items-center slider-height">
-                    <div class="col-12">
-                        <div class="slider-content">
-                            <p class="text text-white text-uppercase animated mb-25" data-animation-in="fadeInLeft">
-                                New Arrivals</p>
-                            <h4 class="title text-white animated text-capitalize mb-20" data-animation-in="fadeInRight"
-                                data-delay-in="1"> Sumer Sale</h4>
-                            <h2 class="sub-title text-white animated" data-animation-in="fadeInUp" data-delay-in="2">Up
-                                To 70% Off</h2>
-                            <a href="shop-grid-4-column.html"
-                                class="btn theme--btn1 btn--lg text-uppercase rounded-5 animated mt-45 mt-sm-25"
-                                data-animation-in="zoomIn" data-delay-in="3">Shop now</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- slider-item end -->
-    </div>
-    <!-- slick-progress -->
-    <div class="slick-progress">
-        <span></span>
-    </div>
-    <!-- slick-progress end-->
-</section>
+
 </header>
 
  <main class="app-content">
@@ -824,14 +767,13 @@
     </div>
     <!-- coppy-right end -->
 </footer>
-    <script src="assets/js/vendor/jquery-3.6.0.min.js"></script>
-    <script src="assets/js/vendor/jquery-migrate-3.3.2.min.js"></script>
-    <script src="assets/js/vendor/modernizr-3.7.1.min.js"></script>
-    <script src="assets/js/plugins/jquery-ui.min.js"></script>
-    <script src="assets/js/plugins/plugins.js"></script>
-    <script src="assets/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/main.js"></script>
-
+<script src="{{ asset('assets/js/vendor/jquery-3.6.0.min.js') }}"></script>
+<script src="{{ asset('assets/js/vendor/jquery-migrate-3.3.2.min.js') }}"></script>
+<script src="{{ asset('assets/js/vendor/modernizr-3.7.1.min.js') }}"></script>
+<script src="{{ asset('assets/js/plugins/jquery-ui.min.js') }}"></script>
+<script src="{{ asset('assets/js/plugins/plugins.js') }}"></script>
+<script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('assets/js/main.js') }}"></script>
     <!-- Use the minified version files listed below for better performance and remove the files listed above -->
 
     <!--*************************** 
