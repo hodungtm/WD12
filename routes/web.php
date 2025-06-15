@@ -1,12 +1,12 @@
 <?php
 
 use App\Exports\DiscountsExport;
-use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuditLogController;
@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\WishlistController;
+use App\Http\Controllers\Client\ProductDetailController;
 
 
 // ->middleware(['auth'])
@@ -31,10 +32,15 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/test', function () {
-    return view('Admin/test');
+    return view('client/index');
 });
 Route::get('/test1', function () {
-    return view('Client/index');
+    return view('Client/Product/productDetail');
+});
+Route::prefix('client')->name('client.')->group(function () {
+    Route::get('/san-pham/{id}', [ProductDetailController::class, 'show'])->name('product.detail');
+    Route::post('/san-pham/{id}/danh-gia', [ProductDetailController::class, 'submitReview'])->name('product.review');
+    Route::post('/san-pham/{id}/binh-luan', [ProductDetailController::class, 'submitComment'])->name('product.comment');
 });
 Route::prefix('admin')->group(function () {
     Route::resource('orders', OrderController::class)->names('admin.orders');
