@@ -681,10 +681,13 @@
     <!-- slick-progress end-->
 </section>
 </header>
+
  <main class="app-content">
+    
       @yield('main')
 
   </main>
+
   <footer class="bg-light theme1 position-relative">
     <!-- footer bottom start -->
     <div class="footer-bottom pt-80 pb-30">
