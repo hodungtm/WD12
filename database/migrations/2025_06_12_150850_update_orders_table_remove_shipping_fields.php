@@ -13,14 +13,26 @@ return new class extends Migration
 {
     Schema::table('orders', function (Blueprint $table) {
         // Xóa các cột cũ
-        $table->dropColumn('shipping_method');
-        $table->dropColumn('shipping_fee');
+        // $table->dropColumn('shipping_method');
+        // $table->dropColumn('shipping_fee');
 
         // Thêm khoá ngoại
-        $table->unsignedBigInteger('shipping_method_id')->after('payment_method');
+        // $table->unsignedBigInteger('shipping_method_id')->after('payment_method');
 
-        $table->foreign('shipping_method_id')->references('id')->on('shipping_methods')->nullOnDelete();
-    });
+        // $table->foreign('shipping_method_id')->references('id')->on('shipping_methods')->nullOnDelete();
+
+        //---------------------------------ta sửa tạm thịnh nhé có j lỗi bảo ta-----------------
+
+          // Thêm cột shipping_method_id và cho phép null
+            $table->unsignedBigInteger('shipping_method_id')->nullable()->after('payment_method');
+
+            // Thêm khóa ngoại với hành vi nullOnDelete
+           // Kiểm tra chỉ thêm foreign key nếu cột đã có
+            $table->foreign('shipping_method_id')
+                ->references('id')
+                ->on('shipping_methods')
+                ->nullOnDelete();
+                });
 }
 
     /**
@@ -28,6 +40,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        
+        Schema::table('orders', function (Blueprint $table) {
+            // Xóa foreign key trước
+            $table->dropForeign(['shipping_method_id']);
+
+            // Sau đó xóa cột
+            $table->dropColumn('shipping_method_id');
+        });
     }
 };

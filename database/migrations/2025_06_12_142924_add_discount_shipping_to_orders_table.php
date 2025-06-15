@@ -15,8 +15,8 @@ return new class extends Migration
             $table->unsignedBigInteger('discount_id')->nullable()->after('receiver_id'); // Khóa ngoại đến bảng discounts
             $table->decimal('discount_amount', 10, 2)->nullable()->after('total_price'); // Số tiền giảm thực tế
             $table->decimal('final_amount', 15, 2)->default(0.00)->after('discount_amount'); // Tổng tiền sau giảm
-            $table->string('shipping_method', 100)->nullable()->after('payment_method');
-            $table->decimal('shipping_fee', 10, 2)->nullable()->after('shipping_method');
+            // $table->string('shipping_method', 100)->nullable()->after('payment_method');
+            // $table->decimal('shipping_fee', 10, 2)->nullable()->after('shipping_method');
 
             $table->foreign('discount_id')->references('id')->on('discounts')->nullOnDelete();
         });
@@ -29,8 +29,8 @@ return new class extends Migration
                 'discount_id',
                 'discount_amount',
                 'final_amount',
-                'shipping_method',
-                'shipping_fee',
+                // 'shipping_method',
+                // 'shipping_fee',
             ]);
         });
     }

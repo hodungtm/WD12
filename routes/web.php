@@ -1,12 +1,13 @@
 <?php
 
 use App\Exports\DiscountsExport;
-use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuditLogController;
@@ -20,9 +21,7 @@ use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\WishlistController;
 
 
-// ->middleware(['auth'])
-
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 });
 
@@ -113,4 +112,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::get('admin/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit_logs.index');
 
 
+Route::middleware('auth','admin')->group(function () {
+    Route::get('/user/overview', [UserController::class, 'overview'])->name('user.overview');
+});
 
+Auth::routes();
+
+Route::get('/home', [HomeController::class, 'index'])->name('home');
