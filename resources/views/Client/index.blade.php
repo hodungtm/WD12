@@ -1,7 +1,7 @@
 @extends('Client.Layouts.ClientLayout')
 @section('main')
 <body>
-    
+
 
 <!-- offcanvas-overlay start -->
 <div class="offcanvas-overlay"></div>
@@ -21,6 +21,11 @@
                         <a href="wishlist.html"> <i class="ion-android-favorite-outline"></i> Wishlist
                             <span>(0)</span></a>
                     </li>
+
+
+
+
+
                 </ul>
             </nav>
         </div>
@@ -1830,7 +1835,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    
+
                 </button>
             </div>
             <div class="modal-body">
@@ -1965,7 +1970,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    
+
                 </button>
             </div>
             <div class="modal-body">
@@ -1982,7 +1987,7 @@
                 <h5 class="modal-title" id="add-to-cartCenterTitle"> <span class="ion-checkmark-round"></span>
                     Product successfully added to your shopping cart</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    
+
                 </button>
             </div>
             <div class="modal-body">
@@ -2087,11 +2092,11 @@
 
 
 
-    <!--*********************** 
+    <!--***********************
         all js files
      ***********************-->
 
-    <!--****************************************************** 
+    <!--******************************************************
         jquery,modernizr ,poppe,bootstrap,plugins and main js
      ******************************************************-->
 
@@ -2105,11 +2110,11 @@
 
     <!-- Use the minified version files listed below for better performance and remove the files listed above -->
 
-    <!--*************************** 
-          Minified  js 
+    <!--***************************
+          Minified  js
      ***************************-->
 
-    <!--*********************************** 
+    <!--***********************************
          vendor,plugins and main js
       ***********************************-->
 
