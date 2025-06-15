@@ -9,10 +9,14 @@ use Illuminate\Support\Facades\Hash;
 class Admin extends Model
 {
     /** @use HasFactory<\Database\Factories\AdminFactory> */
-   use HasFactory;
+    use HasFactory;
 
     protected $fillable = [
-        'name', 'email', 'password', 'is_active',
+        'name',
+        'email',
+        'password',
+        'is_active',
+        'avatar',
     ];
 
     protected $hidden = [
@@ -74,5 +78,5 @@ class Admin extends Model
         $this->is_active = !$this->is_active;
         $this->save();
     }
-    
+
 }

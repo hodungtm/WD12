@@ -8,6 +8,7 @@ use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
@@ -30,45 +31,51 @@ class AdminController extends Controller
 
 
     // Hiển thị form tạo admin mới
-    public function create()
+    // public function create()
+    // {
+    //     $roles = Role::all();
+    //     return view('admin.admins.create', compact('roles'));
+    // }
+
+    public function show($id)
     {
-        $roles = Role::all();
-        return view('admin.admins.create', compact('roles'));
+        $admin = Admin::findOrFail($id);
+        return view('admin.admins.show', compact('admin'));
     }
 
     // Xử lý lưu admin mới
-   public function store(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:admins,email',
-        'password' => 'required|string|min:6|confirmed',
-        'roles' => 'array',
-        'roles.*' => 'exists:roles,id',
-    ]);
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:admins,email',
+            'password' => 'required|string|min:6|confirmed',
+            'roles' => 'array',
+            'roles.*' => 'exists:roles,id',
+        ]);
 
-    $admin = Admin::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-        'is_active' => $request->input('is_active', true),
-    ]);
+        $admin = Admin::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'is_active' => $request->input('is_active', true),
+        ]);
 
-    // Gán roles
-    $admin->roles()->sync($request->input('roles', []));
+        // Gán roles
+        // $admin->roles()->sync($request->input('roles', []));
 
-    // Ghi log sau khi tạo thành công
-    AuditLog::create([
-        'admin_id' => Auth::id(),
-        'action' => 'create',
-        'target_type' => 'Admin',
-        'target_id' => $admin->id,
-        'description' => 'Tạo admin mới: ' . $admin->email,
-        'ip_address' => request()->ip(),
-    ]);
+        // Ghi log sau khi tạo thành công
+        AuditLog::create([
+            'admin_id' => Auth::id(),
+            'action' => 'create',
+            'target_type' => 'Admin',
+            'target_id' => $admin->id,
+            'description' => 'Tạo admin mới: ' . $admin->email,
+            'ip_address' => request()->ip(),
+        ]);
 
-    return redirect()->route('admin.admins.index')->with('success', 'Tạo tài khoản admin thành công');
-}
+        return redirect()->route('admin.admins.index')->with('success', 'Tạo tài khoản admin thành công');
+    }
 
 
     // Hiển thị form chỉnh sửa admin
@@ -81,62 +88,78 @@ class AdminController extends Controller
 
     // Xử lý cập nhật admin
     public function update(Request $request, Admin $admin)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => ['required', 'email', Rule::unique('admins')->ignore($admin->id)],
-        'password' => 'nullable|string|min:6|confirmed',
-        'roles' => 'array',
-        'roles.*' => 'exists:roles,id',
-        'is_active' => 'required|boolean',
-    ]);
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => ['required', 'email', Rule::unique('admins')->ignore($admin->id)],
+            'password' => 'nullable|string|min:6|confirmed',
+            'roles' => 'array',
+            'roles.*' => 'exists:roles,id',
+            'is_active' => 'required|boolean',
+        ]);
 
-    $admin->name = $request->name;
-    $admin->email = $request->email;
-    $admin->is_active = $request->is_active;
+        $admin->name = $request->name;
+        $admin->email = $request->email;
+        $admin->is_active = $request->is_active;
 
-    if ($request->filled('password')) {
-        $admin->password = Hash::make($request->password);
+        if ($request->filled('password')) {
+            $admin->password = Hash::make($request->password);
+        }
+
+        // Nếu có ảnh mới thì xử lý lưu
+        if ($request->hasFile('avatar')) {
+            if ($admin->avatar && Storage::disk('public')->exists($admin->avatar)) {
+                Storage::disk('public')->delete($admin->avatar);
+            }
+
+            $file = $request->file('avatar');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path = $file->storeAs('avatars', $filename, 'public');
+
+            $admin->avatar = $path; // ✅ Gán avatar vào model
+        }
+
+        $admin->is_active = $request->is_active;
+
+
+        $admin->save();
+
+        // if ($request->has('roles')) {
+        //     $admin->roles()->sync($request->roles);
+        // } else {
+        //     $admin->roles()->detach();
+        // }
+
+        AuditLog::create([
+            'admin_id' => Auth::id(),
+            'action' => 'update',
+            'target_type' => 'Admin',
+            'target_id' => $admin->id,
+            'description' => 'Cập nhật admin: ' . $admin->email,
+            'ip_address' => request()->ip(),
+        ]);
+
+        return redirect()->route('admin.admins.index')->with('success', 'Cập nhật tài khoản admin thành công');
     }
-
-    $admin->save();
-
-    if ($request->has('roles')) {
-        $admin->roles()->sync($request->roles);
-    } else {
-        $admin->roles()->detach();
-    }
-
-    AuditLog::create([
-        'admin_id' => Auth::id(),
-        'action' => 'update',
-        'target_type' => 'Admin',
-        'target_id' => $admin->id,
-        'description' => 'Cập nhật admin: ' . $admin->email,
-        'ip_address' => request()->ip(),
-    ]);
-
-    return redirect()->route('admin.admins.index')->with('success', 'Cập nhật tài khoản admin thành công');
-}
 
     // Xóa tài khoản admin thật sự
- public function destroy(Admin $admin)
-{
-    $adminId = $admin->id;
-    $adminEmail = $admin->email;
+    public function destroy(Admin $admin)
+    {
+        $adminId = $admin->id;
+        $adminEmail = $admin->email;
 
-    $admin->roles()->detach();
-    $admin->delete();
+        $admin->roles()->detach();
+        $admin->delete();
 
-    AuditLog::create([
-        'admin_id' => Auth::id(),
-        'action' => 'delete',
-        'target_type' => 'Admin',
-        'target_id' => $adminId,
-        'description' => 'Xóa admin: ' . $adminEmail,
-        'ip_address' => request()->ip(),
-    ]);
+        AuditLog::create([
+            'admin_id' => Auth::id(),
+            'action' => 'delete',
+            'target_type' => 'Admin',
+            'target_id' => $adminId,
+            'description' => 'Xóa admin: ' . $adminEmail,
+            'ip_address' => request()->ip(),
+        ]);
 
-    return redirect()->route('admin.admins.index')->with('success', 'Xóa tài khoản admin thành công');
-}
+        return redirect()->route('admin.admins.index')->with('success', 'Xóa tài khoản admin thành công');
+    }
 }

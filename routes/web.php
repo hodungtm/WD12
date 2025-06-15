@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\WishlistController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuditLogController;
@@ -97,8 +98,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('banners', BannerController::class);
 });
 // Quản lý tài khoản Admin và Role
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::resource('admins', AdminController::class)->except(['show']);
-    Route::resource('roles', RoleController::class)->except(['show']);
-});
+// Route::prefix('admin')->name('admin.')->group(function () {
+//     Route::resource('admins', AdminController::class);
+//     // Route::resource('roles', RoleController::class);
+// });
 Route::get('admin/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit_logs.index');
+// Quản lý USER
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('users', UserController::class);
+});
+
+Route::patch('/admin/users/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('admin.users.toggle-active');
+
