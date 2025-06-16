@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sizes', function (Blueprint $table) {
+        Schema::create('attribute_values', function (Blueprint $table) {
             $table->id();
-             $table->string('name');
+            $table->foreignId('attribute_id')->constrained()->onDelete('cascade'); // Liên kết với attributes
+            $table->string('value'); // Giá trị
             $table->timestamps();
         });
     }
@@ -23,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sizes');
+        Schema::dropIfExists('attributes_values');
     }
 };

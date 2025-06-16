@@ -19,6 +19,9 @@ use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\WishlistController;
+use App\Http\Controllers\AttributeController;
+use App\Http\Controllers\AttributeValueController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\Client\ProductDetailController;
 
 
@@ -44,6 +47,8 @@ Route::prefix('client')->name('client.')->group(function () {
 Route::prefix('admin')->group(function () {
     Route::resource('orders', OrderController::class)->names('admin.orders');
 });
+Route::post('/admin/orders/{order}/complete', [App\Http\Controllers\Admin\OrderController::class, 'completeOrder'])->name('admin.orders.complete');
+
 Route::prefix('admin')->name('Admin.')->group(function () {
 
     // ===== CATEGORIES =====
@@ -133,3 +138,11 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('attribute', AttributeController::class);
+    Route::resource('attributeValue', AttributeValueController::class);
+    Route::resource('brand', BrandController::class);
+    Route::resource('product', ProductController::class);
+});
