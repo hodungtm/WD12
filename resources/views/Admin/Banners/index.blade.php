@@ -20,7 +20,7 @@
                 </a>
 
                 <form method="GET" action="" class="d-flex mb-3" style="max-width: 400px;">
-                    <input type="text" name="search" class="form-control me-2" placeholder="Tìm kiếm nội dung"
+                    <input type="text" name="search" class="form-control me-2" placeholder="Tìm kiếm"
                         value="{{ request('search') }}" aria-label="Tìm kiếm">
                     <button class="btn btn-outline-secondary" type="submit">
                         <i class="bi bi-search"></i>

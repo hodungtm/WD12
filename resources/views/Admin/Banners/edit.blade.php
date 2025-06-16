@@ -84,17 +84,21 @@
                                                     <div class="d-flex align-items-center">
                                                         <img id="preview_{{ $index }}"
                                                             src="{{ Storage::url($item->hinh_anh) }}" width="50px">
+
                                                         <input type="file" name="list_image[{{ $item->id }}]"
                                                             class="form-control mx-2"
                                                             onchange="previewImage(this, {{ $index }})">
-                                                        <button class="btn btn-light remove-row text-danger" onclick="removeRow(this)"
-                                                            type="button">
+
+                                                        {{-- Nút xóa + input ẩn sẽ thêm vào DOM khi bấm nút --}}
+                                                        <button type="button" class="btn btn-light text-danger"
+                                                            onclick="markImageForDelete(this, {{ $item->id }})">
                                                             <i class="bx bx-trash"></i>
                                                         </button>
                                                     </div>
                                                 </td>
                                             </tr>
                                         @endforeach
+
 
                                     </tbody>
                                 </table>
@@ -130,8 +134,8 @@
                                     @foreach ($banner->hinhAnhBanner as $key => $hinhAnh)
                                         <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
                                             <img src="{{ Storage::url($hinhAnh->hinh_anh) }}"
-                                                class="d-block w-100 img-fluid" style="max-height:250px; height:auto; object-fit:contain; display:block; margin:auto;"
-
+                                                class="d-block w-100 img-fluid"
+                                                style="max-height:250px; height:auto; object-fit:contain; display:block; margin:auto;"
                                                 alt="Banner {{ $banner->id }} Image {{ $key + 1 }}">
                                         </div>
                                     @endforeach
@@ -231,5 +235,20 @@
     function removeRow(item) {
         var row = item.closest('tr');
         row.remove();
+    }
+
+    function markImageForDelete(button, imageId) {
+        // Xóa hàng hiển thị
+        let row = button.closest('tr');
+        row.remove();
+
+        // Tạo input hidden để Laravel biết xóa ảnh nào
+        let input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'delete_images[]';
+        input.value = imageId;
+
+        // Thêm vào form
+        document.querySelector('form').appendChild(input);
     }
 </script>
