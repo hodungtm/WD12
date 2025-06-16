@@ -19,6 +19,9 @@ use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\WishlistController;
+use App\Http\Controllers\AttributeController;
+use App\Http\Controllers\AttributeValueController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\Client\ProductDetailController;
 
 
@@ -129,3 +132,11 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('attribute', AttributeController::class);
+    Route::resource('attributeValue', AttributeValueController::class);
+    Route::resource('brand', BrandController::class);
+    Route::resource('product', ProductController::class);
+});
