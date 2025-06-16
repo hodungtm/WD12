@@ -17,6 +17,7 @@ return new class extends Migration
             $table->text('attribute_text');
             $table->string('sku')->unique();
             $table->decimal('price', 10, 2);
+            $table->integer('quantity')->default(0); // Số lượng tồn kho
             $table->decimal('sale_price', 10, 2)->nullable();
             $table->string('stock_status')->default('còn hàng'); // hoặc dùng ENUM
 

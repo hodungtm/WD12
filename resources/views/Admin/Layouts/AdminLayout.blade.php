@@ -88,6 +88,12 @@
           <span class="app-menu__label">Quản lý Mã Giảm Giá</span>
         </a>
       </li>
+        <li><a class="app-menu__item" href="{{ route('admin.attribute.index') }}"><i
+            class='app-menu__icon bx bx-task'></i><span class="app-menu__label">Quản lý thuộc tính</span></a></li>
+      <li><a class="app-menu__item" href="{{ route('admin.attributeValue.index') }}"><i
+            class='app-menu__icon bx bx-task'></i><span class="app-menu__label">Quản lý giá trị</span></a></li>
+      <li><a class="app-menu__item" href="{{ route('admin.brand.index') }}"><i
+            class='app-menu__icon bx bx-task'></i><span class="app-menu__label">Quản lý thương hiệu</span></a></li>
       <li><a class="app-menu__item" href="#"><i class='app-menu__icon bx bx-user-voice'></i><span
             class="app-menu__label">Quản lý khách hàng</span></a></li>
       <li><a class="app-menu__item" href="{{ route("Admin.products.index") }}"><i

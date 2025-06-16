@@ -18,8 +18,7 @@ class ArchivedOrderItem extends Model
         'order_id',
         'product_id',
         'discount_id',
-        'size_id', // Thêm trường này
-        'color_id', // Thêm trường này
+        'product_variant_id', // Thêm trường này
         'quantity',
         'price',
         'discount_price',
@@ -64,15 +63,6 @@ class ArchivedOrderItem extends Model
         return $this->belongsTo(Product::class, 'product_id');
     }
 
-    public function size()
-    {
-        return $this->belongsTo(Size::class, 'size_id');
-    }
-
-    public function color()
-    {
-        return $this->belongsTo(Color::class, 'color_id');
-    }
      public function productVariant()
     {
         return $this->belongsTo(ProductVariant::class);
