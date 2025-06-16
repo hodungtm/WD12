@@ -12,6 +12,7 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'receiver_id', // Thêm nếu bạn muốn gán receiver_id qua mass assignment
+        'discount_id', // Thêm nếu bạn muốn gán discount_id qua mass assignment
         'order_date',
         'status',
         'payment_status',
@@ -46,7 +47,10 @@ public function shippingMethod()
 }
 
 
-
+ public function archivedOrderItems()
+    {
+        return $this->hasMany(ArchivedOrderItem::class);
+    }
 
     // Một đơn hàng có nhiều sản phẩm (thông qua bảng trung gian order_items)
     public function orderItems()

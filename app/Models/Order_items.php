@@ -13,6 +13,7 @@ class Order_items extends Model
         'order_id',
         'product_id',
         'discount_id',
+        'product_variant_id',
         'quantity',
         'price',  
         'discount_price', // THÊM: Cột này có trong bảng và có thể được gán.
@@ -36,8 +37,10 @@ class Order_items extends Model
          return $this->belongsTo(Product::class);
      }
 
-    /**
-     * Tính tổng tiền (nếu muốn tính tự động)
-     */
+  public function productVariant()
+{
+    return $this->belongsTo(ProductVariant::class);
+}
+
     
 }
