@@ -113,6 +113,26 @@
     </small>
 </div>
 
+            <!-- Mã giảm giá -->
+
+<div class="form-group">
+    <label for="discount_id">Mã giảm giá</label>
+    <select name="discount_id" id="discount_id" class="form-control">
+        <option value="">-- Chọn mã giảm giá --</option>
+        @foreach($discounts as $discount)
+            <option value="{{ $discount->id }}"
+                {{ old('discount_id') == $discount->id ? 'selected' : '' }}>
+                {{ $discount->code }}
+                ({{ $discount->description }}
+                - {{ $discount->discount_percent > 0
+                        ? $discount->discount_percent . '%' 
+                        : number_format($discount->discount_amount) . ' VNĐ' }})
+            </option>
+        @endforeach 
+    </select>
+</div>
+
+
 
             <!-- Ghi chú -->
             <div class="form-group">
