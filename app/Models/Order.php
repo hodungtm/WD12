@@ -36,10 +36,10 @@ class Order extends Model
     return $this->belongsTo(Receiver::class);
 }
 
-public function discount()
-{
-    return $this->belongsTo(Discount::class);
-}
+ public function discount()
+    {
+        return $this->belongsTo(Discount::class, 'discount_id');
+    }
 
 public function shippingMethod()
 {

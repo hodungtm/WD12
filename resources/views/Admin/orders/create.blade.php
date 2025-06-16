@@ -51,7 +51,6 @@
                                     <option value="">-- Chọn sản phẩm & biến thể --</option>
                                     @foreach($products as $product)
                                         @foreach($product->variants as $variant)
-                                            {{-- Lấy tên thuộc tính từ attributeValues --}}
                                             @php
                                                 $attributeNames = [];
                                                 if ($variant->attributeValues) {
@@ -62,9 +61,11 @@
                                                     }
                                                 }
                                                 $variantDisplay = implode(' - ', $attributeNames);
+                                                // Đảm bảo lấy đúng tên cột giá từ ProductVariant model: 'price' và 'sale_price'
+                                                $effectivePrice = ($variant->sale_price > 0 && $variant->sale_price < $variant->price) ? $variant->sale_price : $variant->price;
                                             @endphp
                                             <option value="{{ $variant->id }}"
-                                                data-price="{{ $variant->variant_sale_price > 0 ? $variant->variant_sale_price : $variant->variant_price }}"
+                                                data-price="{{ $effectivePrice }}" {{-- SỬA Ở ĐÂY --}}
                                                 {{ (old('products.0.variant_id') == $variant->id) ? 'selected' : '' }}>
                                                 {{ $product->name }} - {{ $variantDisplay }}
                                             </option>
@@ -122,21 +123,21 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="discount_id">Mã giảm giá</label>
-                    <select name="discount_id" id="discount_id" class="form-control">
-                        <option value="">-- Chọn mã giảm giá --</option>
-                        @foreach($discounts as $discount)
-                            <option value="{{ $discount->id }}"
-                                {{ old('discount_id') == $discount->id ? 'selected' : '' }}>
-                                {{ $discount->code }}
-                                ({{ $discount->description }}
-                                - {{ $discount->discount_percent > 0
-                                        ? $discount->discount_percent . '%'
-                                        : number_format($discount->discount_amount) . ' VNĐ' }})
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+    <label for="discount_id">Mã giảm giá</label>
+    <select name="discount_id" id="discount_id" class="form-control">
+        <option value="">-- Chọn mã giảm giá --</option>
+        @foreach($discounts as $discount)
+            <option value="{{ $discount->id }}"
+                {{ old('discount_id') == $discount->id ? 'selected' : '' }}>
+                {{ $discount->code }}
+                ({{ $discount->description }}
+                - {{ $discount->discount_percent > 0
+                        ? $discount->discount_percent . '%' 
+                        : number_format($discount->discount_amount) . ' VNĐ' }})
+            </option>
+        @endforeach 
+    </select>
+</div>
 
                 <div class="form-group">
                     <label>Ghi chú</label>
@@ -157,7 +158,6 @@
             document.getElementById('shipping-fee').innerText = fee.toLocaleString('vi-VN') + 'đ';
         });
 
-        // Gọi ngay khi load trang để cập nhật phí vận chuyển ban đầu nếu có giá trị cũ được chọn
         document.addEventListener('DOMContentLoaded', function () {
             const shippingMethodSelect = document.getElementById('shipping-method');
             if (shippingMethodSelect.value) {
@@ -192,13 +192,12 @@
             }
         });
 
-        let index = 1; // Bắt đầu từ 1 vì phần tử đầu tiên là index 0
+        let index = 1;
         document.getElementById('add-product').addEventListener('click', function () {
             const wrapper = document.getElementById('product-wrapper');
             const newGroup = document.createElement('div');
             newGroup.classList.add('product-group', 'mb-3', 'border', 'p-3');
 
-            // Xây dựng lại các option sản phẩm cho group mới
             let productOptions = '';
             @foreach($products as $product)
                 @foreach($product->variants as $variant)
@@ -212,9 +211,11 @@
                             }
                         }
                         $variantDisplay = implode(' - ', $attributeNames);
+                        // Đảm bảo lấy đúng tên cột giá từ ProductVariant model: 'price' và 'sale_price'
+                        $effectivePrice = ($variant->sale_price > 0 && $variant->sale_price < $variant->price) ? $variant->sale_price : $variant->price;
                     @endphp
                     productOptions += `<option value="{{ $variant->id }}"
-                        data-price="{{ $variant->variant_sale_price > 0 ? $variant->variant_sale_price : $variant->variant_price }}">
+                        data-price="{{ $effectivePrice }}"> {{-- SỬA Ở ĐÂY --}}
                         {{ $product->name }} - ${decodeHtmlEntities("{{ $variantDisplay }}")}
                     </option>`;
                 @endforeach
@@ -269,20 +270,17 @@
                 selects.forEach(select => select.name = `products[${idx}][variant_id]`);
                 quantities.forEach(qty => qty.name = `products[${idx}][quantity]`);
             });
-            index = productGroups.length; // Cập nhật lại index cho thêm mới
+            index = productGroups.length;
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            // Cập nhật thông tin cho sản phẩm đầu tiên khi tải trang
             const firstProductGroup = document.querySelector('.product-group');
             if (firstProductGroup) {
                 updateVariantInfo(firstProductGroup);
             }
-            // Gọi hàm này để đảm bảo index đúng khi trang được tải lại với old input
             updateProductIndexes();
         });
 
-        // Helper function to decode HTML entities in JavaScript
         function decodeHtmlEntities(str) {
             var parser = new DOMParser();
             var doc = parser.parseFromString(str, 'text/html');

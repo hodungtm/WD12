@@ -17,9 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id')->nullable();
             $table->unsignedBigInteger('discount_id')->nullable();
 
-            // Thêm cột cho ID của Size và Color (có thể nullable nếu không phải sản phẩm nào cũng có size/color)
-            $table->unsignedBigInteger('size_id')->nullable();
-            $table->unsignedBigInteger('color_id')->nullable();
+            $table->unsignedBigInteger('product_variant_id')->nullable();
 
             $table->integer('quantity');
             $table->decimal('price', 10, 2);

@@ -108,71 +108,100 @@
                 @endif
 
                 <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>STT</th>
-                            <th>Tên sản phẩm</th>
-                            <th>Màu sắc</th>
-                            <th>Size</th>
-                            <th>Số lượng</th>
-                            <th>Đơn giá</th>
-                            <th>Thành tiền</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($itemsToDisplay as $index => $item)
-                            <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td>
-                                    {{-- Kiểm tra loại đối tượng để truy cập thuộc tính phù hợp --}}
-                                    @if ($item instanceof \App\Models\ArchivedOrderItem)
-                                        {{ $item->product_name ?? 'N/A' }}
-                                    @else
-                                        {{ $item->product->name ?? 'N/A' }}
-                                    @endif
-                                </td>
-                                <td>
-                                    @if ($item instanceof \App\Models\ArchivedOrderItem)
-                                        {{ $item->color_name ?? '---' }}
-                                    @else
-                                        {{ $item->productVariant->color->name ?? '---' }}
-                                    @endif
-                                </td>
-                                <td>
-                                    @if ($item instanceof \App\Models\ArchivedOrderItem)
-                                        {{ $item->size_name ?? '---' }}
-                                    @else
-                                        {{ $item->productVariant->size->name ?? '---' }}
-                                    @endif
-                                </td>
-                                <td>{{ $item->quantity }}</td>
-                                <td>{{ number_format($item->final_price ?? $item->price, 0, ',', '.') }}₫</td>
-                                <td>{{ number_format($item->total_price, 0, ',', '.') }}₫</td>
-                            </tr>
-                            @php
-                                $totalItemsPrice += $item->total_price;
-                            @endphp
-                        @endforeach
-                        <tr>
-                            <td colspan="6" class="text-end"><strong>Tổng tiền sản phẩm:</strong></td>
-                            <td><strong>{{ number_format($totalItemsPrice, 0, ',', '.') }}₫</strong></td>
-                        </tr>
-                        <tr>
-                            <td colspan="6" class="text-end"><strong>Phí vận chuyển:</strong></td>
-                            <td><strong>{{ number_format(optional($order->shippingMethod)->fee ?? 0, 0, ',', '.') }}₫</strong></td>
-                        </tr>
-                        @if (($order->discount_amount ?? 0) > 0)
-                            <tr>
-                                <td colspan="6" class="text-end"><strong>Giảm giá:</strong></td>
-                                <td><strong>- {{ number_format($order->discount_amount, 0, ',', '.') }}₫</strong></td>
-                            </tr>
-                        @endif
-                        <tr>
-                            <td colspan="6" class="text-end"><strong>Tổng thanh toán:</strong></td>
-                            <td><strong>{{ number_format($order->final_amount, 0, ',', '.') }}₫</strong></td>
-                        </tr>
-                    </tbody>
-                </table>
+    <thead>
+        <tr>
+            <th>STT</th>
+            <th>Tên sản phẩm</th>
+            <th>Màu sắc</th>
+            <th>Size</th>
+            <th>Số lượng</th>
+            <th>Đơn giá</th>
+            <th>Thành tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+        @php
+            $totalItemsPrice = 0; // Khởi tạo biến tổng tiền sản phẩm
+        @endphp
+
+        {{-- Lặp qua các item (có thể là OrderItem hoặc ArchivedOrderItem) --}}
+        @foreach ($itemsToDisplay as $index => $item)
+            <tr>
+                <td>{{ $index + 1 }}</td>
+                <td>
+                    {{-- Lấy tên sản phẩm --}}
+                    @if ($item instanceof \App\Models\ArchivedOrderItem)
+                        {{ $item->product_name ?? 'N/A' }}
+                    @else
+                        {{ $item->product->name ?? 'N/A' }}
+                    @endif
+                </td>
+                <td>
+                    {{-- Lấy tên màu sắc --}}
+                    @if ($item instanceof \App\Models\ArchivedOrderItem)
+                        {{ $item->color_name ?? '---' }}
+                    @else
+                        @php
+                            $colorName = '---';
+                            if ($item->productVariant && $item->productVariant->attributeValues) {
+                                foreach ($item->productVariant->attributeValues as $attrValue) {
+                                    if ($attrValue->attribute && (strtolower($attrValue->attribute->name) === 'màu' || strtolower($attrValue->attribute->name) === 'color')) {
+                                        $colorName = $attrValue->value;
+                                        break; // Tìm thấy màu, thoát vòng lặp
+                                    }
+                                }
+                            }
+                        @endphp
+                        {{ $colorName }}
+                    @endif
+                </td>
+                <td>
+                    {{-- Lấy tên size --}}
+                    @if ($item instanceof \App\Models\ArchivedOrderItem)
+                        {{ $item->size_name ?? '---' }}
+                    @else
+                        @php
+                            $sizeName = '---';
+                            if ($item->productVariant && $item->productVariant->attributeValues) {
+                                foreach ($item->productVariant->attributeValues as $attrValue) {
+                                    if ($attrValue->attribute && strtolower($attrValue->attribute->name) === 'size') {
+                                        $sizeName = $attrValue->value;
+                                        break; // Tìm thấy size, thoát vòng lặp
+                                    }
+                                }
+                            }
+                        @endphp
+                        {{ $sizeName }}
+                    @endif
+                </td>
+                <td>{{ $item->quantity }}</td>
+                <td>{{ number_format($item->final_price ?? $item->price, 0, ',', '.') }}₫</td>
+                <td>{{ number_format($item->total_price, 0, ',', '.') }}₫</td>
+            </tr>
+            @php
+                $totalItemsPrice += $item->total_price;
+            @endphp
+        @endforeach
+        <tr>
+            <td colspan="6" class="text-end"><strong>Tổng tiền sản phẩm:</strong></td>
+            <td><strong>{{ number_format($totalItemsPrice, 0, ',', '.') }}₫</strong></td>
+        </tr>
+        <tr>
+            <td colspan="6" class="text-end"><strong>Phí vận chuyển:</strong></td>
+            <td><strong>{{ number_format(optional($order->shippingMethod)->fee ?? 0, 0, ',', '.') }}₫</strong></td>
+        </tr>
+        @if (($order->discount_amount ?? 0) > 0)
+            <tr>
+                <td colspan="6" class="text-end"><strong>Giảm giá:</strong></td>
+                <td><strong>- {{ number_format($order->discount_amount, 0, ',', '.') }}₫</strong></td>
+            </tr>
+        @endif
+        <tr>
+            <td colspan="6" class="text-end"><strong>Tổng thanh toán:</strong></td>
+            <td><strong>{{ number_format($order->final_amount, 0, ',', '.') }}₫</strong></td>
+        </tr>
+    </tbody>
+</table>
             </div>
 
             <div class="tile-footer">

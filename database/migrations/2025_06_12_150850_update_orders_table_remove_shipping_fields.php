@@ -22,7 +22,7 @@ return new class extends Migration
         // $table->foreign('shipping_method_id')->references('id')->on('shipping_methods')->nullOnDelete();
 
         //---------------------------------ta sửa tạm thịnh nhé có j lỗi bảo ta-----------------
-
+$table->string('order_code')->unique()->nullable()->after('id'); // Tạm thời nullable 
           // Thêm cột shipping_method_id và cho phép null
             $table->unsignedBigInteger('shipping_method_id')->nullable()->after('payment_method');
 
