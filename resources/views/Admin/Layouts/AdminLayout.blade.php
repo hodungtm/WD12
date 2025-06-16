@@ -71,6 +71,7 @@
           <span class="app-menu__label">Quản lý danh mục</span>
         </a>
       </li>
+      </li>
       <li><a class="app-menu__item" href="{{ route('Admin.reviews.index') }}"><i
             class='app-menu__icon bx bx-task'></i><span class="app-menu__label">Quản lý đánh giá</span></a></li>
       <li><a class="app-menu__item" href="{{ route('Admin.comments.index') }}"><i
@@ -92,8 +93,8 @@
       </li>
       <li><a class="app-menu__item" href="{{ route('admin.orders.index') }}"><i
             class='app-menu__icon bx bx-task'></i><span class="app-menu__label">Quản lý đơn hàng</span></a></li>
-      <li><a class="app-menu__item" href="{{ route('admin.admins.index') }}"><i
-            class='app-menu__icon bx bx-user'></i><span class="app-menu__label">Quản lý tài khoản admin
+      <li><a class="app-menu__item" href="{{ route('admin.users.index') }}"><i
+            class='app-menu__icon bx bx-user'></i><span class="app-menu__label">Quản lý tài khoản
           </span></a></li>
       <li>
         <a class="app-menu__item" href="{{ route('admin.banners.index') }}">
@@ -101,12 +102,12 @@
           <span class="app-menu__label">Quản lý banner</span>
         </a>
       </li>
-     <li>
-  <a class="app-menu__item" href="{{ route('admin.dashboard') }}">
-    <i class='app-menu__icon bx bx-bar-chart-alt-2'></i>
-    <span class="app-menu__label">Trang Thống Kê</span>
-  </a>
-</li>
+      <li>
+        <a class="app-menu__item" href="{{ route('admin.dashboard') }}">
+          <i class='app-menu__icon bx bx-bar-chart-alt-2'></i>
+          <span class="app-menu__label">Trang Thống Kê</span>
+        </a>
+      </li>
 
   </aside>
 

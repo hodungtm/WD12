@@ -1,5 +1,12 @@
 <?php
 
+// use App\Http\Controllers\Admin\BannerController;
+// use App\Http\Controllers\Admin\DiscountController;
+// use App\Http\Controllers\Admin\OrderController;
+// use App\Http\Controllers\Admin\UserController;
+// use App\Http\Controllers\Admin\WishlistController;
+// use App\Http\Controllers\AdminController;
+// use App\Http\Controllers\AuditLogController;
 use App\Exports\DiscountsExport;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
@@ -18,6 +25,7 @@ use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DiscountController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\WishlistController;
 use App\Http\Controllers\AttributeController;
 use App\Http\Controllers\AttributeValueController;
@@ -116,20 +124,34 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('banners', BannerController::class);
 });
 // Quản lý tài khoản Admin và Role
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::resource('admins', AdminController::class)->except(['show']);
-    Route::resource('roles', RoleController::class)->except(['show']);
-});
+// Route::prefix('admin')->name('admin.')->group(function () {
+//     Route::resource('admins', AdminController::class);
+//     // Route::resource('roles', RoleController::class);
+// });
 Route::get('admin/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit_logs.index');
+// Quản lý tài khoản
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('users', AdminUserController::class);
+    Route::patch('users/{user}/toggle-active', [AdminUserController::class, 'toggleActive'])->name('users.toggle-active');
+});
 
-
-Route::middleware(['auth','admin'])->group(function () {
+// Middleware cho trang overview người dùng
+Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/user/overview', [UserController::class, 'overview'])->name('user.overview');
 });
 
+// Auth routes
+Auth::routes();
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
 Auth::routes();
 
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Auth::routes();
 
