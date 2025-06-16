@@ -1,7 +1,12 @@
 @extends('Client.Layouts.ClientLayout')
-@section('main')
+@section('main') 
 <body>
 <<<<<<< HEAD
+    
+   
+=======
+<<<<<<< HEAD
+>>>>>>> main
 
 
 <!-- offcanvas-overlay start -->

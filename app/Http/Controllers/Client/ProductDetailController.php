@@ -7,13 +7,14 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Review;
 use App\Models\Comment;
+use App\Models\Products;
 use Illuminate\Http\Request;
 
 class ProductDetailController extends Controller
 {
     public function show($id)
     {
-        $product = Product::with('variants')->findOrFail($id);
+        $product = Products::with('images', 'variants.size', 'variants.color')->findOrFail($id);
         $reviews = Review::where('product_id', $id)->latest()->get();
         $comments = Comment::where('product_id', $product->id)
             ->whereNull('deleted_at')
@@ -23,7 +24,8 @@ class ProductDetailController extends Controller
         $productVariants = ProductVariant::where('product_id', $product->id)
             ->with(['size', 'color']) // assuming you've defined relationships
             ->get();
-        return view('Client.Product.productDetail', compact('product', 'reviews', 'comments'));
+return view('Client.Product.productDetail', compact('product', 'reviews', 'comments', 'productVariants'));
+
     }
 
     public function submitReview(Request $request, $id)

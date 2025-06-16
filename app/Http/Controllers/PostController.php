@@ -54,13 +54,7 @@ class PostController extends Controller
 
    public function store(Request $request)
 {
-    // Validate dữ liệu đầu vào
-    // $data = $request->validate([
-    //     'title'   => 'required|max:255',
-    //     'content' => 'required',
-    //     'image'   => 'nullable|image|max:2048',
-    //     'status'  => 'required|in:draft,published,hidden',
-    // ]);
+  
    $data = $request->validate([
         'title'   => 'required|max:255',
         'status'  => 'required|in:published,draft,hidden',
