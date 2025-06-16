@@ -12,8 +12,8 @@ return new class extends Migration
   public function up(): void
 {
     Schema::table('product_variants', function (Blueprint $table) {
-        $table->foreignId('color_id')->nullable()->constrained('colors')->nullOnDelete();
-        $table->foreignId('size_id')->nullable()->constrained('sizes')->nullOnDelete();
+        // $table->foreignId('color_id')->nullable()->constrained('colors')->nullOnDelete();
+        // $table->foreignId('size_id')->nullable()->constrained('sizes')->nullOnDelete();
     });
 }
     /**

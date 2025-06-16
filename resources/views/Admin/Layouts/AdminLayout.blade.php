@@ -59,11 +59,18 @@
     </div>
     <hr>
     <ul class="app-menu">
-
-      <a class="app-menu__item" href="{{ route('Admin.categories.index') }}">
-        <i class='app-menu__icon bx bx-purchase-tag-alt'></i>
-        <span class="app-menu__label">Quản lý danh mục</span>
-      </a>
+      <li>
+        <a class="app-menu__item" href="{{ route('admin.dashboard') }}">
+          <i class='app-menu__icon bx bx-purchase-tag-alt'></i>
+          <span class="app-menu__label">Thống kê</span>
+        </a>
+      </li>
+      <li>
+        <a class="app-menu__item" href="{{ route('Admin.categories.index') }}">
+          <i class='app-menu__icon bx bx-purchase-tag-alt'></i>
+          <span class="app-menu__label">Quản lý danh mục</span>
+        </a>
+      </li>
       </li>
       <li><a class="app-menu__item" href="{{ route('Admin.reviews.index') }}"><i
             class='app-menu__icon bx bx-task'></i><span class="app-menu__label">Quản lý đánh giá</span></a></li>
@@ -87,12 +94,18 @@
       <li><a class="app-menu__item" href="{{ route('admin.orders.index') }}"><i
             class='app-menu__icon bx bx-task'></i><span class="app-menu__label">Quản lý đơn hàng</span></a></li>
       <li><a class="app-menu__item" href="{{ route('admin.users.index') }}"><i
-            class='app-menu__icon bx bx-user'></i><span class="app-menu__label">Quản lý tài khoản 
+            class='app-menu__icon bx bx-user'></i><span class="app-menu__label">Quản lý tài khoản
           </span></a></li>
       <li>
         <a class="app-menu__item" href="{{ route('admin.banners.index') }}">
           <i class='app-menu__icon bx bx-image'></i>
           <span class="app-menu__label">Quản lý banner</span>
+        </a>
+      </li>
+      <li>
+        <a class="app-menu__item" href="{{ route('admin.dashboard') }}">
+          <i class='app-menu__icon bx bx-bar-chart-alt-2'></i>
+          <span class="app-menu__label">Trang Thống Kê</span>
         </a>
       </li>
 
