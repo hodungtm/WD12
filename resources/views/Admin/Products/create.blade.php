@@ -6,14 +6,12 @@
 <form action="{{ route('admin.product.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
 
-    <!-- Tên sản phẩm -->
     <div class="mb-3">
         <label for="name" class="form-label">Tên sản phẩm</label>
         <input id="name" name="name" class="form-control" value="{{ old('name') }}">
         @error('name') <span class="text-danger">{{ $message }}</span> @enderror
     </div>
 
-    <!-- Thương hiệu -->
     <div class="mb-3">
         <label for="brand_id" class="form-label">Thương hiệu</label>
         <select id="brand_id" name="brand_id" class="form-select">
@@ -27,49 +25,54 @@
         @error('brand_id') <span class="text-danger">{{ $message }}</span> @enderror
     </div>
 
-    <!-- Giá -->
+    <div class="mb-3">
+        <label for="category_id" class="form-label">Danh mục</label>
+        <select id="category_id" name="category_id" class="form-select">
+            <option value="">-- Chọn --</option>
+            @foreach ($categories as $category)
+            <option value="{{ $category->id }}" {{ old('category_id')==$category->id ? 'selected' : '' }}>
+                {{ $category->ten_danh_muc }}
+            </option>
+            @endforeach
+        </select>
+        @error('category_id') <span class="text-danger">{{ $message }}</span> @enderror
+    </div>
+
     <div class="mb-3">
         <label for="price" class="form-label">Giá</label>
         <input id="price" name="price" class="form-control" value="{{ old('price') }}">
         @error('price') <span class="text-danger">{{ $message }}</span> @enderror
     </div>
 
-    <!-- Số lượng -->
     <div class="mb-3">
         <label for="quantity" class="form-label">Số lượng</label>
         <input id="quantity" name="quantity" class="form-control" value="{{ old('quantity') }}">
         @error('quantity') <span class="text-danger">{{ $message }}</span> @enderror
     </div>
 
-    <!-- Mô tả -->
     <div class="mb-3">
         <label for="description" class="form-label">Mô tả</label>
         <textarea id="description" name="description" class="form-control" rows="5">{{ old('description') }}</textarea>
     </div>
 
-    <!-- Ảnh sản phẩm -->
     <div class="mb-3">
         <label for="image" class="form-label">Ảnh sản phẩm</label>
         <input id="image" name="image" class="form-control" type="file">
         @error('image') <span class="text-danger">{{ $message }}</span> @enderror
     </div>
 
-    <!-- Giao diện quản lý thuộc tính và biến thể -->
     <div class="card p-3 mt-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <!-- Nút quản lý thuộc tính -->
             <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#manageAttributeModal">
                 <i class="bi bi-sliders"></i> Quản lý thuộc tính
             </button>
 
-            <!-- Nút gán thuộc tính cho sản phẩm -->
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productAttributeModal"
                 onclick="loadAttributes()">
                 <i class="bi bi-gear"></i> Thuộc tính cho sản phẩm này
             </button>
         </div>
 
-        <!-- Bảng biến thể -->
         <table class="table table-bordered">
             <thead class="table-light">
                 <tr>
@@ -80,7 +83,6 @@
                 </tr>
             </thead>
             <tbody id="variant-table-body">
-                <!-- Mặc định ban đầu -->
                 <tr>
                     <td>0</td>
                     <td>Mặc định
@@ -93,14 +95,9 @@
         </table>
     </div>
 
-
-
-
-    <!-- Nút submit form -->
     <button class="btn btn-primary mt-4">Thêm sản phẩm</button>
 </form>
 
-<!-- Modal: Gán thuộc tính cho sản phẩm -->
 <div class="modal fade" id="productAttributeModal" tabindex="-1" aria-labelledby="productAttributeModalLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -111,19 +108,15 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <!-- Danh sách thuộc tính -->
                     <div class="col-md-6 border-end">
                         <h6 class="fw-bold">Danh sách thuộc tính</h6>
                         <div id="attribute-list">
-                            <!-- Nội dung sẽ đổ từ JS -->
-                        </div>
+                            </div>
                     </div>
-                    <!-- Danh sách đã chọn -->
                     <div class="col-md-6">
                         <h6 class="fw-bold">Danh sách thuộc tính đã chọn</h6>
                         <div id="selected-attributes">
-                            <!-- Nội dung sẽ đổ từ JS -->
-                        </div>
+                            </div>
                     </div>
                 </div>
             </div>
@@ -134,7 +127,6 @@
     </div>
 </div>
 
-<!-- Modal chỉnh sửa phiên bản sản phẩm -->
 <div class="modal fade" id="editVariantModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -185,9 +177,6 @@
     </div>
 </div>
 
-
-
-
 <script>
     const attributesFromServer = @json($attributes);
     const selectedAttributes = {};
@@ -201,9 +190,8 @@
             const groupDiv = document.createElement('div');
             groupDiv.classList.add('mb-3', 'border', 'p-2');
 
-           const headerDiv = document.createElement('div');
+            const headerDiv = document.createElement('div');
             headerDiv.classList.add('d-flex', 'justify-content-between', 'align-items-center');
-
 
             const title = document.createElement('div');
             title.classList.add('fw-bold');
@@ -418,7 +406,7 @@ function handleSave() {
 }
 
 
- document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
         const form = document.getElementById('edit-variant-form');
 
         form.addEventListener('submit', function (e) {
@@ -480,14 +468,10 @@ function handleSave() {
             <input type="hidden" name="variants[${index}][attribute_text]" value="${attributeText}">
         </td>
         <td>
-            <!-- các nút chỉnh sửa nếu cần -->
-        </td>
+            </td>
     `;
     document.getElementById('variant-table-body').appendChild(tr);
 }
-
-
 </script>
-
 
 @endsection
