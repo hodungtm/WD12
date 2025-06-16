@@ -121,7 +121,7 @@
         </div>
         <!-- end col -->
 
-        <div class="col-xl-7 col-lg-8">
+        {{-- <div class="col-xl-7 col-lg-8">
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card">
@@ -147,6 +147,42 @@
                     </div>
                 </div>
             </div>
+        </div> --}}
+
+        <div class="col-xl-7 col-lg-8">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h1>Slide ở đây</h1>
+                        </div>
+                        <div class="card-body">
+                            <div id="bannerCarousel" class="carousel slide mb-3 " data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    @foreach ($banner->hinhAnhBanner as $key => $hinhAnh)
+                                        <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                                            <img src="{{ Storage::url($hinhAnh->hinh_anh) }}"
+                                                class="d-block w-100 img-fluid" style="height: 300px; object-fit: cover;"
+                                                alt="Banner {{ $banner->id }} Image {{ $key + 1 }}">
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel"
+                                    data-bs-slide="prev" style="background: transparent; border: none; outline: none; box-shadow: none;">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden"></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel"
+                                    data-bs-slide="next" style="background: transparent; border: none; outline: none; box-shadow: none;">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden"></span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -161,7 +197,7 @@
 @endpush
 
 <!-- prismjs plugin -->
-<script src="{{ asset('assets/admin/libs/prismjs/prism.js') }}"></script>
+{{-- <script src="{{ asset('assets/admin/libs/prismjs/prism.js') }}"></script>
 
 <!-- gridjs js -->
 <script src="{{ asset('assets/admin/libs/gridjs/gridjs.umd.js') }}"></script>
@@ -251,4 +287,100 @@
         // Thêm vào form
         document.querySelector('form').appendChild(input);
     }
-</script>
+</script> --}}
+
+@push('scripts')
+    <!-- prismjs plugin -->
+    <script src="{{ asset('assets/admin/libs/prismjs/prism.js') }}"></script>
+
+    <!-- gridjs js -->
+    <script src="{{ asset('assets/admin/libs/gridjs/gridjs.umd.js') }}"></script>
+    <!--  Đây là chỗ hiển thị dữ liệu phân trang -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var rowCount = {{ count($banner->hinhAnhBanner) }};
+
+            // Thêm sự kiện cho nút 'Thêm hàng'
+            document.getElementById('add-row').addEventListener('click', function() {
+                var tableBody = document.getElementById('image-table-body');
+                var newRow = document.createElement('tr');
+
+                newRow.innerHTML = `
+                    <td class="d-flex align-items-center">
+                        <div class="d-flex align-items-center">
+                            <img id="preview_${rowCount}" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrVLGzO55RQXipmjnUPh09YUtP-BW3ZTUeAA&s" width="50px">
+                            <input type="file" id="hinh_anh" name="list_image[id_${rowCount}]" class="form-control mx-2" onchange="previewImage(this, ${rowCount})">
+                                                        <button class="btn btn-light remove-row" onclick="removeRow(this)"><i class="bx bx-trash"></i></button>
+                        </div>
+                    </td>
+                `;
+
+                tableBody.appendChild(newRow);
+                rowCount++;
+            });
+
+
+
+
+        });
+
+        function previewImage(input, rowIndex) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById(`preview_${rowIndex}`).setAttribute('src', e.target.result);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // function previewImageAndAddToSlideshow(input, rowIndex) {
+        //     if (input.files && input.files[0]) {
+        //         const reader = new FileReader();
+        //         reader.onload = function(e) {
+        //             // Cập nhật ảnh xem trước
+        //             document.getElementById(`preview_${rowIndex}`).setAttribute('src', e.target.result);
+
+        //             // Thêm ảnh vào carousel
+        //             var carouselInner = document.getElementById('carouselImages');
+        //             var newCarouselItem = document.createElement('div');
+        //             newCarouselItem.classList.add('carousel-item');
+        //             newCarouselItem.innerHTML = `
+        //             <img src="${e.target.result}" class="d-block w-100 img-fluid" style="height: 300px; object-fit: cover;" alt="Image ${rowIndex + 1}">
+        //         `;
+
+        //             // Nếu là ảnh đầu tiên, đặt class 'active'
+        //             if (carouselInner.children.length === 0) {
+        //                 newCarouselItem.classList.add('active');
+        //             }
+
+        //             // Thêm ảnh vào carousel
+        //             carouselInner.appendChild(newCarouselItem);
+        //         };
+        //         reader.readAsDataURL(input.files[0]);
+        //     }
+        // }
+
+        function removeRow(item) {
+            var row = item.closest('tr');
+            row.remove();
+        }
+
+        function markImageForDelete(button, imageId) {
+        // Xóa hàng hiển thị
+        let row = button.closest('tr');
+        row.remove();
+
+        // Tạo input hidden để Laravel biết xóa ảnh nào
+        let input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'delete_images[]';
+        input.value = imageId;
+
+        // Thêm vào form
+        document.querySelector('form').appendChild(input);
+    }
+    </script>
+@endpush
+

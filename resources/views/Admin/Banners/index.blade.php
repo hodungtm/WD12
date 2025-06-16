@@ -27,11 +27,59 @@
                     </button>
                 </form>
 
+                {{-- <form method="GET" action="" class="d-flex mb-3" style="max-width: 600px;">
+                    <input type="text" name="search" class="form-control me-2" placeholder="Tìm kiếm"
+                        value="{{ request('search') }}" aria-label="Tìm kiếm">
+
+                    <select name="loai_banner" class="form-select me-2">
+                        <option value="">-- Tất cả loại --</option>
+                        <option value="home" {{ request('loai_banner') == 'home' ? 'selected' : '' }}>Trang chủ</option>
+                        <option value="product" {{ request('loai_banner') == 'product' ? 'selected' : '' }}>Sản phẩm
+                        </option>
+                        <option value="about" {{ request('loai_banner') == 'about' ? 'selected' : '' }}>Giới thiệu</option>
+                        <!-- Thêm các loại khác nếu có -->
+                    </select>
+
+                    <button class="btn btn-outline-secondary" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form> --}}
+
+                {{-- <div class="d-flex justify-content-between mb-3 flex-wrap" style="gap: 10px;">
+             
+                    <form method="GET" action="" class="d-flex" style="max-width: 400px;">
+                        <input type="text" name="search" class="form-control me-2" placeholder="Tìm kiếm theo tiêu đề"
+                            value="{{ request('search') }}">
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+
+                
+                    <form method="GET" action="" class="d-flex" style="max-width: 300px;">
+                        <select name="loai_banner" class="form-select me-2" onchange="this.form.submit()">
+                            <option value="">-- Lọc theo loại banner --</option>
+                            <option value="home" {{ request('loai_banner') == 'home' ? 'selected' : '' }}>Trang chủ
+                            </option>
+                            <option value="product" {{ request('loai_banner') == 'product' ? 'selected' : '' }}>Sản phẩm
+                            </option>
+                            <option value="about" {{ request('loai_banner') == 'about' ? 'selected' : '' }}>Giới thiệu
+                            </option>
+                            <!-- Thêm các loại khác nếu có -->
+                        </select>
+                        @if (request('search'))
+                            <input type="hidden" name="search" value="{{ request('search') }}">
+                        @endif
+                    </form>
+                </div> --}}
+
+
+
                 @if (session('success'))
-    <div id="success-alert" class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
+                    <div id="success-alert" class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
 
 
                 <table class="table table-hover table-bordered align-middle">
@@ -47,7 +95,7 @@
                     </thead>
                     <tbody>
                         @forelse ($banners as $index => $banner)
-                            
+
 
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
@@ -55,8 +103,8 @@
                                 <td>
                                     @if ($banner->hinhAnhBanner && $banner->hinhAnhBanner->count())
                                         @foreach ($banner->hinhAnhBanner as $img)
-                                            <img src="{{ asset('storage/' . $img->hinh_anh) }}" alt="ảnh banner" width="100px"
-                                                class="mb-1">
+                                            <img src="{{ asset('storage/' . $img->hinh_anh) }}" alt="ảnh banner"
+                                                width="100px" class="mb-1">
                                         @endforeach
                                     @else
                                         <span class="text-muted">Chưa có ảnh</span>
@@ -69,13 +117,16 @@
                                     </span>
                                 </td>
                                 <td class="text-nowrap">
-                                    <a class="btn btn-outline-info btn-sm" title="Xem" href="{{ route('admin.banners.show', $banner->id) }}">
+                                    <a class="btn btn-outline-info btn-sm" title="Xem"
+                                        href="{{ route('admin.banners.show', $banner->id) }}">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a class="btn btn-outline-primary btn-sm" title="Sửa" href="{{ route('admin.banners.edit', $banner->id) }}">
+                                    <a class="btn btn-outline-primary btn-sm" title="Sửa"
+                                        href="{{ route('admin.banners.edit', $banner->id) }}">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <form action="{{ route('admin.banners.destroy', $banner->id) }}" method="POST" style="display:inline-block;"
+                                    <form action="{{ route('admin.banners.destroy', $banner->id) }}" method="POST"
+                                        style="display:inline-block;"
                                         onsubmit="return confirm('Bạn có chắc muốn xóa banner này không?');">
                                         @csrf
                                         @method('DELETE')
@@ -92,15 +143,15 @@
                         @endforelse
                     </tbody>
                 </table>
-                 {{ $banners->links() }}
+                {{ $banners->links() }}
                 {{-- Nếu sau này dùng phân trang --}}
-                  
+
             </div>
         </div>
     </div>
 @endsection
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const alertBox = document.getElementById('success-alert');
         if (alertBox) {
             setTimeout(() => {
@@ -112,4 +163,3 @@
         }
     });
 </script>
-

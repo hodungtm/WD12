@@ -12,26 +12,31 @@ use Illuminate\Support\Facades\Storage;
 
 class BannerController extends Controller
 {
-    public function index(Request $request)
-    {
-        // Lấy giá trị từ ô tìm kiếm nếu có
-        $search = $request->input('search');
+   public function index(Request $request)
+{
+    // Lấy giá trị từ ô tìm kiếm và lọc loại banner nếu có
+    $search = $request->input('search');
+    $loaiBanner = $request->input('loai_banner');
 
-        // Query banner cùng mối quan hệ hình ảnh
-        $query = Banner::with('hinhAnhBanner');
+    // Query banner cùng mối quan hệ hình ảnh
+    $query = Banner::with('hinhAnhBanner');
 
-        // Nếu có tìm kiếm thì lọc theo tiêu đề
-        if (!empty($search)) {
-            $query->where('tieu_de', 'like', '%' . $search . '%');
-        }
-
-        // Sắp xếp mới nhất và phân trang
-        $banners = $query->orderBy('id', 'desc')->paginate(5);
-
-        // Trả về view và truyền dữ liệu
-
-        return view('admin.banners.index', compact('banners'));
+    // Nếu có tìm kiếm thì lọc theo tiêu đề
+    if (!empty($search)) {
+        $query->where('tieu_de', 'like', '%' . $search . '%');
     }
+
+    // Nếu có lọc theo loại banner thì thêm điều kiện
+    if (!empty($loaiBanner)) {
+        $query->where('loai_banner', $loaiBanner);
+    }
+
+    // Sắp xếp mới nhất và phân trang, giữ lại query string khi chuyển trang
+    $banners = $query->orderBy('id', 'desc')->paginate(5)->withQueryString();
+
+    return view('admin.banners.index', compact('banners'));
+}
+
 
     public function create()
     {
