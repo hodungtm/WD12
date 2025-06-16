@@ -29,6 +29,8 @@ Route::get('/test1', function () {
 Route::prefix('admin')->group(function () {
     Route::resource('orders', OrderController::class)->names('admin.orders');
 });
+Route::post('/admin/orders/{order}/complete', [App\Http\Controllers\Admin\OrderController::class, 'completeOrder'])->name('admin.orders.complete');
+
 Route::prefix('admin')->name('Admin.')->group(function () {
 
     // ===== CATEGORIES =====
