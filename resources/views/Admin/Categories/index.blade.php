@@ -20,7 +20,9 @@
               <a href="{{ route('Admin.categories.trash') }}" class="btn btn-warning">
                 <i class="fas fa-trash-restore"></i> Thùng rác
               </a>
+              
             </div>
+            
           </div>
           <form method="GET" action="{{ route('Admin.categories.index') }}" class="row g-3 align-items-center mb-3">
             <div class="col-auto">

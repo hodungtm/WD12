@@ -1,27 +1,45 @@
 <?php
 
-use App\Http\Controllers\Admin\BannerController;
-use App\Http\Controllers\Admin\DiscountController;
-use App\Http\Controllers\Admin\OrderController;
-use App\Http\Controllers\Admin\WishlistController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AuditLogController;
+use App\Exports\DiscountsExport;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\DiscountsExport;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\RoleController;
+use App\Http\Controllers\Admin\DiscountController;
+use App\Http\Controllers\Admin\WishlistController;
+use App\Http\Controllers\Client\ProductDetailController;
+
+
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+});
+
 
 Route::get('/', function () {
     return view('welcome');
 });
 Route::get('/test', function () {
-    return view('Admin/test');
+    return view('client/index');
+});
+Route::get('/test1', function () {
+    return view('Client/Product/productDetail');
+});
+Route::prefix('client')->name('client.')->group(function () {
+    Route::get('/san-pham/{id}', [ProductDetailController::class, 'show'])->name('product.detail');
+    Route::post('/san-pham/{id}/danh-gia', [ProductDetailController::class, 'submitReview'])->name('product.review');
+    Route::post('/san-pham/{id}/binh-luan', [ProductDetailController::class, 'submitComment'])->name('product.comment');
 });
 Route::prefix('admin')->group(function () {
     Route::resource('orders', OrderController::class)->names('admin.orders');
@@ -45,8 +63,7 @@ Route::prefix('admin')->name('Admin.')->group(function () {
     Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
     Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
-    Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');
-    Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.delete');
+    Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.delete');
     Route::get('admin/products/{id}', [ProductController::class, 'show'])->name('products.show');
 
     // ===== REVIEWS =====
@@ -80,10 +97,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('discounts/{id}/restore', [DiscountController::class, 'restore'])->name('discounts.restore');
     Route::delete('discounts/delete-all', [DiscountController::class, 'deleteAll'])->name('discounts.deleteAll');
     Route::delete('discounts/{id}/force-delete', [DiscountController::class, 'forceDelete'])->name('discounts.forceDelete');
-});
-
-
-Route::post('admin/discounts/import-excel', [DiscountController::class, 'importExcel'])->name('discounts.importExcel');
+    Route::get('/admin/discounts/{id}', [DiscountController::class, 'show'])->name('discounts.show');
+});Route::post('admin/discounts/import-excel', [DiscountController::class, 'importExcel'])->name('discounts.importExcel');
 
 //// ADMIM POST----------------------------------------------------////////////
 Route::prefix('admin')->group(function () {
@@ -101,3 +116,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('roles', RoleController::class)->except(['show']);
 });
 Route::get('admin/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit_logs.index');
+
+
+Route::middleware(['auth','admin'])->group(function () {
+    Route::get('/user/overview', [UserController::class, 'overview'])->name('user.overview');
+});
+
+Auth::routes();
+
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

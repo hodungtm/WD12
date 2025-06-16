@@ -7,16 +7,20 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Main CSS-->
-<link rel="stylesheet" type="text/css" href="{{ asset('css/main.css') }}">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
-<!-- or -->
-<link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
-<!-- Font-icon css-->
-<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{{ asset('css/main.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+  <!-- or -->
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+  <!-- Font-icon css-->
+  <link rel="stylesheet" type="text/css"
+    href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Bootstrap JS (v5) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </head>
 
 <body onload="time()" class="app sidebar-mini rtl">
@@ -41,12 +45,13 @@
 
 
 
-{{------------------------ AE GẮN LINK CHUYỂN TRANG Ở DƯỚI ĐÂY NHÉ -------------------------------}}
+  {{------------------------ AE GẮN LINK CHUYỂN TRANG Ở DƯỚI ĐÂY NHÉ -------------------------------}}
   <!-- Sidebar menu-->
   <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
   <aside class="app-sidebar">
-    <div class="app-sidebar__user"><img class="app-sidebar__user-avatar" src="https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482621VPj/anh-mo-ta.png" width="50px"
-        alt="User Image">
+    <div class="app-sidebar__user"><img class="app-sidebar__user-avatar"
+        src="https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482621VPj/anh-mo-ta.png"
+        width="50px" alt="User Image">
       <div>
         <p class="app-sidebar__user-name"><b>Sudes Sport</b></p>
         <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
@@ -54,7 +59,13 @@
     </div>
     <hr>
     <ul class="app-menu">
-     
+      <li>
+        <a class="app-menu__item" href="{{ route('admin.dashboard') }}">
+          <i class='app-menu__icon bx bx-purchase-tag-alt'></i>
+          <span class="app-menu__label">Thống kê</span>
+        </a>
+      </li>
+      <li>
         <a class="app-menu__item" href="{{ route('Admin.categories.index') }}">
           <i class='app-menu__icon bx bx-purchase-tag-alt'></i>
           <span class="app-menu__label">Quản lý danh mục</span>
@@ -62,43 +73,49 @@
       </li>
       <li><a class="app-menu__item" href="{{ route('Admin.reviews.index') }}"><i
             class='app-menu__icon bx bx-task'></i><span class="app-menu__label">Quản lý đánh giá</span></a></li>
-      <li><a class="app-menu__item" href="{{ route('Admin.comments.index') }}"><i class='app-menu__icon bx bx-user-voice'></i><span
-            class="app-menu__label">Quản lý bình luận</span></a></li>
+      <li><a class="app-menu__item" href="{{ route('Admin.comments.index') }}"><i
+            class='app-menu__icon bx bx-user-voice'></i><span class="app-menu__label">Quản lý bình luận</span></a></li>
       <li><a class="app-menu__item" href="{{ route('posts.index') }}"><i class='app-menu__icon bx bx-edit'></i><span
             class="app-menu__label">Quản lý Bài Viết</span></a></li>
       <li><a class="app-menu__item " href="table-data-table.html"><i class='app-menu__icon bx bx-id-card'></i> <span
             class="app-menu__label">Quản lý nhân viên</span></a></li>
       <li>
-    <a class="app-menu__item" href="{{ route('admin.discounts.index') }}">
-        <i class='app-menu__icon bx bx-purchase-tag-alt'></i>
-        <span class="app-menu__label">Quản lý Mã Giảm Giá</span>
-    </a>
-        </li>
+        <a class="app-menu__item" href="{{ route('admin.discounts.index') }}">
+          <i class='app-menu__icon bx bx-purchase-tag-alt'></i>
+          <span class="app-menu__label">Quản lý Mã Giảm Giá</span>
+        </a>
+      </li>
       <li><a class="app-menu__item" href="#"><i class='app-menu__icon bx bx-user-voice'></i><span
             class="app-menu__label">Quản lý khách hàng</span></a></li>
       <li><a class="app-menu__item" href="{{ route("Admin.products.index") }}"><i
             class='app-menu__icon bx bx-purchase-tag-alt'></i><span class="app-menu__label">Quản lý sản phẩm</span></a>
       </li>
-    <li><a class="app-menu__item" href="{{ route('admin.orders.index') }}"><i class='app-menu__icon bx bx-task'></i><span
-            class="app-menu__label">Quản lý đơn hàng</span></a></li>
-      <li><a class="app-menu__item" href="{{ route('admin.admins.index') }}"><i class='app-menu__icon bx bx-user'></i><span
-            class="app-menu__label">Quản lý tài khoản admin
+      <li><a class="app-menu__item" href="{{ route('admin.orders.index') }}"><i
+            class='app-menu__icon bx bx-task'></i><span class="app-menu__label">Quản lý đơn hàng</span></a></li>
+      <li><a class="app-menu__item" href="{{ route('admin.admins.index') }}"><i
+            class='app-menu__icon bx bx-user'></i><span class="app-menu__label">Quản lý tài khoản admin
           </span></a></li>
       <li>
         <a class="app-menu__item" href="{{ route('admin.banners.index') }}">
           <i class='app-menu__icon bx bx-image'></i>
-            <span class="app-menu__label">Quản lý banner</span>
+          <span class="app-menu__label">Quản lý banner</span>
         </a>
       </li>
-    
+     <li>
+  <a class="app-menu__item" href="{{ route('admin.dashboard') }}">
+    <i class='app-menu__icon bx bx-bar-chart-alt-2'></i>
+    <span class="app-menu__label">Trang Thống Kê</span>
+  </a>
+</li>
+
   </aside>
 
-{{-- -----------------------------------------------END ----------------------------------}}
+  {{-- -----------------------------------------------END ----------------------------------}}
 
 
 
   <main class="app-content">
-      @yield('main')
+    @yield('main')
 
   </main>
 
@@ -110,9 +127,8 @@
 <script src="{{ asset('js/popper.min.js') }}"></script>
 <script src="https://unpkg.com/boxicons@latest/dist/boxicons.js"></script>
 <!--===============================================================================================-->
-{{-- <script src="{{ asset('js/bootstrap.min.js') }}"></script> --}}
+<script src="{{ asset('js/bootstrap.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 <!--===============================================================================================-->
 <script src="{{ asset('js/main.js') }}"></script>
 <!--===============================================================================================-->
@@ -195,7 +211,29 @@
         return i;
       }
     }
+
   </script>@yield('scripts')
+
+  @section('scripts')
+    <script>
+    function toggleDiscountInput() {
+      const selected = document.querySelector('input[name="discount_type"]:checked')?.value;
+      document.getElementById('amount_input').style.display = selected === 'amount' ? 'block' : 'none';
+      document.getElementById('percent_input').style.display = selected === 'percent' ? 'block' : 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      toggleDiscountInput(); // Khi load trang
+      document.querySelectorAll('input[name="discount_type"]').forEach(function (input) {
+      input.addEventListener('change', toggleDiscountInput);
+      });
+    });
+    </script>
+  @endsection
+
+
+
 </body>
 
 </html>
+@stack('scripts')

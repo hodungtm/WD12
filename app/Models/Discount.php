@@ -14,7 +14,7 @@ class Discount extends Model
 
     protected $fillable = [
         'code', 'type', 'description', 'discount_amount', 'discount_percent',
-        'start_date', 'end_date', 'max_usage', 'min_order_amount'
+        'start_date', 'end_date', 'max_usage', 'min_order_amount','max_discount_amount'
     ];
 
     public function usages()

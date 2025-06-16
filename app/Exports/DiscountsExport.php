@@ -10,21 +10,35 @@ class DiscountsExport implements FromCollection, WithHeadings
 {
     public function collection()
     {
-        return Discount::select('id', 'code', 'description', 'discount_amount', 'discount_percent', 'start_date', 'end_date', 'max_usage', 'min_order_amount')->get();
+        return Discount::select(
+            'id',
+            'code',
+            'description',
+            'type',
+            'discount_amount',
+            'discount_percent',
+            'max_discount_amount',
+            'min_order_amount',
+            'max_usage',
+            'start_date',
+            'end_date'
+        )->get();
     }
 
     public function headings(): array
     {
         return [
             'ID',
-            'Code',
-            'Description',
-            'Discount Amount',
-            'Discount Percent',
-            'Start Date',
-            'End Date',
-            'Max Usage',
-            'Min Order Amount',
+            'Mã giảm giá',
+            'Mô tả',
+            'Loại mã',
+            'Giảm theo tiền (VNĐ)',
+            'Giảm theo %',
+            'Giá trị giảm tối đa (VNĐ)',
+            'Giá trị đơn tối thiểu (VNĐ)',
+            'Số lượt dùng tối đa',
+            'Ngày bắt đầu',
+            'Ngày kết thúc',
         ];
     }
 }
