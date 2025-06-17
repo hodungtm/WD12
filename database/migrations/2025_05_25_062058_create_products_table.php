@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->integer('price'); // Giá sản phẩm
-            $table->integer('quantity')->default(0);
             $table->string('image')->nullable();
             $table->foreignId('brand_id')->constrained()->onDelete('cascade'); // Thương hiệu
             $table->timestamps();

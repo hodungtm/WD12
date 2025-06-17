@@ -22,4 +22,14 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class);
     }
+     public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    // Mối quan hệ với Bình luận (nếu có riêng)
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }
