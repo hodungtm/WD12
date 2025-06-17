@@ -8,7 +8,7 @@
                         <h4>Chỉnh sửa sản phẩm</h4>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('admin.product.update', $product->id) }}" method="POST" enctype="multipart/form-data">
+                        <form id="product-form" action="{{ route('admin.product.update', $product->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
 
@@ -41,7 +41,7 @@
                                     <option value="">Chọn danh mục</option>
                                     @foreach ($categories as $category)
                                         <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
-                                            {{ $category->name }}
+                                            {{ $category->ten_danh_muc }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -84,7 +84,7 @@
                             {{-- Phần quản lý biến thể --}}
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5>Biến thể sản phẩm</h5>
-                                <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#productAttributeModal">
+                                <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#productAttributeModal" onclick="loadAttributes()">
                                     <i class="bi bi-gear"></i> Quản lý thuộc tính
                                 </button>
                             </div>
@@ -101,7 +101,8 @@
                                         </tr>
                                     </thead>
                                     <tbody id="variant-table-body">
-                                        {{-- Các hàng biến thể sẽ được JavaScript chèn vào đây --}}
+                                        {{-- Các hàng biến thể sẽ được JavaScript chèn/cập nhật vào đây --}}
+                                        {{-- Dữ liệu ban đầu sẽ được JS populate --}}
                                     </tbody>
                                 </table>
                             </div>
@@ -117,6 +118,7 @@
         </div>
     </div>
 
+    {{-- Modal quản lý thuộc tính sản phẩm --}}
     <div class="modal fade" id="productAttributeModal" tabindex="-1" aria-labelledby="productAttributeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -148,6 +150,7 @@
         </div>
     </div>
 
+    {{-- Modal chỉnh sửa chi tiết biến thể --}}
     <div class="modal fade" id="editVariantModal" tabindex="-1" aria-labelledby="editVariantModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -155,7 +158,7 @@
                     <h5 class="modal-title" id="editVariantModalLabel">Chỉnh sửa chi tiết biến thể</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="edit-variant-form">
+                <form id="edit-variant-form"> {{-- Không cần data-index ở đây, sẽ được quản lý qua currentEditingIndex --}}
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="edit-variant-sku" class="form-label">SKU</label>
@@ -186,9 +189,15 @@
                         </div>
                         <div class="mb-3">
                             <label for="edit-variant-image" class="form-label">Hình ảnh biến thể (tùy chọn)</label>
-                            <input type="file" class="form-control" id="edit-variant-image" name="image">
+                            <input type="file" class="form-control" id="edit-variant-image" name="image_file_upload">
                             <div class="mt-2">
-                                <img id="edit-variant-image-preview" src="" alt="Variant Image Preview" style="max-width: 100px; border: 1px solid #ddd; padding: 5px; {{ !$product->image ? 'display:none;' : '' }}">
+                                <img id="edit-variant-image-preview" src="" alt="Variant Image Preview" style="max-width: 100px; border: 1px solid #ddd; padding: 5px; display:none;">
+                            </div>
+                            <div id="edit-variant-image-delete-container" class="form-check mt-2" style="display: none;">
+                                <input class="form-check-input" type="checkbox" id="edit-variant-image-delete" name="delete_image">
+                                <label class="form-check-label" for="edit-variant-image-delete">
+                                    Xóa ảnh hiện tại
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -200,497 +209,738 @@
             </div>
         </div>
     </div>
- <script>
-        const attributesFromServer = @json($attributes); // Dữ liệu thuộc tính từ server
-        let selectedAttributes = {}; // Sử dụng let để cho phép gán lại nếu cần
-        let existingVariants = @json($product->variants ?? []); // Truyền các biến thể hiện có từ controller
 
-        let currentEditingIndex = null; // Biến để theo dõi chỉ mục của variant đang chỉnh sửa
+<script>
+    // Dữ liệu thuộc tính từ server (tất cả các thuộc tính và giá trị)
+    const attributesFromServer = @json($attributes);
+    // Dữ liệu biến thể của sản phẩm hiện tại từ server
+    let existingVariants = @json($product->variants->map(function($variant) {
+        $variant->attribute_values = $variant->attributeValues->map(function($av) {
+            return ['id' => $av->id, 'value' => $av->value, 'attribute_id' => $av->attribute_id];
+        })->toArray();
+        return $variant;
+    }));
 
-        // Hàm để điền selectedAttributes từ các biến thể hiện có
-        // Hàm này cần xây dựng selectedAttributes dựa trên tên và giá trị thuộc tính thực tế
-        function populateSelectedAttributesFromVariants() {
-            if (existingVariants.length === 0 || (existingVariants.length === 1 && existingVariants[0].attribute_text === 'Mặc định')) {
-                // Nếu không có biến thể hoặc chỉ có một biến thể mặc định, không có thuộc tính nào được chọn trước
-                selectedAttributes = {};
-                return;
-            }
+    // selectedAttributes sẽ chứa các thuộc tính (ví dụ: Màu, Size) và các giá trị (ví dụ: Đỏ, Xanh; S, M, L) mà người dùng đã chọn
+    // Nó được dùng để tạo ra các tổ hợp (biến thể)
+    let selectedAttributes = {};
 
-            const tempSelectedAttributes = {};
-            existingVariants.forEach(variant => {
-                if (variant.attribute_value_ids && Array.isArray(variant.attribute_value_ids)) {
-                    variant.attribute_value_ids.forEach(valueId => {
-                        // Tìm thuộc tính và giá trị của nó bằng valueId
-                        attributesFromServer.forEach(attr => {
-                            const foundValue = attr.values.find(v => v.id === valueId);
-                            if (foundValue) {
-                                if (!tempSelectedAttributes[attr.name]) {
-                                    tempSelectedAttributes[attr.name] = new Set(); // Sử dụng Set cho các giá trị duy nhất
-                                }
-                                tempSelectedAttributes[attr.name].add(foundValue.value);
-                            }
-                        });
-                    });
-                }
-            });
+    // Biến để theo dõi chỉ mục của variant đang chỉnh sửa trong modal
+    let currentEditingIndex = null;
 
-            // Chuyển đổi Sets trở lại thành Arrays cho selectedAttributes
-            for (const attrName in tempSelectedAttributes) {
-                selectedAttributes[attrName] = Array.from(tempSelectedAttributes[attrName]);
-            }
+    // Map để lưu trữ các File object của ảnh mới được chọn cho từng biến thể (key là index của hàng, value là File object)
+    // Cần thiết vì File object không thể lưu vào hidden input
+    const newVariantImages = new Map();
 
-            renderSelectedAttributes(); // Render ngay sau khi điền
+    // Set để lưu trữ ID của các biến thể đã bị xóa khỏi bảng để gửi lên backend khi submit form chính
+    const variantsToDeleteOnSubmit = new Set();
+
+    // Biến instance của Bootstrap 5 Modals
+    let productAttributeModalInstance;
+    let editVariantModalInstance;
+
+    // --- Hàm khởi tạo Bootstrap Modals và dữ liệu ban đầu ---
+    document.addEventListener('DOMContentLoaded', function () {
+        // Khởi tạo Bootstrap 5 modal instances
+        const productAttributeModalElement = document.getElementById('productAttributeModal');
+        const editVariantModalElement = document.getElementById('editVariantModal');
+
+        if (productAttributeModalElement) {
+            productAttributeModalInstance = new bootstrap.Modal(productAttributeModalElement);
+        }
+        if (editVariantModalElement) {
+            editVariantModalInstance = new bootstrap.Modal(editVariantModalElement);
         }
 
-        // Hàm để tải và hiển thị các thuộc tính có sẵn
-        function loadAttributes() {
-            const container = document.getElementById('attribute-list');
-            container.innerHTML = ''; // Xóa nội dung hiện có
+        // 1. Điền selectedAttributes từ các biến thể hiện có (nếu có)
+        // Điều này đảm bảo khi mở modal quản lý thuộc tính, các lựa chọn trước đó đã được tải
+        populateSelectedAttributesFromVariants();
 
-            attributesFromServer.forEach(attribute => {
-                const groupDiv = document.createElement('div');
-                groupDiv.classList.add('mb-3', 'border', 'p-2');
+        // 2. Render các biến thể hiện có vào bảng chính khi trang tải
+        // handleSave() sẽ dùng selectedAttributes để tạo lại bảng,
+        // đồng thời sẽ ưu tiên dữ liệu từ existingVariants nếu khớp combo
+        handleSave(); // Initial render of variants into the table
 
-                const headerDiv = document.createElement('div');
-                headerDiv.classList.add('d-flex', 'justify-content-between', 'align-items-center');
+        // --- Event Listener cho form chỉnh sửa biến thể trong modal ---
+        const form = document.getElementById('edit-variant-form');
+        form.addEventListener('submit', function (e) {
+            e.preventDefault(); // Ngăn chặn submit form mặc định của modal
+            if (currentEditingIndex === null) return;
 
-                const title = document.createElement('div');
-                title.classList.add('fw-bold');
-                title.textContent = attribute.name;
-
-                const btnGroup = document.createElement('button');
-                btnGroup.classList.add('btn', 'btn-dark', 'btn-sm');
-                btnGroup.innerHTML = 'Chọn tất cả <i class="bi bi-arrow-right"></i>';
-                btnGroup.onclick = () => {
-                    attribute.values.forEach(val => selectAttribute(attribute.name, val.value));
-                };
-
-                headerDiv.appendChild(title);
-                headerDiv.appendChild(btnGroup);
-                groupDiv.appendChild(headerDiv);
-
-                attribute.values.forEach(value => {
-                    const row = document.createElement('div');
-                    row.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-2', 'border-bottom', 'pb-1');
-
-                    const valueText = document.createElement('div');
-                    valueText.textContent = value.value;
-
-                    const btn = document.createElement('button');
-                    btn.classList.add('btn', 'btn-primary', 'btn-sm');
-                    btn.innerHTML = 'Chọn <i class="bi bi-arrow-right"></i>';
-                    btn.onclick = () => selectAttribute(attribute.name, value.value);
-
-                    row.appendChild(valueText);
-                    row.appendChild(btn);
-                    groupDiv.appendChild(row);
-                });
-
-                container.appendChild(groupDiv);
-            });
-        }
-
-        // Hàm để chọn một giá trị thuộc tính
-        function selectAttribute(group, value) {
-            if (!selectedAttributes[group]) selectedAttributes[group] = [];
-            if (!selectedAttributes[group].includes(value)) {
-                selectedAttributes[group].push(value);
-                renderSelectedAttributes();
-            }
-        }
-
-        // Hàm để xóa một giá trị thuộc tính
-        function removeAttribute(group, value) {
-            if (selectedAttributes[group]) {
-                selectedAttributes[group] = selectedAttributes[group].filter(val => val !== value);
-                if (selectedAttributes[group].length === 0) delete selectedAttributes[group];
-                renderSelectedAttributes();
-            }
-        }
-
-        // Hàm để hiển thị các thuộc tính đã chọn
-        function renderSelectedAttributes() {
-            const container = document.getElementById('selected-attributes');
-            container.innerHTML = ''; // Xóa nội dung hiện có
-
-            Object.keys(selectedAttributes).forEach(group => {
-                const groupDiv = document.createElement('div');
-                groupDiv.classList.add('mb-3', 'border', 'p-2');
-
-                const title = document.createElement('div');
-                title.classList.add('fw-bold', 'mb-2');
-                title.textContent = group;
-                groupDiv.appendChild(title);
-
-                selectedAttributes[group].forEach(value => {
-                    const row = document.createElement('div');
-                    row.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-1');
-
-                    const valueText = document.createElement('div');
-                    valueText.textContent = value;
-
-                    const btn = document.createElement('button');
-                    btn.classList.add('btn', 'btn-danger', 'btn-sm');
-                    btn.innerHTML = '<i class="bi bi-trash"></i>';
-                    btn.onclick = () => removeAttribute(group, value);
-
-                    row.appendChild(valueText);
-                    row.appendChild(btn);
-                    groupDiv.appendChild(row);
-                });
-
-                container.appendChild(groupDiv);
-            });
-        }
-
-        // Hàm để tạo các kết hợp (biến thể) từ các thuộc tính đã chọn
-        function generateCombinations(obj) {
-            const keys = Object.keys(obj);
-            if (keys.length === 0) return [];
-
-            const combinations = [];
-
-            function backtrack(index, currentCombo, currentAttrValueIds) {
-                if (index === keys.length) {
-                    combinations.push({
-                        comboText: currentCombo.join(' - '),
-                        attrValueIds: [...currentAttrValueIds] // Đảm bảo đó là một mảng mới
-                    });
-                    return;
-                }
-
-                const key = keys[index];
-                for (const val of obj[key]) {
-                    const correspondingAttrValue = attributesFromServer
-                        .flatMap(attr => attr.values)
-                        .find(v => v.value === val && attributesFromServer.find(a => a.id === v.attribute_id).name === key);
-
-                    if (correspondingAttrValue) {
-                        currentCombo.push(val);
-                        currentAttrValueIds.push(correspondingAttrValue.id);
-                        backtrack(index + 1, currentCombo, currentAttrValueIds);
-                        currentAttrValueIds.pop();
-                        currentCombo.pop();
-                    }
-                }
-            }
-
-            backtrack(0, [], []);
-            return combinations;
-        }
-
-        // Hàm để tìm một biến thể hiện có phù hợp với kết hợp được tạo
-        function findMatchingVariant(generatedVariantCombo) {
-            const generatedAttrValueIds = generatedVariantCombo.attrValueIds.sort((a, b) => a - b).join(',');
-
-            return existingVariants.find(v => {
-                // Đảm bảo v.attribute_value_ids tồn tại và là một mảng
-                const existingAttrValueIds = v.attribute_value_ids && Array.isArray(v.attribute_value_ids) ? v.attribute_value_ids.sort((a, b) => a - b).join(',') : '';
-                return existingAttrValueIds === generatedAttrValueIds;
-            });
-        }
-
-        // Hàm để xử lý lưu biến thể và cập nhật bảng
-        // Hàm này sẽ điền các biến thể vào bảng, sử dụng dữ liệu hiện có nếu có.
-        function handleSave() {
-            const tbody = document.getElementById('variant-table-body');
-            tbody.innerHTML = ''; // Xóa các hàng cũ trước khi thêm hàng mới
-
-            let combinations = [];
-            if (Object.keys(selectedAttributes).length === 0) {
-                // Nếu không có thuộc tính nào được chọn, hãy kiểm tra xem có biến thể mặc định nào không
-                const defaultVariantInExisting = existingVariants.find(v => v.attribute_text === 'Mặc định');
-                if (defaultVariantInExisting) {
-                    // Nếu có biến thể mặc định, chỉ sử dụng nó
-                    combinations.push({
-                        comboText: 'Mặc định',
-                        attrValueIds: [] // Biến thể mặc định không có attribute_value_ids
-                    });
-                } else {
-                    // Nếu không có biến thể mặc định nào trong existingVariants và không có thuộc tính nào được chọn
-                    // Tạo một biến thể mặc định mới
-                    combinations.push({
-                        comboText: 'Mặc định',
-                        attrValueIds: []
-                    });
-                }
-            } else {
-                // Nếu có thuộc tính được chọn, tạo các kết hợp dựa trên đó
-                combinations = generateCombinations(selectedAttributes);
-            }
-
-            // Nếu không có kết hợp nào được tạo (ví dụ, sau khi xóa tất cả thuộc tính)
-            if (combinations.length === 0 && existingVariants.length > 0) {
-                const defaultVariant = existingVariants.find(v => v.attribute_text === 'Mặc định');
-                if (defaultVariant) {
-                    combinations.push({
-                        comboText: 'Mặc định',
-                        attrValueIds: []
-                    });
-                } else {
-                    // Nếu không có mặc định, vẫn tạo một cái mới.
-                    combinations.push({
-                        comboText: 'Mặc định',
-                        attrValueIds: []
-                    });
-                }
-            }
-
-
-            combinations.forEach((comboData, index) => {
-                const tr = document.createElement('tr');
-                tr.dataset.index = index;
-
-                const matchingVariant = findMatchingVariant(comboData);
-
-                const variantId = matchingVariant ? matchingVariant.id : '';
-                const sku = matchingVariant ? matchingVariant.sku : `SKU-${Date.now()}-${index}`; // Fix: Use backticks
-                const quantity = matchingVariant ? matchingVariant.quantity : 0;
-                const price = matchingVariant ? matchingVariant.price : (document.getElementById('price').value || 0);
-                const salePrice = matchingVariant ? (matchingVariant.sale_price || '') : '';
-                const stockStatus = matchingVariant ? matchingVariant.stock_status : 'in_stock';
-                const description = matchingVariant ? (matchingVariant.description || '') : (document.getElementById('description').value || '');
-                const image = matchingVariant ? (matchingVariant.image || '') : ''; // Đường dẫn hình ảnh hiện có
-
-                // Tạo một trường input file ẩn cho mỗi biến thể trong bảng
-                // Điều này cho phép Laravel nhận tệp tải lên cho từng biến thể khi gửi biểu mẫu chính
-                const fileInputId = `variant-image-upload-${index}`; // Fix: Use backticks
-                const fileInputHtml = `<input type="file" name="variants[${index}][image]" class="d-none" id="${fileInputId}">`; // Fix: Use backticks
-
-                tr.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>
-                        ${comboData.comboText}
-                        <input type="hidden" name="variants[${index}][id]" value="${variantId}">
-                        <input type="hidden" name="variants[${index}][attribute_text]" value="${comboData.comboText}">
-                        <input type="hidden" name="variants[${index}][price]" value="${price}">
-                        <input type="hidden" name="variants[${index}][sale_price]" value="${salePrice}">
-                        <input type="hidden" name="variants[${index}][stock_status]" value="${stockStatus}">
-                        <input type="hidden" name="variants[${index}][description]" value="${description}">
-                        <input type="hidden" name="variants[${index}][image_path_only]" value="${image}"> ${fileInputHtml} ${comboData.attrValueIds.map(id => `<input type="hidden" name="variants[${index}][attribute_value_ids][]" value="${id}">`).join('')}
-                    </td>
-                    <td><input type="text" name="variants[${index}][sku]" class="form-control" value="${sku}"></td>
-                    <td><input type="number" name="variants[${index}][quantity]" class="form-control" min="0" value="${quantity}"></td>
-                    <td>
-                        <button type="button" class="btn btn-sm btn-primary" onclick="editVariant(this)" data-index="${index}">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        ${(combinations.length > 1 || (combinations.length === 1 && comboData.comboText !== 'Mặc định')) ? `<button type="button" class="btn btn-sm btn-danger ms-2" onclick="deleteVariantRow(this)"><i class="bi bi-trash"></i></button>` : ''}
-                    </td>
-                `; // Fix: Ensure complete template literal
-                tbody.appendChild(tr);
-            });
-
-            $('#productAttributeModal').modal('hide');
-            console.log('✔️ Các biến thể đã được tạo/cập nhật trong bảng.');
-        }
-
-        // Hàm để chỉnh sửa một biến thể
-        function editVariant(button) {
-            const index = button.dataset.index;
-            currentEditingIndex = parseInt(index);
-
-            const row = document.querySelector(`tr[data-index="${index}"]`); // Fix: Use backticks
+            const row = document.querySelector(`tr[data-index="${currentEditingIndex}"]`);
             if (!row) return;
 
-            // Điền các trường modal
-            document.getElementById('edit-variant-sku').value = row.querySelector(`input[name="variants[${index}][sku]"]`).value; // Fix: Use backticks
-            document.getElementById('edit-variant-quantity').value = row.querySelector(`input[name="variants[${index}][quantity]"]`).value; // Fix: Use backticks
-            document.getElementById('edit-variant-price').value = row.querySelector(`input[name="variants[${index}][price]"]`).value; // Fix: Use backticks
-            document.getElementById('edit-variant-sale_price').value = row.querySelector(`input[name="variants[${index}][sale_price]"]`).value; // Fix: Use backticks
-            document.getElementById('edit-variant-stock_status').value = row.querySelector(`input[name="variants[${index}][stock_status]"]`).value; // Fix: Use backticks
-            document.getElementById('edit-variant-description').value = row.querySelector(`input[name="variants[${index}][description]"]`).value; // Fix: Use backticks
+            // Lấy dữ liệu từ các input trong modal
+            const sku = document.getElementById('edit-variant-sku').value;
+            const quantity = document.getElementById('edit-variant-quantity').value;
+            const price = document.getElementById('edit-variant-price').value;
+            const salePrice = document.getElementById('edit-variant-sale_price').value;
+            const stockStatus = document.getElementById('edit-variant-stock_status').value;
+            const description = document.getElementById('edit-variant-description').value;
+            const newImageFile = document.getElementById('edit-variant-image').files[0]; // Lấy đối tượng File
+            const deleteCurrentImage = document.getElementById('edit-variant-image-delete').checked;
 
-            // Xử lý xem trước hình ảnh biến thể
-            const imagePathOnlyInput = row.querySelector(`input[name="variants[${index}][image_path_only]"]`); // Fix: Use backticks
-            const imagePreview = document.getElementById('edit-variant-image-preview');
-            const imageFileInput = document.getElementById('edit-variant-image'); // Trường input file trong modal
+            // Cập nhật các trường input ẩn trong hàng của bảng chính
+            row.querySelector(`input[name="variants[${currentEditingIndex}][sku]"]`).value = sku;
+            row.querySelector(`input[name="variants[${currentEditingIndex}][quantity]"]`).value = quantity;
+            row.querySelector(`input[name="variants[${currentEditingIndex}][price]"]`).value = price;
+            row.querySelector(`input[name="variants[${currentEditingIndex}][sale_price]"]`).value = salePrice;
+            row.querySelector(`input[name="variants[${currentEditingIndex}][stock_status]"]`).value = stockStatus;
+            row.querySelector(`input[name="variants[${currentEditingIndex}][description]"]`).value = description;
 
-            // Reset the file input in the modal
-            imageFileInput.value = '';
-
-            if (imagePathOnlyInput && imagePathOnlyInput.value && imagePathOnlyInput.value !== 'TEMP_NEW_IMAGE') {
-                imagePreview.src = `/storage/${imagePathOnlyInput.value}`; // Fix: Use backticks
-                imagePreview.style.display = 'block';
-                // Show delete checkbox if there's an existing image
-                document.getElementById('edit-variant-image-delete-container').style.display = 'block';
-            } else {
-                imagePreview.src = '';
-                imagePreview.style.display = 'none';
-                document.getElementById('edit-variant-image-delete-container').style.display = 'none';
+            const imagePathOnlyInput = row.querySelector(`input[name="variants[${currentEditingIndex}][image_path_only]"]`);
+            // Tìm hoặc tạo input hidden để đánh dấu xóa ảnh
+            let imageRemoveFlagInput = row.querySelector(`input[name="variants[${currentEditingIndex}][image_remove]"]`);
+            if (!imageRemoveFlagInput) {
+                imageRemoveFlagInput = document.createElement('input');
+                imageRemoveFlagInput.type = 'hidden';
+                imageRemoveFlagInput.name = `variants[${currentEditingIndex}][image_remove]`;
+                row.appendChild(imageRemoveFlagInput);
             }
-            document.getElementById('edit-variant-image-delete').checked = false; // Uncheck by default
 
-            $('#editVariantModal').modal('show');
-        }
+            if (deleteCurrentImage) {
+                // Nếu người dùng chọn xóa ảnh hiện tại
+                imagePathOnlyInput.value = ''; // Xóa đường dẫn ảnh cũ
+                imageRemoveFlagInput.value = '1'; // Đặt cờ xóa ảnh
+                newVariantImages.delete(currentEditingIndex); // Xóa khỏi map nếu có ảnh mới đang chờ
+            } else if (newImageFile) {
+                // Nếu có file ảnh mới được chọn
+                newVariantImages.set(currentEditingIndex, newImageFile); // Lưu File object vào Map
+                imagePathOnlyInput.value = 'TEMP_NEW_IMAGE'; // Đặt một placeholder để backend biết có ảnh mới
+                imageRemoveFlagInput.value = '0'; // Đảm bảo không đặt cờ xóa
+            } else {
+                // Không có file mới và không chọn xóa -> giữ nguyên ảnh cũ (nếu có)
+                imageRemoveFlagInput.value = '0';
+                // imagePathOnlyInput giữ nguyên giá trị cũ của nó
+            }
 
-        // Hàm để xóa một hàng biến thể khỏi bảng
-        function deleteVariantRow(button) {
-            const row = button.closest('tr');
-            // Bạn có thể thêm một trường ẩn để đánh dấu biến thể này để xóa ở backend
-            // Ví dụ: <input type="hidden" name="variants_to_delete[]" value="${variantId}">
-            row.remove();
-            console.log('Đã xóa một dòng biến thể khỏi DOM.');
-        }
+            // Đóng modal và reset form
+            if (editVariantModalInstance) editVariantModalInstance.hide();
+            form.reset();
+            document.getElementById('edit-variant-image').value = ''; // Clear actual file input
+            document.getElementById('edit-variant-image-preview').src = '';
+            document.getElementById('edit-variant-image-preview').style.display = 'none';
+            document.getElementById('edit-variant-image-delete').checked = false;
+            document.getElementById('edit-variant-image-delete-container').style.display = 'none';
+            currentEditingIndex = null;
 
+            console.log('✔️ Hàng biến thể đã được cập nhật từ modal.');
+        });
 
-        document.addEventListener('DOMContentLoaded', function () {
-            // Tải các thuộc tính có sẵn vào modal khi DOM được tải
-            loadAttributes();
+        // Event listener cho input file trong modal edit variant để hiển thị preview
+        document.getElementById('edit-variant-image').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('edit-variant-image-preview');
+            const deleteImageCheckboxContainer = document.getElementById('edit-variant-image-delete-container');
+            const deleteImageCheckbox = document.getElementById('edit-variant-image-delete');
 
-            // Tải ban đầu các biến thể hiện có vào bảng
-            populateSelectedAttributesFromVariants(); // Điền selectedAttributes dựa trên existingVariants
-            handleSave(); // Điền bảng với các biến thể, sử dụng existingVariants để điền trước dữ liệu
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+                deleteImageCheckboxContainer.style.display = 'none'; // Ẩn checkbox xóa nếu có ảnh mới
+                deleteImageCheckbox.checked = false; // Bỏ chọn checkbox xóa
+            } else {
+                // Nếu người dùng hủy chọn file (nhấn Cancel trong dialog)
+                // Phục hồi trạng thái ảnh cũ hoặc ẩn nếu không có ảnh
+                const row = document.querySelector(`tr[data-index="${currentEditingIndex}"]`);
+                const imagePathOnlyInput = row?.querySelector(`input[name="variants[${currentEditingIndex}][image_path_only]"]`);
+                const imageRemoveFlag = row?.querySelector(`input[name="variants[${currentEditingIndex}][image_remove]"]`);
 
-            const form = document.getElementById('edit-variant-form');
-
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
-                if (currentEditingIndex === null) return;
-
-                const row = document.querySelector(`tr[data-index="${currentEditingIndex}"]`); // Fix: Use backticks
-                if (!row) return;
-
-                // Lấy dữ liệu từ modal
-                const sku = document.getElementById('edit-variant-sku').value;
-                const quantity = document.getElementById('edit-variant-quantity').value;
-                const price = document.getElementById('edit-variant-price').value;
-                const salePrice = document.getElementById('edit-variant-sale_price').value;
-                const stockStatus = document.getElementById('edit-variant-stock_status').value;
-                const description = document.getElementById('edit-variant-description').value;
-                const newImageFile = document.getElementById('edit-variant-image').files[0];
-                const deleteCurrentImage = document.getElementById('edit-variant-image-delete').checked;
-
-                // Cập nhật các trường ẩn trong hàng bảng chính
-                row.querySelector(`input[name="variants[${currentEditingIndex}][sku]"]`).value = sku; // Fix: Use backticks
-                row.querySelector(`input[name="variants[${currentEditingIndex}][quantity]"]`).value = quantity; // Fix: Use backticks
-                row.querySelector(`input[name="variants[${currentEditingIndex}][price]"]`).value = price; // Fix: Use backticks
-                row.querySelector(`input[name="variants[${currentEditingIndex}][sale_price]"]`).value = salePrice; // Fix: Use backticks
-                row.querySelector(`input[name="variants[${currentEditingIndex}][stock_status]"]`).value = stockStatus; // Fix: Use backticks
-                row.querySelector(`input[name="variants[${currentEditingIndex}][description]"]`).value = description; // Fix: Use backticks
-
-                // Xử lý hình ảnh:
-                const imagePathOnlyInput = row.querySelector(`input[name="variants[${currentEditingIndex}][image_path_only]"]`); // Fix: Use backticks
-                const fileInputForUpload = document.getElementById(`variant-image-upload-${currentEditingIndex}`); // Input file ẩn thực sự của hàng này // Fix: Use backticks
-
-                if (deleteCurrentImage) {
-                    // Nếu người dùng chọn xóa ảnh
-                    imagePathOnlyInput.value = ''; // Xóa đường dẫn ảnh hiện tại
-                    if (fileInputForUpload) {
-                        fileInputForUpload.value = ''; // Đảm bảo input file rỗng
-                    }
-                    // Thêm một trường ẩn để báo hiệu cho backend biết cần xóa ảnh
-                    let removeImageFlag = row.querySelector(`input[name="variants[${currentEditingIndex}][image_remove]"]`); // Fix: Use backticks
-                    if (!removeImageFlag) {
-                        removeImageFlag = document.createElement('input');
-                        removeImageFlag.type = 'hidden';
-                        removeImageFlag.name = `variants[${currentEditingIndex}][image_remove]`; // Fix: Use backticks
-                        row.appendChild(removeImageFlag);
-                    }
-                    removeImageFlag.value = '1';
-                } else if (newImageFile) {
-                    // Nếu có tệp mới được chọn, gán nó vào input file ẩn của hàng
-                    if (fileInputForUpload) {
-                        // Tạo một DataTransfer để thêm tệp vào input type="file"
-                        const dataTransfer = new DataTransfer();
-                        dataTransfer.items.add(newImageFile);
-                        fileInputForUpload.files = dataTransfer.files;
-                    }
-                    // Cập nhật đường dẫn ảnh tạm thời để hiển thị nếu cần (hoặc dựa vào backend)
-                    // Ở đây, chúng ta đặt một cờ để biết có ảnh mới được chọn.
-                    imagePathOnlyInput.value = 'TEMP_NEW_IMAGE'; // Đặt một giá trị tạm thời để biết có ảnh mới
-                    // Đảm bảo cờ xóa không được đặt nếu có ảnh mới
-                    let removeImageFlag = row.querySelector(`input[name="variants[${currentEditingIndex}][image_remove]"]`); // Fix: Use backticks
-                    if (removeImageFlag) {
-                        removeImageFlag.remove();
-                    }
-                } else {
-                    // Không có tệp mới và không xóa, đảm bảo cờ xóa không được đặt và không có tệp nào được gán
-                    let removeImageFlag = row.querySelector(`input[name="variants[${currentEditingIndex}][image_remove]"]`); // Fix: Use backticks
-                    if (removeImageFlag) {
-                        removeImageFlag.remove();
-                    }
-                    if (fileInputForUpload) {
-                        fileInputForUpload.value = ''; // Đảm bảo không có tệp nào được gán nếu không chọn mới
-                    }
-                    // Giữ nguyên image_path_only hiện có nếu không có thay đổi
-                }
-
-
-                // Đóng modal và đặt lại biểu mẫu
-                $('#editVariantModal').modal('hide');
-                form.reset();
-                document.getElementById('edit-variant-image').value = ''; // Xóa input tệp
-                document.getElementById('edit-variant-image-preview').src = ''; // Xóa xem trước hình ảnh
-                document.getElementById('edit-variant-image-preview').style.display = 'none'; // Ẩn xem trước
-                document.getElementById('edit-variant-image-delete').checked = false;
-                document.getElementById('edit-variant-image-delete-container').style.display = 'none';
-                currentEditingIndex = null;
-
-                console.log('✔️ Hàng biến thể đã được cập nhật từ modal.');
-            });
-
-            // Xử lý xem trước hình ảnh trong modal chỉnh sửa
-            document.getElementById('edit-variant-image').addEventListener('change', function(event) {
-                const file = event.target.files[0];
-                const preview = document.getElementById('edit-variant-image-preview');
-                const deleteImageCheckboxContainer = document.getElementById('edit-variant-image-delete-container');
-
-                if (file) {
+                if (imageRemoveFlag?.value === '1') { // Nếu trước đó đã được đánh dấu xóa
+                    preview.src = '';
+                    preview.style.display = 'none';
+                    deleteImageCheckboxContainer.style.display = 'block';
+                    deleteImageCheckbox.checked = true;
+                } else if (newVariantImages.has(currentEditingIndex)) { // Nếu có ảnh mới đang chờ
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         preview.src = e.target.result;
                         preview.style.display = 'block';
                     };
-                    reader.readAsDataURL(file);
-                    deleteImageCheckboxContainer.style.display = 'none'; // Ẩn checkbox xóa nếu chọn ảnh mới
-                    document.getElementById('edit-variant-image-delete').checked = false; // Bỏ chọn xóa ảnh
-                } else {
-                    // Nếu không có tệp nào được chọn (người dùng hủy chọn tệp)
-                    // Cố gắng hiển thị lại ảnh hiện có (nếu có)
-                    const row = document.querySelector(`tr[data-index="${currentEditingIndex}"]`); // Fix: Use backticks
-                    if (row) {
-                        const imagePathOnlyInput = row.querySelector(`input[name="variants[${currentEditingIndex}][image_path_only]"]`); // Fix: Use backticks
-                        if (imagePathOnlyInput && imagePathOnlyInput.value && imagePathOnlyInput.value !== 'TEMP_NEW_IMAGE') {
-                            preview.src = `/storage/${imagePathOnlyInput.value}`; // Fix: Use backticks
-                            preview.style.display = 'block';
-                            deleteImageCheckboxContainer.style.display = 'block'; // Hiển thị checkbox xóa
-                        } else {
-                            preview.src = '';
-                            preview.style.display = 'none';
-                            deleteImageCheckboxContainer.style.display = 'none';
-                        }
-                    } else {
-                        preview.src = '';
-                        preview.style.display = 'none';
-                        deleteImageCheckboxContainer.style.display = 'none';
-                    }
-                    document.getElementById('edit-variant-image-delete').checked = false; // Đảm bảo bỏ chọn
-                }
-            });
-
-            // Xử lý sự kiện khi checkbox xóa ảnh được click
-            document.getElementById('edit-variant-image-delete').addEventListener('change', function() {
-                const preview = document.getElementById('edit-variant-image-preview');
-                const fileInput = document.getElementById('edit-variant-image');
-                if (this.checked) {
+                    reader.readAsDataURL(newVariantImages.get(currentEditingIndex));
+                    deleteImageCheckboxContainer.style.display = 'none';
+                    deleteImageCheckbox.checked = false;
+                } else if (imagePathOnlyInput && imagePathOnlyInput.value && imagePathOnlyInput.value !== 'TEMP_NEW_IMAGE') { // Nếu có ảnh cũ từ DB
+                    preview.src = `/storage/${imagePathOnlyInput.value}`;
+                    preview.style.display = 'block';
+                    deleteImageCheckboxContainer.style.display = 'block';
+                    deleteImageCheckbox.checked = false;
+                } else { // Không có ảnh nào
                     preview.src = '';
                     preview.style.display = 'none';
-                    fileInput.value = ''; // Đảm bảo không có tệp nào được chọn
-                } else {
-                    // Nếu bỏ chọn xóa, hãy cố gắng hiển thị lại ảnh hiện có (nếu có)
-                    const row = document.querySelector(`tr[data-index="${currentEditingIndex}"]`); // Fix: Use backticks
-                    if (row) {
-                        const imagePathOnlyInput = row.querySelector(`input[name="variants[${currentEditingIndex}][image_path_only]"]`); // Fix: Use backticks
-                        if (imagePathOnlyInput && imagePathOnlyInput.value && imagePathOnlyInput.value !== 'TEMP_NEW_IMAGE') {
-                            preview.src = `/storage/${imagePathOnlyInput.value}`; // Fix: Use backticks
-                            preview.style.display = 'block';
-                        }
-                    }
+                    deleteImageCheckboxContainer.style.display = 'none';
+                    deleteImageCheckbox.checked = false;
                 }
-            });
+            }
         });
 
-    </script>
-@endsection
+        // Event listener cho checkbox xóa ảnh trong modal
+        document.getElementById('edit-variant-image-delete').addEventListener('change', function(event) {
+            const preview = document.getElementById('edit-variant-image-preview');
+            if (event.target.checked) {
+                preview.src = '';
+                preview.style.display = 'none';
+            } else {
+                // Nếu bỏ chọn xóa, khôi phục ảnh hiện tại (nếu có)
+                const row = document.querySelector(`tr[data-index="${currentEditingIndex}"]`);
+                const imagePathOnlyInput = row?.querySelector(`input[name="variants[${currentEditingIndex}][image_path_only]"]`);
 
+                if (newVariantImages.has(currentEditingIndex)) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(newVariantImages.get(currentEditingIndex));
+                } else if (imagePathOnlyInput && imagePathOnlyInput.value && imagePathOnlyInput.value !== 'TEMP_NEW_IMAGE') {
+                    preview.src = `/storage/${imagePathOnlyInput.value}`;
+                    preview.style.display = 'block';
+                }
+            }
+        });
+    });
+
+
+    // --- Hàm điền selectedAttributes từ dữ liệu biến thể hiện có (tải lúc đầu) ---
+    function populateSelectedAttributesFromVariants() {
+        // Chỉ điền selectedAttributes nếu có biến thể TỰ ĐỊNH NGHĨA (không phải chỉ biến thể Mặc định)
+        const hasDefinedVariants = existingVariants.some(v => v.attribute_text !== 'Mặc định');
+
+        if (!hasDefinedVariants && existingVariants.length > 0) {
+            // Nếu chỉ có biến thể mặc định hoặc không có biến thể, selectedAttributes sẽ trống,
+            // để khi bấm "Quản lý thuộc tính", nó hiển thị danh sách thuộc tính rỗng
+            selectedAttributes = {};
+            return;
+        }
+
+        const tempSelectedAttributes = {};
+        existingVariants.forEach(variant => {
+            if (variant.attribute_values && Array.isArray(variant.attribute_values)) {
+                variant.attribute_values.forEach(attrValue => {
+                    const parentAttribute = attributesFromServer.find(attr =>
+                        attr.values.some(val => val.id === attrValue.id)
+                    );
+                    if (parentAttribute) {
+                        if (!tempSelectedAttributes[parentAttribute.name]) {
+                            tempSelectedAttributes[parentAttribute.name] = new Set();
+                        }
+                        tempSelectedAttributes[parentAttribute.name].add(JSON.stringify({ // Store stringified object to use Set for uniqueness
+                            valueName: attrValue.value,
+                            valueId: attrValue.id
+                        }));
+                    }
+                });
+            }
+        });
+
+        for (const attrName in tempSelectedAttributes) {
+            selectedAttributes[attrName] = Array.from(tempSelectedAttributes[attrName]).map(item => JSON.parse(item));
+        }
+
+        renderSelectedAttributes(); // Render ngay sau khi điền
+    }
+
+
+    // --- Hàm tải và hiển thị các thuộc tính có sẵn ---
+    function loadAttributes() {
+        const container = document.getElementById('attribute-list');
+        container.innerHTML = '';
+
+        if (attributesFromServer.length === 0) {
+            container.innerHTML = '<div class="alert alert-warning">Chưa có thuộc tính nào được định nghĩa. Vui lòng thêm thuộc tính trong mục "Quản lý thuộc tính".</div>';
+            return;
+        }
+
+        attributesFromServer.forEach(attribute => {
+            const groupDiv = document.createElement('div');
+            groupDiv.classList.add('mb-3', 'border', 'rounded', 'p-3', 'shadow-sm-sm');
+
+            const headerDiv = document.createElement('div');
+            headerDiv.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-2');
+
+            const title = document.createElement('h6');
+            title.classList.add('fw-bold', 'mb-0');
+            title.textContent = attribute.name;
+
+            const btnGroup = document.createElement('button');
+            btnGroup.classList.add('btn', 'btn-outline-dark', 'btn-sm');
+            btnGroup.innerHTML = 'Chọn tất cả <i class="bi bi-arrow-right"></i>';
+            btnGroup.type = 'button';
+            btnGroup.onclick = () => {
+                attribute.values.forEach(val => selectAttribute(attribute.name, val.value, val.id));
+            };
+
+            headerDiv.appendChild(title);
+            headerDiv.appendChild(btnGroup);
+            groupDiv.appendChild(headerDiv);
+
+            if (attribute.values.length === 0) {
+                const noValues = document.createElement('small');
+                noValues.classList.add('text-muted');
+                noValues.textContent = 'Chưa có giá trị nào.';
+                groupDiv.appendChild(noValues);
+            } else {
+                attribute.values.forEach(value => {
+                    const row = document.createElement('div');
+                    row.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'py-1', 'border-bottom');
+
+                    const valueText = document.createElement('span');
+                    valueText.textContent = value.value;
+
+                    const btn = document.createElement('button');
+                    btn.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+                    btn.innerHTML = 'Chọn <i class="bi bi-arrow-right"></i>';
+                    btn.type = 'button';
+                    btn.onclick = () => selectAttribute(attribute.name, value.value, value.id);
+
+                    row.appendChild(valueText);
+                    row.appendChild(btn);
+                    groupDiv.appendChild(row);
+                });
+            }
+            container.appendChild(groupDiv);
+        });
+    }
+
+    // --- Hàm để chọn một giá trị thuộc tính (updated to include valueId) ---
+    function selectAttribute(groupName, valueName, valueId) {
+        if (!selectedAttributes[groupName]) {
+            selectedAttributes[groupName] = [];
+        }
+        if (!selectedAttributes[groupName].some(item => item.valueName === valueName && item.valueId === valueId)) {
+            selectedAttributes[groupName].push({ valueName, valueId });
+            renderSelectedAttributes();
+        } else {
+            console.log(`Attribute "${valueName}" in group "${groupName}" is already selected.`);
+        }
+    }
+
+    // --- Hàm để xóa một giá trị thuộc tính (updated to remove by ID as well for precision) ---
+    function removeAttribute(groupName, valueName, valueIdToRemove) {
+        if (selectedAttributes[groupName]) {
+            selectedAttributes[groupName] = selectedAttributes[groupName].filter(item => !(item.valueName === valueName && item.valueId === valueIdToRemove));
+            if (selectedAttributes[groupName].length === 0) {
+                delete selectedAttributes[groupName];
+            }
+            renderSelectedAttributes();
+        }
+    }
+
+    // --- Hàm để hiển thị các thuộc tính đã chọn (updated to pass valueId to removeAttribute) ---
+    function renderSelectedAttributes() {
+        const container = document.getElementById('selected-attributes');
+        container.innerHTML = '';
+
+        const groups = Object.keys(selectedAttributes);
+        if (groups.length === 0) {
+            container.innerHTML = '<div class="alert alert-info text-center">Chưa có thuộc tính nào được chọn.</div>';
+            return;
+        }
+
+        groups.forEach(groupName => {
+            const groupDiv = document.createElement('div');
+            groupDiv.classList.add('mb-3', 'border', 'rounded', 'p-3', 'bg-light');
+
+            const title = document.createElement('h6');
+            title.classList.add('fw-bold', 'mb-2');
+            title.textContent = groupName;
+            groupDiv.appendChild(title);
+
+            selectedAttributes[groupName].forEach(item => {
+                const row = document.createElement('div');
+                row.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'py-1', 'border-bottom');
+
+                const valueText = document.createElement('span');
+                valueText.textContent = item.valueName;
+
+                const btn = document.createElement('button');
+                btn.classList.add('btn', 'btn-danger', 'btn-sm');
+                btn.innerHTML = '<i class="bi bi-trash"></i> Hủy';
+                btn.type = 'button';
+                btn.onclick = () => removeAttribute(groupName, item.valueName, item.valueId);
+                row.appendChild(valueText);
+                row.appendChild(btn);
+                groupDiv.appendChild(row);
+            });
+            container.appendChild(groupDiv);
+        });
+    }
+
+    // --- Hàm tạo ra các tổ hợp (biến thể) từ các thuộc tính đã chọn ---
+    function generateCombinations(obj) {
+        const keys = Object.keys(obj);
+        if (keys.length === 0) return []; // Nếu không có thuộc tính nào được chọn, trả về mảng rỗng
+
+        const combinations = [];
+
+        function backtrack(index, currentComboNames, currentComboIds) {
+            if (index === keys.length) {
+                combinations.push({
+                    comboText: currentComboNames.join(' - '),
+                    attrValueIds: [...currentComboIds]
+                });
+                return;
+            }
+
+            const key = keys[index];
+            for (const item of obj[key]) { // item is now {valueName, valueId}
+                currentComboNames.push(item.valueName);
+                currentComboIds.push(item.valueId);
+                backtrack(index + 1, currentComboNames, currentComboIds);
+                currentComboNames.pop();
+                currentComboIds.pop();
+            }
+        }
+        backtrack(0, [], []);
+        return combinations;
+    }
+
+    // --- MODIFIED: Hàm xử lý việc lưu các biến thể và cập nhật bảng chính ---
+    function handleSave() {
+        const tbody = document.getElementById('variant-table-body');
+        const currentTableRows = Array.from(tbody.querySelectorAll('tr')); // Lấy các hàng hiện tại
+
+        const combinationsToRender = [];
+
+        // Nếu không có thuộc tính nào được chọn, chỉ có một biến thể "Mặc định"
+        if (Object.keys(selectedAttributes).length === 0) {
+            // Tìm biến thể "Mặc định" trong dữ liệu ban đầu hoặc trong các hàng hiện có
+            const defaultVariantData = existingVariants.find(v => v.attribute_text === 'Mặc định') ||
+                                       currentTableRows.map(row => { // Check current table rows for a default
+                                           const attrText = row.querySelector(`input[name$="[attribute_text]"]`)?.value;
+                                           if (attrText === 'Mặc định') {
+                                               return collectRowData(row);
+                                           }
+                                           return null;
+                                       }).filter(Boolean)[0]; // Get the first default variant from current rows
+
+            combinationsToRender.push({
+                comboText: 'Mặc định',
+                attrValueIds: [],
+                existingData: defaultVariantData || null
+            });
+        } else {
+            // Nếu có thuộc tính được chọn, tạo tổ hợp
+            const generated = generateCombinations(selectedAttributes);
+            generated.forEach(combo => {
+                // Ưu tiên tìm biến thể khớp trong các hàng hiện tại của bảng (để giữ các chỉnh sửa tạm thời)
+                const matchingInCurrentTable = currentTableRows.map(row => {
+                    const collectedData = collectRowData(row);
+                    if (collectedData && compareAttributeIds(collectedData.attribute_value_ids, combo.attrValueIds)) {
+                        return collectedData;
+                    }
+                    return null;
+                }).filter(Boolean)[0]; // Lấy biến thể khớp đầu tiên
+
+                if (matchingInCurrentTable) {
+                    combinationsToRender.push({
+                        comboText: combo.comboText,
+                        attrValueIds: combo.attrValueIds,
+                        existingData: matchingInCurrentTable
+                    });
+                } else {
+                    // Nếu không tìm thấy trong bảng hiện tại, tìm trong existingVariants ban đầu
+                    const matchingInExisting = findMatchingVariantByAttributeIds(combo.attrValueIds);
+                    combinationsToRender.push({
+                        comboText: combo.comboText,
+                        attrValueIds: combo.attrValueIds,
+                        existingData: matchingInExisting
+                    });
+                }
+            });
+        }
+
+        // Tái tạo lại toàn bộ tbody
+        tbody.innerHTML = '';
+        let currentMaxIndex = -1; // Để đảm bảo index mới luôn duy nhất và tăng dần
+
+        combinationsToRender.forEach((comboData, i) => {
+            const variantId = comboData.existingData ? comboData.existingData.id : '';
+            // Gán một index mới duy nhất nếu đây là biến thể mới hoặc không có ID
+            let rowIndex = comboData.existingData && comboData.existingData.id ?
+                            currentTableRows.findIndex(row => row.dataset.variantId == comboData.existingData.id) : -1;
+
+            if (rowIndex === -1) { // New or re-indexed variant (not found by ID in current rows)
+                rowIndex = ++currentMaxIndex; // Use a continuously incrementing index
+            } else { // Existing variant found in current rows, keep its original index
+                rowIndex = parseInt(currentTableRows[rowIndex].dataset.index);
+            }
+
+            // Cập nhật currentMaxIndex nếu rowIndex hiện tại lớn hơn
+            if (rowIndex > currentMaxIndex) {
+                currentMaxIndex = rowIndex;
+            }
+
+
+            const sku = comboData.existingData ? comboData.existingData.sku : `SKU-${Date.now()}-${rowIndex}`;
+            const quantity = comboData.existingData ? comboData.existingData.quantity : 0;
+            const price = comboData.existingData ? comboData.existingData.price : (document.getElementById('price').value || 0);
+            const salePrice = comboData.existingData ? (comboData.existingData.sale_price || '') : '';
+            const stockStatus = comboData.existingData ? comboData.existingData.stock_status : 'in_stock';
+            const description = comboData.existingData ? (comboData.existingData.description || '') : (document.getElementById('description').value || '');
+            const imagePath = comboData.existingData ? (comboData.existingData.image || '') : ''; // Path từ DB
+            const imageRemoveFlag = comboData.existingData ? (comboData.existingData.image_remove ? '1' : '0') : '0';
+
+
+            const tr = document.createElement('tr');
+            tr.dataset.index = rowIndex; // Dùng rowIndex đã được tính
+            if (variantId) {
+                tr.dataset.variantId = variantId; // Chỉ thêm variantId nếu có
+            }
+
+
+            tr.innerHTML = `
+                <td>${rowIndex + 1}</td>
+                <td>
+                    ${comboData.comboText}
+                    <input type="hidden" name="variants[${rowIndex}][id]" value="${variantId}">
+                    <input type="hidden" name="variants[${rowIndex}][attribute_text]" value="${comboData.comboText}">
+                    <input type="hidden" name="variants[${rowIndex}][price]" value="${price}">
+                    <input type="hidden" name="variants[${rowIndex}][sale_price]" value="${salePrice}">
+                    <input type="hidden" name="variants[${rowIndex}][stock_status]" value="${stockStatus}">
+                    <input type="hidden" name="variants[${rowIndex}][description]" value="${description}">
+                    <input type="hidden" name="variants[${rowIndex}][image_path_only]" value="${imagePath}">
+                    <input type="hidden" name="variants[${rowIndex}][image_remove]" value="${imageRemoveFlag}">
+                    ${comboData.attrValueIds.map(id => `<input type="hidden" name="variants[${rowIndex}][attribute_value_ids][]" value="${id}">`).join('')}
+                </td>
+                <td><input type="text" name="variants[${rowIndex}][sku]" class="form-control" value="${sku}"></td>
+                <td><input type="number" name="variants[${rowIndex}][quantity]" class="form-control" min="0" value="${quantity}"></td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-primary" onclick="editVariant(this)" data-index="${rowIndex}">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    ${(combinationsToRender.length > 1 || comboData.comboText === 'Mặc định') ? `<button type="button" class="btn btn-sm btn-danger ms-2" onclick="deleteVariantRow(this)"><i class="bi bi-trash"></i></button>` : ''}
+                </td>
+            `;
+            tbody.appendChild(tr);
+
+            // Nếu có ảnh mới chờ upload cho biến thể này, cập nhật giá trị placeholder
+            if (newVariantImages.has(rowIndex)) {
+                 row.querySelector(`input[name="variants[${rowIndex}][image_path_only]"]`).value = 'TEMP_NEW_IMAGE';
+            }
+        });
+
+        // Cập nhật lại currentMaxIndex để nó sẵn sàng cho lần thêm biến thể mới tiếp theo
+        // (Đây chỉ quan trọng khi bạn có thể thêm biến thể mà không cần qua modal thuộc tính)
+        // Nếu chỉ thêm qua modal thuộc tính, currentMaxIndex = nextIndex của generate_combinations
+        // Sau khi render xong tất cả các hàng, maxIndex sẽ là số lượng hàng - 1
+        const finalRows = document.querySelectorAll('#variant-table-body tr');
+        currentMaxIndex = finalRows.length > 0 ? Array.from(finalRows).reduce((max, row) => Math.max(max, parseInt(row.dataset.index)), -1) : -1;
+
+
+        // Đóng modal bằng instance của Bootstrap 5
+        if (productAttributeModalInstance) productAttributeModalInstance.hide();
+        console.log('✔️ Các biến thể đã được tạo/cập nhật trong bảng.');
+    }
+
+
+    // --- Hàm để chỉnh sửa một biến thể từ bảng chính (qua modal edit) ---
+    function editVariant(button) {
+        const row = button.closest('tr');
+        const index = parseInt(row.dataset.index);
+        currentEditingIndex = index;
+
+        // Điền các trường modal từ các hidden input trong hàng
+        document.getElementById('edit-variant-sku').value = row.querySelector(`input[name="variants[${index}][sku]"]`).value;
+        document.getElementById('edit-variant-quantity').value = row.querySelector(`input[name="variants[${index}][quantity]"]`).value;
+        document.getElementById('edit-variant-price').value = row.querySelector(`input[name="variants[${index}][price]"]`).value;
+        document.getElementById('edit-variant-sale_price').value = row.querySelector(`input[name="variants[${index}][sale_price]"]`).value;
+        document.getElementById('edit-variant-stock_status').value = row.querySelector(`input[name="variants[${index}][stock_status]"]`).value;
+        document.getElementById('edit-variant-description').value = row.querySelector(`input[name="variants[${index}][description]"]`).value;
+
+        const imagePathOnlyInput = row.querySelector(`input[name="variants[${index}][image_path_only]"]`);
+        const imagePreview = document.getElementById('edit-variant-image-preview');
+        const imageFileInput = document.getElementById('edit-variant-image');
+        const imageDeleteContainer = document.getElementById('edit-variant-image-delete-container');
+        const imageDeleteCheckbox = document.getElementById('edit-variant-image-delete');
+
+        // IMPORTANT: Reset modal's file input AND its internal state
+        imageFileInput.value = ''; // Clears selected file in browser UI
+        imageDeleteCheckbox.checked = false; // Uncheck delete checkbox by default
+
+        // Check if there's a new image already selected for this variant from a previous modal edit
+        const newFileForThisVariant = newVariantImages.get(index);
+        // Check the current image_remove flag value from the hidden input
+        const isMarkedForRemoval = row.querySelector(`input[name="variants[${index}][image_remove]"]`)?.value === '1';
+
+
+        if (isMarkedForRemoval) {
+            imagePreview.src = '';
+            imagePreview.style.display = 'none';
+            imageDeleteCheckbox.checked = true;
+            imageDeleteContainer.style.display = 'block';
+        } else if (newFileForThisVariant) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                imageDeleteContainer.style.display = 'none';
+            };
+            reader.readAsDataURL(newFileForThisVariant);
+        } else if (imagePathOnlyInput && imagePathOnlyInput.value && imagePathOnlyInput.value !== 'TEMP_NEW_IMAGE') {
+            imagePreview.src = `/storage/${imagePathOnlyInput.value}`;
+            imagePreview.style.display = 'block';
+            imageDeleteContainer.style.display = 'block';
+        } else {
+            imagePreview.src = '';
+            imagePreview.style.display = 'none';
+            imageDeleteContainer.style.display = 'none';
+        }
+
+        if (editVariantModalInstance) editVariantModalInstance.show();
+    }
+
+    // --- Hàm để xóa một hàng biến thể khỏi bảng ---
+    function deleteVariantRow(button) {
+        const row = button.closest('tr');
+        const index = parseInt(row.dataset.index); // Get the index of the row
+        const variantId = row.dataset.variantId; // Get the variant ID if it exists
+
+        // Nếu có ảnh mới đang chờ upload cho biến thể này, hãy xóa nó khỏi map
+        newVariantImages.delete(index);
+
+        // Nếu đây là biến thể đã tồn tại trong database (có ID), thêm vào danh sách xóa
+        if (variantId) {
+            variantsToDeleteOnSubmit.add(variantId);
+            // Thêm một input hidden vào form chính để backend biết các ID cần xóa
+            const form = document.getElementById('product-form');
+            const deletedInput = document.createElement('input');
+            deletedInput.type = 'hidden';
+            deletedInput.name = 'variants_to_delete[]';
+            deletedInput.value = variantId;
+            form.appendChild(deletedInput);
+        }
+
+        row.remove(); // Xóa hàng khỏi DOM
+        console.log('Đã xóa một dòng biến thể khỏi DOM.');
+        // Sau khi xóa, bạn có thể gọi lại handleSave() để cập nhật lại bảng cho phù hợp
+        // hoặc để logic này được xử lý khi submit form chính.
+        // Tuy nhiên, việc xóa khỏi DOM là cần thiết ngay lập tức.
+    }
+
+    // --- Helper functions ---
+
+    // So sánh hai mảng IDs (không quan tâm thứ tự)
+    function compareAttributeIds(arr1, arr2) {
+        if (!arr1 || !arr2) return false;
+        if (arr1.length !== arr2.length) return false;
+        const sortedArr1 = [...arr1].sort();
+        const sortedArr2 = [...arr2].sort();
+        return sortedArr1.every((val, index) => val === sortedArr2[index]);
+    }
+
+    // Thu thập dữ liệu từ một hàng cụ thể trong bảng
+    function collectRowData(row) {
+        const index = parseInt(row.dataset.index);
+        return {
+            id: row.querySelector(`input[name="variants[${index}][id]"]`)?.value || null,
+            sku: row.querySelector(`input[name="variants[${index}][sku]"]`)?.value || '',
+            quantity: row.querySelector(`input[name="variants[${index}][quantity]"]`)?.value || 0,
+            price: row.querySelector(`input[name="variants[${index}][price]"]`)?.value || 0,
+            sale_price: row.querySelector(`input[name="variants[${index}][sale_price]"]`)?.value || '',
+            stock_status: row.querySelector(`input[name="variants[${index}][stock_status]"]`)?.value || 'in_stock',
+            description: row.querySelector(`input[name="variants[${index}][description]"]`)?.value || '',
+            attribute_text: row.querySelector(`input[name="variants[${index}][attribute_text]"]`)?.value || '',
+            image: row.querySelector(`input[name="variants[${index}][image_path_only]"]`)?.value || '',
+            image_remove: row.querySelector(`input[name="variants[${index}][image_remove]"]`)?.value === '1',
+            attribute_value_ids: Array.from(row.querySelectorAll(`input[name="variants[${index}][attribute_value_ids][]"]`)).map(input => parseInt(input.value))
+        };
+    }
+
+    // Tìm một biến thể hiện có từ `existingVariants` dựa trên attribute_value_ids
+    function findMatchingVariantByAttributeIds(ids) {
+        const sortedIds = [...ids].sort((a, b) => a - b).join(',');
+        return existingVariants.find(v => {
+            const variantAttrIds = v.attribute_values && Array.isArray(v.attribute_values) ?
+                                    v.attribute_values.map(val => val.id).sort((a, b) => a - b).join(',') :
+                                    '';
+            return variantAttrIds === sortedIds;
+        });
+    }
+
+    // --- Xử lý Submit form chính để thêm các file ảnh mới ---
+    document.getElementById('product-form').addEventListener('submit', function(event) {
+        // Tạo FormData mới từ form hiện có
+        const formData = new FormData(this);
+
+        // Thêm các file ảnh biến thể mới từ Map vào FormData
+        newVariantImages.forEach((file, index) => {
+            // Đảm bảo tên trường khớp với cách bạn xử lý trong Controller
+            // Ví dụ: variants[index][image_file_upload]
+            formData.append(`variants[${index}][image_file_upload]`, file, file.name);
+        });
+
+        // Nếu bạn cần gửi FormData qua AJAX, bạn sẽ làm ở đây:
+        // event.preventDefault(); // Ngăn chặn submit mặc định
+        // fetch(this.action, {
+        //     method: this.method,
+        //     body: formData
+        // })
+        // .then(response => response.json())
+        // .then(data => console.log(data))
+        // .catch(error => console.error('Error:', error));
+
+        // Nếu bạn muốn submit form bình thường (có enctype="multipart/form-data"),
+        // bạn cần thay thế form hiện tại bằng FormData này.
+        // Cách đơn giản nhất là đảm bảo các file input trong modal chỉnh sửa
+        // biến thể cũng có tên tương ứng để tự động được thêm vào FormData của form cha.
+        // Với setup hiện tại, chúng ta đang ghi đè giá trị của input hidden
+        // `variants[${index}][image_path_only]` thành 'TEMP_NEW_IMAGE',
+        // và lưu `File` object trong `newVariantImages`.
+        // Controller sẽ cần logic để nhận biết 'TEMP_NEW_IMAGE' và tìm file tương ứng.
+
+        // Nếu bạn vẫn submit form qua HTML, bạn cần đảm bảo Laravel nhận được file:
+        // CÁCH 1: DÙNG AJAX THAY THẾ (phức tạp hơn)
+        // CÁCH 2: Thay đổi input type="file" trong modal thành một phần của form chính.
+        //         HOẶC tạo một input file ẩn trong form chính và gán file cho nó
+        //         trước khi submit.
+        //         Cách hiện tại của bạn là tốt nhất cho việc submit form HTML thông thường:
+        //         các input file trong modal thực sự là một phần của form đó,
+        //         nhưng giá trị của chúng không được giữ lại khi modal đóng.
+        //         Chúng ta đang lưu File object trong JS và cần append thủ công.
+
+        // Vì bạn đang submit form chính, đoạn JS này không thực sự thay đổi cách form submit file.
+        // Bạn sẽ cần xử lý `variants_to_delete` và các file `image_file_upload`
+        // trong ProductController@update.
+
+        // Để gửi các File objects, bạn sẽ cần một cách để gán chúng vào FormData của form chính.
+        // Cách đơn giản nhất là khi bạn chỉnh sửa biến thể trong modal,
+        // thay vì chỉ lưu tên file vào hidden input, bạn sẽ có một input file thật
+        // trong hàng của bảng chính (ẩn đi) và gán File object đó vào.
+        // Nhưng làm vậy sẽ phức tạp DOM.
+
+        // Giải pháp hiện tại của bạn với `newVariantImages` Map là dành cho AJAX submit.
+        // Nếu bạn vẫn muốn submit form HTML, bạn cần tạo các input file động:
+        /*
+        newVariantImages.forEach((file, index) => {
+            const inputFile = document.createElement('input');
+            inputFile.type = 'file';
+            inputFile.name = `variants[${index}][image_file_upload]`;
+            // Cần một DataTransfer object hoặc tương tự để gán File object vào input file
+            // Điều này không dễ dàng với HTML form submission thông thường.
+            // Nếu bạn muốn gửi file qua form HTML, bạn cần giữ input type="file" trong DOM
+            // và đảm bảo nó được submit. Hoặc chuyển sang AJAX.
+        });
+        */
+
+        // Vì `enctype="multipart/form-data"`, Laravel sẽ tự động xử lý file upload từ các input `type="file"`.
+        // Vấn đề là input file trong modal không nằm trong form chính.
+        // Một cách hacky là tạo input file ẩn trong form chính và gán file cho nó.
+        // HOẶC: Thay đổi ProductController để nhận file ảnh biến thể theo một cách khác.
+        // (Ví dụ: tách riêng endpoint upload ảnh, hoặc dùng AJAX cho toàn bộ form submit).
+
+        // ĐỂ ĐƠN GIẢN HÓA VỚI FORM SUBMIT HTML, CHÚNG TA SẼ GIỮ CÁCH CỦA BẠN:
+        // image_path_only='TEMP_NEW_IMAGE' và backend sẽ tìm file.
+        // Backend cần biết `currentEditingIndex` để khớp file.
+        // THƯỜNG THÌ, việc upload file riêng lẻ cho từng variant là phức tạp với FORM HTML submit.
+        // NÊN CHUYỂN QUA AJAX CHO FORM CHÍNH.
+        // Nhưng nếu vẫn dùng form HTML, bạn phải xử lý file upload trong controller theo kiểu
+        // duyệt qua $request->allFiles() để tìm file cho từng variant.
+    });
+
+</script>
+@endsection
