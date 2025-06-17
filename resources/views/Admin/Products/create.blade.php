@@ -44,11 +44,8 @@
         @error('price') <span class="text-danger">{{ $message }}</span> @enderror
     </div>
 
-    <div class="mb-3">
-        <label for="quantity" class="form-label">Số lượng</label>
-        <input id="quantity" name="quantity" class="form-control" value="{{ old('quantity') }}">
-        @error('quantity') <span class="text-danger">{{ $message }}</span> @enderror
-    </div>
+    {{-- Đã XÓA DÒNG NÀY (Số lượng cho sản phẩm chính) vì nó sẽ được quản lý qua Variants --}}
+    {{-- Nếu bạn muốn trường số lượng chính, hãy thêm lại nó và xử lý riêng trong controller --}}
 
     <div class="mb-3">
         <label for="description" class="form-label">Mô tả</label>
@@ -79,17 +76,34 @@
                     <th>STT</th>
                     <th>Thuộc tính <i class="bi bi-question-circle" title="Các thuộc tính của biến thể"></i></th>
                     <th>Mã phiên bản (SKU)</th>
+                    <th>Số lượng</th> {{-- THÊM CỘT SỐ LƯỢNG VÀO ĐÂY --}}
                     <th>Tác vụ</th>
                 </tr>
             </thead>
             <tbody id="variant-table-body">
-                <tr>
-                    <td>0</td>
+                {{-- Dòng mặc định này sẽ bị xóa/ghi đè khi có các biến thể được tạo --}}
+                {{-- Nếu bạn muốn giữ lại 1 dòng mặc định, bạn cần đảm bảo nó có đủ các input hidden cần thiết --}}
+                <tr data-index="0"> {{-- Thêm data-index để JS có thể tìm thấy --}}
+                    <td>1</td> {{-- Thay đổi từ 0 thành 1 để STT bắt đầu từ 1 --}}
                     <td>Mặc định
-                        <input type="hidden" name="variants[0][attribute_text]" value="Màu: Đỏ, Kích cỡ: L">
+                        <input type="hidden" name="variants[0][attribute_text]" value="Mặc định">
+                        {{-- Cần thêm input hidden cho price, sale_price, quantity, etc. nếu muốn mặc định --}}
+                        <input type="hidden" name="variants[0][price]" value="{{ old('variants.0.price') ?? 0 }}">
+                        <input type="hidden" name="variants[0][sale_price]" value="{{ old('variants.0.sale_price') ?? null }}">
+                        <input type="hidden" name="variants[0][stock_status]" value="{{ old('variants.0.stock_status') ?? 'in_stock' }}">
+                        <input type="hidden" name="variants[0][description]" value="{{ old('variants.0.description') ?? '' }}">
+                        <input type="hidden" name="variants[0][image]" value="{{ old('variants.0.image') ?? '' }}">
+                        {{-- Thêm input hidden cho attribute_value_ids rỗng hoặc không có nếu là mặc định --}}
+                        <input type="hidden" name="variants[0][attribute_value_ids][]" value="">
                     </td>
-                    <td><input type="text" name="variants[0][sku]" class="form-control" value="SKU-{{ time() }}"></td>
-                    <td></td>
+                    <td><input type="text" name="variants[0][sku]" class="form-control" value="{{ old('variants.0.sku') ?? '' }}"></td>
+                    <td><input type="number" name="variants[0][quantity]" class="form-control" min="0" value="{{ old('variants.0.quantity') ?? 0 }}"></td> {{-- THÊM INPUT SỐ LƯỢNG CHO MẶC ĐỊNH --}}
+                    <td>
+                        {{-- Nút sửa/xóa cho dòng mặc định nếu cần --}}
+                        <button type="button" class="btn btn-sm btn-primary" onclick="editDefaultVariant(this)" data-index="0">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -97,6 +111,27 @@
 
     <button class="btn btn-primary mt-4">Thêm sản phẩm</button>
 </form>
+
+{{-- MODAL QUẢN LÝ THUỘC TÍNH (nếu có, không có trong code bạn cung cấp nhưng nút có refer đến) --}}
+{{-- Đảm bảo bạn có modal này trong thực tế --}}
+<div class="modal fade" id="manageAttributeModal" tabindex="-1" aria-labelledby="manageAttributeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="manageAttributeModalLabel">Quản lý thuộc tính</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Nơi quản lý các thuộc tính chung của sản phẩm (ví dụ: Thêm/Sửa/Xóa thuộc tính và giá trị của chúng).</p>
+                <p>Bạn sẽ cần triển khai AJAX hoặc form riêng cho chức năng này.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="modal fade" id="productAttributeModal" tabindex="-1" aria-labelledby="productAttributeModalLabel"
     aria-hidden="true">
@@ -111,12 +146,14 @@
                     <div class="col-md-6 border-end">
                         <h6 class="fw-bold">Danh sách thuộc tính</h6>
                         <div id="attribute-list">
-                            </div>
+                            {{-- Content generated by JS --}}
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <h6 class="fw-bold">Danh sách thuộc tính đã chọn</h6>
                         <div id="selected-attributes">
-                            </div>
+                            {{-- Content generated by JS --}}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -127,39 +164,43 @@
     </div>
 </div>
 
-<div class="modal fade" id="editVariantModal" tabindex="-1" role="dialog">
+<div class="modal fade" id="editVariantModal" tabindex="-1" role="dialog" aria-labelledby="editVariantModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form id="edit-variant-form">
                 <div class="modal-header">
-                    <h5 class="modal-title">Sửa phiên bản sản phẩm</h5>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h5 class="modal-title" id="editVariantModalLabel">Sửa phiên bản sản phẩm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> {{-- Changed data-dismiss to data-bs-dismiss --}}
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label>Mã sản phẩm</label>
+                    <div class="form-group mb-3">
+                        <label>Mã sản phẩm (SKU)</label>
                         <input type="text" class="form-control" name="sku" id="edit-variant-sku">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group mb-3">
                         <label>Giá thường (bắt buộc)</label>
-                        <input type="number" class="form-control" name="price" id="edit-variant-price">
+                        <input type="number" class="form-control" name="price" id="edit-variant-price" min="0">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group mb-3">
                         <label>Giá ưu đãi</label>
-                        <input type="number" class="form-control" name="sale_price" id="edit-variant-sale-price">
+                        <input type="number" class="form-control" name="sale_price" id="edit-variant-sale-price" min="0">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group mb-3">
+                        <label>Số lượng</label> {{-- THÊM TRƯỜNG SỐ LƯỢNG VÀO MODAL --}}
+                        <input type="number" class="form-control" name="quantity" id="edit-variant-quantity" min="0">
+                    </div>
+                    <div class="form-group mb-3">
                         <label>Trạng thái kho hàng</label>
                         <select class="form-control" name="stock_status" id="edit-variant-stock-status">
                             <option value="in_stock">Còn hàng</option>
                             <option value="out_of_stock">Hết hàng</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group mb-3">
                         <label>Mô tả</label>
                         <textarea class="form-control" name="description" id="edit-variant-description"></textarea>
                     </div>
-                    <div class="form-group text-center">
+                    <div class="form-group text-center mb-3">
                         <label>Ảnh phiên bản</label>
                         <div>
                             <img id="edit-variant-image-preview" src="" alt="Ảnh phiên bản"
@@ -170,7 +211,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Lưu</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button> {{-- Changed data-dismiss to data-bs-dismiss --}}
                 </div>
             </form>
         </div>
@@ -178,13 +219,14 @@
 </div>
 
 <script>
-    const attributesFromServer = @json($attributes);
-    const selectedAttributes = {};
-    let currentEditingIndex = null;
+    const attributesFromServer = @json($attributes); // Dữ liệu thuộc tính từ server
+    const selectedAttributes = {}; // Lưu trữ các thuộc tính đã chọn
+    let currentEditingIndex = null; // Biến để theo dõi chỉ mục của variant đang chỉnh sửa
 
+    // Hàm tải và hiển thị các thuộc tính có sẵn
     function loadAttributes() {
         const container = document.getElementById('attribute-list');
-        container.innerHTML = '';
+        container.innerHTML = ''; // Xóa nội dung hiện có
 
         attributesFromServer.forEach(attribute => {
             const groupDiv = document.createElement('div');
@@ -229,6 +271,7 @@
         });
     }
 
+    // Hàm chọn một giá trị thuộc tính
     function selectAttribute(group, value) {
         if (!selectedAttributes[group]) selectedAttributes[group] = [];
         if (!selectedAttributes[group].includes(value)) {
@@ -237,6 +280,7 @@
         }
     }
 
+    // Hàm xóa một giá trị thuộc tính
     function removeAttribute(group, value) {
         if (selectedAttributes[group]) {
             selectedAttributes[group] = selectedAttributes[group].filter(val => val !== value);
@@ -245,9 +289,10 @@
         }
     }
 
+    // Hàm hiển thị các thuộc tính đã chọn
     function renderSelectedAttributes() {
         const container = document.getElementById('selected-attributes');
-        container.innerHTML = '';
+        container.innerHTML = ''; // Xóa nội dung hiện có
 
         Object.keys(selectedAttributes).forEach(group => {
             const groupDiv = document.createElement('div');
@@ -279,6 +324,7 @@
         });
     }
 
+    // Hàm tạo ra các tổ hợp (biến thể) từ các thuộc tính đã chọn
     function generateCombinations(obj) {
         const keys = Object.keys(obj);
         if (keys.length === 0) return [];
@@ -303,110 +349,168 @@
         return combinations;
     }
 
-function handleSave() {
-    const tbody = document.getElementById('variant-table-body');
-    tbody.innerHTML = '';
+    // Hàm xử lý việc lưu các biến thể và cập nhật bảng
+    function handleSave() {
+        const tbody = document.getElementById('variant-table-body');
+        tbody.innerHTML = ''; // Xóa các dòng cũ trước khi thêm mới
 
-    const combinations = generateCombinations(selectedAttributes);
+        const combinations = generateCombinations(selectedAttributes);
 
-    combinations.forEach((combo, index) => {
-        const tr = document.createElement('tr');
-        tr.dataset.index = index;
+        // Nếu không có biến thể nào được chọn, hãy hiển thị dòng mặc định ban đầu
+        if (combinations.length === 0) {
+            const defaultTr = document.createElement('tr');
+            defaultTr.dataset.index = 0; // Đảm bảo index 0 cho dòng mặc định
 
-        const tdIndex = document.createElement('td');
-        tdIndex.textContent = index + 1;
+            // Lấy giá trị hiện có từ trường giá và mô tả chính
+            const existingPrice = document.getElementById('price').value || 0;
+            const existingDescription = document.getElementById('description').value || '';
+            const existingQuantity = 0; // Mặc định là 0 khi không có biến thể
 
-        const tdAttr = document.createElement('td');
-        const attrText = combo.join(' - ');
-        tdAttr.textContent = attrText;
-        const attrInput = document.createElement('input');
-        attrInput.type = 'hidden';
-        attrInput.name = `variants[${index}][attribute_text]`;
-        attrInput.value = attrText;
-        tdAttr.appendChild(attrInput);
+            defaultTr.innerHTML = `
+                <td>1</td>
+                <td>Mặc định
+                    <input type="hidden" name="variants[0][attribute_text]" value="Mặc định">
+                    <input type="hidden" name="variants[0][price]" value="${existingPrice}">
+                    <input type="hidden" name="variants[0][sale_price]" value="">
+                    <input type="hidden" name="variants[0][stock_status]" value="in_stock">
+                    <input type="hidden" name="variants[0][description]" value="${existingDescription}">
+                    <input type="hidden" name="variants[0][image]" value="">
+                    <input type="hidden" name="variants[0][attribute_value_ids][]" value="">
+                </td>
+                <td><input type="text" name="variants[0][sku]" class="form-control" value="SKU-${Date.now()}-0"></td>
+                <td><input type="number" name="variants[0][quantity]" class="form-control" min="0" value="${existingQuantity}"></td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-primary" onclick="editDefaultVariant(this)" data-index="0">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(defaultTr);
+        } else {
+            combinations.forEach((combo, index) => {
+                const tr = document.createElement('tr');
+                tr.dataset.index = index;
 
-        const tdSKU = document.createElement('td');
-        const skuInput = document.createElement('input');
-        skuInput.type = 'text';
-        skuInput.classList.add('form-control');
-        skuInput.name = `variants[${index}][sku]`;
-        skuInput.value = `SKU-${Date.now()}-${index}`;
-        tdSKU.appendChild(skuInput);
+                const tdIndex = document.createElement('td');
+                tdIndex.textContent = index + 1;
 
-        // 🔥 Thêm các input attribute_value_ids[] đúng chỗ
-        const attrIds = combo.map(val => {
-            const match = attributesFromServer.flatMap(attr => attr.values)
-                .find(v => v.value === val);
-            return match ? match.id : null;
-        }).filter(id => id !== null);
+                const tdAttr = document.createElement('td');
+                const attrText = combo.join(' - ');
+                tdAttr.textContent = attrText;
+                const attrInput = document.createElement('input');
+                attrInput.type = 'hidden';
+                attrInput.name = `variants[${index}][attribute_text]`;
+                attrInput.value = attrText;
+                tdAttr.appendChild(attrInput);
 
-        attrIds.forEach(attrId => {
-            const idInput = document.createElement('input');
-            idInput.type = 'hidden';
-            idInput.name = `variants[${index}][attribute_value_ids][]`;
-            idInput.value = attrId;
-            tdSKU.appendChild(idInput);
-        });
+                const tdSKU = document.createElement('td');
+                const skuInput = document.createElement('input');
+                skuInput.type = 'text';
+                skuInput.classList.add('form-control');
+                skuInput.name = `variants[${index}][sku]`;
+                skuInput.value = `SKU-${Date.now()}-${index}`;
+                tdSKU.appendChild(skuInput);
 
-        const hiddenFields = document.createElement('div');
-        hiddenFields.innerHTML = `
-            <input type="hidden" name="variants[${index}][price]">
-            <input type="hidden" name="variants[${index}][sale_price]">
-            <input type="hidden" name="variants[${index}][stock_status]">
-            <input type="hidden" name="variants[${index}][description]">
-            <input type="hidden" name="variants[${index}][image]">
-        `;
-        tdSKU.appendChild(hiddenFields);
+                const tdQuantity = document.createElement('td');
+                const quantityInput = document.createElement('input');
+                quantityInput.type = 'number';
+                quantityInput.classList.add('form-control');
+                quantityInput.name = `variants[${index}][quantity]`;
+                quantityInput.value = 0; // Mặc định số lượng là 0
+                quantityInput.min = "0";
+                tdQuantity.appendChild(quantityInput);
 
-        const tdAction = document.createElement('td');
-        const editBtn = document.createElement('button');
-        editBtn.classList.add('btn', 'btn-sm', 'btn-primary');
-        editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
-        editBtn.type = 'button';
+                // Thêm các input attribute_value_ids[] đúng chỗ
+                const attrIds = combo.map(val => {
+                    const match = attributesFromServer.flatMap(attr => attr.values)
+                        .find(v => v.value === val);
+                    return match ? match.id : null;
+                }).filter(id => id !== null);
 
-        editBtn.onclick = () => {
-            currentEditingIndex = index;
+                attrIds.forEach(attrId => {
+                    const idInput = document.createElement('input');
+                    idInput.type = 'hidden';
+                    idInput.name = `variants[${index}][attribute_value_ids][]`;
+                    idInput.value = attrId;
+                    tdAttr.appendChild(idInput);
+                });
 
-            document.getElementById('edit-variant-sku').value = skuInput.value;
-            const fields = ['price', 'sale_price', 'stock_status', 'description'];
-            fields.forEach(field => {
-                const hidden = hiddenFields.querySelector(`[name*="[${field}]"]`);
-                const modalInput = document.getElementById(`edit-variant-${field}`);
-                if (hidden && modalInput) {
-                    modalInput.value = hidden.value;
-                }
+                // Các hidden fields còn lại
+                const hiddenFieldsContainer = document.createElement('div');
+                hiddenFieldsContainer.innerHTML = `
+                    <input type="hidden" name="variants[${index}][price]" value="${document.getElementById('price').value || 0}">
+                    <input type="hidden" name="variants[${index}][sale_price]" value="">
+                    <input type="hidden" name="variants[${index}][stock_status]" value="in_stock">
+                    <input type="hidden" name="variants[${index}][description]" value="${document.getElementById('description').value || ''}">
+                    <input type="hidden" name="variants[${index}][image]" value="">
+                `;
+                tdSKU.appendChild(hiddenFieldsContainer);
+
+                const tdAction = document.createElement('td');
+                const editBtn = document.createElement('button');
+                editBtn.classList.add('btn', 'btn-sm', 'btn-primary');
+                editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
+                editBtn.type = 'button';
+
+                editBtn.onclick = () => {
+                    currentEditingIndex = index;
+
+                    // Lấy giá trị từ các input trong hàng hiện tại
+                    document.getElementById('edit-variant-sku').value = skuInput.value;
+                    document.getElementById('edit-variant-quantity').value = quantityInput.value;
+
+                    const fields = ['price', 'sale_price', 'stock_status', 'description', 'image'];
+                    fields.forEach(field => {
+                        const hiddenInput = hiddenFieldsContainer.querySelector(`input[name="variants[${index}][${field}]"]`);
+                        const modalInput = document.getElementById(`edit-variant-${field}`);
+                        if (hiddenInput && modalInput) {
+                            if (field === 'image') {
+                                const imageUrl = hiddenInput.value;
+                                document.getElementById('edit-variant-image-preview').src = imageUrl ? `/storage/${imageUrl}` : '';
+                            } else {
+                                modalInput.value = hiddenInput.value;
+                            }
+                        }
+                    });
+
+                    $('#editVariantModal').modal('show');
+                };
+
+                tdAction.appendChild(editBtn);
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.classList.add('btn', 'btn-sm', 'btn-danger', 'ms-2');
+                deleteBtn.innerHTML = '<i class="bi bi-trash"></i>';
+                deleteBtn.type = 'button';
+                deleteBtn.onclick = () => tr.remove();
+                tdAction.appendChild(deleteBtn);
+
+                tr.appendChild(tdIndex);
+                tr.appendChild(tdAttr);
+                tr.appendChild(tdSKU);
+                tr.appendChild(tdQuantity);
+                tr.appendChild(tdAction);
+
+                tbody.appendChild(tr);
             });
+        }
 
-            const imageInput = hiddenFields.querySelector(`[name*="[image]"]`);
-            if (imageInput) {
-                document.getElementById('edit-variant-image-preview').src = imageInput.value ? `/storage/${imageInput.value}` : '';
-            }
+        // Đóng modal sau khi xử lý xong
+        $('#productAttributeModal').modal('hide');
+        console.log('Đã sinh ra các variant:', combinations);
+    }
 
-            $('#editVariantModal').modal('show');
-        };
+    document.addEventListener('DOMContentLoaded', function () {
+        // Khởi tạo giá trị mặc định
+        const defaultSkuInput = document.querySelector('input[name="variants[0][sku]"]');
+        if (defaultSkuInput && !defaultSkuInput.value) {
+             defaultSkuInput.value = `SKU-${Date.now()}-0`;
+        }
+        const defaultQuantityInput = document.querySelector('input[name="variants[0][quantity]"]');
+        if (defaultQuantityInput && !defaultQuantityInput.value) {
+            defaultQuantityInput.value = 0;
+        }
 
-        tdAction.appendChild(editBtn);
-
-        const deleteBtn = document.createElement('button');
-        deleteBtn.classList.add('btn', 'btn-sm', 'btn-danger', 'ms-2');
-        deleteBtn.innerHTML = '<i class="bi bi-trash"></i>';
-        deleteBtn.type = 'button';
-        deleteBtn.onclick = () => tr.remove();
-        tdAction.appendChild(deleteBtn);
-
-        tr.appendChild(tdIndex);
-        tr.appendChild(tdAttr);
-        tr.appendChild(tdSKU);
-        tr.appendChild(tdAction);
-
-        tbody.appendChild(tr);
-    });
-
-    console.log('Đã sinh ra các variant:', combinations);
-}
-
-
-document.addEventListener('DOMContentLoaded', function () {
         const form = document.getElementById('edit-variant-form');
 
         form.addEventListener('submit', function (e) {
@@ -420,10 +524,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Cập nhật trường SKU
             const skuInput = row.querySelector(`input[name="variants[${currentEditingIndex}][sku]"]`);
-            skuInput.value = formData.get('sku') || '';
+            if (skuInput) skuInput.value = formData.get('sku') || '';
+
+            // Cập nhật trường Quantity
+            const quantityInput = row.querySelector(`input[name="variants[${currentEditingIndex}][quantity]"]`);
+            if (quantityInput) quantityInput.value = formData.get('quantity') || 0;
 
             // Cập nhật các hidden input khác
-            const fields = ['price', 'sale_price', 'stock_status','description', 'image'];
+            const fields = ['price', 'sale_price', 'stock_status', 'description', 'image'];
 
             fields.forEach(field => {
                 const input = row.querySelector(`input[name="variants[${currentEditingIndex}][${field}]"]`);
@@ -431,16 +539,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (field === 'image') {
                     const file = formData.get('image');
-                    if (file && file.name) {
+                    if (file && file.name && file.size > 0) {
                         input.value = file.name;
-
-                        // Cập nhật lại ảnh preview nếu cần
-                        const preview = document.getElementById('edit-variant-image-preview');
-                        if (preview) {
-                            preview.src = URL.createObjectURL(file);
-                        }
-                    } else {
-                        input.value = '';
                     }
                 } else {
                     input.value = formData.get(field) || '';
@@ -453,25 +553,52 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('edit-variant-image-preview').src = '';
             currentEditingIndex = null;
 
-            // Log để kiểm tra
             console.log('✔️ Đã cập nhật dòng variant:', Object.fromEntries(formData.entries()));
+        });
+
+        // Xử lý preview ảnh trong modal chỉnh sửa
+        document.getElementById('edit-variant-image').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('edit-variant-image-preview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                document.getElementById('edit-variant-image-preview').src = '';
+            }
         });
     });
 
-    function addVariantRow(index, attributeText) {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-        <td>${index}</td>
-        <td>${attributeText}</td>
-        <td>
-            <input type="text" name="variants[${index}][sku]" class="form-control" value="SKU-${Date.now()}-${index}">
-            <input type="hidden" name="variants[${index}][attribute_text]" value="${attributeText}">
-        </td>
-        <td>
-            </td>
-    `;
-    document.getElementById('variant-table-body').appendChild(tr);
-}
+    // Hàm chỉnh sửa dòng mặc định
+    function editDefaultVariant(button) {
+        const index = button.dataset.index;
+        currentEditingIndex = parseInt(index);
+
+        const row = document.querySelector(`tr[data-index="${index}"]`);
+        if (!row) return;
+
+        // Lấy giá trị từ các input trong hàng mặc định
+        document.getElementById('edit-variant-sku').value = row.querySelector(`input[name="variants[${index}][sku]"]`).value;
+        document.getElementById('edit-variant-quantity').value = row.querySelector(`input[name="variants[${index}][quantity]"]`).value;
+
+        const fields = ['price', 'sale_price', 'stock_status', 'description', 'image'];
+        fields.forEach(field => {
+            const hiddenInput = row.querySelector(`input[name="variants[${index}][${field}]"]`);
+            if (hiddenInput) {
+                if (field === 'image') {
+                    const imageUrl = hiddenInput.value;
+                    document.getElementById('edit-variant-image-preview').src = imageUrl ? `/storage/${imageUrl}` : '';
+                } else {
+                    document.getElementById(`edit-variant-${field}`).value = hiddenInput.value;
+                }
+            }
+        });
+
+        $('#editVariantModal').modal('show');
+    }
+
 </script>
 
 @endsection
