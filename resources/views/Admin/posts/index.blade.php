@@ -19,27 +19,6 @@
                             style="gap: 5px;">
                             <i class="fas fa-plus"></i> Tạo mới bài viết
                         </a>
-                        <a href="" class="btn btn-warning btn-sm d-flex align-items-center" title="Tải từ file"
-                            style="gap: 5px;">
-                            <i class="fas fa-file-upload"></i> Tải từ file
-                        </a>
-
-                        <a class="btn btn-info btn-sm d-flex align-items-center" onclick="window.print()" style="gap: 5px;">
-                            <i class="fas fa-print"></i> In dữ liệu
-                        </a>
-
-                        <button type="button" class="btn btn-secondary btn-sm d-flex align-items-center js-textareacopybtn"
-                            style="gap: 5px;">
-                            <i class="fas fa-copy"></i> Sao chép
-                        </button>
-
-                        <a class="btn btn-success btn-sm d-flex align-items-center" href="" style="gap: 5px;">
-                            <i class="fas fa-file-excel"></i> Xuất Excel
-                        </a>
-
-                        <a class="btn btn-danger btn-sm d-flex align-items-center" href="" style="gap: 5px;">
-                            <i class="fas fa-file-pdf"></i> Xuất PDF
-                        </a>
 
                         <form action="" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa tất cả?');"
                             style="display:inline;">
