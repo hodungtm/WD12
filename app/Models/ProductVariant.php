@@ -11,12 +11,11 @@ class ProductVariant extends Model
 
     protected $fillable = [
         'product_id',
-<<<<<<< HEAD
+
         'size_id',
         'color_id',
         'price',
         'quantity',
-=======
         'sku',
         'price',
         'sale_price',
@@ -25,21 +24,20 @@ class ProductVariant extends Model
         'description',
         'attribute_text',
         'image',
->>>>>>> main
+
     ];
 
     public function product()
     {
         return $this->belongsTo(Products::class, 'product_id');
     }
-<<<<<<< HEAD
+
 
     public function size()
     {
         return $this->belongsTo(Size::class, 'size_id');
     }
-=======
->>>>>>> main
+
 
     public function attributeValues()
     {

@@ -7,8 +7,8 @@
 // use App\Http\Controllers\Admin\WishlistController;
 // use App\Http\Controllers\AdminController;
 // use App\Http\Controllers\AuditLogController;
-use App\Exports\DiscountsExport;
 use App\Models\Brand;
+use App\Exports\DiscountsExport;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
@@ -17,22 +17,23 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BrandController;
+use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\AttributeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\ReviewController;
-use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DiscountController;
-use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\WishlistController;
-use App\Http\Controllers\AttributeController;
 use App\Http\Controllers\AttributeValueController;
-use App\Http\Controllers\BrandController;
 use App\Http\Controllers\Client\ProductDetailController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 
 
 Route::prefix('admin')->group(function () {
@@ -73,8 +74,8 @@ Route::prefix('admin')->name('Admin.')->group(function () {
     Route::put('categories/{id}/restore', [CategoryController::class, 'restore'])->name('categories.restore');
     Route::delete('categories/{id}/force-delete', [CategoryController::class, 'forceDelete'])->name('categories.forceDelete');
 
-<<<<<<< HEAD
-=======
+
+
     // ===== PRODUCTS =====
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     // Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
@@ -82,7 +83,7 @@ Route::prefix('admin')->name('Admin.')->group(function () {
     // Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
     // Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.delete');
     // Route::get('admin/products/{id}', [ProductController::class, 'show'])->name('products.show');
->>>>>>> main
+
 
     // ===== REVIEWS =====
     Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
@@ -167,7 +168,7 @@ Auth::routes();
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 
-<<<<<<< HEAD
+
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
@@ -194,11 +195,11 @@ Route::delete('/catalog/color/{color}', [CatalogController::class, 'destroyColor
 
 
 ////// producst/////////////////////////////////////
-=======
+
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('attribute', AttributeController::class);
     Route::resource('attributeValue', AttributeValueController::class);
     Route::resource('brand', BrandController::class);
     Route::resource('product', ProductController::class);
 });
->>>>>>> main
+
