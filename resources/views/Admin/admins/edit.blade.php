@@ -11,96 +11,87 @@
     </div>
 
     <div class="row">
-        <div class="col-md-12">
-            <div class="tile">
-                <h3 class="tile-title">Chỉnh sửa tài khoản Admin</h3>
-                <div class="tile-body">
-                    <form action="{{ route('admin.admins.update', $admin->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
+    <div class="col-md-12">
+        <div class="tile">
+            <h3 class="tile-title">Chỉnh sửa tài khoản Admin</h3>
+            <div class="tile-body">
+                <form action="{{ route('admin.admins.update', $admin->id) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
 
-                        <div class="row">
+                    <div class="row">
 
-                            <div class="form-group col-md-6">
-                                <label class="control-label">Tên</label>
-                                <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
-                                    value="{{ old('name', $admin->name) }}">
-                                @error('name')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                <label class="control-label">Email</label>
-                                <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
-                                    value="{{ old('email', $admin->email) }}">
-                                @error('email')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                <label class="control-label">Mật khẩu <small>(để trống nếu không đổi)</small></label>
-                                <input type="password" name="password"
-                                    class="form-control @error('password') is-invalid @enderror">
-                                @error('password')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                <label class="control-label">Xác nhận mật khẩu</label>
-                                <input type="password" name="password_confirmation" class="form-control">
-                            </div>
-
-                            <div class="form-group col-md-6">
-                                <label><strong>Phân quyền</strong></label>
-                                <div class="multi-select-dropdown" id="roleDropdown" style="position: relative;">
-                                    <div class="select-box" tabindex="0"
-                                        style="border: 1px solid #ccc; border-radius: 5px; padding: 8px; min-height: 40px; display: flex; align-items: center; cursor: pointer;">
-                                        <span class="placeholder" style="color:#aaa; flex-grow: 1;">Chọn quyền...</span>
-                                        <span class="selected-text" style="flex-grow: 1;"></span>
-                                    </div>
-                                    <div class="options"
-                                        style="display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 200px; overflow-y: auto; border: 1px solid #ccc; border-radius: 5px; background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.15); z-index: 1000;">
-                                        @foreach($roles as $role)
-                                            <div class="option-item" data-id="{{ $role->id }}"
-                                                style="padding: 8px 12px; cursor: pointer; font-size: 14px;">
-                                                {{ $role->name }}
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                    <input type="hidden" name="roles[]" id="roleInput" value="">
-                                </div>
-                            </div>
-
-
-
-                            <div class="form-group col-md-6 mt-6">
-                                <label class="control-label">Trạng thái</label>
-                                <select name="is_active" class="form-control @error('is_active') is-invalid @enderror">
-                                    <option value="1" {{ old('is_active', $admin->is_active) == 1 ? 'selected' : '' }}>Hoạt
-                                        động</option>
-                                    <option value="0" {{ old('is_active', $admin->is_active) == 0 ? 'selected' : '' }}>Khóa
-                                    </option>
-                                </select>
-                                @error('is_active')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
+                        <div class="form-group col-md-6">
+                            <label class="control-label">Tên</label>
+                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
+                                value="{{ old('name', $admin->name) }}">
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
-                        <button type="submit" class="btn btn-save mt-3">Lưu lại</button>
-                        <a href="{{ route('admin.admins.index') }}" class="btn btn-cancel mt-3">Hủy bỏ</a>
-                    </form>
-                </div>
+                        <div class="form-group col-md-6">
+                            <label class="control-label">Email</label>
+                            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
+                                value="{{ old('email', $admin->email) }}">
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="control-label">Mật khẩu <small>(để trống nếu không đổi)</small></label>
+                            <input type="password" name="password"
+                                class="form-control @error('password') is-invalid @enderror">
+                            @error('password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label class="control-label">Xác nhận mật khẩu</label>
+                            <input type="password" name="password_confirmation" class="form-control">
+                        </div>
+
+                        {{-- ẢNH ĐẠI DIỆN --}}
+                        <div class="form-group col-md-6">
+                            <label class="control-label">Ảnh đại diện</label>
+                            @if ($admin->avatar)
+                                <div class="mb-2">
+                                    <img src="{{ asset('storage/' . $admin->avatar) }}" alt="Avatar"
+                                         class="rounded-circle" width="100" height="100">
+                                </div>
+                            @endif
+                            <input type="file" name="avatar" class="form-control @error('avatar') is-invalid @enderror">
+                            @error('avatar')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group col-md-6 mt-6">
+                            <label class="control-label">Trạng thái</label>
+                            <select name="is_active" class="form-control @error('is_active') is-invalid @enderror">
+                                <option value="1" {{ old('is_active', $admin->is_active) == 1 ? 'selected' : '' }}>Hoạt động</option>
+                                <option value="0" {{ old('is_active', $admin->is_active) == 0 ? 'selected' : '' }}>Khóa</option>
+                            </select>
+                            @error('is_active')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-save mt-3">Lưu lại</button>
+                    <a href="{{ route('admin.admins.index') }}" class="btn btn-cancel mt-3">Hủy bỏ</a>
+                </form>
             </div>
         </div>
     </div>
+</div>
+
 @endsection
 
-<script>
+{{-- <script>
 document.addEventListener('DOMContentLoaded', function () {
     const dropdown = document.getElementById('roleDropdown');
     const selectBox = dropdown.querySelector('.select-box');
@@ -169,4 +160,4 @@ document.addEventListener('DOMContentLoaded', function () {
     color: white;
     outline: none;
   }
-</style>
+</style> --}}

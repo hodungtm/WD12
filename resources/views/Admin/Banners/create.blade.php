@@ -30,13 +30,14 @@
                             <div class="mb-3">
                                 <label for="tieu_de" class="form-label">Tiêu đề:</label>
                                 <input type="text" name="tieu_de"
-                                    class="form-control @error('tieu_de') is-invalid @enderror"
-                                    value="{{ old('tieu_de') }}" placeholder="Tiêu đề cho banner">
+                                    class="form-control @error('tieu_de') is-invalid @enderror" value="{{ old('tieu_de') }}"
+                                    placeholder="Tiêu đề cho banner">
                             </div>
 
                             <div class="mb-3">
                                 <label for="noi_dung" class="form-label">Nội dung:</label>
-                                <textarea placeholder="Nội dung của banner" name="noi_dung" class="form-control @error('noi_dung') is-invalid @enderror">{{ old('noi_dung') }}</textarea>
+                                <textarea placeholder="Nội dung của banner" name="noi_dung"
+                                    class="form-control @error('noi_dung') is-invalid @enderror">{{ old('noi_dung') }}</textarea>
                             </div>
 
                             <div class="mb-3">
@@ -91,9 +92,30 @@
         </div>
         <!-- end col -->
 
-        <div class="col-xl-7 col-lg-8">
+        {{-- <div class="col-xl-7 col-lg-8">
             <div class="card">
                 <h1 class="card-header">Ảnh ở đây</h1>
+                <div id="bannerCarousel" class="carousel slide mb-3 p-2" data-bs-ride="carousel">
+                    <div class="carousel-inner" id="carouselImages">
+                        <!-- Nơi ảnh sẽ được thêm vào -->
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+        </div> --}}
+
+        <div class="col-xl-7 col-lg-8">
+            <div class="card">
+                <h1 class="card-header">Slide ở đây</h1>
                 <div id="bannerCarousel" class="carousel slide mb-3 p-2" data-bs-ride="carousel">
                     <div class="carousel-inner" id="carouselImages">
                         <!-- Nơi ảnh sẽ được thêm vào -->
@@ -108,9 +130,22 @@
                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Next</span>
                     </button> --}}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarouselModal"
+                        data-bs-slide="prev"
+                        style="background: transparent; border: none; outline: none; box-shadow: none;">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#bannerCarouselModal"
+                        data-bs-slide="next"
+                        style="background: transparent; border: none; outline: none; box-shadow: none;">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden"></span>
+                    </button>
                 </div>
             </div>
         </div>
+
         <!-- end col -->
     </div>
 
@@ -121,7 +156,7 @@
     <!-- gridjs css -->
     <link rel="stylesheet" href="{{ asset('assets/admin/libs/gridjs/theme/mermaid.min.css') }}">
 @endpush
-
+@push('scripts')
     <!-- prismjs plugin -->
     <script src="{{ asset('assets/admin/libs/prismjs/prism.js') }}"></script>
 
@@ -185,4 +220,4 @@
             row.remove();
         }
     </script>
-
+@endpush

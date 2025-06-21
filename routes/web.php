@@ -1,6 +1,14 @@
 <?php
 
+// use App\Http\Controllers\Admin\BannerController;
+// use App\Http\Controllers\Admin\DiscountController;
+// use App\Http\Controllers\Admin\OrderController;
+// use App\Http\Controllers\Admin\UserController;
+// use App\Http\Controllers\Admin\WishlistController;
+// use App\Http\Controllers\AdminController;
+// use App\Http\Controllers\AuditLogController;
 use App\Exports\DiscountsExport;
+use App\Models\Brand;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Route;
@@ -19,11 +27,15 @@ use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DiscountController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\WishlistController;
+use App\Http\Controllers\AttributeController;
+use App\Http\Controllers\AttributeValueController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\Client\ProductDetailController;
 
 
-Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+Route::prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 });
 
@@ -45,6 +57,8 @@ Route::prefix('client')->name('client.')->group(function () {
 Route::prefix('admin')->group(function () {
     Route::resource('orders', OrderController::class)->names('admin.orders');
 });
+Route::post('/admin/orders/{order}/complete', [App\Http\Controllers\Admin\OrderController::class, 'completeOrder'])->name('admin.orders.complete');
+
 Route::prefix('admin')->name('Admin.')->group(function () {
 
     // ===== CATEGORIES =====
@@ -59,6 +73,16 @@ Route::prefix('admin')->name('Admin.')->group(function () {
     Route::put('categories/{id}/restore', [CategoryController::class, 'restore'])->name('categories.restore');
     Route::delete('categories/{id}/force-delete', [CategoryController::class, 'forceDelete'])->name('categories.forceDelete');
 
+<<<<<<< HEAD
+=======
+    // ===== PRODUCTS =====
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    // Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
+    // Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    // Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    // Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.delete');
+    // Route::get('admin/products/{id}', [ProductController::class, 'show'])->name('products.show');
+>>>>>>> main
 
     // ===== REVIEWS =====
     Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
@@ -105,23 +129,45 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('banners', BannerController::class);
 });
 // Quản lý tài khoản Admin và Role
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::resource('admins', AdminController::class)->except(['show']);
-    Route::resource('roles', RoleController::class)->except(['show']);
-});
+// Route::prefix('admin')->name('admin.')->group(function () {
+//     Route::resource('admins', AdminController::class);
+//     // Route::resource('roles', RoleController::class);
+// });
 Route::get('admin/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit_logs.index');
+// Quản lý tài khoản
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('users', AdminUserController::class);
+    Route::patch('users/{user}/toggle-active', [AdminUserController::class, 'toggleActive'])->name('users.toggle-active');
+});
 
-
-Route::middleware(['auth','admin'])->group(function () {
+// Middleware cho trang overview người dùng
+Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/user/overview', [UserController::class, 'overview'])->name('user.overview');
 });
+
+// Auth routes
+Auth::routes();
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Auth::routes();
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-Auth::routes();
 
+<<<<<<< HEAD
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
@@ -148,3 +194,11 @@ Route::delete('/catalog/color/{color}', [CatalogController::class, 'destroyColor
 
 
 ////// producst/////////////////////////////////////
+=======
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('attribute', AttributeController::class);
+    Route::resource('attributeValue', AttributeValueController::class);
+    Route::resource('brand', BrandController::class);
+    Route::resource('product', ProductController::class);
+});
+>>>>>>> main

@@ -12,26 +12,31 @@ use Illuminate\Support\Facades\Storage;
 
 class BannerController extends Controller
 {
-    public function index(Request $request)
-    {
-        // Lấy giá trị từ ô tìm kiếm nếu có
-        $search = $request->input('search');
+   public function index(Request $request)
+{
+    // Lấy giá trị từ ô tìm kiếm và lọc loại banner nếu có
+    $search = $request->input('search');
+    $loaiBanner = $request->input('loai_banner');
 
-        // Query banner cùng mối quan hệ hình ảnh
-        $query = Banner::with('hinhAnhBanner');
+    // Query banner cùng mối quan hệ hình ảnh
+    $query = Banner::with('hinhAnhBanner');
 
-        // Nếu có tìm kiếm thì lọc theo tiêu đề
-        if (!empty($search)) {
-            $query->where('tieu_de', 'like', '%' . $search . '%');
-        }
-
-        // Sắp xếp mới nhất và phân trang
-        $banners = $query->orderBy('id', 'desc')->paginate(5);
-
-        // Trả về view và truyền dữ liệu
-
-        return view('admin.banners.index', compact('banners'));
+    // Nếu có tìm kiếm thì lọc theo tiêu đề
+    if (!empty($search)) {
+        $query->where('tieu_de', 'like', '%' . $search . '%');
     }
+
+    // Nếu có lọc theo loại banner thì thêm điều kiện
+    if (!empty($loaiBanner)) {
+        $query->where('loai_banner', $loaiBanner);
+    }
+
+    // Sắp xếp mới nhất và phân trang, giữ lại query string khi chuyển trang
+    $banners = $query->orderBy('id', 'desc')->paginate(5)->withQueryString();
+
+    return view('admin.banners.index', compact('banners'));
+}
+
 
     public function create()
     {
@@ -69,36 +74,46 @@ class BannerController extends Controller
     }
 
 
-    public function update(BannerRequest $request, Banner $banner)
+    public function update(Request $request, string $id)
 {
-    // 1. Cập nhật thông tin cơ bản
-    $banner->update($request->only(['tieu_de', 'noi_dung', 'loai_banner', 'trang_thai']));
+    $banner = Banner::findOrFail($id);
 
-    // 2. Danh sách ID ảnh cũ còn giữ lại (từ hidden input)
-    $imageIdsFromForm = array_keys($request->input('list_image', []));
+    // Cập nhật thông tin banner
+    $banner->update([
+        'tieu_de'    => $request->tieu_de,
+        'noi_dung'   => $request->noi_dung,
+        'loai_banner'=> $request->loai_banner,
+        'trang_thai' => $request->trang_thai,
+    ]);
 
-    // 3. Xóa ảnh cũ không còn trong form
-    $banner->hinhAnhBanner->each(function ($image) use ($imageIdsFromForm) {
-        if (!in_array($image->id, $imageIdsFromForm)) {
-            Storage::disk('public')->delete($image->hinh_anh);
-            $image->delete();
+    // XÓA HÌNH ẢNH ĐƯỢC ĐÁNH DẤU
+    if ($request->has('delete_images')) {
+        foreach ($request->delete_images as $imageId) {
+            $image = $banner->hinhAnhBanner()->find($imageId);
+            if ($image) {
+                // Xóa file trên storage
+                Storage::disk('public')->delete($image->hinh_anh);
+                // Xóa bản ghi trong database
+                $image->delete();
+            }
         }
-    });
+    }
 
-    // 4. Thêm ảnh mới
+    // THÊM ẢNH MỚI (nếu có)
     if ($request->hasFile('list_image')) {
-        foreach ($request->file('list_image') as $key => $image) {
-            if (is_file($image) && $image->isValid()) {
-                $path = $image->store("uploads/hinhanhbanner/id_{$banner->id}", 'public');
+        foreach ($request->file('list_image') as $image) {
+            if ($image) {
+                $path = $image->store("uploads/hinhanhbanner/id_$id", 'public');
                 $banner->hinhAnhBanner()->create([
-                    'hinh_anh' => $path
+                    'hinh_anh' => $path,
                 ]);
             }
         }
     }
 
-    return redirect()->route('admin.banners.index')->with('success', 'Cập nhật Banner thành công.');
+    return redirect()->route('admin.banners.index')->with('success', 'Cập nhật banner thành công!');
 }
+
 
 
 
@@ -116,6 +131,21 @@ class BannerController extends Controller
 
         return redirect()->back()->with('success', 'Xóa thành công');
     }
+
+//     public function destroyImage($id)
+// {
+//     $image = HinhAnhBanner::findOrFail($id);
+
+//     // Xóa file trên storage
+//     if ($image->hinh_anh) {
+//         Storage::disk('public')->delete($image->hinh_anh);
+//     }
+
+//     $image->delete();
+
+//     return redirect()->back()->with('success', 'Xóa ảnh thành công!');
+// }
+
 
     public function updateStatus(Request $request, $id)
     {
