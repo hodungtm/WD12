@@ -79,6 +79,75 @@
 
     <script src="https://unpkg.com/boxicons@latest/dist/boxicons.js"></script>
 
+<<<<<<< HEAD
+  {{------------------------ AE GẮN LINK CHUYỂN TRANG Ở DƯỚI ĐÂY NHÉ -------------------------------}}
+  <!-- Sidebar menu-->
+  <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+  <aside class="app-sidebar">
+    <div class="app-sidebar__user"><img class="app-sidebar__user-avatar"
+        src="https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482621VPj/anh-mo-ta.png"
+        width="50px" alt="User Image">
+      <div>
+        <p class="app-sidebar__user-name"><b>Sudes Sport</b></p>
+        <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>
+      </div>
+    </div>
+    <hr>
+    <ul class="app-menu">
+      <li>
+        <a class="app-menu__item" href="{{ route('admin.dashboard') }}">
+          <i class='app-menu__icon bx bx-purchase-tag-alt'></i>
+          <span class="app-menu__label">Thống kê</span>
+        </a>
+      </li>
+      <li>
+        <a class="app-menu__item" href="{{ route('Admin.categories.index') }}">
+          <i class='app-menu__icon bx bx-purchase-tag-alt'></i>
+          <span class="app-menu__label">Quản lý danh mục</span>
+        </a>
+      </li>
+      <li><a class="app-menu__item" href="{{ route('Admin.reviews.index') }}"><i
+            class='app-menu__icon bx bx-task'></i><span class="app-menu__label">Quản lý đánh giá</span></a></li>
+      <li><a class="app-menu__item" href="{{ route('Admin.comments.index') }}"><i
+            class='app-menu__icon bx bx-user-voice'></i><span class="app-menu__label">Quản lý bình luận</span></a></li>
+      <li><a class="app-menu__item" href="{{ route('posts.index') }}"><i class='app-menu__icon bx bx-edit'></i><span
+            class="app-menu__label">Quản lý Bài Viết</span></a></li>
+      <li><a class="app-menu__item " href="table-data-table.html"><i class='app-menu__icon bx bx-id-card'></i> <span
+            class="app-menu__label">Quản lý nhân viên</span></a></li>
+      <li>
+        <a class="app-menu__item" href="{{ route('admin.discounts.index') }}">
+          <i class='app-menu__icon bx bx-purchase-tag-alt'></i>
+          <span class="app-menu__label">Quản lý Mã Giảm Giá</span>
+        </a>
+      </li>
+      <li><a class="app-menu__item" href="#"><i class='app-menu__icon bx bx-user-voice'></i><span
+            class="app-menu__label">Quản lý khách hàng</span></a></li>
+
+     
+      <li><a class="app-menu__item" href="{{ route('admin.orders.index') }}"><i
+            class='app-menu__icon bx bx-task'></i><span class="app-menu__label">Quản lý đơn hàng</span></a></li>
+      <li><a class="app-menu__item" href="{{ route('admin.admins.index') }}"><i
+            class='app-menu__icon bx bx-user'></i><span class="app-menu__label">Quản lý tài khoản admin
+          </span></a></li>
+      <li>
+        <a class="app-menu__item" href="{{ route('admin.banners.index') }}">
+          <i class='app-menu__icon bx bx-image'></i>
+          <span class="app-menu__label">Quản lý banner</span>
+        </a>
+      </li>
+     <li>
+  <a class="app-menu__item" href="{{ route('admin.dashboard') }}">
+    <i class='app-menu__icon bx bx-bar-chart-alt-2'></i>
+    <span class="app-menu__label">Trang Thống Kê</span>
+  </a>
+</li>
+                <li>
+                <a class="app-menu__item" href="catalog"><i class='app-menu__icon bx bx-collection'></i><span class="app-menu__label">catalog</span></a>
+            </li>
+            <li>
+                <a class="app-menu__item" href="products"><i class='app-menu__icon bx bx-cube'></i><span class="app-menu__label">Products</span></a>
+            </li>
+=======
     <script type="text/javascript">
         // Your custom JavaScript code here
         var data = {
@@ -105,6 +174,7 @@
         };
         var ctxl = $("#lineChartDemo").get(0).getContext("2d");
         var lineChart = new Chart(ctxl).Line(data);
+>>>>>>> main
 
         var ctxb = $("#barChartDemo").get(0).getContext("2d");
         var barChart = new Chart(ctxb).Bar(data);
