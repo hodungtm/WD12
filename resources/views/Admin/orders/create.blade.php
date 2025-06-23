@@ -26,18 +26,29 @@
                 @error('user_id') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
 
-            <div class="form-group">
-                <label>Người Nhận</label>
-                <select name="receiver_id" class="form-control" required>
-                    <option value="">-- Chọn Người Nhận --</option>
-                    @foreach($receivers as $receiver)
-                        <option value="{{ $receiver->id }}" {{ old('receiver_id') == $receiver->id ? 'selected' : '' }}>
-                            {{ $receiver->name }} ({{ $receiver->email }})
-                        </option>
-                    @endforeach
-                </select>
-                @error('receiver_id') <span class="text-danger">{{ $message }}</span> @enderror
-            </div>
+          <div class="form-group">
+    <label for="receiver_name">Tên người nhận</label>
+    <input type="text" class="form-control" name="receiver_name" value="{{ old('receiver_name') }}" required>
+    @error('receiver_name') <span class="text-danger">{{ $message }}</span> @enderror
+</div>
+
+<div class="form-group">
+    <label for="receiver_phone">Số điện thoại</label>
+    <input type="text" class="form-control" name="receiver_phone" value="{{ old('receiver_phone') }}" required>
+    @error('receiver_phone') <span class="text-danger">{{ $message }}</span> @enderror
+</div>
+
+<div class="form-group">
+    <label for="receiver_email">Email</label>
+    <input type="email" class="form-control" name="receiver_email" value="{{ old('receiver_email') }}">
+    @error('receiver_email') <span class="text-danger">{{ $message }}</span> @enderror
+</div>
+
+<div class="form-group">
+    <label for="receiver_address">Địa chỉ</label>
+    <textarea class="form-control" name="receiver_address" rows="3" required>{{ old('receiver_address') }}</textarea>
+    @error('receiver_address') <span class="text-danger">{{ $message }}</span> @enderror
+</div>
 
             <div class="form-group">
                 <label>Ngày tạo đơn</label>

@@ -39,8 +39,8 @@ class ProductVariant extends Model
     }
 
 
-    public function attributeValues()
+    public function color()
     {
-        return $this->belongsToMany(AttributeValue::class, 'attribute_value_product_variant');
+        return $this->belongsTo(Color::class, 'color_id');
     }
 }

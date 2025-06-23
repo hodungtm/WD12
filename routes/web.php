@@ -76,13 +76,6 @@ Route::prefix('admin')->name('Admin.')->group(function () {
 
 
 
-    // ===== PRODUCTS =====
-    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-    // Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
-    // Route::post('/products', [ProductController::class, 'store'])->name('products.store');
-    // Route::get('/products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
-    // Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.delete');
-    // Route::get('admin/products/{id}', [ProductController::class, 'show'])->name('products.show');
 
 
     // ===== REVIEWS =====
@@ -151,25 +144,7 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
-Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-Auth::routes();
-
-Route::get('/home', [HomeController::class, 'index'])->name('home');
-
-
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 
 
@@ -195,11 +170,4 @@ Route::delete('/catalog/color/{color}', [CatalogController::class, 'destroyColor
 
 
 ////// producst/////////////////////////////////////
-
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::resource('attribute', AttributeController::class);
-    Route::resource('attributeValue', AttributeValueController::class);
-    Route::resource('brand', BrandController::class);
-    Route::resource('product', ProductController::class);
-});
 

@@ -37,7 +37,7 @@ class ProductsController extends Controller
                       ->appends($request->query()); // giữ lại query search khi chuyển trang
 
     // Truyền dữ liệu vào view
-    return view('admin.products.List', compact('products'));
+    return view('admin.products.index', compact('products'));
 }
 
 
