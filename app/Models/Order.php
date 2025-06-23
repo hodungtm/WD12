@@ -10,52 +10,52 @@ class Order extends Model
     use HasFactory;
 
     protected $fillable = [
+        'order_code',
         'user_id',
-        'receiver_id', // Thêm nếu bạn muốn gán receiver_id qua mass assignment
-        'discount_id', // Thêm nếu bạn muốn gán discount_id qua mass assignment
+        'shipping_method_id',
+
+        // Thông tin người nhận (nếu không dùng bảng receivers)
+        'receiver_name',
+        'receiver_phone',
+        'receiver_email',
+        'receiver_address',
+
         'order_date',
+        'note',
+
+        // Trạng thái đơn hàng
         'status',
+
+        // Thanh toán
         'payment_status',
         'payment_method',
-        'total_amount',
-        'note',
-        'shipping_method_id', // <-- THÊM DÒNG NÀY
-        'order_code', // <-- THÊM DÒNG NÀY nếu bạn cũng tạo order_code qua mass assignment
-        'total_price', // <-- THÊM nếu bạn gán nó qua mass assignment
-        'discount_amount', // <-- THÊM nếu bạn gán nó qua mass assignment
-        'final_amount', 
+
+        // Giá tiền
+        'total_price',
+        'discount_amount',
+        'final_amount',
+        'discount_code'
     ];
 
-    // Một đơn hàng thuộc về một khách hàng
+    protected $casts = [
+        'order_date' => 'datetime',
+    ];
+
+    /** Quan hệ Eloquent **/
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-    public function receiver()
-{
-    return $this->belongsTo(Receiver::class);
-}
 
- public function discount()
+    public function shippingMethod()
     {
-        return $this->belongsTo(Discount::class, 'discount_id');
+        return $this->belongsTo(ShippingMethod::class);
     }
 
-public function shippingMethod()
-{
-    return $this->belongsTo(ShippingMethod::class, 'shipping_method_id');
-}
-
-
- public function archivedOrderItems()
-    {
-        return $this->hasMany(ArchivedOrderItem::class);
-    }
-
-    // Một đơn hàng có nhiều sản phẩm (thông qua bảng trung gian order_items)
     public function orderItems()
     {
-        return $this->hasMany(Order_items::class);
+        return $this->hasMany(Order_items::class); 
     }
 
     // Tổng tiền tự động tính lại (nếu cần)

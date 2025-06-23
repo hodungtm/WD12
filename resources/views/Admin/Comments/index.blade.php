@@ -18,11 +18,11 @@
             <div class="tile">
                 <div class="tile-body">
                     <div class="row element-button">
-                        <div class="col-sm-2">
+                        {{-- <div class="col-sm-2">
                             <a href="{{ route('Admin.comments.trash') }}" class="btn btn-warning">
                                 <i class="fas fa-trash-restore"></i> Thùng rác
                             </a>
-                        </div>
+                        </div> --}}
                     </div>
 
                     <form method="GET" action="{{ route('Admin.comments.index') }}" class="d-flex mb-3"
@@ -82,13 +82,13 @@
                                     <td>
                                         <a href="{{ route('Admin.comments.edit', $comment->id) }}"
                                             class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
-                                        <form method="POST" action="{{ route('Admin.comments.destroy', $comment->id) }}"
+                                        {{-- <form method="POST" action="{{ route('Admin.comments.destroy', $comment->id) }}"
                                             style="display:inline" onsubmit="return confirm('Bạn có chắc muốn xóa?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-danger btn-sm"><i
                                                     class="fas fa-trash-alt"></i></button>
-                                        </form>
+                                        </form> --}}
                                         <a href="{{ route('Admin.comments.show', $comment->id) }}"
                                             class="btn btn-info btn-sm">
                                             <i class="fas fa-eye"></i>

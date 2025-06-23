@@ -85,33 +85,33 @@ class CommentController extends Controller
         ])->with('success', 'Đã duyệt bình luận.');
     }
 
-    public function destroy($id)
-    {
-        $comment = Comment::findOrFail($id);
-        $comment->delete();
-        return redirect()->route('Admin.comments.index')->with('success', 'Xóa bình luận thành công (xóa mềm).');
-    }
+    // public function destroy($id)
+    // {
+    //     $comment = Comment::findOrFail($id);
+    //     $comment->delete();
+    //     return redirect()->route('Admin.comments.index')->with('success', 'Xóa bình luận thành công (xóa mềm).');
+    // }
 
     // Thùng rác bình luận
-    public function trash()
-    {
-        $comments = Comment::onlyTrashed()->paginate(10);
-        return view('Admin.comments.trash', compact('comments'));
-    }
+    // public function trash()
+    // {
+    //     $comments = Comment::onlyTrashed()->paginate(10);
+    //     return view('Admin.comments.trash', compact('comments'));
+    // }
 
-    // Khôi phục bình luận
-    public function restore($id)
-    {
-        $comment = Comment::onlyTrashed()->where('id', $id)->firstOrFail();
-        $comment->restore();
-        return redirect()->route('Admin.comments.trash')->with('success', 'Khôi phục bình luận thành công.');
-    }
+    // // Khôi phục bình luận
+    // public function restore($id)
+    // {
+    //     $comment = Comment::onlyTrashed()->where('id', $id)->firstOrFail();
+    //     $comment->restore();
+    //     return redirect()->route('Admin.comments.trash')->with('success', 'Khôi phục bình luận thành công.');
+    // }
 
-    // Xóa vĩnh viễn bình luận
-    public function forceDelete($id)
-    {
-        $comment = Comment::onlyTrashed()->where('id', $id)->firstOrFail();
-        $comment->forceDelete();
-        return redirect()->route('Admin.comments.trash')->with('success', 'Xóa bình luận vĩnh viễn thành công.');
-    }
+    // // Xóa vĩnh viễn bình luận
+    // public function forceDelete($id)
+    // {
+    //     $comment = Comment::onlyTrashed()->where('id', $id)->firstOrFail();
+    //     $comment->forceDelete();
+    //     return redirect()->route('Admin.comments.trash')->with('success', 'Xóa bình luận vĩnh viễn thành công.');
+    // }
 }
