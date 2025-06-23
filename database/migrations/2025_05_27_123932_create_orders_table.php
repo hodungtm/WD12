@@ -21,7 +21,7 @@ return new class extends Migration
             $table->date('order_date')->nullable();
 
             // Phương thức vận chuyển
-            $table->foreignId('shipping_method_id')->constrained()->onDelete('set null')->nullable();
+            $table->foreignId('shipping_method_id')->constrained()->nullable();
 
             // Thông tin người nhận (snapshot)
             $table->string('receiver_name');
