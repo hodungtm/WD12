@@ -1,10 +1,5 @@
 @extends('Client.Layouts.ClientLayout')
 @section('main')
-<<<<<<< HEAD
-<h1>TEST CLIENT </h1>
-
-@endsection
-=======
     <section class="product-single theme3 pt-60">
         <div class="container">
             <div class="row">
@@ -15,23 +10,34 @@
                     <div class="product-sync-init mb-20">
                         <div class="single-product">
                             <div class="product-thumb">
-                                <img class="d-block mx-auto" src="{{ asset('storage/' . $product->image_product) }}"
-                                    alt="{{ $product->name }}" style="width: auto; height: 400px;">
+                                @if($product->images->count())
+    {{-- Ảnh chính --}}
+    <div class="d-flex justify-content-center mb-3">
+    <img id="mainProductImage"
+         src="{{ asset('storage/' . $product->images->first()->image) }}"
+         alt="{{ $product->name }}"
+         style="width: auto; height: 400px;"
+         class="img-fluid border rounded shadow-sm">
+</div>
+
+    {{-- Ảnh phụ --}}
+    <div class="d-flex justify-content-center flex-wrap gap-2">
+        @foreach($product->images as $img)
+            <img src="{{ asset('storage/' . $img->image) }}"
+                 alt="Ảnh phụ"
+                 class="thumbnail border rounded shadow-sm"
+                 style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
+                 onclick="document.getElementById('mainProductImage').src = this.src">
+        @endforeach
+    </div>
+@else
+    <p>Không có ảnh</p>
+@endif
                             </div>
                         </div>
-                        <!-- single-product end -->
-
+                        
                     </div>
-
-                    <div class="product-sync-nav single-product">
-                        <div class="single-product">
-                            <div class="product-thumb">
-                                <a href="javascript:void(0)"> <img src="{{ asset('storage/' . $product->image_product) }}"
-                                        alt="product-thumb"></a>
-                            </div>
-                        </div>
-
-                    </div>
+                   
                 </div>
                 <div class="col-lg-6 mt-5 mt-md-0">
                     <div class="single-product-info">
@@ -58,49 +64,50 @@
                         <div class="product-footer">
                             <form action="" method="POST">
                                 @csrf
-                                <div class="product-grouped product-count style">
-                                    @foreach($product->variants as $variant)
-                                        <div class="media flex-column flex-sm-row align-items-sm-center mb-4">
-                                            <div class="count d-flex">
-                                                <span class="ms-2 text-muted">(Còn: {{ $variant->quantity }} SP)</span>
-                                                <input type="number" min="0" max="10" step="1" value="0"
-                                                    name="quantities[{{ $variant->id }}]" class="form-control me-2"
-                                                    style="width: 70px;">
-                                                <div class="button-group d-flex flex-column justify-content-between">
-                                                    <button type="button" class="count-btn increment"><i
-                                                            class="fas fa-chevron-up"></i></button>
-                                                    <button type="button" class="count-btn decrement"><i
-                                                            class="fas fa-chevron-down"></i></button>
-                                                </div>
-                                            </div>
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Màu sắc:</label>
+                                    <div class="d-flex flex-wrap gap-3">
+                                        @foreach($product->variants->groupBy('color_id') as $colorId => $variantsByColor)
+                                            @php $color = $variantsByColor->first()->color; @endphp
+                                            <label class="color-option position-relative btn btn-outline-dark"
+                                                style="cursor: pointer;">
+                                                <input type="radio" name="selected_color" value="{{ $colorId }}"
+                                                    class="d-none color-radio">
 
-                                            <div class="media-body d-flex align-items-center ms-4">
-                                                <div class="group-img me-4">
-                                                    {{-- Hiển thị Size --}}
-                                                    <div class="mb-1">Size: <strong>{{ $variant->size->name ?? 'N/A' }}</strong>
-                                                    </div>
-
-                                                    {{-- Hiển thị Color --}}
-                                                    <div class="color-circle"
-                                                        style="width: 20px; height: 20px; border-radius: 50%; background-color: {{ $variant->color->code ?? '#000' }}; border: 1px solid #ccc;"
-                                                        title="{{ $variant->color->name ?? 'Color' }}"></div>
-                                                </div>
-
-                                                <div>
-                                                    <h3 class="title mb-1">{{ $variant->ten_bien_the }}</h3>
-                                                    <h6 class="product-price">
-                                                        <span
-                                                            class="onsale fw-bold">{{ number_format($variant->variant_sale_price ?? $variant->variant_price, 0, ',', '.') }}₫</span>
-                                                        @if($product->sale_price)
-                                                            <del
-                                                                class="del ms-2">{{ number_format($variant->variant_price, 0, ',', '.') }}₫</del>
-                                                        @endif
-                                                    </h6>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
+                                                <div class="text-center small mt-1">{{ $color->name }}</div>
+                                            </label>
+                                        @endforeach
+                                    </div>
                                 </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Kích thước:</label>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        @foreach($product->variants as $variant)
+                                            <label
+                                                class="size-option d-none color-{{ $variant->color_id }} btn btn-outline-dark"
+                                                data-variant-id="{{ $variant->id }}"
+                                                data-price="{{ $variant->price ?? $variant->price }}"
+                                                data-stock="{{ $variant->quantity }}">
+                                                {{ $variant->size->name ?? 'N/A' }}
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                <div id="variant-info" class="d-none mt-3">
+                                    <div class="mb-2 text-muted">
+                                        <span>Giá: </span>
+                                        <span id="selected-price" class="fw-bold text-danger"></span>
+                                        <span id="selected-stock" class="ms-3">(Còn <span id="stock-count"></span>
+                                            SP)</span>
+                                    </div>
+                                    <label for="quantity" class="form-label">Số lượng:</label>
+                                    <input type="number" id="quantity" name="quantity" class="form-control mb-3" value="1"
+                                        min="1" style="width: 100px;">
+                                </div>
+
+                                <input type="hidden" name="selected_variant_id" id="selected_variant_id">
 
                                 <div class="mb-4">
                                     <button type="submit" class="btn theme-btn--dark3 btn--xl mt-5 mt-sm-0 rounded-5">
@@ -358,5 +365,50 @@
     </div>
 
     </div>
+
+
+    <style>
+        .color-option input:checked+span {
+            border: 2px solid #000;
+        }
+
+        .size-option.active {
+            background-color: #000 !important;
+            color: #fff !important;
+        }
+    </style>
+
+    <script>
+        document.querySelectorAll('.color-radio').forEach(radio => {
+            radio.addEventListener('change', function () {
+                const colorId = this.value;
+                document.querySelectorAll('.size-option').forEach(btn => {
+                    btn.classList.add('d-none');
+                    btn.classList.remove('active');
+                });
+                document.querySelectorAll('.color-' + colorId).forEach(btn => {
+                    btn.classList.remove('d-none');
+                });
+                document.getElementById('variant-info').classList.add('d-none');
+            });
+        });
+
+        document.querySelectorAll('.size-option').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.size-option').forEach(el => el.classList.remove('active'));
+                this.classList.add('active');
+
+                const variantId = this.dataset.variantId;
+                const price = parseInt(this.dataset.price).toLocaleString('vi-VN') + '₫';
+                const stock = this.dataset.stock;
+
+                document.getElementById('selected-price').textContent = price;
+                document.getElementById('stock-count').textContent = stock;
+                document.getElementById('quantity').setAttribute('max', stock);
+                document.getElementById('selected_variant_id').value = variantId;
+                document.getElementById('variant-info').classList.remove('d-none');
+            });
+        });
+    </script>
+    </section>
 @endsection
->>>>>>> main
