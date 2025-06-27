@@ -144,6 +144,7 @@
 
 <main class="app-content">
     @yield('main')
+    @yield('scripts')
 </main>
 
 {{-- Scripts --}}

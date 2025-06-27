@@ -19,16 +19,6 @@
                             style="gap: 5px;">
                             <i class="fas fa-plus"></i> Tạo mới bài viết
                         </a>
-
-                        <form action="" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa tất cả?');"
-                            style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-secondary btn-sm d-flex align-items-center"
-                                style="background-color: #6c757d; border-color: #6c757d; color: white; gap: 5px;">
-                                <i class="fas fa-trash-alt"></i> Xóa tất cả
-                            </button>
-                        </form>
                     </div>
 
 
@@ -111,7 +101,7 @@
                                     <td class="text-start">{{ $post->title }}</td>
                                     <td>
                                         @if ($post->image)
-                                            <img src="{{ asset('storage/' . $post->image) }}" alt="Ảnh" width="100"
+                                            <img src="{{ asset('storage/' . $post->image) }}" alt="Ảnh" width="80"
                                                 class="img-thumbnail">
                                         @else
                                             <span class="text-muted">Không có ảnh</span>
