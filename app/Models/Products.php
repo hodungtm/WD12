@@ -2,36 +2,25 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Client\Cart;
+
 class Products extends Model
 {
-    /** @use HasFactory<\Database\Factories\ProductsFactory> */
-    use HasFactory;
-
+   
+    protected $table = 'products'; 
     protected $fillable = [
-        'name', 
-        'price',
-        'discount_price', 
-        'quantity', 
-        'description', // Mô tả sản phẩm
-        'category_id', 
-        'rating', 
-        'size', 
-        'color',
+        'name', 'description', 'category_id', 'product_code', 'status'
     ];
 
     public function category()
     {
-        return $this->belongsTo(Category::class, 'category_id');
+        return $this->belongsTo(Category::class);
     }
 
     public function images()
     {
         return $this->hasMany(ProductImage::class, 'product_id');
     }
-    
 
     public function variants()
     {

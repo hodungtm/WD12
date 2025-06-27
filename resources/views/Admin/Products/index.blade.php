@@ -2,14 +2,20 @@
 
 @section('main')
 
-    <!-- Thông báo thành công -->
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-            {{ session('success') }}
+  <!-- Thông báo thành công -->
+@if (session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+      
+    </div>
+@endif
 
-        </div>
-    @endif
-
+@if (session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+       
+    </div>
+@endif
 
         <div class="app-title d-flex justify-content-between align-items-center mb-3">
             <ul class="app-breadcrumb breadcrumb side mb-0">
@@ -47,6 +53,7 @@
                                       <th>Tên sản phẩm</th>
                                     <th style="width: 120px;">Hình ảnh</th>
                                     <th>Giá</th>
+                                    <th>Giá Sale</th>
                                     <th>Danh mục</th>
                                     <th>Trang Thái</th>
                                     <th>Ngày tạo</th>
@@ -61,7 +68,7 @@
                 
                                     <tr>
                                         <td>{{ $product->id }}</td>
-                                        <td>Thêm Mã SP ai cho mày fix cứng </td>
+                                        <td>{{ $product->product_code }}</td>
                                          <td class="text-start">{{ $product->name }}</td>
                                         <td>
                                             @if ($product->images->isNotEmpty())
@@ -71,20 +78,22 @@
                                             @endif
                                         </td>
                                        
-                                        <td>
-                                            @if ($variant)
-                                                {{ number_format($variant->price, 0, ',', '.') }} VND
-                                            @else
-                                                <span class="text-muted">Chưa có giá</span>
-                                            @endif
-                                        </td>
-                                        
+                                      <td>
+                                        {{ $variant ? number_format($variant->price, 0, ',', '.') . ' VND' : 'Chưa có giá' }}
+                                    </td>
+                                    <td>
+                                        {{ $variant ? number_format($variant->sale_price, 0, ',', '.') . ' VND' : 'Chưa có giá khuyến mãi' }}
+                                    </td>
                                         </td>
                                         <td>{{ $product->category->ten_danh_muc ?? 'Không có danh mục' }}</td>
-                                           <td>Thêm Trạng Thái Vào Cho Tao  </td>    
+                                           <td>
+                                        @if ($product->status == 1)
+                                            <span class="badge bg-success">Hiển thị</span>
+                                        @else
+                                            <span class="badge bg-danger">Ẩn</span>
+                                        @endif
+                                    </td>
                                         <td>{{ $product->created_at->format('d/m/Y H:i') }}</td>    
-                                     
-
                                        <td>
                                         <a href="{{ route('products.show', $product->id) }}" 
                                         class="btn btn-outline-info btn-sm me-1 mb-1" title="Xem">
@@ -94,7 +103,7 @@
                                         class="btn btn-outline-warning btn-sm me-1 mb-1" title="Sửa">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form action="{{ route('products.destroy', $product->id) }}" method="POST" 
+                                        <form action="{{ route('products.softDelete', $product->id) }}" method="POST" 
                                             class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa sản phẩm này?');">
                                             @csrf
                                             @method('DELETE')

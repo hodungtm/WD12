@@ -6,7 +6,6 @@
 @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
         {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 @endif
 
@@ -17,6 +16,7 @@
     </ul>
     <div id="clock"></div>
 </div>
+
 
 <!-- Nội dung -->
 <div class="row">
@@ -33,11 +33,15 @@
                         <form method="POST" action="{{ route('catalog.size.store') }}" class="mb-4">
                             @csrf
                             <div class="input-group">
-                                <input type="text" name="name" class="form-control" placeholder="Tên Size..." required>
+                                <input type="text" name="name" class="form-control" placeholder="Tên Size..." >
                                 <button type="submit" class="btn btn-outline-success">
                                     <i class="fas fa-plus me-2"></i> Thêm Size
                                 </button>
-                            </div>
+                              
+                            </div>   
+                            @error('name')
+                                <div class="text-danger mt-1">{{ $message }}</div>
+                                @enderror
                         </form>
 
                         <!-- Danh sách Size -->
@@ -57,7 +61,8 @@
                                         <form method="POST" action="{{ route('catalog.size.update', $item->id) }}" class="d-flex">
                                             @csrf
                                             @method('PUT')
-                                            <input type="text" name="name" value="{{ $item->name }}" class="form-control me-2" required>
+                                            <input type="text" name="name" value="{{ $item->name }}" class="form-control me-2" >
+                                           
                                             <button type="submit" class="btn btn-outline-success btn-sm">Lưu</button>
                                         </form>
                                     </td>
@@ -84,11 +89,14 @@
                         <form method="POST" action="{{ route('catalog.color.store') }}" class="mb-4">
                             @csrf
                             <div class="input-group">
-                                <input type="text" name="name" class="form-control" placeholder="Tên Color..." required>
+                                <input type="text" name="name" class="form-control" placeholder="Tên Color..." >
                                 <button type="submit" class="btn btn-outline-success">
                                     <i class="fas fa-plus me-2"></i> Thêm Color
                                 </button>
                             </div>
+                             @error('name')
+                                                <div class="text-danger mt-1">{{ $message }}</div>
+                                            @enderror
                         </form>
 
                         <!-- Danh sách Color -->
