@@ -31,7 +31,7 @@ class CategoryController extends Controller
         }, function ($query) {
             return $query->latest(); // mặc định: mới nhất
         })
-        ->get();
+        ->paginate(10)->appends($request->all());
 
     return view('Admin.categories.index', compact('categories'));
 }
