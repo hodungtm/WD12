@@ -125,11 +125,27 @@
                     <strong>Phí vận chuyển:</strong> <span id="shipping-fee">0đ</span>
                 </small>
             </div>
+<div class="form-group">
+    <label for="discount_code">Mã khuyến mãi</label>
+    <select name="discount_code" class="form-control @error('discount_code') is-invalid @enderror">
+        <option value="">-- Không áp dụng --</option>
+        @foreach($discounts as $discount)
+            <option value="{{ $discount->code }}" {{ old('discount_code') == $discount->code ? 'selected' : '' }}>
+                {{ $discount->code }} - 
+                @if($discount->discount_percent > 0)
+                    Giảm {{ $discount->discount_percent }}%
+                @else
+                    Giảm {{ number_format($discount->discount_amount, 0, ',', '.') }}₫
+                @endif
+            </option>
+        @endforeach
+    </select>
+    @error('discount_code')
+        <span class="text-danger">{{ $message }}</span>
+    @enderror
+</div>
 
-            <div class="form-group">
-                <label>Mã giảm giá</label>
-                <input type="text" name="discount_code" class="form-control" placeholder="Nhập mã giảm giá" value="{{ old('discount_code') }}">
-            </div>
+
 
             <div class="form-group">
                 <label>Ghi chú</label>

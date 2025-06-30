@@ -32,15 +32,15 @@
                     {{-- Người nhận --}}
                     <div class="form-group col-md-4">
                         <label>Người nhận</label>
-                        <input class="form-control" type="text" value="{{ $order->receiver->name ?? 'Trùng người đặt' }}" readonly>
+                        <input class="form-control" type="text" value="{{ $order->receiver_name ?? 'Trùng người đặt' }}" readonly>
                     </div>
                     <div class="form-group col-md-4">
                         <label>SĐT người nhận</label>
-                        <input class="form-control" type="text" value="{{ $order->receiver->phone ?? '' }}" readonly>
+                        <input class="form-control" type="text" value="{{ $order->receiver_phone ?? '' }}" readonly>
                     </div>
                     <div class="form-group col-md-4">
                         <label>Địa chỉ người nhận</label>
-                        <input class="form-control" type="text" value="{{ $order->receiver->address ?? '' }}" readonly>
+                        <input class="form-control" type="text" value="{{ $order->receiver_address ?? '' }}" readonly>
                     </div>
                 </form>
             </div>
@@ -69,7 +69,7 @@
                     </div>
                     <div class="form-group col-md-4">
                         <label>Mã Giảm Giá</label>
-                        <input class="form-control" type="text" value="{{ optional($order->discount)->code }}" readonly>
+                        <input class="form-control" type="text" value="{{ $order->discount_code ?? 'Không có'}}" readonly>
                     </div>
                     <div class="form-group col-md-4">
                         <label>Tình trạng đơn hàng</label>
@@ -91,97 +91,59 @@
         <div class="tile mt-4">
             <h4 class="tile-title">Chi tiết sản phẩm</h4>
             <div class="tile-body">
-                @php
-                    // Xác định nguồn dữ liệu dựa trên trạng thái đơn hàng
-                    $itemsToDisplay = ($order->status === 'Hoàn thành') ? $order->archivedOrderItems : $order->orderItems;
-                    $totalItemsPrice = 0; // Khởi tạo tổng tiền sản phẩm
-                @endphp
+              
 
-                @if ($order->status === 'Hoàn thành' && $itemsToDisplay->isEmpty())
-                    <div class="alert alert-warning">
-                        Đơn hàng đã hoàn thành nhưng không tìm thấy chi tiết sản phẩm được lưu trữ.
-                    </div>
-                @elseif ($order->status !== 'Hoàn thành' && $itemsToDisplay->isEmpty())
-                    <div class="alert alert-info">
-                        Đơn hàng chưa có sản phẩm nào.
-                    </div>
-                @endif
-
-                <table class="table table-bordered">
+<table class="table table-bordered">
     <thead>
         <tr>
             <th>STT</th>
-            <th>Tên sản phẩm</th>
-            <th>Màu sắc</th>
+            <th>Sản phẩm</th>
             <th>Size</th>
+            <th>Màu sắc</th>
             <th>Số lượng</th>
             <th>Đơn giá</th>
             <th>Thành tiền</th>
         </tr>
     </thead>
     <tbody>
-        @php
-            $totalItemsPrice = 0; // Khởi tạo biến tổng tiền sản phẩm
-        @endphp
+        @php $totalItemsPrice = 0; @endphp
+        @foreach ($order->orderItems as $index => $item)
+            @php
+                // Ưu tiên dùng dữ liệu snapshot
+                $productName = $item->product_name ?? 'Sản phẩm đã xoá';
+                $variantName = $item->variant_name ?? '';
+                $variantImage = $item->product_image ?? null;
 
-        {{-- Lặp qua các item (có thể là OrderItem hoặc ArchivedOrderItem) --}}
-        @foreach ($itemsToDisplay as $index => $item)
+                // Tách Size / Màu từ variant_name
+                $color = '---';
+                $size = '---';
+                if (!empty($variantName)) {
+                    $parts = preg_split('/\s*[-\/]\s*/', $variantName);
+                    $size = $parts[0] ?? '---';
+                    $color = $parts[1] ?? '---';
+                }
+            @endphp
             <tr>
                 <td>{{ $index + 1 }}</td>
                 <td>
-                    {{-- Lấy tên sản phẩm --}}
-                    @if ($item instanceof \App\Models\ArchivedOrderItem)
-                        {{ $item->product_name ?? 'N/A' }}
-                    @else
-                        {{ $item->product->name ?? 'N/A' }}
-                    @endif
+                    <div class="d-flex align-items-center">
+                        @if($variantImage)
+                            <img src="{{ asset('storage/' . $variantImage) }}" alt="Ảnh" width="60" height="60" class="me-2 rounded border">
+                        @endif
+                        <div>
+                            <div><strong>{{ $productName }}</strong></div>
+                        </div>
+                    </div>
                 </td>
-                <td>
-                    {{-- Lấy tên màu sắc --}}
-                    @if ($item instanceof \App\Models\ArchivedOrderItem)
-                        {{ $item->color_name ?? '---' }}
-                    @else
-                        @php
-                            $colorName = '---';
-                            if ($item->productVariant && $item->productVariant->attributeValues) {
-                                foreach ($item->productVariant->attributeValues as $attrValue) {
-                                    if ($attrValue->attribute && (strtolower($attrValue->attribute->name) === 'màu' || strtolower($attrValue->attribute->name) === 'color')) {
-                                        $colorName = $attrValue->value;
-                                        break; // Tìm thấy màu, thoát vòng lặp
-                                    }
-                                }
-                            }
-                        @endphp
-                        {{ $colorName }}
-                    @endif
-                </td>
-                <td>
-                    {{-- Lấy tên size --}}
-                    @if ($item instanceof \App\Models\ArchivedOrderItem)
-                        {{ $item->size_name ?? '---' }}
-                    @else
-                        @php
-                            $sizeName = '---';
-                            if ($item->productVariant && $item->productVariant->attributeValues) {
-                                foreach ($item->productVariant->attributeValues as $attrValue) {
-                                    if ($attrValue->attribute && strtolower($attrValue->attribute->name) === 'size') {
-                                        $sizeName = $attrValue->value;
-                                        break; // Tìm thấy size, thoát vòng lặp
-                                    }
-                                }
-                            }
-                        @endphp
-                        {{ $sizeName }}
-                    @endif
-                </td>
+                <td>{{ $size }}</td>
+                <td>{{ $color }}</td>
                 <td>{{ $item->quantity }}</td>
                 <td>{{ number_format($item->final_price ?? $item->price, 0, ',', '.') }}₫</td>
                 <td>{{ number_format($item->total_price, 0, ',', '.') }}₫</td>
             </tr>
-            @php
-                $totalItemsPrice += $item->total_price;
-            @endphp
+            @php $totalItemsPrice += $item->total_price; @endphp
         @endforeach
+
         <tr>
             <td colspan="6" class="text-end"><strong>Tổng tiền sản phẩm:</strong></td>
             <td><strong>{{ number_format($totalItemsPrice, 0, ',', '.') }}₫</strong></td>
@@ -202,6 +164,8 @@
         </tr>
     </tbody>
 </table>
+
+
             </div>
 
             <div class="tile-footer">
