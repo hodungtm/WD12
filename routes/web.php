@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\WishlistController;
 use App\Http\Controllers\Client\ProductDetailController;
+use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 
 
@@ -131,7 +132,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 // Auth routes
 Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-    
+
 
 
 ////// producst/////////////////////////////////////
@@ -157,6 +158,14 @@ Route::prefix('admin')->group(function () {
     Route::put('/catalog/color/{color}', [CatalogController::class, 'updateColor'])->name('catalog.color.update');
     Route::delete('/catalog/color/{color}', [CatalogController::class, 'destroyColor'])->name('catalog.color.destroy');
 });
+
+
+// Route::get('/user/dashboard', [UserDashboardController::class, 'index']);
+
+
+
+
+
 
 
 ////// producst/////////////////////////////////////
