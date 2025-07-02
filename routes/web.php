@@ -19,6 +19,8 @@ use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\WishlistController;
+use App\Http\Controllers\AccountController;
+
 use App\Http\Controllers\Client\ProductDetailController;
 
 
@@ -129,3 +131,5 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::get('user/dashboard', [AccountController::class, 'dashboard'])->name('user.dashboard');
