@@ -13,7 +13,7 @@ class ProductDetailController extends Controller
 {
     public function show($id)
     {
-        $product = Product::with('variants')->findOrFail($id);
+        $product = Product::with('images', 'variants.size', 'variants.color')->findOrFail($id);
         $reviews = Review::where('product_id', $id)->latest()->get();
         $comments = Comment::where('product_id', $product->id)
             ->whereNull('deleted_at')

@@ -9,19 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-  public function up(): void
+   public function up()
 {
-    Schema::table('product_variants', function (Blueprint $table) {
-        $table->foreignId('color_id')->nullable()->constrained('colors')->nullOnDelete();
-        $table->foreignId('size_id')->nullable()->constrained('sizes')->nullOnDelete();
+    Schema::table('products', function (Blueprint $table) {
+        $table->softDeletes();
     });
 }
+
+
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::table('product_variants', function (Blueprint $table) {
+        Schema::table('products', function (Blueprint $table) {
             //
         });
     }

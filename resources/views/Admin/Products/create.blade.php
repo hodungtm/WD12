@@ -1,236 +1,260 @@
-@extends('Admin.Layouts.AdminLayout')
+@extends('admin.layouts.Adminlayout')
 
 @section('main')
-<div class="container">
-    <h2>Thêm sản phẩm mới</h2>
+    <div class="app-title d-flex justify-content-between align-items-center mb-3">
+        <ul class="app-breadcrumb breadcrumb mb-0">
+            <li class="breadcrumb-item">Sản phẩm</li>
+            <li class="breadcrumb-item active">Thêm sản phẩm mới</li>
+        </ul>
+        <div id="clock"></div>
+    </div>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @elseif(session('error'))
-        <div class="alert alert-danger">{{ session('error') }}</div>
-    @endif
+    <div class="row">
+        <div class="col-md-12">
+            <div class="tile card shadow-sm rounded-3 border-0">
+                <div class="tile-body p-4">
+                    <h3 class="tile-title mb-4">Thêm sản phẩm mới</h3>
 
-    <form action="{{ route('Admin.products.store') }}" method="POST" enctype="multipart/form-data">
-        @csrf
+                    <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data"
+                        class="row">
+                        @csrf
 
-        <div class="row">
-            <div class="col-md-6">
-                <!-- Tên -->
-                <div class="mb-3">
-                    <label>Tên sản phẩm</label>
-                    <input type="text" name="name" class="form-control" value="{{ old('name') }}">
-                    @error('name') <div class="text-danger">{{ $message }}</div> @enderror
-                </div>
+                        <!-- Tên sản phẩm -->
+                        <div class="form-group col-md-6">
+                            <label class="form-label">Tên sản phẩm</label>
+                            <input type="text" name="name" class="form-control">
+                            @error('name')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
 
-                <!-- Giá -->
-                <div class="mb-3">
-                    <label>Giá</label>
-                    <input type="number" name="price" class="form-control" value="{{ old('price') }}">
-                    @error('price') <div class="text-danger">{{ $message }}</div> @enderror
-                </div>
+                        <!-- Danh mục -->
+                        <div class="form-group col-md-6">
+                            <label for="category_id" class="form-label">Danh mục</label>
+                            <select name="category_id" id="category_id"
+                                class="form-control">
+                                <option value="">-- Chọn danh mục --</option>
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}"
+                                        {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                        {{ $category->ten_danh_muc }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('category_id')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
 
-                <!-- Giá khuyến mãi -->
-                <div class="mb-3">
-                    <label>Giá khuyến mãi</label>
-                    <input type="number" name="sale_price" class="form-control" value="{{ old('sale_price') }}">
-                    @error('sale_price') <div class="text-danger">{{ $message }}</div> @enderror
-                </div>
+                        <!-- Mô tả -->
+                        <div class="form-group col-md-12">
+                            <label class="form-label">Mô tả</label>
+                            <textarea name="description" class="form-control" rows="4"></textarea>
+                            @error('description')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
 
-                <!-- Loại -->
-                <div class="mb-3">
-                    <label>Loại sản phẩm</label>
-                    <select name="type" class="form-control">
-                        <option value="">-- Chọn loại --</option>
-                        <option value="shoes" {{ old('type') == 'shoes' ? 'selected' : '' }}>Giày thể thao</option>
-                        <option value="shirt" {{ old('type') == 'shirt' ? 'selected' : '' }}>Áo</option>
-                        <option value="pants" {{ old('type') == 'pants' ? 'selected' : '' }}>Quần</option>
-                    </select>
-                    @error('type') <div class="text-danger">{{ $message }}</div> @enderror
-                </div>
+                        <!-- Hình ảnh -->
+                        <div class="form-group col-md-12">
+                            <label class="form-label">Hình ảnh sản phẩm</label>
+                            <input type="file" name="images[]" class="form-control" multiple>
+                            @error('images[]')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
 
-                <!-- Thương hiệu -->
-                <div class="mb-3">
-                    <label>Thương hiệu</label>
-                    <input type="text" name="brand" class="form-control" value="{{ old('brand') }}">
-                    @error('brand') <div class="text-danger">{{ $message }}</div> @enderror
+                        <!-- Size -->
+                        <div class="form-group col-md-12">
+                            <label class="form-label">Chọn Size</label>
+                            <div>
+                                <label class="me-3">
+                                    <input type="checkbox" id="select_all_sizes" onchange="toggleAll('sizes[]', this)"> Chọn
+                                    tất cả
+                                </label>
+                                @foreach ($sizes as $size)
+                                    <label class="me-3">
+                                        <input type="checkbox" name="sizes[]" value="{{ $size->id }}">
+                                        {{ $size->name }}
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <!-- Màu -->
+                        <div class="form-group col-md-12">
+                            <label class="form-label">Chọn Màu</label>
+                            <div>
+                                <label class="me-3">
+                                    <input type="checkbox" id="select_all_colors" onchange="toggleAll('colors[]', this)">
+                                    Chọn tất cả
+                                </label>
+                                @foreach ($colors as $color)
+                                    <label class="me-3">
+                                        <input type="checkbox" name="colors[]" value="{{ $color->id }}">
+                                        {{ $color->name }}
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <!-- Giá chung -->
+                        <div class="form-group col-md-4">
+                            <label class="form-label">Giá Chung</label>
+                            <input type="number" id="common_price" class="form-control" placeholder="Nhập giá VND">
+                        </div>
+
+                        <!-- Giá sale -->
+                        <div class="form-group col-md-4">
+                            <label class="form-label">Giá Sale Chung</label>
+                            <input type="number" id="common_sale_price" class="form-control" placeholder="Nhập giá VND">
+                        </div>
+
+                        <!-- Số lượng -->
+                        <div class="form-group col-md-4">
+                            <label class="form-label">Số lượng Chung</label>
+                            <input type="number" id="common_quantity" class="form-control" placeholder="Nhập số lượng">
+                        </div>
+
+                        <!-- Nút tạo biến thể -->
+                        <div class="form-group col-md-12">
+                            <button type="button" class="btn btn-outline-success mt-2" onclick="generateVariants()">
+                                <i class="fas fa-plus me-1"></i> Tạo biến thể
+                            </button>
+                            <div id="variant_error" class="text-danger mt-2 fw-bold"></div>
+                        </div>
+
+                        <!-- Danh sách biến thể -->
+                        <div class="form-group col-md-12 mt-3">
+                            <h5>Danh sách biến thể:</h5>
+                            <button type="button" class="btn btn-outline-danger btn-sm mb-2"
+                                onclick="deleteSelectedVariants()">
+                                <i class="fas fa-trash-alt me-1"></i> Xoá các biến thể đã chọn
+                            </button>
+
+                            <table class="table table-bordered" id="variant_table">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="select_all_variants"
+                                                onchange="toggleAllVariants(this)"></th>
+                                        <th>Size</th>
+                                        <th>Màu</th>
+                                        <th>Giá</th>
+                                        <th>Giá Sale</th>
+                                        <th>Số lượng</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+
+                        <!-- Nút lưu -->
+                        <div class="form-group col-md-12 text-end mt-3">
+                            <button type="submit" class="btn btn-outline-success"><i class="fas fa-save me-1"></i> Lưu sản
+                                phẩm</button>
+                            <a href="{{ route('products.index') }}" class="btn btn-outline-danger"><i
+                                    class="fas fa-times me-1"></i> Hủy bỏ</a>
+                        </div>
+                    </form>
+
                 </div>
             </div>
-
-            <div class="col-md-6">
-                <!-- Slug -->
-                <div class="mb-3">
-                    <label>Slug</label>
-                    <input type="text" name="slug" class="form-control" value="{{ old('slug') }}">
-                    @error('slug') <div class="text-danger">{{ $message }}</div> @enderror
-                </div>
-
-                <!-- Danh mục -->
-                <div class="mb-3">
-                    <label>Danh mục</label>
-                    <select name="category_id" class="form-control">
-                        <option value="">-- Chọn danh mục --</option>
-                        @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>
-                                {{ $cat->ten_danh_muc }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('category_id') <div class="text-danger">{{ $message }}</div> @enderror
-                </div>
-
-                <!-- Trạng thái -->
-                <div class="mb-3">
-                    <label>Trạng thái</label>
-                    <select name="status" class="form-control">
-                        <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Hoạt động</option>
-                        <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Không hoạt động</option>
-                    </select>
-                    @error('status') <div class="text-danger">{{ $message }}</div> @enderror
-                </div>
-
-                <!-- Ảnh chính -->
-                <div class="mb-3">
-                    <label>Ảnh chính</label>
-                    <input type="file" name="image_product" class="form-control">
-                    @error('image_product') <div class="text-danger">{{ $message }}</div> @enderror
-                </div>
-
-                <!-- Ảnh phụ -->
-                <div class="mb-3">
-                    <label>Ảnh phụ</label>
-                    <input type="file" name="image_path[]" class="form-control" multiple>
-                    @foreach($errors->get('image_path.*') as $messages)
-                        @foreach($messages as $msg) <div class="text-danger">{{ $msg }}</div> @endforeach
-                    @endforeach
-                </div>
-            </div>
         </div>
+    </div>
 
-        <!-- Biến thể -->
-        <hr>
-        <h4>Biến thể sản phẩm</h4>
-        <div id="variant-container">
-            <div class="variant-group row border p-3 mb-3 position-relative">
-                <button type="button" class="btn btn-danger btn-sm btn-remove-variant" style="position:absolute;top:5px;right:5px;">&times;</button>
-
-                <!-- Size -->
-                <div class="col-md-4">
-                    <label>Size</label>
-                    <div class="d-flex flex-wrap gap-2 mt-1">
-                        @foreach($sizes as $size)
-                            <button type="button" class="btn btn-outline-secondary size-btn" data-value="{{ $size->name }}">{{ $size->name }}</button>
-                        @endforeach
-                    </div>
-                </div>
-
-                <!-- Màu -->
-                <div class="col-md-4">
-                    <label>Màu</label>
-                    <div class="d-flex flex-wrap gap-2 mt-1">
-                        @foreach($colors as $color)
-                            <div class="color-circle border" data-value="{{ $color->code }}"
-                                 style="width:30px; height:30px; border-radius:50%; background:{{ $color->code }}; cursor:pointer;"></div>
-                        @endforeach
-                    </div>
-                </div>
-
-                <!-- Số lượng -->
-                <div class="col-md-4">
-                    <label>Số lượng</label>
-                    <input type="number" name="variant_quantity[]" class="form-control mt-1" min="1">
-                </div>
-
-                <!-- Giá và khuyến mãi -->
-                <div class="col-md-6 mt-3">
-                    <label>Giá biến thể</label>
-                    <input type="number" name="variant_price[]" class="form-control">
-                </div>
-                <div class="col-md-6 mt-3">
-                    <label>Giá khuyến mãi biến thể</label>
-                    <input type="number" name="variant_sale_price[]" class="form-control">
-                </div>
-
-                <!-- Hidden -->
-                <input type="hidden" name="selected_size[]" class="selected_size">
-                <input type="hidden" name="selected_color[]" class="selected_color">
-            </div>
-        </div>
-
-        <button type="button" class="btn btn-primary mb-3" id="add-variant-btn">+ Thêm biến thể</button>
-
-        <!-- Mô tả -->
-        <div class="mb-3">
-            <label>Mô tả sản phẩm</label>
-            <textarea name="description" class="form-control" rows="4">{{ old('description') }}</textarea>
-            @error('description') <div class="text-danger">{{ $message }}</div> @enderror
-        </div>
-
-        <div class="mt-3">
-            <button type="submit" class="btn btn-success">Lưu</button>
-            <a href="{{ route('Admin.products.index') }}" class="btn btn-secondary">Hủy</a>
-        </div>
-    </form>
-</div>
-
-<!-- Scripts -->
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Slug tự động
-    const nameInput = document.querySelector('input[name="name"]');
-    const slugInput = document.querySelector('input[name="slug"]');
-    nameInput.addEventListener('input', function () {
-        let slug = nameInput.value.toLowerCase()
-            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-            .replace(/[^a-z0-9\s-]/g, '')
-            .replace(/\s+/g, '-')
-            .replace(/-+/g, '-')
-            .replace(/^-+|-+$/g, '');
-        slugInput.value = slug;
-    });
-
-    // Chọn size
-    document.addEventListener('click', function (e) {
-        if (e.target.classList.contains('size-btn')) {
-            const group = e.target.closest('.variant-group');
-            group.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            group.querySelector('.selected_size').value = e.target.dataset.value;
+    <!-- JS -->
+    <script>
+        function toggleAll(name, sourceCheckbox) {
+            document.querySelectorAll(`input[name="${name}"]`).forEach(cb => {
+                cb.checked = sourceCheckbox.checked;
+            });
         }
-    });
 
-    // Chọn màu
-    document.addEventListener('click', function (e) {
-        if (e.target.classList.contains('color-circle')) {
-            const group = e.target.closest('.variant-group');
-            group.querySelectorAll('.color-circle').forEach(c => c.classList.remove('border-primary'));
-            e.target.classList.add('border-primary');
-            group.querySelector('.selected_color').value = e.target.dataset.value;
-        }
-    });
+       function generateVariants() {
+    const errorBox = document.getElementById('variant_error');
+    errorBox.innerText = ''; 
 
-    // Thêm biến thể
-    document.getElementById('add-variant-btn').addEventListener('click', function () {
-        const container = document.getElementById('variant-container');
-        const group = container.querySelector('.variant-group');
-        const clone = group.cloneNode(true);
+    let selectedSizes = document.querySelectorAll('input[name="sizes[]"]:checked');
+    let selectedColors = document.querySelectorAll('input[name="colors[]"]:checked');
+    let price = document.getElementById('common_price').value;
+    let sale_price = document.getElementById('common_sale_price').value;
+    let quantity = document.getElementById('common_quantity').value;
+    let tableBody = document.getElementById('variant_table').querySelector('tbody');
 
-        clone.querySelectorAll('input').forEach(input => input.value = '');
-        clone.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('active'));
-        clone.querySelectorAll('.color-circle').forEach(c => c.classList.remove('border-primary'));
+    if (selectedSizes.length === 0) {
+        errorBox.innerText = 'Vui lòng chọn ít nhất 1 size.';
+        return;
+    }
 
-        container.appendChild(clone);
-    });
+    if (selectedColors.length === 0) {
+        errorBox.innerText = 'Vui lòng chọn ít nhất 1 màu.';
+        return;
+    }
+    if (parseFloat(sale_price) >= parseFloat(price)) {
+        errorBox.innerText = 'Giá sale phải nhỏ hơn giá gốc.';
+        return;
+    }
 
-    // Xóa biến thể
-    document.addEventListener('click', function (e) {
-        if (e.target.classList.contains('btn-remove-variant')) {
-            const container = document.getElementById('variant-container');
-            const all = container.querySelectorAll('.variant-group');
-            if (all.length > 1) {
-                e.target.closest('.variant-group').remove();
+    selectedSizes.forEach(size => {
+        selectedColors.forEach(color => {
+            if (!variantExists(size.value, color.value)) {
+                let row = `
+                <tr>
+                    <td><input type="checkbox" class="variant_checkbox"></td>
+                    <td>
+                        <input type="hidden" name="variant_sizes[]" value="${size.value}">
+                        ${size.nextSibling.nodeValue.trim()}
+                    </td>
+                    <td>
+                        <input type="hidden" name="variant_colors[]" value="${color.value}">
+                        ${color.nextSibling.nodeValue.trim()}
+                    </td>
+                    <td>
+                        <input type="number" name="variant_prices[]" class="form-control" value="${price}">
+                    </td>
+                    <td>
+                        <input type="number" name="variant_sale_prices[]" class="form-control" value="${sale_price}">
+                    </td>
+                    <td>
+                        <input type="number" name="variant_quantities[]" class="form-control" value="${quantity}">
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="this.closest('tr').remove()">
+                            <i class="fas fa-trash-alt"></i> Xóa
+                        </button>
+                    </td>
+                </tr>`;
+                tableBody.insertAdjacentHTML('beforeend', row);
             }
-        }
+        });
     });
-});
-</script>
+}
+
+
+
+        function variantExists(sizeId, colorId) {
+            let rows = document.querySelectorAll('#variant_table tbody tr');
+            for (let row of rows) {
+                let sizeVal = row.querySelector('input[name="variant_sizes[]"]').value;
+                let colorVal = row.querySelector('input[name="variant_colors[]"]').value;
+                if (sizeVal == sizeId && colorVal == colorId) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function toggleAllVariants(sourceCheckbox) {
+            document.querySelectorAll('.variant_checkbox').forEach(cb => {
+                cb.checked = sourceCheckbox.checked;
+            });
+        }
+
+        function deleteSelectedVariants() {
+            document.querySelectorAll('.variant_checkbox:checked').forEach(cb => {
+                cb.closest('tr').remove();
+            });
+        }
+    </script>
 @endsection
