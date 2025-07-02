@@ -135,9 +135,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-<<<<<<< HEAD
 Route::get('user/dashboard', [AccountController::class, 'dashboard'])->name('user.dashboard');
-=======
 
 
 ////// producst/////////////////////////////////////
@@ -166,13 +164,3 @@ Route::prefix('admin')->group(function () {
 
 
 // Route::get('/user/dashboard', [UserDashboardController::class, 'index']);
-
-
-
-
-
-
-
-////// producst/////////////////////////////////////
-
->>>>>>> main
