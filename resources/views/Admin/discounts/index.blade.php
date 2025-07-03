@@ -92,7 +92,7 @@
                                 <th>Ngày kết thúc</th>
                                 <th>Lượt tối đa</th>
                                 <th>Đơn tối thiểu</th>
-                                <th>Đơn tối Đa</th>
+                                <th>Giá Trị Giảm Tối Đa</th>
                                 <th>Phân loại</th>
                                 <th>Chức năng</th>
                             </tr>
