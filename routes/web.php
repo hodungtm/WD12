@@ -52,15 +52,21 @@ Route::prefix('client')->name('client.')->group(function () {
     Route::post('/san-pham/{id}/danh-gia', [ProductDetailController::class, 'submitReview'])->name('product.review');
     Route::post('/san-pham/{id}/binh-luan', [ProductDetailController::class, 'submitComment'])->name('product.comment');
 
-    Route::prefix('cart')->name('cart.')->group(function () {
-    Route::get('/', [CartController::class, 'index'])->name('index'); // cart.index
-    Route::post('/add/{productId}', [CartController::class, 'addToCart'])->name('add'); // cart.add
-    Route::post('/update/{id}', [CartController::class, 'updateQuantity'])->name('update'); // cart.update
-    Route::delete('/remove/{id}', [CartController::class, 'remove'])->name('remove'); // cart.remove
-});
+  Route::middleware(['auth'])->group(function () {
+        // Giỏ hàng
+        Route::prefix('cart')->name('cart.')->group(function () {
+            Route::get('/', [CartController::class, 'index'])->name('index'); // client.cart.index
+            Route::post('/add/{productId}', [CartController::class, 'addToCart'])->name('add'); // client.cart.add
+            Route::post('/update/{id}', [CartController::class, 'updateQuantity'])->name('update'); // client.cart.update
+            Route::delete('/remove/{id}', [CartController::class, 'remove'])->name('remove'); // client.cart.remove
+        });
 
-     Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
-    Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+        // Thanh toán
+        Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
+        Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+        Route::get('/don-hang-thanh-cong/{order}', [CheckoutController::class, 'success'])->name('order.success');
+
+    });
 });
 
 Route::prefix('admin')->group(function () {
@@ -146,7 +152,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 
 // Auth routes
-// Auth::routes();
+Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('user/dashboard', [AccountController::class, 'dashboard'])->name('user.dashboard');

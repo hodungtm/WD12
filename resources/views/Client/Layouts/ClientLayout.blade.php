@@ -246,14 +246,22 @@
                     <nav class="navbar-top pb-2 pb-md-0 position-relative">
                         <ul class="d-flex justify-content-center justify-content-md-end align-items-center">
                             <li>
-                                <a href="#" id="dropdown1" data-bs-toggle="dropdown" aria-haspopup="true"
-                                    aria-expanded="false">Setting <i class="ion ion-ios-arrow-down"></i></a>
-                                <ul class="topnav-submenu dropdown-menu" aria-labelledby="dropdown1">
-                                    <li><a href="myaccount.html">My account</a></li>
-                                    <li><a href="checkout.html">Checkout</a></li>
-                                    <li><a href="login.html">Sign out</a></li>
-                                </ul>
-                            </li>
+    <a href="#" id="dropdown1" data-bs-toggle="dropdown" aria-haspopup="true"
+        aria-expanded="false">
+        {{ Auth::user()->name ?? 'Tài khoản' }}
+        <i class="ion ion-ios-arrow-down"></i>
+    </a>
+    <ul class="topnav-submenu dropdown-menu" aria-labelledby="dropdown1">
+        <li><a href="{{ route('client.checkout.show') }}">Thanh toán</a></li>
+        <li>
+            <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                @csrf
+                <button type="submit" class="dropdown-item">Đăng xuất</button>
+            </form>
+        </li>
+    </ul>
+</li>
+
                             <li>
                                 <a href="#" id="dropdown2" data-bs-toggle="dropdown" aria-haspopup="true"
                                     aria-expanded="false">USD $ <i class="ion ion-ios-arrow-down"></i> </a>
