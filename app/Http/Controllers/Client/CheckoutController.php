@@ -17,88 +17,113 @@ use Illuminate\Support\Str;
 class CheckoutController extends Controller
 {
     public function show()
-    {
-        $cartItems = Cart::with(['product.images',  'variant.color', 'variant.size'])->get();
-        $shippingMethods = ShippingMethod::all();
-        $discounts = Discount::whereDate('start_date', '<=', now())
+{
+    $userId = Auth::id();
+
+    $cartItems = Cart::with(['product.images', 'variant.color', 'variant.size'])
+        ->where('user_id', $userId)
+        ->get();
+
+    $shippingMethods = ShippingMethod::all();
+    $discounts = Discount::whereDate('start_date', '<=', now())
+        ->whereDate('end_date', '>=', now())
+        ->get();
+
+    return view('client.cart.checkout', compact('cartItems', 'shippingMethods', 'discounts'));
+}
+
+
+public function process(Request $request)
+{
+    $user = Auth::user();
+
+    $cartItems = Cart::with(['product', 'variant'])
+        ->where('user_id', $user->id)
+        ->get();
+
+    if ($cartItems->isEmpty()) {
+        return back()->with('error', 'Giỏ hàng trống!');
+    }
+
+    // Tính tổng tiền hàng (subtotal)
+    $subtotal = 0;
+    foreach ($cartItems as $item) {
+        $subtotal += $item->variant->price * $item->quantity;
+    }
+
+    // Xử lý mã giảm giá
+    $discountCode = $request->discount_code;
+    $discountAmount = 0;
+    if ($discountCode) {
+        $discount = Discount::where('code', $discountCode)
+            ->whereDate('start_date', '<=', now())
             ->whereDate('end_date', '>=', now())
-            ->get();
-        return view('client.cart.checkout', compact('cartItems', 'shippingMethods', 'discounts'));
+            ->first();
+
+        if ($discount && $subtotal >= $discount->min_order_amount) {
+            $discountAmount = min(
+                round($subtotal * $discount->discount_percent / 100),
+                $discount->max_discount_amount
+            );
+        }
     }
 
+    // Phí ship từ phương thức giao hàng
+    $shippingMethod = ShippingMethod::find($request->shipping_method_id);
+    $shippingFee = $shippingMethod ? $shippingMethod->fee : 0;
 
-    public function process(Request $request)
-    {
-        $user = Auth::user();
-        $cartItems = Cart::with(['product', 'variant'])->get();
-        if ($cartItems->isEmpty()) {
-            return back()->with('error', 'Giỏ hàng trống!');
-        }
+    // Tổng cuối cùng
+    $finalAmount = $subtotal + $shippingFee - $discountAmount;
 
-        $subtotal = 0;
-        foreach ($cartItems as $item) {
-            $subtotal += $item->variant->price * $item->quantity;
-        }
+    // Lưu đơn hàng
+    $order = Order::create([
+        'user_id'            => $user->id,
+        'order_code'         => 'DH' . now()->format('Ymd') . '-' . strtoupper(Str::random(5)),
+        'order_date'         => now(),
+        'shipping_method_id' => $request->shipping_method_id,
+        'receiver_name'      => $request->receiver_name,
+        'receiver_phone'     => $request->receiver_phone,
+        'receiver_email'     => $user->email,
+        'receiver_address'   => $request->receiver_address,
+        'total_price'        => $subtotal, // Giá trị đơn hàng chưa giảm, chưa ship
+        'discount_code'      => $discountCode,
+        'discount_amount'    => $discountAmount,
+        'final_amount'       => $finalAmount,
+    ]);
 
-        // Xử lý mã giảm giá
-        $discountCode = $request->discount_code;
-        $discountAmount = 0;
-        if ($discountCode) {
-            $discount = Discount::where('code', $discountCode)
-                ->whereDate('start_date', '<=', now())
-                ->whereDate('end_date', '>=', now())
-                ->first();
-
-            if ($discount && $subtotal >= $discount->min_order_amount) {
-                $discountAmount = min(
-                    round($subtotal * $discount->discount_percent / 100),
-                    $discount->max_discount_amount
-                );
-            }
-        }
-
-        // Phí ship từ phương thức giao hàng
-        $shippingMethod = ShippingMethod::find($request->shipping_method_id);
-        $shippingFee = $shippingMethod ? $shippingMethod->fee : 0;
-
-        $total = $subtotal + $shippingFee - $discountAmount;
-
-        // Lưu đơn hàng
-        $order = Order::create([
-            'user_id'            => $user->id,
-            'order_code'         => 'DH' . now()->format('Ymd') . '-' . strtoupper(Str::random(5)),
-            'order_date'         => now(),
-            'shipping_method_id' => $request->shipping_method_id,
-            'receiver_name'      => $request->receiver_name,
-            'receiver_phone'     => $request->receiver_phone,
-            'receiver_email'     => $user->email,
-            'receiver_address'   => $request->receiver_address,
-            'total_price'        => $total,
-            'discount_code'      => $discountCode,
-            'discount_amount'    => $discountAmount,
+    // Lưu từng sản phẩm
+    foreach ($cartItems as $item) {
+        Order_items::create([
+            'order_id'           => $order->id,
+            'product_id'         => $item->product->id,
+            'product_variant_id' => $item->variant->id,
+            'quantity'           => $item->quantity,
+            'price'              => $item->variant->price,
+            'total_price'        => $item->variant->price * $item->quantity,
+            'product_name'       => $item->product->name,
+            'variant_name'       => ($item->variant->color->name ?? '') . ' / ' . ($item->variant->size->name ?? ''),
+            'product_image'      =>  optional($item->product->images->first())->image,
         ]);
-
-        // Lưu từng sản phẩm
-        foreach ($cartItems as $item) {
-            Order_items::create([
-                'order_id'           => $order->id,
-                'product_id'         => $item->product->id,
-                'product_variant_id' => $item->variant->id,
-                'quantity'           => $item->quantity,
-                'price'              => $item->variant->price,
-                'total_price'        => $item->variant->price * $item->quantity,
-                'product_name'       => $item->product->name,
-                'variant_name'       => ($item->variant->color->name ?? '') . ' / ' . ($item->variant->size->name ?? ''),
-                'product_image'      => optional($item->variant->images->first())->image ?? optional($item->product->images->first())->image,
-            ]);
-        }
-
-        // Xóa giỏ hàng
-        Cart::truncate(); // hoặc Cart::where('user_id', $user->id)->delete();
-
-        return redirect()->route('client.order.success', $order->id)
-            ->with('success', 'Đặt hàng thành công!');
     }
+
+    // Xoá giỏ hàng của user
+    Cart::where('user_id', $user->id)->delete();
+
+    return redirect()->route('client.order.success', $order->id)
+        ->with('success', 'Đặt hàng thành công!');
+}
+
+public function success($orderId)
+{
+    $order = Order::with(['orderItems.product', 'orderItems.productVariant'])->findOrFail($orderId);
+
+    // Kiểm tra đơn có thuộc về người dùng hiện tại không (bảo mật)
+    if ($order->user_id !== Auth::id()) {
+        abort(403, 'Không có quyền xem đơn hàng này');
+    }
+
+    return view('client.order.success', compact('order'));
+}
 
     function execPostRequest($url, $data)
     {

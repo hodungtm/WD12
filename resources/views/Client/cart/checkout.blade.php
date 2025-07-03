@@ -10,26 +10,29 @@
                 <div class="row">
                     <!-- Thông tin người nhận -->
                     <div class="col-md-6">
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" id="sameAsBuyer" onclick="copyBuyerInfo()">
-                            <label class="form-check-label" for="sameAsBuyer">
-                                Tôi là người nhận hàng
-                            </label>
-                        </div>
+    <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="sameAsBuyer" name="sameAsBuyer" onclick="copyBuyerInfo()">
+        <label class="form-check-label" for="sameAsBuyer">
+            Tôi là người nhận hàng
+        </label>
+    </div>
 
-                        <div class="form-group mb-3">
-                            <label>Họ tên người nhận</label>
-                            <input type="text" name="receiver_name" class="form-control" required>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label>Số điện thoại</label>
-                            <input type="text" name="receiver_phone" class="form-control" required>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label>Địa chỉ</label>
-                            <textarea name="receiver_address" class="form-control" required></textarea>
-                        </div>
-                    </div>
+    <div class="form-group mb-3">
+        <label>Họ tên người nhận</label>
+        <input type="text" name="receiver_name" id="receiver_name" class="form-control" required>
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Số điện thoại</label>
+        <input type="text" name="receiver_phone" id="receiver_phone" class="form-control" required>
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Địa chỉ</label>
+        <textarea name="receiver_address" id="receiver_address" class="form-control" required></textarea>
+    </div>
+</div>
+
 
                     <!-- Tóm tắt đơn hàng -->
                     <div class="col-md-6">
@@ -128,12 +131,12 @@
                                 <option value="zalopay">ZaloPay</option>
                             </select>
                         </div>
-                         <form action="{{ url('/momo_payment') }}" method="post">
+                         {{-- <form action="{{ url('/momo_payment') }}" method="post">
                                             @csrf
                                             <input type="hidden" name="total_momo" value="{{ $total_after }}">
                                             <button type="submit" class="btn btn-default check_out" name="payUrl">Thanh
                                                 toán MOMO</button>
-                                        </form>
+                                        </form> --}}
 
 
                         <button type="submit" class="btn btn-primary btn-lg w-100">Xác nhận đặt hàng</button>
@@ -173,6 +176,32 @@
     window.onload = () => {
         updateShipping();
     };
+
+     function copyBuyerInfo() {
+        const isChecked = document.getElementById('sameAsBuyer').checked;
+
+        const nameInput = document.getElementById('receiver_name');
+        const phoneInput = document.getElementById('receiver_phone');
+        const addressInput = document.getElementById('receiver_address');
+
+        if (isChecked) {
+            nameInput.value = @json(Auth::user()->name);
+            phoneInput.value = @json(Auth::user()->phone);
+            addressInput.value = @json(Auth::user()->address);
+
+            nameInput.readOnly = true;
+            phoneInput.readOnly = true;
+            addressInput.readOnly = true;
+        } else {
+            nameInput.readOnly = false;
+            phoneInput.readOnly = false;
+            addressInput.readOnly = false;
+
+            nameInput.value = "";
+            phoneInput.value = "";
+            addressInput.value = "";
+        }
+    }
 </script>
 
 

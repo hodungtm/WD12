@@ -17,14 +17,15 @@ use App\Models\Comment;
 
 class CartController extends Controller
 {
-    public function index()
+public function index()
 {
     $cartItems = Cart::with([
-        // 'variant.images',     // load ảnh của biến thể nếu có
         'variant.color',
         'variant.size',
-        'product.images'      // load ảnh của sản phẩm
-    ])->get();
+        'product.images'
+    ])
+    ->where('user_id', Auth::id()) // Chỉ lấy giỏ hàng của user hiện tại
+    ->get();
 
     return view('Client.cart.ListCart', compact('cartItems'));
 }
@@ -49,7 +50,7 @@ class CartController extends Controller
     //     return redirect()->route('cart.index')->with('success', 'Product added to cart successfully.');
     // }
 
-    public function addToCart(Request $request, $productId)
+   public function addToCart(Request $request, $productId)
 {
     $product = Products::findOrFail($productId);
     $variantId = $request->input('variant_id');
@@ -59,26 +60,24 @@ class CartController extends Controller
         return back()->withErrors(['variant_id' => 'Biến thể không tồn tại.']);
     }
 
-    $cart = session()->get('cart', []);
+    $userId = Auth::id();
 
-    // Tạo khóa riêng cho mỗi biến thể sản phẩm
-    $cartKey = $productId . '-' . $variantId;
+    // Tìm xem đã có trong giỏ chưa
+    $existing = Cart::where('user_id', $userId)
+        ->where('product_id', $productId)
+        ->where('variant_id', $variantId)
+        ->first();
 
-    // Nếu sản phẩm đã có thì tăng số lượng
-    if (isset($cart[$cartKey])) {
-        $cart[$cartKey]['quantity'] += $quantity;
+    if ($existing) {
+        $existing->increment('quantity', $quantity);
     } else {
-        $cart[$cartKey] = [
-            'product_id'  => $productId,
-            'variant_id'  => $variantId,
-            'quantity'    => $quantity,
-            'name'        => $product->name,
-            'image'       => optional($product->images->first())->image,
-            'price'       => ProductVariant::find($variantId)?->price ?? $product->price,
-        ];
+        Cart::create([
+            'user_id'    => $userId,
+            'product_id' => $productId,
+            'variant_id' => $variantId,
+            'quantity'   => $quantity,
+        ]);
     }
-
-    session()->put('cart', $cart);
 
     return redirect()->route('client.cart.index')->with('success', 'Đã thêm vào giỏ hàng.');
 }
