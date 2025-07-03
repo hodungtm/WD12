@@ -20,7 +20,11 @@
         .login-container {
             display: flex;
             width: 900px;
+<<<<<<< HEAD
             max-width: 95%; 
+=======
+            max-width: 95%;
+>>>>>>> TienDung
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
