@@ -28,7 +28,9 @@
 <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
 <aside class="app-sidebar">
     <div class="app-sidebar__user">
+        <a href="/home">
         <img class="app-sidebar__user-avatar" src="https://img.tripi.vn/cdn-cgi/image/width=700,height=700/https://gcs.tripi.vn/public-tripi/tripi-feed/img/482621VPj/anh-mo-ta.png" width="50px" alt="User Image">
+        </a>
         <div>
             <p class="app-sidebar__user-name"><b>Sudes Sport</b></p>
             <p class="app-sidebar__user-designation">Chào mừng bạn trở lại</p>

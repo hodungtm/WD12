@@ -22,10 +22,10 @@ use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DiscountController;
-use App\Http\Controllers\Admin\WishlistController;
+use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\ProductDetailController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
-
+use App\Http\Controllers\Client\CheckoutController;
 
 Route::prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
@@ -38,14 +38,25 @@ Route::get('/', function () {
 Route::get('/test', function () {
     return view('client/index');
 });
-Route::get('/test1', function () {
-    return view('Client/Product/productDetail');
-});
+// Route::get('/test1', function () {
+//     return view('Client/Product/productDetail');
+// });
 Route::prefix('client')->name('client.')->group(function () {
     Route::get('/san-pham/{id}', [ProductDetailController::class, 'show'])->name('product.detail');
     Route::post('/san-pham/{id}/danh-gia', [ProductDetailController::class, 'submitReview'])->name('product.review');
     Route::post('/san-pham/{id}/binh-luan', [ProductDetailController::class, 'submitComment'])->name('product.comment');
+
+    Route::prefix('cart')->name('cart.')->group(function () {
+    Route::get('/', [CartController::class, 'index'])->name('index'); // cart.index
+    Route::post('/add/{productId}', [CartController::class, 'addToCart'])->name('add'); // cart.add
+    Route::post('/update/{id}', [CartController::class, 'updateQuantity'])->name('update'); // cart.update
+    Route::delete('/remove/{id}', [CartController::class, 'remove'])->name('remove'); // cart.remove
 });
+
+     Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
+    Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+});
+
 Route::prefix('admin')->group(function () {
     Route::resource('orders', OrderController::class)->names('admin.orders');
 });
@@ -129,7 +140,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 
 // Auth routes
-Auth::routes();
+// Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     
 
