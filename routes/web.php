@@ -22,8 +22,14 @@ use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DiscountController;
+
 use App\Http\Controllers\Client\CartController;
+
+use App\Http\Controllers\Admin\WishlistController;
+use App\Http\Controllers\AccountController;
+
 use App\Http\Controllers\Client\ProductDetailController;
+use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Client\CheckoutController;
 
@@ -142,7 +148,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
 // Auth routes
 // Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-    
+
+Route::get('user/dashboard', [AccountController::class, 'dashboard'])->name('user.dashboard');
 
 
 ////// producst/////////////////////////////////////
@@ -170,5 +177,4 @@ Route::prefix('admin')->group(function () {
 });
 
 
-////// producst/////////////////////////////////////
-
+// Route::get('/user/dashboard', [UserDashboardController::class, 'index']);
