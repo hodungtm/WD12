@@ -24,7 +24,8 @@ class ProductDetailController extends Controller
         $productVariants = ProductVariant::where('product_id', $product->id)
             ->with(['size', 'color']) // assuming you've defined relationships
             ->get();
-        return view('Client.Product.productDetail', compact('product', 'reviews', 'comments'));
+return view('Client.Product.productDetail', compact('product', 'reviews', 'comments', 'productVariants'));
+
     }
 
     public function submitReview(Request $request, $id)

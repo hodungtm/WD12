@@ -64,7 +64,7 @@
 
                         </div>
                         <div class="product-footer">
-                            <form action="" method="POST">
+                            <form action="{{ route('client.cart.add', $product->id) }}" method="POST">
                                 @csrf
                                 <div class="mb-4">
                                     <label class="form-label fw-bold">Màu sắc:</label>
@@ -109,13 +109,13 @@
                                         min="1" style="width: 100px;">
                                 </div>
 
-                                <input type="hidden" name="selected_variant_id" id="selected_variant_id">
+                              <input type="hidden" name="variant_id" id="selected_variant_id">
 
                                 <div class="mb-4">
                                     <button type="submit" class="btn theme-btn--dark3 btn--xl mt-5 mt-sm-0 rounded-5">
                                         <span class="me-2"><i class="ion-android-add"></i></span>
                                         Add to cart
-                                    </button>
+                                    </button>   
                                 </div>
                             </form>
                         </div>
