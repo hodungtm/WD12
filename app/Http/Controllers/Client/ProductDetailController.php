@@ -7,13 +7,14 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Review;
 use App\Models\Comment;
+use App\Models\Products;
 use Illuminate\Http\Request;
 
 class ProductDetailController extends Controller
 {
     public function show($id)
     {
-        $product = Product::with('images', 'variants.size', 'variants.color')->findOrFail($id);
+        $product = Products::with('images', 'variants.size', 'variants.color')->findOrFail($id);
         $reviews = Review::where('product_id', $id)->latest()->get();
         $comments = Comment::where('product_id', $product->id)
             ->whereNull('deleted_at')

@@ -1,12 +1,4 @@
 <?php
-
-// use App\Http\Controllers\Admin\BannerController;
-// use App\Http\Controllers\Admin\DiscountController;
-// use App\Http\Controllers\Admin\OrderController;
-// use App\Http\Controllers\Admin\UserController;
-// use App\Http\Controllers\Admin\WishlistController;
-// use App\Http\Controllers\AdminController;
-// use App\Http\Controllers\AuditLogController;
 use App\Models\Brand;
 use App\Exports\DiscountsExport;
 use Illuminate\Support\Facades\Auth;
@@ -31,7 +23,6 @@ use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\WishlistController;
-use App\Http\Controllers\AttributeValueController;
 use App\Http\Controllers\Client\ProductDetailController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 
@@ -73,11 +64,6 @@ Route::prefix('admin')->name('Admin.')->group(function () {
     Route::delete('categories/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
     Route::put('categories/{id}/restore', [CategoryController::class, 'restore'])->name('categories.restore');
     Route::delete('categories/{id}/force-delete', [CategoryController::class, 'forceDelete'])->name('categories.forceDelete');
-
-
-
-
-
     // ===== REVIEWS =====
     Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
     Route::get('/reviews/trash', [ReviewController::class, 'trash'])->name('reviews.trash');
@@ -122,11 +108,13 @@ Route::delete('/posts/delete-selected', [PostController::class, 'deleteSelected'
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('banners', BannerController::class);
 });
+
 // Quản lý tài khoản Admin và Role
 // Route::prefix('admin')->name('admin.')->group(function () {
 //     Route::resource('admins', AdminController::class);
 //     // Route::resource('roles', RoleController::class);
 // });
+
 Route::get('admin/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit_logs.index');
 // Quản lý tài khoản
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -139,34 +127,36 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/user/overview', [UserController::class, 'overview'])->name('user.overview');
 });
 
+
 // Auth routes
 Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-
-
-
+    
 
 
 ////// producst/////////////////////////////////////
 Route::prefix('admin')->group(function () {
     Route::resource('products', ProductsController::class);
-    
+
+    // Xóa ảnh phụ
+    Route::delete('/products/image/{id}', [ProductsController::class, 'destroyImage'])->name('products.image.destroy');
+
+    // Xóa mềm sản phẩm (dành cho trang danh sách)
+    Route::delete('/products/{id}/soft-delete', [ProductsController::class, 'softDelete'])->name('products.softDelete');
+
+    // Danh mục
     Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
 
-// Size
-Route::post('/catalog/size/store', [CatalogController::class, 'storeSize'])->name('catalog.size.store');
-Route::put('/catalog/size/{size}', [CatalogController::class, 'updateSize'])->name('catalog.size.update');
-Route::delete('/catalog/size/{size}', [CatalogController::class, 'destroySize'])->name('catalog.size.destroy');
+    // Size
+    Route::post('/catalog/size/store', [CatalogController::class, 'storeSize'])->name('catalog.size.store');
+    Route::put('/catalog/size/{size}', [CatalogController::class, 'updateSize'])->name('catalog.size.update');
+    Route::delete('/catalog/size/{size}', [CatalogController::class, 'destroySize'])->name('catalog.size.destroy');
 
-// Color
-Route::post('/catalog/color/store', [CatalogController::class, 'storeColor'])->name('catalog.color.store');
-Route::put('/catalog/color/{color}', [CatalogController::class, 'updateColor'])->name('catalog.color.update');
-Route::delete('/catalog/color/{color}', [CatalogController::class, 'destroyColor'])->name('catalog.color.destroy');
+    // Color
+    Route::post('/catalog/color/store', [CatalogController::class, 'storeColor'])->name('catalog.color.store');
+    Route::put('/catalog/color/{color}', [CatalogController::class, 'updateColor'])->name('catalog.color.update');
+    Route::delete('/catalog/color/{color}', [CatalogController::class, 'destroyColor'])->name('catalog.color.destroy');
 });
-
-
-// routes/web.php
 
 
 ////// producst/////////////////////////////////////

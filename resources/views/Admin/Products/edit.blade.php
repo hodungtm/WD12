@@ -1,256 +1,246 @@
 @extends('admin.layouts.Adminlayout') 
 
 @section('main')
-    <style>
-        .box-value-item {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px 16px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            margin: 5px;
-            cursor: pointer;
-            user-select: none;
-            transition: all 0.2s ease;
-        }
+    <div class="app-title d-flex justify-content-between align-items-center mb-3">
+        <ul class="app-breadcrumb breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{ route('products.index') }}">Sản phẩm</a></li>
+            <li class="breadcrumb-item active">Chỉnh sửa sản phẩm</li>
+        </ul>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="tile card shadow-sm rounded-3 border-0">
+                <div class="tile-body p-4">
+                    <h3 class="tile-title mb-4">Chỉnh sửa sản phẩm</h3>
 
-        .box-value-item input {
-            display: none;
-        }
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
-        .box-value-item input:checked+.body-text {
-            background-color: #0066ff;
-            color: #fff;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
+                    <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data" class="row g-3">
+                        @csrf
+                        @method('PUT')
 
-        .body-text {
-            font-size: 14px;
-        }
+                         {{-- Tên sản phẩm  --}}
+                        <div class="form-group col-md-6">
+                            <label class="form-label">Tên sản phẩm</label>
+                            <input type="text" name="name" class="form-control" value="{{ old('name', $product->name) }}" required>
+                        </div>
 
-        table.table,
-        table.table th,
-        table.table td {
-            border: 1px solid #eee;
-        }
-    </style>
-
-    <div class="main-content-inner">
-        <div class="main-content-wrap">
-            <div class="flex items-center flex-wrap justify-between gap20 mb-27">
-                <h3>Chỉnh sửa sản phẩm</h3>
-                <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-                    <li><a href="#">
-                            <div class="text-tiny">Dashboard</div>
-                        </a></li>
-                    <li><i class="icon-chevron-right"></i></li>
-                    <li><a href="#">
-                            <div class="text-tiny">Ecommerce</div>
-                        </a></li>
-                    <li><i class="icon-chevron-right"></i></li>
-                    <li>
-                        <div class="text-tiny">Chỉnh sửa sản phẩm</div>
-                    </li>
-                </ul>
-            </div>
-
-            <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data"
-                class="tf-section-2 form-add-product">
-                @csrf
-                @method('PUT')
-
-                <div class="wg-box">
-                    <fieldset class="name">
-                        <div class="body-title mb-10">Tên sản phẩm <span class="tf-color-1">*</span></div>
-                        <input type="text" name="name" placeholder="Nhập tên sản phẩm" class="mb-10" value="{{ old('name', $product->name) }}" required>
-                    </fieldset>
-
-                    <fieldset class="category">
-                        <div class="body-title mb-10">Danh mục <span class="tf-color-1">*</span></div>
-                        <div class="select">
-                            <select name="category_id" required>
-                                <option value="">-- Chọn danh mục --</option>
+                         {{-- Danh mục  --}}
+                        <div class="form-group col-md-3">
+                            <label class="form-label">Danh mục</label>
+                            <select name="category_id" class="form-control" required>
                                 @foreach ($categories as $category)
                                     <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>{{ $category->ten_danh_muc }}</option>
                                 @endforeach
                             </select>
                         </div>
-                    </fieldset>
-
-                    <fieldset class="description">
-                        <div class="body-title mb-10">Mô tả sản phẩm <span class="tf-color-1">*</span></div>
-                        <textarea name="description" class="mb-10" rows="4" placeholder="Mô tả sản phẩm..." required>{{ old('description', $product->description) }}</textarea>
-                    </fieldset>
-                </div>
-
-                {{-- Size và màu --}}
-                <div class="wg-box">
-                    <div class="cols gap22 mt-3">
-                        <fieldset>
-                            <div class="body-title mb-10">Giá chung cho biến thể</div>
-                            <input type="text" id="common_price" class="form-control" placeholder="Nhập giá VND">
-                        </fieldset>
-                        <fieldset>
-                            <div class="body-title mb-10">Số lượng chung cho biến thể</div>
-                            <input type="number" id="common_quantity" class="form-control" placeholder="Nhập số lượng">
-                        </fieldset>
-                    </div>
-
-                    <fieldset>
-                        <div class="body-title mb-10">Chọn Size</div>
-                        <div class="flex flex-wrap gap10">
-                            <label class="circle-option">
-                                <input type="checkbox" id="select_all_sizes" onchange="toggleAll('sizes[]', this)">
-                                <span>Chọn tất cả</span>
-                            </label>
-                            @foreach ($sizes as $size)
-                                <label class="circle-option">
-                                    <input type="checkbox" name="sizes[]" value="{{ $size->id }}" {{ in_array($size->id, $selectedSizes ?? []) ? 'checked' : '' }}>
-                                    <span>{{ $size->name }}</span>
-                                </label>
-                            @endforeach
+                         {{--  Trạng Thái  --}}
+                        <div class="form-group col-md-3">
+                            <label for="status">Trạng thái</label>
+                            <select name="status" class="form-control">
+                                <option value="1" {{ $product->status == 1 ? 'selected' : '' }}>Hiển thị</option>
+                                <option value="0" {{ $product->status == 0 ? 'selected' : '' }}>Ẩn</option>
+                            </select>
                         </div>
-                    </fieldset>
 
-                    <fieldset class="mt-3">
-                        <div class="body-title mb-10">Chọn Màu</div>
-                        <div class="flex flex-wrap gap10">
-                            <label class="circle-option">
-                                <input type="checkbox" id="select_all_colors" onchange="toggleAll('colors[]', this)">
-                                <span>Chọn tất cả</span>
-                            </label>
-                            @foreach ($colors as $color)
-                                <label class="circle-option">
-                                    <input type="checkbox" name="colors[]" value="{{ $color->id }}" {{ in_array($color->id, $selectedColors ?? []) ? 'checked' : '' }}>
-                                    <span>{{ $color->name }}</span>
-                                </label>
-                            @endforeach
+
+                         {{-- Mô tả  --}}
+                        <div class="form-group col-md-12">
+                            <label class="form-label">Mô tả</label>
+                            <textarea name="description" class="form-control" rows="4" required>{{ old('description', $product->description) }}</textarea>
                         </div>
-                    </fieldset>
 
-                    <button type="button" class="tf-button mt-3" onclick="generateVariants()">
-                        <i class="fas fa-plus me-1"></i> Tạo biến thể
-                    </button>
-                </div>
+                         {{-- Ảnh mới  --}}
+                        <div class="form-group col-md-12">
+                            <label class="form-label">Thêm ảnh mới</label>
+                            <input type="file" name="images[]" class="form-control" multiple>
+                        </div>
 
-                {{-- Upload ảnh --}}
-                <div class="wg-box">
-                    <fieldset>
-                        <div class="body-title mb-10">Tải lên ảnh sản phẩm</div>
-                        <div class="upload-image mb-16">
-                            <div class="item up-load">
-                                <label class="uploadfile" for="product_images">
-                                    <span class="icon"><i class="icon-upload-cloud"></i></span>
-                                    <span class="text-tiny">Drop your images here or <span class="tf-color">click to browse</span></span>
-                                    <input type="file" id="product_images" name="images[]" multiple>
-                                    <div id="image_preview" class="flex flex-wrap gap10 mt-3">
-                                        @foreach ($product->images as $img)
-                                            <div class="relative">
-                                                <img src="{{ asset('storage/' . $img->image) }}" style="width:100px;height:100px;object-fit:cover;border:1px solid #ccc;padding:2px;border-radius:6px;">
-                                            </div>
-                                        @endforeach
-                                    </div>
+                         {{-- Giá mặc định  --}}
+                        <div class="form-group col-md-4">
+                            <label class="form-label">Giá mặc định</label>
+                            <input type="number" id="default_price" class="form-control">
+                        </div>
+
+                         {{-- Giá sale  --}}
+                        <div class="form-group col-md-4">
+                            <label class="form-label">Giá sale mặc định</label>
+                            <input type="number" id="default_saleprice" class="form-control">
+                        </div>
+
+                         {{-- Số lượng  --}}
+                        <div class="form-group col-md-4">
+                            <label class="form-label">Số lượng mặc định</label>
+                            <input type="number" id="default_quantity" class="form-control">
+                        </div>
+
+                         {{-- Size  --}}
+                        <div class="form-group col-md-12">
+                            <label class="form-label">Chọn Size</label>
+                            <div>
+                                <label class="me-3">
+                                    <input type="checkbox" id="select_all_sizes" onchange="toggleAll('sizes[]', this)"> Chọn tất cả
                                 </label>
+                                @foreach ($sizes as $size)
+                                    <label class="me-3">
+                                        <input type="checkbox" name="sizes[]" value="{{ $size->id }}" {{ in_array($size->id, $selectedSizes ?? []) ? 'checked' : '' }}>
+                                        {{ $size->name }}
+                                    </label>
+                                @endforeach
                             </div>
                         </div>
-                    </fieldset>
-                </div>
 
-                {{-- Bảng biến thể --}}
-                <div class="wg-box">
-                    <div class="flex items-center justify-between mb-3">
-                        <h5 class="mb-0">Danh sách biến thể</h5>
-                        <button type="button" class="tf-button style-1" onclick="deleteSelectedVariants()">
-                            <i class="fas fa-trash-alt me-1"></i> Xóa các biến thể đã chọn
-                        </button>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table table-bordered text-center" id="variant_table">
-                            <thead class="table-light">
-                                <tr>
-                                    <th><input type="checkbox" id="select_all_variants" onchange="toggleAllVariants(this)"></th>
-                                    <th>Size</th>
-                                    <th>Màu</th>
-                                    <th>Giá</th>
-                                    <th>Số lượng</th>
-                                    <th>Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($product->variants as $variant)
-                                <tr>
-                                    <td><input type="checkbox" class="variant_checkbox"></td>
-                                    <td><input type="hidden" name="variant_sizes[]" value="{{ $variant->size_id }}">{{ $variant->size->name ?? '' }}</td>
-                                    <td><input type="hidden" name="variant_colors[]" value="{{ $variant->color_id }}">{{ $variant->color->name ?? '' }}</td>
-                                    <td><input type="text" name="variant_prices[]" class="form-control" value="{{ $variant->price }}"></td>
-                                    <td><input type="number" name="variant_quantities[]" class="form-control" value="{{ $variant->quantity }}"></td>
-                                    <td><button type="button" class="btn btn-sm text-danger" style="font-size: 20px; line-height: 1;" onclick="this.closest('tr').remove()">&times;</button></td>
-                                </tr>
+                         {{-- Màu  --}}
+                        <div class="form-group col-md-12">
+                            <label class="form-label">Chọn Màu</label>
+                            <div>
+                                <label class="me-3">
+                                    <input type="checkbox" id="select_all_colors" onchange="toggleAll('colors[]', this)"> Chọn tất cả
+                                </label>
+                                @foreach ($colors as $color)
+                                    <label class="me-3">
+                                        <input type="checkbox" name="colors[]" value="{{ $color->id }}" {{ in_array($color->id, $selectedColors ?? []) ? 'checked' : '' }}>
+                                        {{ $color->name }}
+                                    </label>
                                 @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                            </div>
+                        </div>
 
-                <div class="cols gap10 mt-4">
-                    <button type="submit" class="tf-button w-full">Cập nhật sản phẩm</button>
-                    <a href="{{ route('products.index') }}" class="tf-button style-1 w-full">Hủy bỏ</a>
+                         {{-- Tạo biến thể  --}}
+                        <div class="form-group col-md-12">
+                            <button type="button" class="btn btn-outline-success" onclick="generateVariants()">
+                                <i class="fas fa-plus me-1"></i> Tạo biến thể
+                            </button>
+                        </div>
+
+                         {{-- Bảng biến thể  --}}
+                        <div class="form-group col-md-12 mt-3">
+                            <h5>Danh sách biến thể</h5>
+                            <button type="button" class="btn btn-outline-danger btn-sm mb-2" onclick="deleteSelectedVariants()">
+                                <i class="fas fa-trash-alt me-1"></i> Xoá các biến thể đã chọn
+                            </button>
+                            <table class="table table-bordered text-center" id="variant_table">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th><input type="checkbox" id="select_all_variants" onchange="toggleAllVariants(this)"></th>
+                                        <th>Size</th>
+                                        <th>Màu</th>
+                                        <th>Giá</th>
+                                        <th>Giá Sale</th>
+                                        <th>Số lượng</th>
+                                        <th>Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($product->variants as $variant)
+                                        <tr>
+                                            <td><input type="checkbox" class="variant_checkbox"></td>
+                                            <td><input type="hidden" name="variant_sizes[]" value="{{ $variant->size_id }}">{{ $variant->size->name ?? '' }}</td>
+                                            <td><input type="hidden" name="variant_colors[]" value="{{ $variant->color_id }}">{{ $variant->color->name ?? '' }}</td>
+                                            <td><input type="number" name="variant_prices[]" class="form-control" value="{{ $variant->price }}"></td>
+                                            <td><input type="number" name="variant_sale_prices[]" class="form-control" value="{{ $variant->sale_price }}"></td>
+                                            <td><input type="number" name="variant_quantities[]" class="form-control" value="{{ $variant->quantity }}"></td>
+                                            <td><button type="button" class="btn btn-outline-danger btn-sm" onclick="this.closest('tr').remove()">Xoá</button></td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                         {{-- Nút lưu  --}}
+                        <div class="form-group col-md-12 text-end mt-3">
+                            <button type="submit" class="btn btn-outline-success"><i class="fas fa-save me-1"></i> Lưu sản phẩm</button>
+                            <a href="{{ route('products.index') }}" class="btn btn-outline-danger"><i class="fas fa-times me-1"></i> Hủy bỏ</a>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
-<script>
-    function toggleAll(name, sourceCheckbox) {
-        document.querySelectorAll(`input[name="${name}"]`).forEach(cb => cb.checked = sourceCheckbox.checked);
-    }
 
-    function generateVariants() {
-        let sizes = document.querySelectorAll('input[name="sizes[]"]:checked');
-        let colors = document.querySelectorAll('input[name="colors[]"]:checked');
-        let price = document.getElementById('common_price').value;
-        let quantity = document.getElementById('common_quantity').value;
-        let tbody = document.querySelector('#variant_table tbody');
+     {{-- Ảnh hiện tại  --}}
+    @if ($product->images->isNotEmpty())
+        <div class="tile mt-4">
+            <h5>Ảnh hiện tại</h5>
+            <div class="row">
+                @foreach ($product->images as $img)
+                    <div class="col-3 col-md-2 mb-3">
+                        <div class="border rounded shadow-sm overflow-hidden p-1 text-center">
+                            <img src="{{ asset('storage/' . $img->image) }}" class="img-fluid mb-2" style="object-fit: cover; width: 100%; height: 100px;">
+                            <form action="{{ route('products.image.destroy', $img->id) }}" method="POST" onsubmit="return confirm('Bạn chắc chắn muốn xóa ảnh này?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-outline-danger btn-sm w-100">Xoá</button>
+                            </form>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
 
-        sizes.forEach(size => {
-            colors.forEach(color => {
-                if (!variantExists(size.value, color.value)) {
-                    tbody.insertAdjacentHTML('beforeend', `
-                        <tr>
-                            <td><input type="checkbox" class="variant_checkbox"></td>
-                            <td><input type="hidden" name="variant_sizes[]" value="${size.value}">${size.closest('label').innerText.trim()}</td>
-                            <td><input type="hidden" name="variant_colors[]" value="${color.value}">${color.closest('label').innerText.trim()}</td>
-                            <td><input type="text" name="variant_prices[]" class="form-control" value="${price}"></td>
-                            <td><input type="number" name="variant_quantities[]" class="form-control" value="${quantity}"></td>
-                            <td>
-                                <button type="button" class="btn btn-sm text-danger" style="font-size: 20px;" onclick="this.closest('tr').remove()">
-                                    &times;
-                                </button>
-                            </td>
-                        </tr>
-                    `);
-                }
+
+    <script>
+        function toggleAll(name, sourceCheckbox) {
+            document.querySelectorAll(`input[name="${name}"]`).forEach(cb => {
+                cb.checked = sourceCheckbox.checked;
             });
-        });
-    }
+        }
 
-    function variantExists(sizeId, colorId) {
-        return Array.from(document.querySelectorAll('#variant_table tbody tr')).some(row =>
-            row.querySelector('input[name="variant_sizes[]"]').value == sizeId &&
-            row.querySelector('input[name="variant_colors[]"]').value == colorId
-        );
-    }
+        function generateVariants() {
+            let selectedSizes = document.querySelectorAll('input[name="sizes[]"]:checked');
+            let selectedColors = document.querySelectorAll('input[name="colors[]"]:checked');
+            let price = document.getElementById('default_price').value;
+            let saleprice = document.getElementById('default_saleprice').value;
+            let quantity = document.getElementById('default_quantity').value;
+            let tableBody = document.getElementById('variant_table').querySelector('tbody');
+
+            selectedSizes.forEach(size => {
+                selectedColors.forEach(color => {
+                    if (!variantExists(size.value, color.value)) {
+                        let row = `
+                            <tr>
+                                <td><input type="checkbox" class="variant_checkbox"></td>
+                                <td><input type="hidden" name="variant_sizes[]" value="${size.value}">${size.nextSibling.nodeValue.trim()}</td>
+                                <td><input type="hidden" name="variant_colors[]" value="${color.value}">${color.nextSibling.nodeValue.trim()}</td>
+                                <td><input type="number" name="variant_prices[]" class="form-control" value="${price}"></td>
+                                <td><input type="number" name="variant_sale_prices[]" class="form-control" value="${saleprice}"></td>
+                                <td><input type="number" name="variant_quantities[]" class="form-control" value="${quantity}"></td>
+                                <td><button type="button" class="btn btn-outline-danger btn-sm" onclick="this.closest('tr').remove()">Xoá</button></td>
+                            </tr>
+                        `;
+                        tableBody.insertAdjacentHTML('beforeend', row);
+                    }
+                });
+            });
+        }
+
+        function variantExists(sizeId, colorId) {
+            let rows = document.querySelectorAll('#variant_table tbody tr');
+            for (let row of rows) {
+                let sizeVal = row.querySelector('input[name="variant_sizes[]"]').value;
+                let colorVal = row.querySelector('input[name="variant_colors[]"]').value;
+                if (sizeVal == sizeId && colorVal == colorId) return true;
+            }
+            return false;
+        }
 
     function toggleAllVariants(sourceCheckbox) {
         document.querySelectorAll('.variant_checkbox').forEach(cb => cb.checked = sourceCheckbox.checked);
     }
 
-    function deleteSelectedVariants() {
-        document.querySelectorAll('.variant_checkbox:checked').forEach(cb => cb.closest('tr').remove());
-    }
-</script>
-
-   
+        function deleteSelectedVariants() {
+            document.querySelectorAll('.variant_checkbox:checked').forEach(cb => {
+                cb.closest('tr').remove();
+            });
+        }
+    </script>
 @endsection
