@@ -41,7 +41,6 @@
                             <a class="btn btn-danger btn-sm d-flex align-items-center" href="" style="gap: 5px;">
                                 <i class="fas fa-file-pdf"></i> Xuất PDF
                             </a>
-
                             <form action="" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa tất cả?');"
                                 style="display:inline;">
                                 @csrf
@@ -159,8 +158,8 @@
                                             <span class="badge bg-danger">Bị khóa</span>
                                         @endif
                                     </td>
-                                    <td>{{ optional($user->created_at)->format('d/m/Y H:i') }}</td>
 
+                                    <td>{{ optional($user->created_at)->format('d/m/Y H:i') }}</td>
                                     <td>
                                         {{-- Xem --}}
                                         <a href="{{ route('admin.users.show', $user->id) }}" class="btn btn-info btn-sm">
@@ -192,7 +191,7 @@
                                             <form method="POST" action="{{ route('admin.users.toggle-active', $user->id) }}"
                                                 style="display:inline-block;">
                                                 @csrf
-                                                @method('PUT')
+                                                @method('PATCH')
                                                 <button onclick="return confirm('Bạn có chắc muốn đổi trạng thái?')"
                                                     class="btn btn-warning btn-sm">
                                                     @if($user->is_active)

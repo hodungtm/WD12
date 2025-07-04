@@ -1,26 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Trang quản trị | Admin</title>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- Main CSS-->
-<link rel="stylesheet" type="text/css" href="{{ asset('css/main.css') }}">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
-<!-- or -->
-<link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
-<!-- Font-icon css-->
-<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-<!-- Bootstrap JS (v5) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Bootstrap Bundle JS (gồm cả Popper.js) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+    <title>Trang quản trị | Admin</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="{{ asset('css/main.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
@@ -173,61 +156,7 @@
 <script src="{{ asset('js/plugins/pace.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/plugins/chart.js') }}"></script>
 
-
-
-  <script src="{{ asset('js/jquery-3.2.1.min.js') }}"></script>
-<!--===============================================================================================-->
-<script src="{{ asset('js/popper.min.js') }}"></script>
-<script src="https://unpkg.com/boxicons@latest/dist/boxicons.js"></script>
-<!--===============================================================================================-->
-<script src="{{ asset('js/bootstrap.min.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<!--===============================================================================================-->
-<script src="{{ asset('js/main.js') }}"></script>
-<!--===============================================================================================-->
-<script src="{{ asset('js/plugins/pace.min.js') }}"></script>
-<!--===============================================================================================-->
-<script type="text/javascript" src="{{ asset('js/plugins/chart.js') }}"></script>
-<!--===============================================================================================-->
-<script type="text/javascript">
-    // Your custom JavaScript code here
-
-
-    var data = {
-      labels: ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6"],
-      datasets: [{
-        label: "Dữ liệu đầu tiên",
-        fillColor: "rgba(255, 213, 59, 0.767), 212, 59)",
-        strokeColor: "rgb(255, 212, 59)",
-        pointColor: "rgb(255, 212, 59)",
-        pointStrokeColor: "rgb(255, 212, 59)",
-        pointHighlightFill: "rgb(255, 212, 59)",
-        pointHighlightStroke: "rgb(255, 212, 59)",
-        data: [20, 59, 90, 51, 56, 100]
-      },
-      {
-        label: "Dữ liệu kế tiếp",
-        fillColor: "rgba(9, 109, 239, 0.651)  ",
-        pointColor: "rgb(9, 109, 239)",
-        strokeColor: "rgb(9, 109, 239)",
-        pointStrokeColor: "rgb(9, 109, 239)",
-        pointHighlightFill: "rgb(9, 109, 239)",
-        pointHighlightStroke: "rgb(9, 109, 239)",
-        data: [48, 48, 49, 39, 86, 10]
-      }
-      ]
-    };
-    var ctxl = $("#lineChartDemo").get(0).getContext("2d");
-    var lineChart = new Chart(ctxl).Line(data);
-
-    var ctxb = $("#barChartDemo").get(0).getContext("2d");
-    var barChart = new Chart(ctxb).Bar(data);
-  </script>
-  <script type="text/javascript">
-    //Thời Gian
-=======
 <script>
-
     function time() {
         var today = new Date();
         var weekday = ["Chủ Nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"];
