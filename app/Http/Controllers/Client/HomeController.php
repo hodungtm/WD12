@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Post;
-
+// Xong home
 class HomeController extends Controller
 {
     public function index()

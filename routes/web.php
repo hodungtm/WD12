@@ -26,12 +26,12 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Client\CheckoutController;
 
 use App\Http\Controllers\Client\HomeController as ClientHomeController;
-
 Route::prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 });
 
 Route::get('/', [ClientHomeController::class, 'index']);
+// Xong home
 
 Route::prefix('client')->name('client.')->group(function () {
     Route::get('/san-pham/{id}', [ProductDetailController::class, 'show'])->name('product.detail');

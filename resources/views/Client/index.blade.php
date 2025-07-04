@@ -9,7 +9,6 @@
 <body>
     <!-- header start -->
     <header>
-        {{-- HOME ĐÃ XONG --}}
         <!-- header-middle satrt -->
         <!-- main slider start -->
         <section class="bg-light position-relative">
