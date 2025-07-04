@@ -161,4 +161,4 @@
             checkboxes.forEach(cb => cb.checked = this.checked);
         });
     </script>
-@endsection 
+@endsection

@@ -181,5 +181,4 @@ Route::prefix('admin')->group(function () {
     Route::put('/catalog/color/{color}', [CatalogController::class, 'updateColor'])->name('catalog.color.update');
     Route::delete('/catalog/color/{color}', [CatalogController::class, 'destroyColor'])->name('catalog.color.destroy');
 });
-
 // Route::get('/user/dashboard', [UserDashboardController::class, 'index']);
