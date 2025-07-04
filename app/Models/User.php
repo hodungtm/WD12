@@ -20,12 +20,18 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'role'  
-    ];
-
+    'name',
+    'email',
+    'password',
+    'phone',
+    'gender',
+    'address',
+    'dob',
+    'avatar',
+    'is_active',
+    'role' 
+];
+      
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -56,3 +62,4 @@ class User extends Authenticatable
         return $this ->role ===self::ROLE_ADMIN;
     }
 }
+    

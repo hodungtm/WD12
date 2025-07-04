@@ -12,32 +12,38 @@ class Order_items extends Model
     protected $fillable = [
         'order_id',
         'product_id',
-        'discount_id',
+        'product_variant_id',
         'quantity',
-        'price',  
-        'discount_price', // THÊM: Cột này có trong bảng và có thể được gán.
-        'final_price',  
+        'price',
         'total_price',
+
+        // Snapshot thông tin sản phẩm & biến thể
+        'product_name',
+        'variant_name',     // "Size M - Màu đỏ"
+        'product_image',
+        'sku',
+        'brand_name',
     ];
 
     /**
      * Mỗi OrderItem thuộc về một đơn hàng
      */
-     public function order()
-     {
-         return $this->belongsTo(Order::class);
-     }
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
 
-    /**
-     * Mỗi OrderItem liên kết với một sản phẩm
-     */
-     public function product()
-     {
-         return $this->belongsTo(Product::class);
-     }
-
-    /**
-     * Tính tổng tiền (nếu muốn tính tự động)
-     */
     
+     public function product()
+    {
+        return $this->belongsTo(Products::class);
+    }
+
+    /**
+     * Biến thể sản phẩm liên kết
+     */
+    public function productVariant()
+    {
+        return $this->belongsTo(ProductVariant::class);
+    }
 }

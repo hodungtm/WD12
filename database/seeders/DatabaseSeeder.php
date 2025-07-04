@@ -45,7 +45,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // User::factory(10)->create();
-$this->call(CommentSeeder::class);
+        $this->call(CommentSeeder::class);
         // User::factory()->create([
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
@@ -55,8 +55,10 @@ $this->call(CommentSeeder::class);
         //     HinhAnhBannerSeeder::class,
         //     // Add other seeders here
         // ]);
-            
-        
+
+        $this->call([
+            UsersTableSeeder::class,
+        ]);
 
     }
 }
