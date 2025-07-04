@@ -12,26 +12,31 @@
       </ul>
     </div>
 
-    <!-- Form lọc -->
-    <form method="GET" action="{{ route('admin.dashboard') }}" class="grid md:grid-cols-4 gap10 mb-5">
-      <div>
-        <label class="text-tiny block mb-1">Bắt đầu</label>
-        <input type="datetime-local" name="from" value="{{ request('from') }}" class="form-control">
+    <div class="wg-box p-4">
+      <div class="title-box mb-3">
+        <i class="icon-search"></i>
+        <div class="body-text">Lọc thống kê theo thời gian</div>
       </div>
-      <div>
-        <label class="text-tiny block mb-1">Kết thúc</label>
-        <input type="datetime-local" name="to" value="{{ request('to') }}" class="form-control">
-      </div>
-      <div class="flex items-end">
-        <button type="submit" class="tf-button w-full">Lọc</button>
-      </div>
-      <div class="flex items-end">
-        <a href="{{ route('admin.dashboard') }}" class="tf-button style-1 w-full">Reset</a>
-      </div>
-    </form>
 
-    <!-- Thống kê ô -->
-    <div class="grid md:grid-cols-3 gap10 mb-5">
+      <form method="GET" action="{{ route('admin.dashboard') }}" class="flex flex-wrap gap20">
+        <div>
+          <label class="text-tiny block mb-1">Bắt đầu</label>
+          <input type="datetime-local" name="from" value="{{ request('from') }}" class="form-control">
+        </div>
+        <div>
+          <label class="text-tiny block mb-1">Kết thúc</label>
+          <input type="datetime-local" name="to" value="{{ request('to') }}" class="form-control">
+        </div>
+        <div class="flex items-end">
+          <button type="submit" class="tf-button">Lọc</button>
+        </div>
+        <div class="flex items-end">
+          <a href="{{ route('admin.dashboard') }}" class="tf-button style-1">Reset</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap20 mt-4">
       <div class="wg-box text-center py-4">
         <div class="body-title mb-2">📦 Tổng đơn hàng</div>
         <div class="text-2xl font-bold">{{ $totalOrders }}</div>
@@ -46,27 +51,27 @@
       </div>
     </div>
 
-    <!-- Biểu đồ -->
-    <div class="grid md:grid-cols-2 gap10 mb-5">
+    <div class="grid md:grid-cols-2 gap20 mt-4">
       <div class="wg-box p-4">
-        <div class="body-title mb-4">📅 Biểu đồ đơn hàng theo thời gian</div>
+        <div class="body-title mb-3">📅 Biểu đồ đơn hàng theo thời gian</div>
         <canvas id="ordersTimeChart" style="height: 320px; width: 100%;"></canvas>
       </div>
       <div class="wg-box p-4">
-        <div class="body-title mb-4">📊 Biểu đồ trạng thái đơn hàng</div>
+        <div class="body-title mb-3">📊 Biểu đồ trạng thái đơn hàng</div>
         <div class="flex justify-center">
           <canvas id="orderStatusChart" style="max-width: 300px;"></canvas>
         </div>
       </div>
     </div>
 
-    <!-- Top sản phẩm -->
-    <div class="wg-box p-4">
-      <div class="body-title mb-4">🔥 Top sản phẩm bán chạy</div>
+    <div class="wg-box p-4 mt-4">
+      <div class="body-title mb-3">🔥 Top sản phẩm bán chạy</div>
       <ul class="list-disc pl-5 text-base">
-        @foreach ($topProducts as $product)
+        @forelse ($topProducts as $product)
           <li>{{ $product->name }} - {{ $product->total_orders }} đơn hàng</li>
-        @endforeach
+        @empty
+          <li>Không có dữ liệu</li>
+        @endforelse
       </ul>
     </div>
   </div>
@@ -107,25 +112,16 @@
             callback: function (value) {
               return Number.isInteger(value) ? value : null;
             },
-            precision: 0,
-            color: 'black',
-            font: { weight: 'bold' }
+            precision: 0
           },
           title: {
             display: true,
-            text: 'Đơn hàng',
-            color: 'black',
-            font: { weight: 'bold' }
+            text: 'Đơn hàng'
           }
         }
       },
       plugins: {
-        legend: {
-          labels: {
-            color: 'black',
-            font: { weight: 'bold' }
-          }
-        },
+        legend: { labels: { font: { weight: 'bold' } }},
         tooltip: {
           bodyFont: { weight: 'bold' },
           titleFont: { weight: 'bold' }

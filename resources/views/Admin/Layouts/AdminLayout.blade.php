@@ -139,7 +139,7 @@
                                         </a>
                                         <ul class="sub-menu">
                                             <li class="sub-menu-item">
-                                                <a href="oder-list.html" class="">
+                                                <a href="{{ route('admin.orders.index') }}" class="">
                                                     <div class="text">Order list</div>
                                                 </a>
                                             </li>
@@ -186,25 +186,31 @@
                                     <li class="menu-item has-children">
                                         <a href="javascript:void(0);" class="menu-item-button">
                                             <div class="icon"><i class="icon-user-plus"></i></div>
-                                            <div class="text">Phản hồi khách hàng</div>
+                                            <div class="text">Feedback</div>
                                         </a>
                                         <ul class="sub-menu">
                                             <li class="sub-menu-item">
                                                 <a href="{{ route('Admin.reviews.index') }}" class="">
-                                                    <div class="text">Đánh giá</div>
+                                                    <div class="text">Reviews</div>
                                                 </a>
                                             </li>
                                             <li class="sub-menu-item">
                                                 <a href="{{ route('Admin.comments.index') }}" class="">
-                                                    <div class="text">Bình luận</div>
+                                                    <div class="text">Comments</div>
                                                 </a>
                                             </li>
                                         </ul>
                                     </li>
                                     <li class="menu-item">
-                                        <a href="gallery.html" class="">
+                                        <a href="{{ route('admin.discounts.index') }}" class="">
                                             <div class="icon"><i class="icon-image"></i></div>
-                                            <div class="text">Gallery</div>
+                                            <div class="text">Discounts</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a href="{{ route('admin.banners.index') }}" class="">
+                                            <div class="icon"><i class="icon-image"></i></div>
+                                            <div class="text">Banners</div>
                                         </a>
                                     </li>
                                     <li class="menu-item">
@@ -215,6 +221,7 @@
                                     </li>
                                 </ul>
                             </div>
+
                             <div class="center-item">
                                 <div class="center-heading">Setting</div>
                                 <ul class="menu-list">

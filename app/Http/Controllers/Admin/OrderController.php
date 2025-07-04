@@ -27,24 +27,20 @@ use Illuminate\Validation\ValidationException;
 class OrderController extends Controller
 {
     public function index(Request $request)
-    {
-        $query = Order::with([
-            'user',
-            'shippingMethod',
-            'orderItems',
-        ]);
+{
+    $query = Order::with(['user', 'shippingMethod', 'orderItems']);
 
-        // Tìm kiếm theo mã đơn hàng
-        if ($request->has('search') && !empty($request->search)) {
-            $search = $request->search;
-            $query->where('order_code', 'LIKE', '%' . $search . '%');
-        }
-
-        // Lấy danh sách đơn hàng mới nhất
-        $orders = $query->latest()->get();
-
-        return view('admin.orders.index', compact('orders'));
+    if ($request->has('search') && !empty($request->search)) {
+        $search = $request->search;
+        $query->where('order_code', 'LIKE', '%' . $search . '%');
     }
+
+    $perPage = $request->input('per_page', 10);  // lấy từ request hoặc mặc định 10
+
+    $orders = $query->latest()->paginate($perPage);
+
+    return view('admin.orders.index', compact('orders'));
+}
 
     public function show($id)
     {
