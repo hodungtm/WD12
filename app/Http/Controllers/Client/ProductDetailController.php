@@ -7,13 +7,14 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Review;
 use App\Models\Comment;
+use App\Models\Products;
 use Illuminate\Http\Request;
 
 class ProductDetailController extends Controller
 {
     public function show($id)
     {
-        $product = Product::with('images', 'variants.size', 'variants.color')->findOrFail($id);
+        $product = Products::with('images', 'variants.size', 'variants.color')->findOrFail($id);
         $reviews = Review::where('product_id', $id)->latest()->get();
         $comments = Comment::where('product_id', $product->id)
             ->whereNull('deleted_at')
@@ -23,7 +24,7 @@ class ProductDetailController extends Controller
         $productVariants = ProductVariant::where('product_id', $product->id)
             ->with(['size', 'color']) // assuming you've defined relationships
             ->get();
-        return view('Client.Product.productDetail', compact('product', 'reviews', 'comments'));
+        return view('Client.Product.productDetail', compact('product', 'reviews', 'comments', 'productVariants'));
     }
 
     public function submitReview(Request $request, $id)
@@ -31,12 +32,12 @@ class ProductDetailController extends Controller
         $request->validate([
             // 'ten_nguoi_danh_gia' => 'required|string',
             'so_sao' => 'required|integer|min:1|max:5',
-            
+
             'noi_dung' => 'required|string',
         ], [
             // 'ten_nguoi_danh_gia.required' => 'Vui lòng nhập tên',
             'so_sao.required' => 'Vui lòng nhập số sao đánh giá',
-          
+
             'noi_dung.required' => 'Vui lòng nhập nội dung',
         ]);
 
@@ -44,7 +45,7 @@ class ProductDetailController extends Controller
             'product_id' => $id,
             // 'ten_nguoi_danh_gia' => $request->ten_nguoi_danh_gia,
             'so_sao' => $request->so_sao,
-           
+
             'noi_dung' => $request->noi_dung,
         ]);
 

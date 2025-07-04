@@ -1,146 +1,140 @@
-@extends('Admin.layouts.AdminLayout')
+@extends('admin.layouts.AdminLayout')
+
 @section('main')
-<div class="app-title">
-    <ul class="app-breadcrumb breadcrumb">
-        <li class="breadcrumb-item">Đơn hàng</li>
-        <li class="breadcrumb-item active"><a href="#">Tạo mới đơn hàng</a></li>
-    </ul>
-</div>
+<div class="main-content-inner">
+    <div class="main-content-wrap">
 
-<div class="tile">
-    <h3 class="tile-title">Thêm đơn hàng</h3>
-    <div class="tile-body">
-        <form method="POST" action="{{ route('admin.orders.store') }}">
-            @csrf
+        <div class="flex items-center flex-wrap justify-between gap20 mb-27">
+            <h3>Tạo đơn hàng mới</h3>
+            <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+                <li><a href="#"><div class="text-tiny">Dashboard</div></a></li>
+                <li><i class="icon-chevron-right"></i></li>
+                <li><a href="#"><div class="text-tiny">Đơn hàng</div></a></li>
+                <li><i class="icon-chevron-right"></i></li>
+                <li><div class="text-tiny">Tạo mới</div></li>
+            </ul>
+        </div>
 
-            <div class="form-group">
-                <label>Người Đặt</label>
-                <select name="user_id" class="form-control" required>
-                    <option value="">-- Chọn Người Đặt --</option>
-                    @foreach($users as $user)
-                        <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
-                            {{ $user->name }} ({{ $user->email }})
-                        </option>
-                    @endforeach
-                </select>
-                @error('user_id') <span class="text-danger">{{ $message }}</span> @enderror
+        <div class="wg-box">
+            <div class="title-box">
+                <i class="icon-cart"></i>
+                <div class="body-text">Điền thông tin chi tiết đơn hàng</div>
             </div>
 
-          <div class="form-group">
-    <label for="receiver_name">Tên người nhận</label>
-    <input type="text" class="form-control" name="receiver_name" value="{{ old('receiver_name') }}" required>
-    @error('receiver_name') <span class="text-danger">{{ $message }}</span> @enderror
-</div>
+            <form method="POST" action="{{ route('admin.orders.store') }}">
+                @csrf
 
-<div class="form-group">
-    <label for="receiver_phone">Số điện thoại</label>
-    <input type="text" class="form-control" name="receiver_phone" value="{{ old('receiver_phone') }}" required>
-    @error('receiver_phone') <span class="text-danger">{{ $message }}</span> @enderror
-</div>
+                <div class="flex flex-wrap gap20">
+                    <!-- Người đặt -->
+                    <div class="form-group w-full md:w-1/2">
+                        <label class="form-label">Người đặt</label>
+                        <select name="user_id" class="form-control">
+                            <option value="">-- Chọn người đặt --</option>
+                            @foreach($users as $user)
+                                <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
+                                    {{ $user->name }} ({{ $user->email }})
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('user_id') <small class="text-danger">{{ $message }}</small> @enderror
+                    </div>
 
-<div class="form-group">
-    <label for="receiver_email">Email</label>
-    <input type="email" class="form-control" name="receiver_email" value="{{ old('receiver_email') }}">
-    @error('receiver_email') <span class="text-danger">{{ $message }}</span> @enderror
-</div>
+                    <div class="form-group w-full md:w-1/2">
+                        <label class="form-label">Ngày tạo đơn</label>
+                        <input type="date" class="form-control" name="order_date" value="{{ old('order_date', now()->format('Y-m-d')) }}">
+                        @error('order_date') <small class="text-danger">{{ $message }}</small> @enderror
+                    </div>
 
-<div class="form-group">
-    <label for="receiver_address">Địa chỉ</label>
-    <textarea class="form-control" name="receiver_address" rows="3" required>{{ old('receiver_address') }}</textarea>
-    @error('receiver_address') <span class="text-danger">{{ $message }}</span> @enderror
-</div>
+                    <!-- Thông tin người nhận -->
+                    <div class="form-group w-full md:w-1/2">
+                        <label class="form-label">Tên người nhận</label>
+                        <input type="text" class="form-control" name="receiver_name" value="{{ old('receiver_name') }}">
+                        @error('receiver_name') <small class="text-danger">{{ $message }}</small> @enderror
+                    </div>
 
-            <div class="form-group">
-                <label>Ngày tạo đơn</label>
-                <input type="date" class="form-control" name="order_date" value="{{ old('order_date', now()->format('Y-m-d')) }}" required>
-                @error('order_date') <span class="text-danger">{{ $message }}</span> @enderror
-            </div>
+                    <div class="form-group w-full md:w-1/2">
+                        <label class="form-label">Số điện thoại</label>
+                        <input type="text" class="form-control" name="receiver_phone" value="{{ old('receiver_phone') }}">
+                        @error('receiver_phone') <small class="text-danger">{{ $message }}</small> @enderror
+                    </div>
 
-            <div id="product-wrapper">
-                <h5>Danh sách sản phẩm</h5>
+                    <div class="form-group w-full md:w-1/2">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="receiver_email" value="{{ old('receiver_email') }}">
+                        @error('receiver_email') <small class="text-danger">{{ $message }}</small> @enderror
+                    </div>
 
-                <div class="product-group mb-3 border p-3">
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label>Sản phẩm & Biến thể</label>
-                            <select name="products[0][variant_id]" class="form-control variant-select" required>
-                                <option value="">-- Chọn sản phẩm & biến thể --</option>
-                                @foreach($products as $product)
-                                    @foreach($product->variants as $variant)
-                                        @php
-                                            $variantDisplay = '';
-                                            if ($variant->size) $variantDisplay .= 'Size: ' . $variant->size->name;
-                                            if ($variant->color) $variantDisplay .= ($variantDisplay ? ' - ' : '') . 'Color: ' . $variant->color->name;
-                                            $price = ($variant->sale_price > 0 && $variant->sale_price < $variant->price) ? $variant->sale_price : $variant->price;
-                                        @endphp
-                                        <option value="{{ $variant->id }}" data-price="{{ $price }}">
-                                            {{ $product->name }} - {{ $variantDisplay }}
-                                        </option>
-                                    @endforeach
-                                @endforeach
-                            </select>
-                        </div>
+                    <div class="form-group w-full">
+                        <label class="form-label">Địa chỉ</label>
+                        <textarea class="form-control" name="receiver_address" rows="2">{{ old('receiver_address') }}</textarea>
+                        @error('receiver_address') <small class="text-danger">{{ $message }}</small> @enderror
+                    </div>
 
-                        <div class="form-group col-md-2">
-                            <label>Số lượng</label>
-                            <input type="number" name="products[0][quantity]" class="form-control" min="1" value="1" required>
-                        </div>
+                    <!-- Sản phẩm -->
+                    <div class="form-group w-full">
+                        <div class="body-title">Danh sách sản phẩm</div>
+                        <div id="product-wrapper"></div>
+                        <button type="button" id="add-product" class="tf-button style-1 mt-2">+ Thêm sản phẩm</button>
+                    </div>
 
-                        <div class="form-group col-md-2">
-                            <label>Giá (tự động)</label>
-                            <input type="text" class="form-control product-price" readonly>
-                        </div>
+                    <!-- Phương thức thanh toán & vận chuyển -->
+                    <div class="form-group w-full md:w-1/2">
+                        <label class="form-label">Phương thức thanh toán</label>
+                        <select class="form-control" name="payment_method">
+                            <option value="Tiền mặt">Tiền mặt</option>
+                            <option value="Chuyển khoản ngân hàng">Chuyển khoản ngân hàng</option>
+                            <option value="Momo">Momo</option>
+                            <option value="ZaloPay">ZaloPay</option>
+                        </select>
+                    </div>
 
-                        <div class="form-group col-md-2 d-flex align-items-end">
-                            <button type="button" class="btn btn-danger remove-product">Xóa</button>
-                        </div>
+                    <div class="form-group w-full md:w-1/2">
+                        <label class="form-label">Phương thức vận chuyển</label>
+                        <select name="shipping_method_id" id="shipping-method" class="form-control">
+                            <option value="">-- Chọn phương thức --</option>
+                            @foreach($shippingMethods as $method)
+                                <option value="{{ $method->id }}" data-fee="{{ $method->fee }}">
+                                    {{ $method->name }} ({{ number_format($method->fee) }}đ)
+                                </option>
+                            @endforeach
+                        </select>
+                        <small><strong>Phí vận chuyển: </strong><span id="shipping-fee">0đ</span></small>
+                    </div>
+
+                    <div class="form-group w-full">
+                        <label class="form-label">Mã khuyến mãi</label>
+                        <select name="discount_code" class="form-control">
+                            <option value="">-- Không áp dụng --</option>
+                            @foreach($discounts as $discount)
+                                <option value="{{ $discount->code }}">
+                                    {{ $discount->code }} - 
+                                    @if($discount->discount_percent > 0)
+                                        Giảm {{ $discount->discount_percent }}%
+                                    @else
+                                        Giảm {{ number_format($discount->discount_amount) }}₫
+                                    @endif
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-group w-full">
+                        <label class="form-label">Ghi chú</label>
+                        <textarea class="form-control" name="note" rows="2">{{ old('note') }}</textarea>
+                    </div>
+
+                    <div class="form-group w-full text-end mt-3">
+                        <button class="tf-button style-1" type="submit">Lưu đơn hàng</button>
+                        <a href="{{ route('admin.orders.index') }}" class="tf-button style-2">Hủy</a>
                     </div>
                 </div>
-            </div>
-
-            <button type="button" id="add-product" class="btn btn-info mb-3">+ Thêm sản phẩm</button>
-
-            <div class="form-group">
-                <label>Phương thức thanh toán</label>
-                <select class="form-control" name="payment_method" required>
-                    <option value="Tiền mặt" {{ old('payment_method') == 'Tiền mặt' ? 'selected' : '' }}>Tiền mặt</option>
-                    <option value="Chuyển khoản ngân hàng" {{ old('payment_method') == 'Chuyển khoản ngân hàng' ? 'selected' : '' }}>Chuyển khoản ngân hàng</option>
-                    <option value="Momo" {{ old('payment_method') == 'Momo' ? 'selected' : '' }}>Momo</option>
-                    <option value="ZaloPay" {{ old('payment_method') == 'ZaloPay' ? 'selected' : '' }}>ZaloPay</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Phương thức vận chuyển</label>
-                <select name="shipping_method_id" id="shipping-method" class="form-control" required>
-                    <option value="">-- Chọn phương thức vận chuyển --</option>
-                    @foreach($shippingMethods as $method)
-                        <option value="{{ $method->id }}" data-fee="{{ $method->fee }}"
-                            {{ old('shipping_method_id') == $method->id ? 'selected' : '' }}>
-                            {{ $method->name }} ({{ number_format($method->fee, 0, ',', '.') }}đ)
-                        </option>
-                    @endforeach
-                </select>
-                <small class="form-text text-muted mt-2">
-                    <strong>Phí vận chuyển:</strong> <span id="shipping-fee">0đ</span>
-                </small>
-            </div>
-
-            <div class="form-group">
-                <label>Mã giảm giá</label>
-                <input type="text" name="discount_code" class="form-control" placeholder="Nhập mã giảm giá" value="{{ old('discount_code') }}">
-            </div>
-
-            <div class="form-group">
-                <label>Ghi chú</label>
-                <textarea class="form-control" name="note" rows="3">{{ old('note') }}</textarea>
-            </div>
-
-            <button class="btn btn-primary" type="submit">Lưu đơn hàng</button>
-            <a class="btn btn-secondary" href="{{ route('admin.orders.index') }}">Hủy</a>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
+
+
+
 
 <script>
     function updateVariantInfo(group) {

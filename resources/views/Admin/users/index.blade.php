@@ -77,26 +77,34 @@
                                         <i class="fas fa-filter me-1"></i> Bộ lọc
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="filterRoleBtn">
+                                        {{-- Tất cả --}}
                                         <li>
-                                            <a class="dropdown-item {{ request('role') == '' ? 'active' : '' }}"
-                                                href="{{ route('admin.users.index') }}">
+                                            <a class="dropdown-item {{ !request('role') ? 'active' : '' }}"
+                                                href="{{ route('admin.users.index', request()->except('role')) }}">
                                                 <i class="fas fa-users me-1"></i> Tất cả
                                             </a>
                                         </li>
+
+                                        {{-- Admin --}}
                                         <li>
-                                            <a class="dropdown-item {{ request('role') == 'Admin' ? 'active' : '' }}"
-                                                href="{{ route('admin.users.index', ['role' => 'Admin']) }}">
+                                            <a class="dropdown-item {{ request('role') === 'admin' ? 'active' : '' }}"
+                                                href="{{ route('admin.users.index', array_merge(request()->all(), ['role' => 'admin'])) }}">
                                                 <i class="fas fa-user-shield me-1"></i> Admin
                                             </a>
                                         </li>
+
+                                        {{-- User --}}
                                         <li>
-                                            <a class="dropdown-item {{ request('role') == 'User' ? 'active' : '' }}"
-                                                href="{{ route('admin.users.index', ['role' => 'User']) }}">
+                                            <a class="dropdown-item {{ request('role') === 'user' ? 'active' : '' }}"
+                                                href="{{ route('admin.users.index', array_merge(request()->all(), ['role' => 'user'])) }}">
                                                 <i class="fas fa-user me-1"></i> User
                                             </a>
                                         </li>
                                     </ul>
                                 </div>
+
+
+
 
                                 <div>
                                     <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary shadow-sm">
@@ -117,7 +125,7 @@
                                 <th>Họ tên</th>
                                 <th>Email</th>
                                 <th>Vai trò</th>
-                                <th>Phone</th>
+                                {{-- <th>Phone</th> --}}
                                 <th>Giới tính</th>
                                 <th>Trạng thái</th>
                                 <th>Ngày tạo</th>
@@ -141,7 +149,7 @@
                                             <span class="badge bg-secondary">User</span>
                                         @endif
                                     </td>
-                                    <td>{{ $user->phone }}</td>
+                                    {{-- <td>{{ $user->phone }}</td> --}}
                                     <td>{{ ucfirst($user->gender) }}</td>
                                     <td>
                                         @if($user->is_active)
@@ -150,47 +158,53 @@
                                             <span class="badge bg-danger">Bị khóa</span>
                                         @endif
                                     </td>
-                                    <td>{{ $user->created_at->format('d/m/Y H:i') }}</td>
-                                    <td>
 
-                                        <!-- Xem chi tiết -->
-                                        <a href="{{ route('admin.users.show', $user) }}" class="btn btn-info btn-sm"
-                                            title="Xem chi tiết">
+                                    <td>{{ optional($user->created_at)->format('d/m/Y H:i') }}</td>
+                                    <td>
+                                        {{-- Xem --}}
+                                        <a href="{{ route('admin.users.show', $user->id) }}" class="btn btn-info btn-sm">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <!-- Khóa / Mở tài khoản (chỉ hiện nếu không phải admin) -->
-                                        @if($user->role !== 'admin')
-                                            <form action="{{ route('admin.users.toggle-active', $user) }}" method="POST"
-                                                class="d-inline-block"
-                                                onsubmit="return confirm('Bạn có chắc muốn {{ $user->is_active ? 'khóa' : 'mở khóa' }} tài khoản này?')">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button type="submit" class="btn btn-warning btn-sm"
-                                                    title="{{ $user->is_active ? 'Khóa tài khoản' : 'Mở khóa tài khoản' }}">
-                                                    <i class="fas {{ $user->is_active ? 'fa-lock' : 'fa-unlock' }}"></i>
-                                                </button>
-                                            </form>
-                                        @endif
 
-                                        <!-- Sửa (chỉ khi là admin) -->
-                                        @if($user->role === 'admin')
-                                            <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-primary btn-sm"
-                                                title="Chỉnh sửa tài khoản admin">
+                                        {{-- Sửa: chỉ nếu là admin chính mình --}}
+                                        @if($user->role === 'admin' && $user->id === Auth::id())
+                                            <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-primary btn-sm">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                         @endif
 
-                                        <!-- Xóa -->
-                                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST"
-                                            class="d-inline-block"
-                                            onsubmit="return confirm('Bạn có chắc chắn muốn xóa tài khoản này?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button class="btn btn-danger btn-sm" title="Xóa">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </form>
+                                        {{-- Xóa: user hoặc admin chính mình --}}
+                                        @if($user->role === 'user' || ($user->role === 'admin' && $user->id === Auth::id()))
+                                            <form method="POST" action="{{ route('admin.users.destroy', $user->id) }}"
+                                                style="display:inline-block;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button onclick="return confirm('Xóa tài khoản này?')"
+                                                    class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+
+                                        {{-- Khóa/Mở: chỉ với user --}}
+                                        @if($user->role === 'user')
+                                            <form method="POST" action="{{ route('admin.users.toggle-active', $user->id) }}"
+                                                style="display:inline-block;">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button onclick="return confirm('Bạn có chắc muốn đổi trạng thái?')"
+                                                    class="btn btn-warning btn-sm">
+                                                    @if($user->is_active)
+                                                        <i class="fas fa-lock"></i>
+                                                    @else
+                                                        <i class="fas fa-unlock"></i>
+                                                    @endif
+                                                </button>
+                                            </form>
+                                        @endif
                                     </td>
+
+
 
                                 </tr>
                             @endforeach

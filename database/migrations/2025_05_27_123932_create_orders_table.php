@@ -44,7 +44,7 @@ return new class extends Migration
 
             // Trạng thái thanh toán
             $table->enum('payment_status', ['Chờ thanh toán', 'Đã thanh toán'])->default('Chờ thanh toán');
-            $table->enum('payment_method', ['Tiền mặt', 'Chuyển khoản'])->nullable();
+            $table->enum('payment_method', ['Tiền mặt', 'Chuyển khoản ngân hàng','Momo','ZaloPay'])->nullable();
 
             // Ghi chú
             $table->text('note')->nullable();
