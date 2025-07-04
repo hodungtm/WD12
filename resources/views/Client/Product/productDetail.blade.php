@@ -8,36 +8,29 @@
                         <span class="badge badge-danger top-right">New</span>
                     </div>
                     <div class="product-sync-init mb-20">
-                        <div class="single-product">
-                            <div class="product-thumb">
-                                @if($product->images->count())
-    {{-- Ảnh chính --}}
-    <div class="d-flex justify-content-center mb-3">
-    <img id="mainProductImage"
-         src="{{ asset('storage/' . $product->images->first()->image) }}"
-         alt="{{ $product->name }}"
-         style="width: auto; height: 400px;"
-         class="img-fluid border rounded shadow-sm">
-</div>
-
-    {{-- Ảnh phụ --}}
-    <div class="d-flex justify-content-center flex-wrap gap-2">
-        @foreach($product->images as $img)
-            <img src="{{ asset('storage/' . $img->image) }}"
-                 alt="Ảnh phụ"
-                 class="thumbnail border rounded shadow-sm"
-                 style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
-                 onclick="document.getElementById('mainProductImage').src = this.src">
-        @endforeach
-    </div>
-@else
-    <p>Không có ảnh</p>
-@endif
+                        @foreach($product->images as $img)
+                            <div class="single-product">
+                                <div class="product-thumb text-center">
+                                    <img src="{{ asset('storage/' . $img->image) }}" alt="product-thumb"
+                                        style="max-height: 400px; object-fit: contain; margin: auto;">
+                                </div>
                             </div>
-                        </div>
-                        
+                        @endforeach
                     </div>
-                   
+
+                    <div class="product-sync-nav single-product">
+                        @foreach($product->images as $img)
+                            <div class="single-product">
+                                <div class="product-thumb">
+                                    <a href="javascript:void(0)">
+                                        <img src="{{ asset('storage/' . $img->image) }}" alt="product-thumb"
+                                            style="height: 80px; object-fit: cover; margin: auto;">
+                                    </a>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
                 </div>
                 <div class="col-lg-6 mt-5 mt-md-0">
                     <div class="single-product-info">
@@ -53,13 +46,22 @@
                         </div>
                         <div class="product-body mb-40">
                             <h6 class="product-price me-2">
-                                <span
-                                    class="onsale">{{ number_format($product->sale_price ?? $product->price, 0, ',', '.') }}₫</span>
-                                @if($product->sale_price)
-                                    <del class="del">{{ number_format($product->price, 0, ',', '.') }}₫</del>
+                                @php
+                                    $firstVariant = $product->variants->first();
+                                @endphp
+
+                                @if($firstVariant)
+                                    <span class="onsale">
+                                        {{ number_format($firstVariant->sale_price ?? $firstVariant->price, 0, ',', '.') }}₫
+                                    </span>
+                                    @if($firstVariant->sale_price)
+                                        <del class="del">
+                                            {{ number_format($firstVariant->price, 0, ',', '.') }}₫
+                                        </del>
+                                    @endif
                                 @endif
                             </h6>
-                            <p>{{ $product->description }}</p>
+
                         </div>
                         <div class="product-footer">
                             <form action="{{ route('client.cart.add', $product->id) }}" method="POST">
@@ -87,7 +89,7 @@
                                             <label
                                                 class="size-option d-none color-{{ $variant->color_id }} btn btn-outline-dark"
                                                 data-variant-id="{{ $variant->id }}"
-                                                data-price="{{ $variant->price ?? $variant->price }}"
+                                                data-price="{{ $variant->sale_price ?? $variant->price }}"
                                                 data-stock="{{ $variant->quantity }}">
                                                 {{ $variant->size->name ?? 'N/A' }}
                                             </label>
@@ -149,10 +151,7 @@
                                     <a class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" href="#pills-home"
                                         role="tab" aria-controls="pills-home" aria-selected="true">Description</a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" href="#pills-profile"
-                                        role="tab" aria-controls="pills-profile" aria-selected="false">Product Details</a>
-                                </li>
+                                
                                 <li class="nav-item">
                                     <a class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" href="#pills-contact"
                                         role="tab" aria-controls="pills-contact" aria-selected="false">Reviews</a>
@@ -177,81 +176,13 @@
                         <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
                             aria-labelledby="pills-home-tab">
                             <div class="single-product-desc">
-                                <ul>
-                                    <li>
-                                        Block out the haters with the fresh adidas® Originals Kaval Windbreaker Jacket.
-                                    </li>
-                                    <li>
-                                        Part of the Kaval Collection.
-                                    </li>
-                                    <li>
-                                        Regular fit is eased, but not sloppy, and perfect for any activity.
-                                    </li>
-                                    <li>
-                                        Plain-woven jacket specifically constructed for freedom of movement.
-                                    </li>
-                                    <li>
-                                        Soft fleece lining delivers lightweight warmth.
-                                    </li>
-                                    <li>
-                                        Attached drawstring hood.
-                                    </li>
-                                    <li>
-                                        Full-length zip closure.
-                                    </li>
-                                    <li>
-                                        Long sleeves with stretch cuffs.
-                                    </li>
-                                    <li>
-                                        Side hand pockets.
-                                    </li>
-                                    <li>
-                                        Brand graphics at left chest and back.
-                                    </li>
-                                    <li>
-                                        Straight hem.
-                                    </li>
-                                    <li>
-                                        Shell: 100% nylon;<br>Lining: 100% polyester.
-                                    </li>
-                                    <li>
-                                        Machine wash, tumble dry.
-                                    </li>
-                                    <li>
-                                        Imported.
-                                    </li>
-                                    <li>
-                                        <div>Product measurements were taken using size MD. Please note that
-                                            measurements may vary by size.</div>
-                                    </li>
-                                </ul>
+                               
+                                    <p>{{ $product->description }}</p>
+                               
                             </div>
                         </div>
                         <!-- second tab-pane -->
-                        <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
-                            <div class="single-product-desc">
-                                <div class="studio-thumb">
-                                    <a href="#"><img class="mb-30" src="assets/img/stodio.jpg" alt="studio-thumb"></a>
-                                    <h6 class="mb-2">Reference <small>demo_1</small> </h6>
-                                    <h6>In stock <small>300 Items</small> </h6>
-                                    <h3>Data sheet</h3>
-                                </div>
-                                <div class="product-features">
-                                    <ul>
-                                        <li><span>Compositions</span></li>
-                                        <li><span>Cotton</span></li>
-                                        <li><span>Paper Type</span></li>
-                                        <li><span>Doted</span></li>
-                                        <li><span>Color</span></li>
-                                        <li><span>Black</span></li>
-                                        <li><span>Size</span></li>
-                                        <li><span>L</span></li>
-                                        <li><span>Frame Size</span></li>
-                                        <li><span>40x60cm</span></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                        
                         <!-- third tab-pane -->
                         <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
                             <div class="single-product-desc">
