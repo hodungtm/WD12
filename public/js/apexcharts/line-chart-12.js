@@ -6,64 +6,81 @@
       
         var options = {
           series: [{
-          name: 'Price',
-          data: [
-            81, 121, 40, 52, 164, 113, 26, 68,135, 182, 76, 112, 199, 168, 49, 120,
-            81, 121, 40, 52, 164, 113, 26, 68,135, 182, 76, 112, 199, 168, 49, 120,
-            81, 121, 40, 52, 164, 113, 26, 68,135, 182, 76, 112, 199, 168, 49, 120,
-            81, 121, 40, 52, 164, 113, 26, 68,135, 182, 76, 112, 199, 168, 49, 120,
-            81, 121, 40, 52, 164, 113, 26, 68,135, 182, 76, 112, 199, 168, 49, 120,
-            81, 121, 40, 52, 164, 113, 26, 68,135, 182, 76, 112, 199, 168, 49, 120
-          ]
-        }],
+            name: 'Price',
+            data: [
+              55, 60, 65, 70, 75, 80, 85, 80,75, 70, 65, 60, 55, 50, 45, 40,35,
+              55, 60, 65, 70, 75, 80, 85, 80,75, 70, 65, 60, 55, 50, 45, 40,35,
+              55, 60, 65, 70, 75, 80, 85, 80,75, 70, 65, 60, 55, 50, 45, 40,35,
+              55, 60, 65, 70, 75, 80, 85, 80,75, 70, 65, 60, 55, 50, 45, 40,35,
+              55, 60, 65, 70, 75, 80, 85, 80,75, 70, 65, 60, 55, 50, 45, 40,35,
+            ]
+          }],
           chart: {
-          type: 'bar',
-          height: 170,
-          toolbar: {
+            type: 'bar',
+            height: 165,
+            toolbar: {
+              show: false,
+            },
+            animations: {
+              enabled: true,
+              easing: 'easeinout',
+              speed: 10,
+              animateGradually: {
+                  enabled: true,
+                  delay: 10
+              },
+              dynamicAnimation: {
+                  enabled: true,
+                  speed: 10
+              }
+            }
+          },
+          plotOptions: {
+            bar: {
+              horizontal: false,
+              columnWidth: '3px',
+              endingShape: 'rounded'
+            },
+          },
+          dataLabels: {
+            enabled: false
+          },
+          legend: {
             show: false,
           },
-        },
-        plotOptions: {
-          bar: {
-            horizontal: false,
-            columnWidth: '3px',
-            endingShape: 'rounded'
+          colors: '#FFD4B1',
+          stroke: {
+            show: false,
           },
-        },
-        dataLabels: {
-          enabled: false
-        },
-        legend: {
-          show: false,
-        },
-        colors: '#FFD4B1',
-        stroke: {
-          show: false,
-        },
-        xaxis: {
-          labels: {
-            show: false
+          xaxis: {
+            labels: {
+              show: false
+            },
+            axisTicks: {
+              show: false
+            },
+            tooltip: {
+              enabled: false
+            }
           },
-          axisTicks: {
-            show: false
+          yaxis: {
+            show: false,
+          },
+          fill: {
+            opacity: 1
           },
           tooltip: {
-            enabled: false
-          }
-        },
-        yaxis: {
-          show: false,
-        },
-        fill: {
-          opacity: 1
-        },
-        tooltip: {
-          y: {
-            formatter: function (val) {
-              return "$ " + val
-            }
-          }
-        }
+            fixed: { enabled: !1 },
+            x: { show: !1 },
+            y: {
+              title: {
+                formatter: function () {
+                  return "$" 
+                }
+              },
+            },
+            marker: { show: !1 },
+          },
         };
 
         chart = new ApexCharts(
@@ -77,20 +94,15 @@
   
       /* Function ============ */
       return {
-        init: function () {},
   
         load: function () {
           chartBar();
         },
-        resize: function () {},
       };
     })();
-  
-    jQuery(document).ready(function () {});
   
     jQuery(window).on("load", function () {
       tfLineChart.load();
     });
   
-    jQuery(window).on("resize", function () {});
 })(jQuery);

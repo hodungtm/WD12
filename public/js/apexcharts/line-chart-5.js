@@ -71,20 +71,15 @@
   
       /* Function ============ */
       return {
-        init: function () {},
   
         load: function () {
           chartBar();
         },
-        resize: function () {},
       };
     })();
-  
-    jQuery(document).ready(function () {});
   
     jQuery(window).on("load", function () {
       tfLineChart.load();
     });
 
-    jQuery(window).on("resize", function () {});
 })(jQuery);

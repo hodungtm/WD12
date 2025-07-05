@@ -36,10 +36,10 @@
           <th>Email</th>
           <td>{{ $user->email }}</td>
         </tr>
-        {{-- <tr>
+        <tr>
           <th>Số điện thoại</th>
           <td>{{ $user->phone ?? '—' }}</td>
-        </tr> --}}
+        </tr>
         <tr>
           <th>Giới tính</th>
           <td>

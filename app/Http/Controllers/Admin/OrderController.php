@@ -150,6 +150,9 @@ class OrderController extends Controller
                    
                 ]);
 
+                // Tăng sold cho sản phẩm cha
+                Products::where('id', $product->id)->increment('sold', $quantity);
+
                 $subtotal += $totalPrice;
             }
 

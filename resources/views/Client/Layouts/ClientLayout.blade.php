@@ -1,603 +1,415 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
-
-
-<!-- Mirrored from htmldemo.net/junno/junno/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 13 Jun 2025 17:00:47 GMT -->
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <meta name="description" content="" />
-    <title>Junno – Multipurpose eCommerce HTML Template</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Porto - Bootstrap eCommerce Template</title>
+
+    <meta name="keywords" content="HTML5 Template" />
+    <meta name="description" content="Porto - Bootstrap eCommerce Template">
+    <meta name="author" content="SW-THEMES">
+
     <!-- Favicon -->
-   <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/img/favicon.ico') }}" />
+    <link rel="icon" type="image/x-icon" href="assets/images/icons/favicon.png">
 
-<link rel="stylesheet" href="{{ asset('assets/css/fontawesome.min.css') }}" />
-<link rel="stylesheet" href="{{ asset('assets/css/ionicons.min.css') }}" />
-<link rel="stylesheet" href="{{ asset('assets/css/simple-line-icons.css') }}" />
-<link rel="stylesheet" href="{{ asset('assets/css/plugins/jquery-ui.min.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}" />
-<link rel="stylesheet" href="{{ asset('assets/css/plugins/plugins.css') }}" />
-<link rel="stylesheet" href="{{ asset('assets/css/style.min.css') }}" />
 
-    <!-- Use the minified version files listed below for better performance and remove the files listed above -->
+    <script>
+        WebFontConfig = {
+            google: { families: [ 'Open+Sans:300,400,600,700,800', 'Poppins:200,300,400,500,600,700,800', 'Oswald:300,600,700', 'Playfair+Display:700' ] }
+        };
+        ( function ( d ) {
+            var wf = d.createElement( 'script' ), s = d.scripts[ 0 ];
+            wf.src = 'assets/js/webfont.js';
+            wf.async = true;
+            s.parentNode.insertBefore( wf, s );
+        } )( document );
+    </script>
 
-    <!--**************************** 
-         Minified  css 
-    ****************************-->
+    <!-- Plugins CSS File -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
 
-    <!--*********************************************** 
-       vendor min css,plugins min css,style min css
-     ***********************************************-->
-    <!-- <link rel="stylesheet" href="assets/css/vendor/vendor.min.css" />
-    <link rel="stylesheet" href="assets/css/plugins/plugins.min.css" />
-    <link rel="stylesheet" href="assets/css/style.min.css" /> -->
+    <!-- Main CSS File -->
+    <link rel="stylesheet" href="assets/css/demo27.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/vendor/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/vendor/simple-line-icons/css/simple-line-icons.min.css">
 </head>
 
 <body>
-    
-
-<!-- offcanvas-overlay start -->
-<div class="offcanvas-overlay"></div>
-<!-- offcanvas-overlay end -->
-<!-- offcanvas-mobile-menu start -->
-<div id="offcanvas-mobile-menu" class="offcanvas theme1 offcanvas-mobile-menu">
-    <div class="inner">
-        <div class="border-bottom mb-4 pb-4 text-end">
-            <button class="offcanvas-close">×</button>
-        </div>
-        <div class="offcanvas-head mb-4">
-            <nav class="offcanvas-top-nav">
-                <ul class="d-flex justify-content-center align-items-center">
-                    <li class="mx-4"><a href="compare.html"><i class="ion-ios-loop-strong"></i> Compare <span>(0)</span>
-                        </a></li>
-                    <li class="mx-4">
-                        <a href="wishlist.html"> <i class="ion-android-favorite-outline"></i> Wishlist
-                            <span>(0)</span></a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-        <nav class="offcanvas-menu">
-            <ul>
-                <li><a href="#"><span class="menu-text">Home</span></a>
-                    <ul class="offcanvas-submenu">
-                        <li><a href="index.html">Home 1</a></li>
-                        <li><a href="index-2.html">Home 2</a></li>
-                        <li><a href="index-3.html">Home 3</a></li>
-                        <li><a href="index-4.html">Home 4</a></li>
-                    </ul>
-
-                </li>
-                <li><a href="#"><span class="menu-text">Shop</span></a>
-                    <ul class="offcanvas-submenu">
-                        <li>
-                            <a href="#"><span class="menu-text">Shop Grid</span></a>
-                            <ul class="offcanvas-submenu">
-                                <li><a href="shop-grid-3-column.html">Shop Grid 3 Column</a></li>
-                                <li><a href="shop-grid-4-column.html">Shop Grid 4 Column</a></li>
-                                <li><a href="shop-grid-left-sidebar.html">Shop Grid Left Sidebar</a></li>
-                                <li><a href="shop-grid-right-sidebar.html">Shop Grid Right Sidebar</a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="#"><span class="menu-text">Shop List</span></a>
-                            <ul class="offcanvas-submenu">
-                                <li><a href="shop-grid-list.html">Shop List</a></li>
-                                <li><a href="shop-grid-list-left-sidebar.html">Shop List Left Sidebar</a></li>
-                                <li><a href="shop-grid-list-right-sidebar.html">Shop List Right Sidebar</a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="#"><span class="menu-text">Shop Single</span></a>
-                            <ul class="offcanvas-submenu">
-                                <li><a href="single-product.html">Shop Single</a></li>
-                                <li><a href="single-product-configurable.html">Shop Variable</a></li>
-                                <li><a href="single-product-affiliate.html">Shop Affiliate</a></li>
-                                <li><a href="single-product-group.html">Shop Group</a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="#"><span class="menu-text">other pages</span></a>
-                            <ul class="offcanvas-submenu">
-                                <li><a href="about-us.html">About Page</a></li>
-                                <li><a href="cart.html">Cart Page</a></li>
-                                <li><a href="checkout.html">Checkout Page</a></li>
-                                <li><a href="compare.html">Compare Page</a></li>
-                                <li><a href="login.html">Login &amp; Register Page</a></li>
-                                <li><a href="myaccount.html">Account Page</a></li>
-                                <li><a href="wishlist.html">Wishlist Page</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-                <li><a href="#"><span class="menu-text">Pages</span></a>
-                    <ul class="offcanvas-submenu">
-                        <li><a href="about-us.html">About Page</a></li>
-                        <li><a href="cart.html">Cart Page</a></li>
-                        <li><a href="checkout.html">Checkout Page</a></li>
-                        <li><a href="compare.html">Compare Page</a></li>
-                        <li><a href="login.html">Login &amp; Register Page</a></li>
-                        <li><a href="myaccount.html">Account Page</a></li>
-                        <li><a href="wishlist.html">Wishlist Page</a></li>
-                    </ul>
-                </li>
-                <li><a href="#"><span class="menu-text">Blog</span></a>
-                    <ul class="offcanvas-submenu">
-                        <li><a href="#"><span class="menu-text">Blog Grid</span></a>
-                            <ul class="offcanvas-submenu">
-                                <li><a href="blog-grid-3-column.html">Blog Grid 3 column</a></li>
-                                <li><a href="blog-grid-4-column.html">Blog Grid 4 column</a></li>
-                                <li><a href="blog-grid-left-sidebar.html">Blog Grid Left Sidebar</a>
-                                </li>
-                                <li><a href="blog-grid-right-sidebar.html">Blog Grid Right Sidebar</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="#"><span class="menu-text">Blog List</span></a>
-                            <ul class="offcanvas-submenu">
-                                <li><a href="blog-list-left-sidebar.html">Blog List Left Sidebar</a></li>
-                                <li><a href="blog-list-right-sidebar.html">Blog List Right Sidebar</a></li>
-                            </ul>
-                        </li>
-                        <li><a href="#"><span class="menu-text">Blog Single</span></a>
-                            <ul class="offcanvas-submenu">
-                                <li><a href="single-blog.html">Single Blog</a></li>
-                                <li><a href="blog-single-left-sidebar.html">Blog Single Left Sidebar</a></li>
-                                <li><a href="blog-single-right-sidebar.html">Blog Single Right Sidbar</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-                <li><a href="contact.html">Contact Us</a></li>
-            </ul>
-        </nav>
-        <div class="offcanvas-social py-30">
-            <ul>
-                <li>
-                    <a href="#"><i class="icon-social-facebook"></i></a>
-                </li>
-                <li>
-                    <a href="#"><i class="icon-social-twitter"></i></a>
-                </li>
-                <li>
-                    <a href="#"><i class="icon-social-instagram"></i></a>
-                </li>
-                <li>
-                    <a href="#"><i class="icon-social-google"></i></a>
-                </li>
-                <li>
-                    <a href="#"><i class="icon-social-instagram"></i></a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</div>
-<!-- offcanvas-mobile-menu end -->
-<!-- OffCanvas Wishlist Start -->
-<div id="offcanvas-wishlist" class="offcanvas offcanvas-wishlist theme1">
-    <div class="inner">
-        <div class="head d-flex flex-wrap justify-content-between">
-            <span class="title">Wishlist</span>
-            <button class="offcanvas-close">×</button>
-        </div>
-        <ul class="minicart-product-list">
-            <li>
-                <a href="single-product.html" class="image"><img src="assets/img/product/4.jpg"
-                        alt="Cart product Image"></a>
-                <div class="content">
-                    <a href="single-product.html" class="title">Walnut Cutting Board</a>
-                    <span class="quantity-price">1 x <span class="amount">$100.00</span></span>
-                    <a href="#" class="remove">×</a>
-                </div>
-            </li>
-            <li>
-                <a href="single-product.html" class="image"><img src="assets/img/product/5.jpg"
-                        alt="Cart product Image"></a>
-                <div class="content">
-                    <a href="single-product.html" class="title">Lucky Wooden Elephant</a>
-                    <span class="quantity-price">1 x <span class="amount">$35.00</span></span>
-                    <a href="#" class="remove">×</a>
-                </div>
-            </li>
-            <li>
-                <a href="single-product.html" class="image"><img src="assets/img/product/6.jpg"
-                        alt="Cart product Image"></a>
-                <div class="content">
-                    <a href="single-product.html" class="title">Fish Cut Out Set</a>
-                    <span class="quantity-price">1 x <span class="amount">$9.00</span></span>
-                    <a href="#" class="remove">×</a>
-                </div>
-            </li>
-        </ul>
-        <a href="wishlist.html" class="btn theme--btn-default btn--lg d-block d-sm-inline-block rounded-5 mt-30">view
-            wishlist</a>
-    </div>
-</div>
-<!-- OffCanvas Wishlist End -->
-
-<!-- OffCanvas Cart Start -->
-<div id="offcanvas-cart" class="offcanvas offcanvas-cart theme1">
-    <div class="inner">
-
-        {{-- Nút xem giỏ hàng --}}
-        <a href="{{ route('client.cart.index') }}"
-           class="btn theme--btn-default btn--lg d-block d-sm-inline-block rounded-5 me-sm-2">
-            Xem giỏ hàng
-        </a>
-
-    </div>
-</div>
-
-<!-- OffCanvas Cart End -->
-
-<!-- header start -->
-<header>
-    <!-- header top start -->
-    <div class="header-top theme1 bg-dark py-15">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6 col-md-7 order-last order-md-first">
-                    <div class="static-info text-center text-md-start">
-                        <p class="text-white">Join our showroom and get <span class="theme-color">50 % off</span> !
-                            Coupon code : <span class="theme-color">Junno50</span></p>
-                    </div>
-                </div>
-                <div class="col-lg-6 col-md-5">
-                    <nav class="navbar-top pb-2 pb-md-0 position-relative">
-                        <ul class="d-flex justify-content-center justify-content-md-end align-items-center">
-                            <li>
-    <a href="#" id="dropdown1" data-bs-toggle="dropdown" aria-haspopup="true"
-        aria-expanded="false">
-        {{ Auth::user()->name ?? 'Tài khoản' }}
-        <i class="ion ion-ios-arrow-down"></i>
-    </a>
-    <ul class="topnav-submenu dropdown-menu" aria-labelledby="dropdown1">
-        <li><a href="{{ route('client.checkout.show') }}">Thanh toán</a></li>
-        <li>
-            <form action="{{ route('logout') }}" method="POST" style="display: inline;">
-                @csrf
-                <button type="submit" class="dropdown-item">Đăng xuất</button>
-            </form>
-        </li>
-    </ul>
-</li>
-
-                            <li>
-                                <a href="#" id="dropdown2" data-bs-toggle="dropdown" aria-haspopup="true"
-                                    aria-expanded="false">USD $ <i class="ion ion-ios-arrow-down"></i> </a>
-                                <ul class="topnav-submenu dropdown-menu" aria-labelledby="dropdown2">
-                                    <li class="active"><a href="#">EUR €</a></li>
-                                    <li><a href="#">USD $</a></li>
+    <div class="page-wrapper">
+        <header class="header">
+            <div class="header-top">
+                <div class="container">
+                    <div class="header-left">
+                        <div class="header-dropdown">
+                            <a href="#">USD</a>
+                            <div class="header-menu">
+                                <ul>
+                                    <li><a href="#">EUR</a></li>
+                                    <li><a href="#">USD</a></li>
                                 </ul>
-                            </li>
-                            <li class="english">
-                                <a href="#" id="dropdown3" class="pe-0" data-bs-toggle="dropdown" aria-haspopup="true"
-                                    aria-expanded="false">
-                                    <img src="assets/img/logo/us-flag.jpg" alt="us flag"> English
-                                    <i class="ion ion-ios-arrow-down"></i>
-                                </a>
-                                <ul class="topnav-submenu dropdown-menu" aria-labelledby="dropdown3">
-                                    <li class="active">
-                                        <a href="#"><img src="assets/img/logo/us-flag.jpg" alt="us flag">
-                                            English</a>
-                                    </li>
-                                    <li>
-                                        <a href="#"><img src="assets/img/logo/france.jpg" alt="france flag">
-                                            Français</a>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- header top end -->
-    <!-- header-middle satrt -->
-    <div class="header-middle pt-20">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-sm-6 col-lg-2 order-first">
-                    <div class="logo text-center text-sm-start mb-30 mb-sm-0">
-                        <a href="index.html"><img src="assets/img/logo/logo-dark.png" alt="logo"></a>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-lg-5 col-xl-4">
-                    <!-- search-form end -->
-                    <div class="d-flex align-items-center justify-content-center justify-content-sm-end">
-                        <div class="media static-media me-50 d-none d-lg-flex">
-                            <img class="me-3 align-self-center" src="assets/img/icon/1.png" alt="icon">
-                            <div class="media-body">
-                                <div class="phone">
-                                    <span class="text-muted">Call us:</span>
-                                </div>
-                                <div class="phone">
-                                    <a href="tel:(+123)4567890" class="text-dark">(+123)4567890</a>
-                                </div>
                             </div>
                         </div>
-                        <!-- static-media end -->
-                        <div class="cart-block-links theme1">
-                            <ul class="d-flex">
-                                <li>
-                                    <a href="compare.html">
-                                        <span class="position-relative">
-                                            <i class="icon-shuffle"></i>
-                                            <span class="badge cbdg1">1</span>
-                                        </span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="offcanvas-toggle" href="#offcanvas-wishlist">
-                                        <span class="position-relative">
-                                            <i class="icon-heart"></i>
-                                            <span class="badge cbdg1">3</span>
-                                        </span>
-                                    </a>
-                                </li>
-                                <li class="me-0 cart-block position-relative">
-                                    <a class="offcanvas-toggle" href="#offcanvas-cart">
-                                        <span class="position-relative">
-                                            <i class="icon-bag"></i>
-                                            <span class="badge cbdg1">3</span>
-                                        </span>
-                                        <span class="cart-total position-relative">$90.00</span>
-                                    </a>
-                                </li>
-                                <!-- cart block end -->
-                            </ul>
+
+                        <div class="header-dropdown">
+                            <a href="#"><i class="flag-us flag"></i>ENG</a>
+                            <div class="header-menu">
+                                <ul>
+                                    <li><a href="#"><i class="flag-us flag mr-2"></i>ENG</a>
+                                    </li>
+                                    <li><a href="#"><i class="flag-fr flag mr-2"></i>FRA</a></li>
+                                </ul>
+                            </div><!-- End .header-menu -->
                         </div>
-                        <div class="mobile-menu-toggle theme1 d-lg-none">
-                            <a href="#offcanvas-mobile-menu" class="offcanvas-toggle">
-                                <svg viewbox="0 0 800 600">
-                                    <path
-                                        d="M300,220 C300,220 520,220 540,220 C740,220 640,540 520,420 C440,340 300,200 300,200"
-                                        id="top"></path>
-                                    <path d="M300,320 L540,320" id="middle"></path>
-                                    <path
-                                        d="M300,210 C300,210 520,210 540,210 C740,210 640,530 520,410 C440,330 300,190 300,190"
-                                        id="bottom" transform="translate(480, 320) scale(1, -1) translate(-480, -318)">
-                                    </path>
-                                </svg>
-                            </a>
+                    </div>
+
+                    <div class="header-right d-none d-lg-flex">
+                        <p class="top-message text-uppercase mr-2">Default Welcome Msg</p>
+                        <div class="header-dropdown dropdown-expanded">
+                            <a href="#">Links</a>
+                            <div class="header-menu">
+                                <ul>
+                                    <li><a href="dashboard.html">My Account</a></li>
+                                    <li><a href="cart.html">Cart</a></li>
+                                    <li><a href="wishlist.html">My Wishlist</a></li>
+                                    <li><a href="blog.html">Blog</a></li>
+                                    <li><a href="#" class="login-link">Log in</a></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-5 col-xl-6 order-lg-first">
-                    <div class="search-form pt-30 pt-lg-0">
-                        <form class="form-inline position-relative">
-                            <input class="form-control theme1-border" type="search"
-                                placeholder="Enter your search key ...">
-                            <button class="btn search-btn theme-bg btn-rounded" type="submit"><i
-                                    class="icon-magnifier"></i></button>
-                        </form>
-                    </div>
-                </div>
             </div>
-        </div>
-    </div>
-    <!-- header-middle end -->
+            <div class="header-middle sticky-header">
+                <div class="container">
+                    <div class="header-left">
+                        <button class="mobile-menu-toggler" type="button">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <a href="demo27.html" class="logo">
+                            <img src="assets/images/logo-black.png" alt="Porto Logo" width="111" height="44">
+                        </a>
+                        <nav class="main-nav">
+                            <ul class="menu">
+                                <li class="active">
+                                    <a href="demo27.html">Home</a>
+                                </li>
+                                <li>
+                                    <a href="demo27-shop.html">Shop</a>
+                                    <div class="megamenu megamenu-fixed-width megamenu-3cols">
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <a href="#" class="nolink">VARIATION 1</a>
+                                                <ul class="submenu">
+                                                    <li><a href="category.html">Fullwidth Banner</a></li>
+                                                    <li><a href="category-banner-boxed-slider.html">Boxed Slider
+                                                            Banner</a>
+                                                    </li>
+                                                    <li><a href="category-banner-boxed-image.html">Boxed Image
+                                                            Banner</a>
+                                                    </li>
+                                                    <li><a href="category.html">Left Sidebar</a></li>
+                                                    <li><a href="category-sidebar-right.html">Right Sidebar</a></li>
+                                                    <li><a href="category-off-canvas.html">Off Canvas Filter</a></li>
+                                                    <li><a href="category-horizontal-filter1.html">Horizontal
+                                                            Filter1</a>
+                                                    </li>
+                                                    <li><a href="category-horizontal-filter2.html">Horizontal
+                                                            Filter2</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-lg-4">
+                                                <a href="#" class="nolink">VARIATION 2</a>
+                                                <ul class="submenu">
+                                                    <li><a href="category-list.html">List Types</a></li>
+                                                    <li><a href="category-infinite-scroll.html">Ajax Infinite Scroll</a>
+                                                    </li>
+                                                    <li><a href="category.html">3 Columns Products</a></li>
+                                                    <li><a href="category-4col.html">4 Columns Products</a></li>
+                                                    <li><a href="category-5col.html">5 Columns Products</a></li>
+                                                    <li><a href="category-6col.html">6 Columns Products</a></li>
+                                                    <li><a href="category-7col.html">7 Columns Products</a></li>
+                                                    <li><a href="category-8col.html">8 Columns Products</a></li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-lg-4 p-0">
+                                                <div class="menu-banner">
+                                                    <figure>
+                                                        <img src="assets/images/menu-banner.jpg" alt="Menu banner"
+                                                            width="300" height="300">
+                                                    </figure>
+                                                    <div class="banner-content">
+                                                        <h4>
+                                                            <span class="">UP TO</span><br />
+                                                            <b class="">50%</b>
+                                                            <i>OFF</i>
+                                                        </h4>
+                                                        <a href="demo27-shop.html" class="btn btn-sm btn-dark">SHOP
+                                                            NOW</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div><!-- End .megamenu -->
+                                </li>
+                                <li>
+                                    <a href="demo27-product.html">Products</a>
+                                    <div class="megamenu megamenu-fixed-width">
+                                        <div class="row">
+                                            <div class="col-lg-4">
+                                                <a href="#" class="nolink">PRODUCT PAGES</a>
+                                                <ul class="submenu">
+                                                    <li><a href="demo27-product.html">SIMPLE PRODUCT</a></li>
+                                                    <li><a href="product-variable.html">VARIABLE PRODUCT</a></li>
+                                                    <li><a href="demo27-product.html">SALE PRODUCT</a></li>
+                                                    <li><a href="demo27-product.html">FEATURED & ON SALE</a></li>
+                                                    <li><a href="product-custom-tab.html">WITH CUSTOM TAB</a></li>
+                                                    <li><a href="product-sidebar-left.html">WITH LEFT SIDEBAR</a></li>
+                                                    <li><a href="product-sidebar-right.html">WITH RIGHT SIDEBAR</a></li>
+                                                    <li><a href="product-addcart-sticky.html">ADD CART STICKY</a></li>
+                                                </ul>
+                                            </div><!-- End .col-lg-4 -->
 
-    <!-- header bottom start -->
-    <nav id="sticky" class="header-bottom theme1 d-none d-lg-block">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-10 offset-lg-2 d-flex flex-wrap align-items-center position-relative">
-                    <ul class="main-menu d-flex">
-                        <li class="active me-0">
-                            <a href="#" class="pe-0">Home <i class="ion-ios-arrow-down"></i></a>
-                            <ul class="sub-menu">
-                                <li><a href="index.html">Home 1</a></li>
-                                <li><a href="index-2.html">Home 2</a></li>
-                                <li><a href="index-3.html">Home 3</a></li>
-                                <li><a href="index-4.html">Home 4</a></li>
-                            </ul>
-                        </li>
-                        <li class="position-static">
-                            <a href=" #">Shop <i class="ion-ios-arrow-down"></i></a>
-                            <ul class="mega-menu row">
-                                <li class="col-3">
-                                    <ul>
-                                        <li class="mega-menu-title"><a href="#">Shop Grid</a></li>
-                                        <li><a href="shop-grid-3-column.html">Shop Grid 3 Column</a></li>
-                                        <li><a href="shop-grid-4-column.html">Shop Grid 4 Column</a></li>
-                                        <li><a href="shop-grid-left-sidebar.html">Shop Grid Left Sidebar</a></li>
-                                        <li><a href="shop-grid-right-sidebar.html">Shop Grid Right Sidebar</a></li>
-                                    </ul>
-                                </li>
-                                <li class="col-3">
-                                    <ul>
-                                        <li class="mega-menu-title"><a href="#">Shop List</a></li>
-                                        <li><a href="shop-grid-list.html">Shop List</a></li>
-                                        <li><a href="shop-grid-list-left-sidebar.html">Shop List Left Sidebar</a>
-                                        </li>
-                                        <li><a href="shop-grid-list-right-sidebar.html">Shop List Right Sidebar</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li class="col-3">
-                                    <ul>
-                                        <li class="mega-menu-title"><a href="#">Shop Single</a></li>
-                                        <li><a href="single-product.html">Shop Single</a></li>
-                                        <li><a href="single-product-configurable.html">Shop Variable</a></li>
-                                        <li><a href="single-product-affiliate.html">Shop Affiliate</a></li>
-                                        <li><a href="single-product-group.html">Shop Group</a></li>
-                                    </ul>
-                                </li>
-                                <li class="col-3">
-                                    <ul>
-                                        <li class="mega-menu-title"><a href="#">other pages</a></li>
-                                        <li><a href="about-us.html">About Page</a></li>
-                                        <li><a href="cart.html">Cart Page</a></li>
-                                        <li><a href="checkout.html">Checkout Page</a></li>
-                                        <li><a href="compare.html">Compare Page</a></li>
-                                    </ul>
-                                </li>
-                                <li class="col-6 mt-4">
-                                    <a href="single-product.html" class="zoom-in overflow-hidden"><img
-                                            src="assets/img/mega-menu/1.jpg" alt="img"></a>
-                                </li>
-                                <li class="col-6 mt-4">
-                                    <a href="single-product.html" class="zoom-in overflow-hidden"><img
-                                            src="assets/img/mega-menu/2.jpg" alt="img"></a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="#">Pages <i class="ion-ios-arrow-down"></i></a>
-                            <ul class="sub-menu">
-                                <li><a href="about-us.html">About Page</a></li>
-                                <li><a href="cart.html">Cart Page</a></li>
-                                <li><a href="checkout.html">Checkout Page</a></li>
-                                <li><a href="compare.html">Compare Page</a></li>
-                                <li><a href="login.html">Login &amp; Register Page</a></li>
-                                <li><a href="myaccount.html">Account Page</a></li>
-                                <li><a href="wishlist.html">Wishlist Page</a></li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="#">Blog <i class="ion-ios-arrow-down"></i></a>
-                            <ul class="sub-menu">
-                                <li>
-                                    <a href="#">Blog Grid</a>
-                                    <ul class="sub-menu">
-                                        <li><a href="blog-grid-3-column.html">Blog Grid 3 column</a></li>
-                                        <li><a href="blog-grid-4-column.html">Blog Grid 4 column</a></li>
-                                        <li><a href="blog-grid-left-sidebar.html">Blog Grid Left Sidebar</a></li>
-                                        <li><a href="blog-grid-right-sidebar.html">Blog Grid Right Sidebar</a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a href="#">Blog List</a>
-                                    <ul class="sub-menu">
-                                        <li><a href="blog-list-left-sidebar.html">Blog List Left Sidebar</a></li>
-                                        <li><a href="blog-list-right-sidebar.html">Blog List Right Sidebar</a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <a href="#">Blog Single</a>
-                                    <ul class="sub-menu">
-                                        <li><a href="single-blog.html">Single Blog</a></li>
-                                        <li><a href="blog-single-left-sidebar.html">Blog Single Left Sidebar</a>
-                                        </li>
-                                        <li><a href="blog-single-right-sidebar.html">Blog Single Right Sidbar</a>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
-                        <li><a href="contact.html">contact Us</a></li>
-                    </ul>
+                                            <div class="col-lg-4">
+                                                <a href="#" class="nolink">PRODUCT LAYOUTS</a>
+                                                <ul class="submenu">
+                                                    <li><a href="product-extended-layout.html">EXTENDED LAYOUT</a></li>
+                                                    <li><a href="product-grid-layout.html">GRID IMAGE</a></li>
+                                                    <li><a href="product-full-width.html">FULL WIDTH LAYOUT</a></li>
+                                                    <li><a href="product-sticky-info.html">STICKY INFO</a></li>
+                                                    <li><a href="product-sticky-both.html">LEFT & RIGHT STICKY</a></li>
+                                                    <li><a href="product-transparent-image.html">TRANSPARENT IMAGE</a>
+                                                    </li>
+                                                    <li><a href="product-center-vertical.html">CENTER VERTICAL</a></li>
+                                                    <li><a href="#">BUILD YOUR OWN</a></li>
+                                                </ul>
+                                            </div><!-- End .col-lg-4 -->
 
-                </div>
-            </div>
-        </div>
-    </nav>
-    <!-- header bottom end -->
-    <div class="mobile-category-nav theme1 d-lg-none py-20">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <!--=======  category menu  =======-->
-                    <div class="hero-side-category">
-                        <!-- Category Toggle Wrap -->
-                        <div class="category-toggle-wrap">
-                            <!-- Category Toggle -->
-                            <button class="category-toggle"><i class="fa fa-bars"></i> All Categories</button>
-                        </div>
-
-                        <!-- Category Menu -->
-                        <nav class="category-menu">
-                            <ul>
-                                <li class="menu-item-has-children menu-item-has-children-1">
-                                    <a href="#">Accessories & Parts<i class="ion-ios-arrow-down"></i></a>
-                                    <!-- category submenu -->
-                                    <ul class="category-mega-menu category-mega-menu-1">
-                                        <li><a href="#">Cables & Adapters</a></li>
-                                        <li><a href="#">Batteries</a></li>
-                                        <li><a href="#">Chargers</a></li>
-                                        <li><a href="#">Bags & Cases</a></li>
-                                        <li><a href="#">Electronic Cigarettes</a></li>
-                                    </ul>
+                                            <div class="col-lg-4 p-0">
+                                                <div class="menu-banner menu-banner-2">
+                                                    <figure>
+                                                        <img src="assets/images/menu-banner-1.jpg" alt="Menu banner"
+                                                            class="product-promo" width="380" height="790">
+                                                    </figure>
+                                                    <i>OFF</i>
+                                                    <div class="banner-content">
+                                                        <h4>
+                                                            <span class="">UP TO</span><br />
+                                                            <b class="">50%</b>
+                                                        </h4>
+                                                    </div>
+                                                    <a href="demo27-shop.html" class="btn btn-sm btn-dark">SHOP NOW</a>
+                                                </div>
+                                            </div><!-- End .col-lg-4 -->
+                                        </div><!-- End .row -->
+                                    </div><!-- End .megamenu -->
                                 </li>
-                                <li class="menu-item-has-children menu-item-has-children-2">
-                                    <a href="#">Camera & Photo<i class="ion-ios-arrow-down"></i></a>
-                                    <!-- category submenu -->
-                                    <ul class="category-mega-menu category-mega-menu-2">
-                                        <li><a href="#">Digital Cameras</a></li>
-                                        <li><a href="#">Camcorders</a></li>
-                                        <li><a href="#">Camera Drones</a></li>
-                                        <li><a href="#">Action Cameras</a></li>
-                                        <li><a href="#">Photo Studio Supplies</a></li>
-                                    </ul>
-                                </li>
-                                <li class="menu-item-has-children menu-item-has-children-3">
-                                    <a href="#">Smart Electronics <i class="ion-ios-arrow-down"></i></a>
-                                    <!-- category submenu -->
-                                    <ul class="category-mega-menu category-mega-menu-3">
-                                        <li><a href="#">Wearable Devices</a></li>
-                                        <li><a href="#">Smart Home Appliances</a></li>
-                                        <li><a href="#">Smart Remote Controls</a></li>
-                                        <li><a href="#">Smart Watches</a></li>
-                                        <li><a href="#">Smart Wristbands</a></li>
-                                    </ul>
-                                </li>
-                                <li class="menu-item-has-children menu-item-has-children-4">
-                                    <a href="#">Audio & Video <i class="ion-ios-arrow-down"></i></a>
-                                    <!-- category submenu -->
-                                    <ul class="category-mega-menu category-mega-menu-4">
-                                        <li><a href="#">Televisions</a></li>
-                                        <li><a href="#">TV Receivers</a></li>
-                                        <li><a href="#">Projectors</a></li>
-                                        <li><a href="#">Audio Amplifier Boards</a></li>
-                                        <li><a href="#">TV Sticks</a></li>
-                                    </ul>
-                                </li>
-                                <li class="menu-item-has-children menu-item-has-children-5">
-                                    <a href="#">Portable Audio & Video <i class="ion-ios-arrow-down"></i></a>
-                                    <!-- category submenu -->
-                                    <ul class="category-mega-menu category-mega-menu-5">
-                                        <li><a href="#">Headphones</a></li>
-                                        <li><a href="#">Speakers</a></li>
-                                        <li><a href="#">MP3 Players</a></li>
-                                        <li><a href="#">VR/AR Devices</a></li>
-                                        <li><a href="#">Microphones</a></li>
-                                    </ul>
-                                </li>
-                                <li class="menu-item-has-children menu-item-has-children-6">
-                                    <a href="#">Video Game <i class="ion-ios-arrow-down"></i></a>
-                                    <!-- category submenu -->
-                                    <ul class="category-mega-menu category-mega-menu-6">
-                                        <li><a href="#">Handheld Game Players</a></li>
-                                        <li><a href="#">Game Controllers</a></li>
-                                        <li><a href="#">Joysticks</a></li>
-                                        <li><a href="#">Stickers</a></li>
-                                    </ul>
-                                </li>
-                                <li><a href="#">Televisions</a></li>
-                                <li><a href="#">Digital Cameras</a></li>
-                                <li><a href="#">Headphones</a></li>
-                                <li><a href="#">Wearable Devices</a></li>
-                                <li><a href="#">Smart Watches</a></li>
-                                <li><a href="#">Game Controllers</a></li>
-                                <li><a href="#"> Smart Home Appliances</a></li>
-                                <li class="hidden"><a href="#">Projectors</a></li>
+                                <li class="d-none d-xxl-block"><a href="blog.html">Blog</a></li>
                                 <li>
-                                    <a href="#" id="more-btn"><i class="ion-ios-plus-empty"></i>
-                                        More Categories</a>
+                                    <a href="#">Pages</a>
+                                    <ul>
+                                        <li><a href="wishlist.html">Wishlist</a></li>
+                                        <li><a href="cart.html">Shopping Cart</a></li>
+                                        <li><a href="checkout.html">Checkout</a></li>
+                                        <li><a href="dashboard.html">Dashboard</a></li>
+                                        <li><a href="about.html">About Us</a></li>
+                                        <li><a href="#">Blog</a>
+                                            <ul>
+                                                <li><a href="blog.html">Blog</a></li>
+                                                <li><a href="single.html">Blog Post</a></li>
+                                            </ul>
+                                        </li>
+                                        <li><a href="contact.html">Contact Us</a></li>
+                                        <li><a href="login.html">Login</a></li>
+                                        <li><a href="forgot-password.html">Forgot Password</a></li>
+                                    </ul>
                                 </li>
+                                <li class="d-none d-xxl-block"><a href="#" target="blank">Buy Porto!</a></li>
                             </ul>
                         </nav>
                     </div>
+
+                    <div class="header-right">
+                        <div
+                            class="header-icon header-search header-search-inline header-search-category w-lg-max text-right d-none d-sm-block">
+                            <a href="#" class="search-toggle" role="button"><i class="icon-magnifier"></i></a>
+                            <form action=" #" method="get">
+                                <div class="header-search-wrapper">
+                                    <input type="search" class="form-control" name="q" id="q"
+                                        placeholder="I'm searching for..." required>
+                                    <div class="select-custom font2">
+                                        <select id="cat" name="cat">
+                                            <option value="">All Categories</option>
+                                            <option value="4">Fashion</option>
+                                            <option value="12">- Women</option>
+                                            <option value="13">- Men</option>
+                                            <option value="66">- Jewellery</option>
+                                            <option value="67">- Kids Fashion</option>
+                                            <option value="5">Electronics</option>
+                                            <option value="21">- Smart TVs</option>
+                                            <option value="22">- Cameras</option>
+                                            <option value="63">- Games</option>
+                                            <option value="7">Home &amp; Garden</option>
+                                            <option value="11">Motors</option>
+                                            <option value="31">- Cars and Trucks</option>
+                                            <option value="32">- Motorcycles &amp; Powersports</option>
+                                            <option value="33">- Parts &amp; Accessories</option>
+                                            <option value="34">- Boats</option>
+                                            <option value="57">- Auto Tools &amp; Supplies</option>
+                                        </select>
+                                    </div><!-- End .select-custom -->
+                                    <button class="btn icon-magnifier" title="search" type="submit"></button>
+                                </div><!-- End .header-search-wrapper -->
+                            </form>
+                        </div><!-- End .header-search -->
+
+                        <a href="wishlist.html" class="header-icon">
+                            <i class="icon-wishlist-2 line-height-1"></i>
+                        </a>
+
+                        <div class="dropdown cart-dropdown">
+                            <a href="#" title="Cart" class="dropdown-toggle cart-toggle" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+                                <i class="minicart-icon"></i>
+                                <span class="cart-count badge-circle">3</span>
+                            </a>
+
+                            <div class="cart-overlay"></div>
+
+                            <div class="dropdown-menu mobile-cart">
+                                <a href="#" title="Close (Esc)" class="btn-close">×</a>
+
+                                <div class="dropdownmenu-wrapper custom-scrollbar">
+                                    <div class="dropdown-cart-header">Shopping Cart</div>
+                                    <!-- End .dropdown-cart-header -->
+
+                                    <div class="dropdown-cart-products">
+                                        <div class="product">
+                                            <div class="product-details">
+                                                <h4 class="product-title">
+                                                    <a href="demo27-product.html">Ultimate 3D Bluetooth Speaker</a>
+                                                </h4>
+
+                                                <span class="cart-product-info">
+                                                    <span class="cart-product-qty">1</span>
+                                                    × $99.00
+                                                </span>
+                                            </div><!-- End .product-details -->
+
+                                            <figure class="product-image-container">
+                                                <a href="demo27-product.html" class="product-image">
+                                                    <img src="assets/images/products/product-1.jpg" alt="product"
+                                                        width="80" height="80">
+                                                </a>
+
+                                                <a href="#" class="btn-remove" title="Remove Product"><span>×</span></a>
+                                            </figure>
+                                        </div><!-- End .product -->
+
+                                        <div class="product">
+                                            <div class="product-details">
+                                                <h4 class="product-title">
+                                                    <a href="demo27-product.html">Brown Women Casual HandBag</a>
+                                                </h4>
+
+                                                <span class="cart-product-info">
+                                                    <span class="cart-product-qty">1</span>
+                                                    × $35.00
+                                                </span>
+                                            </div><!-- End .product-details -->
+
+                                            <figure class="product-image-container">
+                                                <a href="demo27-product.html" class="product-image">
+                                                    <img src="assets/images/products/product-2.jpg" alt="product"
+                                                        width="80" height="80">
+                                                </a>
+
+                                                <a href="#" class="btn-remove" title="Remove Product"><span>×</span></a>
+                                            </figure>
+                                        </div><!-- End .product -->
+
+                                        <div class="product">
+                                            <div class="product-details">
+                                                <h4 class="product-title">
+                                                    <a href="demo27-product.html">Circled Ultimate 3D Speaker</a>
+                                                </h4>
+
+                                                <span class="cart-product-info">
+                                                    <span class="cart-product-qty">1</span>
+                                                    × $35.00
+                                                </span>
+                                            </div><!-- End .product-details -->
+
+                                            <figure class="product-image-container">
+                                                <a href="demo27-product.html" class="product-image">
+                                                    <img src="assets/images/products/product-3.jpg" alt="product"
+                                                        width="80" height="80">
+                                                </a>
+                                                <a href="#" class="btn-remove" title="Remove Product"><span>×</span></a>
+                                            </figure>
+                                        </div><!-- End .product -->
+                                    </div><!-- End .cart-product -->
+
+                                    <div class="dropdown-cart-total">
+                                        <span>SUBTOTAL:</span>
+
+                                        <span class="cart-total-price float-right">$134.00</span>
+                                    </div><!-- End .dropdown-cart-total -->
+
+                                    <div class="dropdown-cart-action">
+                                        <a href="cart.html" class="btn btn-gray btn-block view-cart">View
+                                            Cart</a>
+                                        <a href="checkout.html" class="btn btn-dark btn-block">Checkout</a>
+                                    </div><!-- End .dropdown-cart-total -->
+                                </div><!-- End .dropdownmenu-wrapper -->
+                            </div><!-- End .dropdown-menu -->
+                        </div><!-- End .dropdown -->
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
+            <div class="header-bottom">
+                <div class="owl-carousel info-boxes-slider" data-owl-options="{
+                        'items': 1,
+                        'dots': false,
+                        'loop': false,
+                        'responsive': {
+                            '768': {
+                                'items': 2
+                            },
+                            '992': {
+                                'items': 3
+                            }
+                        }
+                    }">
+                    <div class="info-box info-box-icon-left">
+                        <i class="icon-shipping text-white"></i>
 
-    <!--=======  End of category menu =======-->
+                        <div class="info-box-content">
+                            <h4 class="text-white">Free Shipping &amp; Return</h4>
+                        </div><!-- End .info-box-content -->
+                    </div><!-- End .info-box -->
 
-</header>
+                    <div class="info-box info-box-icon-left">
+                        <i class="icon-money text-white"></i>
+
+                        <div class="info-box-content">
+                            <h4 class="text-white">Money Back Guarantee</h4>
+                        </div><!-- End .info-box-content -->
+                    </div><!-- End .info-box -->
+
+                    <div class="info-box info-box-icon-left">
+                        <i class="icon-support text-white"></i>
+
+                        <div class="info-box-content">
+                            <h4 class="text-white">Online Support 24/7</h4>
+                        </div><!-- End .info-box-content -->
+                    </div><!-- End .info-box -->
+                </div><!-- End .owl-carousel -->
+            </div>
+        </header>
 
  <main class="app-content">
     
@@ -605,166 +417,407 @@
 
   </main>
 
-  <footer class="bg-light theme1 position-relative">
-    <!-- footer bottom start -->
-    <div class="footer-bottom pt-80 pb-30">
-        <div class="container">
-            <div class="row">
-                <div class="col-12 col-md-6 col-lg-4 mb-30">
-                    <div class="footer-widget mx-w-400">
-                        <div class="footer-logo mb-35">
-                            <a href="index.html">
-                                <img src="assets/img/logo/logo-dark.png" alt="footer logo">
-                            </a>
-                        </div>
-                        <p class="text mb-30">We are a team of designers and developers that create high quality
-                            Magento, Prestashop, Opencart.</p>
-                        <div class="address-widget mb-30">
-                            <div class="media">
-                                <span class="address-icon me-3">
-                                    <img src="assets/img/icon/phone.png" alt="phone">
-                                </span>
-                                <div class="media-body">
-                                    <p class="help-text text-uppercase">NEED HELP?</p>
-                                    <h4 class="title text-dark"><a href="tel:+1(123)8889999">(+800) 345 678</a></h4>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="social-network">
-                            <ul class="d-flex">
-                                <li><a href="https://www.facebook.com/" target="_blank"><span
-                                            class="icon-social-facebook"></span></a></li>
-                                <li><a href="https://twitter.com/" target="_blank"><span
-                                            class="icon-social-twitter"></span></a></li>
-                                <li><a href="https://www.youtube.com/" target="_blank"><span
-                                            class="icon-social-youtube"></span></a></li>
-                                <li class="me-0"><a href="https://www.instagram.com/" target="_blank"><span
-                                            class="icon-social-instagram"></span></a></li>
-                            </ul>
+  <footer class="footer font2">
+    <div class="footer-top">
+        <div class="instagram-box bg-dark">
+            <div class="row m-0 align-items-center">
+                <div class="instagram-follow col-md-4 col-lg-3 d-flex align-items-center">
+                    <div class="info-box">
+                        <i class="fab fa-instagram text-white mr-4"></i>
+                        <div class="info-box-content">
+                            <h4 class="text-white line-height-1">Follow Us on Instagram</h4>
+                            <p class="line-height-1">@portoecommerce</p>
                         </div>
                     </div>
                 </div>
-                <div class="col-12 col-md-6 col-lg-2 mb-30">
-                    <div class="footer-widget">
-                        <div class="border-bottom cbb1 mb-25">
-                            <div class="section-title pb-20">
-                                <h2 class="title text-dark text-uppercase">Information</h2>
-                            </div>
-                        </div>
-                        <!-- footer-menu start -->
-                        <ul class="footer-menu">
-                            <li><a href="#">Delivery</a></li>
-                            <li><a href="about-us.html">About us</a></li>
-                            <li><a href="#">Secure payment</a></li>
-                            <li><a href="contact.html">Contact us</a></li>
-                            <li><a href="#">Sitemap</a></li>
-                            <li><a href="#">Stores</a></li>
-                        </ul>
-                        <!-- footer-menu end -->
-                    </div>
-                </div>
-                <div class="col-12 col-md-6 col-lg-2 mb-30">
-                    <div class="footer-widget">
-                        <div class="border-bottom cbb1 mb-25">
-                            <div class="section-title pb-20">
-                                <h2 class="title text-dark text-uppercase">Custom Links</h2>
-                            </div>
-                        </div>
-                        <!-- footer-menu start -->
-                        <ul class="footer-menu">
-                            <li><a href="#">Legal Notice</a></li>
-                            <li><a href="#">Prices drop</a></li>
 
-                            <li><a href="#">New products</a></li>
-
-                            <li><a href="#">Best sales</a></li>
-
-                            <li><a href="login.html">Login</a></li>
-
-                            <li><a href="myaccount.html">My account</a></li>
-                        </ul>
-                        <!-- footer-menu end -->
-                    </div>
-                </div>
-                <div class="col-12 col-md-6 col-lg-4 mb-30">
-                    <div class="footer-widget">
-                        <div class="border-bottom cbb1 mb-25">
-                            <div class="section-title pb-20">
-                                <h2 class="title text-dark text-uppercase">Newsletter</h2>
-                            </div>
-                        </div>
-                        <p class="text mb-20">You may unsubscribe at any moment. For that purpose, please find our
-                            contact info in the legal notice.</p>
-                        <div class="nletter-form mb-35">
-                            <form class="form-inline position-relative"
-                                action="http://devitems.us11.list-manage.com/subscribe/post?u=6bbb9b6f5827bd842d9640c82&amp;id=05d85f18ef"
-                                target="_blank" method="post">
-                                <input class="form-control" type="text" placeholder="Your email address">
-                                <button class="btn nletter-btn text-capitalize" type="submit">Sign
-                                    up</button>
-                            </form>
-                        </div>
-
-                        <div class="store d-flex">
-                            <a href="https://www.apple.com/" class="d-inline-block me-3"><img
-                                    src="assets/img/icon/apple.png" alt="apple icon"> </a>
-                            <a href="https://play.google.com/store/" class="d-inline-block"><img
-                                    src="assets/img/icon/play.png" alt="apple icon"> </a>
-                        </div>
+                <div class="col-md-8 col-lg-9 p-0">
+                    <div class="instagram-carousel owl-carousel owl-theme" data-owl-options="{
+                            'items': 2,
+                            'dots': false,
+                            'responsive': {
+                                '480': {
+                                    'items': 3
+                                },
+                                '950': {
+                                    'items': 4
+                                },
+                                '1200': {
+                                    'items' : 5
+                                },
+                                '1500': {
+                                    'items': 6
+                                }
+                            }
+                        }">
+                        <img src="assets/images/demoes/demo27/instagram/instagram1.jpg" alt="instagram"
+                            width="240" height="240">
+                        <img src="assets/images/demoes/demo27/instagram/instagram2.jpg" alt="instagram"
+                            width="240" height="240">
+                        <img src="assets/images/demoes/demo27/instagram/instagram3.jpg" alt="instagram"
+                            width="240" height="240">
+                        <img src="assets/images/demoes/demo27/instagram/instagram4.jpg" alt="instagram"
+                            width="240" height="240">
+                        <img src="assets/images/demoes/demo27/instagram/instagram5.jpg" alt="instagram"
+                            width="240" height="240">
+                        <img src="assets/images/demoes/demo27/instagram/instagram6.jpg" alt="instagram"
+                            width="240" height="240">
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- footer bottom end -->
-    <!-- coppy-right start -->
-    <div class="coppy-right pb-80">
         <div class="container">
-            <div class="row">
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="text-start">
-                        <p class="mb-3 mb-md-0">
-            © 2021 <span class="text-capitalize">Junno</span> Made
-            with <span style="color:#ea3a3c;">&#10084;</span> by
-            <a target="_blank" href="https://hasthemes.com/">HasThemes</a>
-          </p>
+            <div class="widget-newsletter d-lg-flex align-items-center flex-wrap">
+                <div class="footer-left d-md-flex flex-wrap align-items-center mr-5">
+                    <div class="info-box w-auto mr-5 my-3">
+                        <i class="far fa-envelope text-white mr-4"></i>
+                        <div class="widget-newsletter-info">
+                            <h4 class="line-height-1 text-white">
+                                Get Special Offers and Savings
+                            </h4>
+                            <p class="line-height-1">Get all the latest information on Events,
+                                Sales
+                                and Offers.</p>
+                        </div>
                     </div>
+                    <form action="#" class="my-3">
+                        <div class="footer-submit-wrapper d-flex">
+                            <input type="email" class="form-control font-italic"
+                                placeholder="Enter Your E-mail Address..." size="40" required>
+                            <button type="submit" class="btn btn-sm">Sign Up</button>
+                        </div>
+                    </form>
                 </div>
-                <div class="col-12 col-md-6 col-lg-8">
-                    <div class="text-start">
-                        <img src="assets/img/payment/1.png" alt="img">
-                    </div>
+                <div class="footer-right text-lg-right">
+                    <div class="social-icons my-3">
+                        <a href="#" class="social-icon social-facebook icon-facebook" target="_blank"></a>
+                        <a href="#" class="social-icon social-twitter icon-twitter" target="_blank"></a>
+                        <a href="#" class="social-icon social-linkedin fab fa-linkedin-in" target="_blank"></a>
+                    </div><!-- End .social-icons -->
                 </div>
             </div>
         </div>
     </div>
-    <!-- coppy-right end -->
-</footer>
-<script src="{{ asset('assets/js/vendor/jquery-3.6.0.min.js') }}"></script>
-<script src="{{ asset('assets/js/vendor/jquery-migrate-3.3.2.min.js') }}"></script>
-<script src="{{ asset('assets/js/vendor/modernizr-3.7.1.min.js') }}"></script>
-<script src="{{ asset('assets/js/plugins/jquery-ui.min.js') }}"></script>
-<script src="{{ asset('assets/js/plugins/plugins.js') }}"></script>
-<script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
-<script src="{{ asset('assets/js/main.js') }}"></script>
-    <!-- Use the minified version files listed below for better performance and remove the files listed above -->
+    <div class="container">
+        <div class="footer-middle">
+            <div class="row">
+                <div class="col-lg-3">
+                    <a href="demo27.html"><img src="assets/images/logo-white.png" alt="Logo" class="logo"></a>
 
-    <!--*************************** 
-          Minified  js 
-     ***************************-->
+                    <p class="footer-desc">Lorem ipsum dolor sit amet, consectetur adipis.</p>
 
-    <!--*********************************** 
-         vendor,plugins and main js
-      ***********************************-->
+                    <div class="ls-0 footer-question mb-3">
+                        <h6 class="mb-0 text-white">QUESTIONS?</h6>
+                        <h3 class="mb-0 text-primary">1-888-123-456</h3>
+                    </div>
+                </div><!-- End .col-lg-3 -->
 
-    <!-- <script src="assets/js/vendor/vendor.min.js"></script>
-    <script src="assets/js/plugins/plugins.min.js"></script>
-    <script src="assets/js/main.js"></script> -->
+                <div class="col-lg-3">
+                    <div class="widget">
+                        <h4 class="widget-title">Account</h4>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="links">
+                                    <li><a href="dashboard.html">My Account</a></li>
+                                    <li><a href="#">Track Your Order</a></li>
+                                    <li><a href="#">Payment Methods</a></li>
+                                    <li><a href="#">Shipping Guide</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="links">
+                                    <li><a href="#">FAQs</a></li>
+                                    <li><a href="#">Product Support</a></li>
+                                    <li><a href="#">Privacy</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div><!-- End .widget -->
+                </div><!-- End .col-lg-3 -->
+
+                <div class="col-lg-3">
+                    <div class="widget">
+                        <h4 class="widget-title">About</h4>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="links">
+                                    <li><a href="about.html">About Porto</a></li>
+                                    <li><a href="#">Our Guarantees</a></li>
+                                    <li><a href="#">Terms And Conditions</a></li>
+                                    <li><a href="#">Privacy policy</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="links">
+                                    <li><a href="#">Return Policy</a></li>
+                                    <li><a href="#">Intellectual Property Claims</a></li>
+                                    <li><a href="#">Site Map</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div><!-- End .widget -->
+                </div><!-- End .col-lg-3 -->
+
+                <div class="col-lg-3">
+                    <div class="widget text-lg-right">
+                        <h4 class="widget-title">Features</h4>
+
+                        <ul class="links">
+                            <li><a href="#">Powerful Admin Panel</a></li>
+                            <li><a href="#">Mobile &amp; Retina Optimized</a></li>
+                            <li><a href="#">Super Fast HTML Template</a></li>
+                        </ul>
+                    </div><!-- End .widget -->
+                </div><!-- End .col-lg-3 -->
+            </div><!-- End .row -->
+        </div>
+        <div class="footer-bottom">
+            <p class="footer-copyright text-lg-center mb-0">&copy; Porto eCommerce. 2021. All Rights
+                Reserved
+            </p>
+        </div><!-- End .footer-bottom -->
+    </div><!-- End .container -->
+</footer><!-- End .footer -->
+</div><!-- End .page-wrapper -->
+
+<div class="loading-overlay">
+<div class="bounce-loader">
+    <div class="bounce1"></div>
+    <div class="bounce2"></div>
+    <div class="bounce3"></div>
+</div>
+</div>
+
+<div class="mobile-menu-overlay"></div><!-- End .mobil-menu-overlay -->
+
+<div class="mobile-menu-container">
+<div class="mobile-menu-wrapper">
+    <span class="mobile-menu-close"><i class="fa fa-times"></i></span>
+    <nav class="mobile-nav">
+        <ul class="mobile-menu">
+            <li><a href="demo27.html">Home</a></li>
+            <li>
+                <a href="demo27-shop.html">Categories</a>
+                <ul>
+                    <li><a href="category.html">Full Width Banner</a></li>
+                    <li><a href="category-banner-boxed-slider.html">Boxed Slider Banner</a></li>
+                    <li><a href="category-banner-boxed-image.html">Boxed Image Banner</a></li>
+                    <li><a href="https://www.portotheme.com/html/porto_ecommerce/category-sidebar-left.html">Left Sidebar</a></li>
+                    <li><a href="category-sidebar-right.html">Right Sidebar</a></li>
+                    <li><a href="category-off-canvas.html">Off Canvas Filter</a></li>
+                    <li><a href="category-horizontal-filter1.html">Horizontal Filter 1</a></li>
+                    <li><a href="category-horizontal-filter2.html">Horizontal Filter 2</a></li>
+                    <li><a href="#">List Types</a></li>
+                    <li><a href="category-infinite-scroll.html">Ajax Infinite Scroll<span
+                                class="tip tip-new">New</span></a></li>
+                    <li><a href="category.html">3 Columns Products</a></li>
+                    <li><a href="category-4col.html">4 Columns Products</a></li>
+                    <li><a href="category-5col.html">5 Columns Products</a></li>
+                    <li><a href="category-6col.html">6 Columns Products</a></li>
+                    <li><a href="category-7col.html">7 Columns Products</a></li>
+                    <li><a href="category-8col.html">8 Columns Products</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="demo27-product.html">Products</a>
+                <ul>
+                    <li>
+                        <a href="#" class="nolink">PRODUCT PAGES</a>
+                        <ul>
+                            <li><a href="demo27-product.html">SIMPLE PRODUCT</a></li>
+                            <li><a href="product-variable.html">VARIABLE PRODUCT</a></li>
+                            <li><a href="demo27-product.html">SALE PRODUCT</a></li>
+                            <li><a href="demo27-product.html">FEATURED & ON SALE</a></li>
+                            <li><a href="product-sticky-info.html">WIDTH CUSTOM TAB</a></li>
+                            <li><a href="product-sidebar-left.html">WITH LEFT SIDEBAR</a></li>
+                            <li><a href="product-sidebar-right.html">WITH RIGHT SIDEBAR</a></li>
+                            <li><a href="product-addcart-sticky.html">ADD CART STICKY</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#" class="nolink">PRODUCT LAYOUTS</a>
+                        <ul>
+                            <li><a href="product-extended-layout.html">EXTENDED LAYOUT</a></li>
+                            <li><a href="product-grid-layout.html">GRID IMAGE</a></li>
+                            <li><a href="product-full-width.html">FULL WIDTH LAYOUT</a></li>
+                            <li><a href="product-sticky-info.html">STICKY INFO</a></li>
+                            <li><a href="product-sticky-both.html">LEFT & RIGHT STICKY</a></li>
+                            <li><a href="product-transparent-image.html">TRANSPARENT IMAGE</a></li>
+                            <li><a href="product-center-vertical.html">CENTER VERTICAL</a></li>
+                            <li><a href="#">BUILD YOUR OWN</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#">Pages<span class="tip tip-hot">Hot!</span></a>
+                <ul>
+                    <li>
+                        <a href="wishlist.html">Wishlist</a>
+                    </li>
+                    <li>
+                        <a href="cart.html">Shopping Cart</a>
+                    </li>
+                    <li>
+                        <a href="checkout.html">Checkout</a>
+                    </li>
+                    <li>
+                        <a href="dashboard.html">Dashboard</a>
+                    </li>
+                    <li>
+                        <a href="login.html">Login</a>
+                    </li>
+                    <li>
+                        <a href="forgot-password.html">Forgot Password</a>
+                    </li>
+                </ul>
+            </li>
+            <li><a href="blog.html">Blog</a></li>
+            <li>
+                <a href="#">Elements</a>
+                <ul class="custom-scrollbar">
+                    <li><a href="element-accordions.html">Accordion</a></li>
+                    <li><a href="element-alerts.html">Alerts</a></li>
+                    <li><a href="element-animations.html">Animations</a></li>
+                    <li><a href="element-banners.html">Banners</a></li>
+                    <li><a href="element-buttons.html">Buttons</a></li>
+                    <li><a href="element-call-to-action.html">Call to Action</a></li>
+                    <li><a href="element-countdown.html">Count Down</a></li>
+                    <li><a href="element-counters.html">Counters</a></li>
+                    <li><a href="element-headings.html">Headings</a></li>
+                    <li><a href="element-icons.html">Icons</a></li>
+                    <li><a href="element-info-box.html">Info box</a></li>
+                    <li><a href="element-posts.html">Posts</a></li>
+                    <li><a href="element-products.html">Products</a></li>
+                    <li><a href="element-product-categories.html">Product Categories</a></li>
+                    <li><a href="element-tabs.html">Tabs</a></li>
+                    <li><a href="element-testimonial.html">Testimonials</a></li>
+                </ul>
+            </li>
+        </ul>
+
+        <ul class="mobile-menu mt-2 mb-2">
+            <li class="border-0">
+                <a href="#">
+                    Special Offer!
+                </a>
+            </li>
+            <li class="border-0">
+                <a href="https://1.envato.market/DdLk5" target="_blank">
+                    Buy Porto!
+                    <span class="tip tip-hot">Hot</span>
+                </a>
+            </li>
+        </ul>
+
+        <ul class="mobile-menu">
+            <li><a href="login.html">My Account</a></li>
+            <li><a href="contact.html">Contact Us</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="wishlist.html">My Wishlist</a></li>
+            <li><a href="cart.html">Cart</a></li>
+            <li><a href="login.html" class="login-link">Log In</a></li>
+        </ul>
+    </nav><!-- End .mobile-nav -->
+
+    <form class="search-wrapper mb-2" action="#">
+        <input type="text" class="form-control mb-0" placeholder="Search..." required />
+        <button class="btn icon-search text-white bg-transparent p-0" type="submit"></button>
+    </form>
+
+    <div class="social-icons">
+        <a href="#" class="social-icon social-facebook icon-facebook" target="_blank">
+        </a>
+        <a href="#" class="social-icon social-twitter icon-twitter" target="_blank">
+        </a>
+        <a href="#" class="social-icon social-instagram icon-instagram" target="_blank">
+        </a>
+    </div>
+</div><!-- End .mobile-menu-wrapper -->
+</div><!-- End .mobile-menu-container -->
+
+<div class="sticky-navbar">
+<div class="sticky-info">
+    <a href="demo27.html">
+        <i class="icon-home"></i>Home
+    </a>
+</div>
+<div class="sticky-info">
+    <a href="demo27-shop.html" class="">
+        <i class="icon-bars"></i>Categories
+    </a>
+</div>
+<div class="sticky-info">
+    <a href="wishlist.html" class="">
+        <i class="icon-wishlist-2"></i>Wishlist
+    </a>
+</div>
+<div class="sticky-info">
+    <a href="login.html" class="">
+        <i class="icon-user-2"></i>Account
+    </a>
+</div>
+<div class="sticky-info">
+    <a href="cart.html" class="">
+        <i class="icon-shopping-cart position-relative">
+            <span class="cart-count badge-circle">3</span>
+        </i>Cart
+    </a>
+</div>
+</div>
+
+<div class="newsletter-popup mfp-hide bg-img" id="newsletter-popup-form"
+style="background: #f1f1f1 no-repeat center/cover url(assets/images/newsletter_popup_bg.jpg)">
+<div class="newsletter-popup-content">
+    <img src="assets/images/logo-black.png" alt="Logo" class="logo-newsletter" width="111" height="44">
+    <h2>Subscribe to newsletter</h2>
+
+    <p>
+        Subscribe to the Porto mailing list to receive updates on new
+        arrivals, special offers and our promotions.
+    </p>
+
+    <form action="#">
+        <div class="input-group">
+            <input type="email" class="form-control" id="newsletter-email" name="newsletter-email"
+                placeholder="Your email address" required />
+            <input type="submit" class="btn btn-primary" value="Submit" />
+        </div>
+    </form>
+    <div class="newsletter-subscribe">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" value="0" id="show-again" />
+            <label for="show-again" class="custom-control-label">
+                Don't show this popup again
+            </label>
+        </div>
+    </div>
+</div><!-- End .newsletter-popup-content -->
+
+<button title="Close (Esc)" type="button" class="mfp-close">
+    ×
+</button>
+</div><!-- End .newsletter-popup -->
+
+<a id="scroll-top" href="#top" title="Top" role="button"><i class="icon-angle-up"></i></a>
+
+<!-- Plugins JS File -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/plugins.min.js"></script>
+<script src="assets/js/optional/isotope.pkgd.min.js"></script>
+<script src="assets/js/jquery.appear.min.js"></script>
+<script src="assets/js/jquery.plugin.min.js"></script>
 
 
+<!-- Main JS File -->
+<script src="assets/js/main.min.js"></script>
 </body>
 
 
-<!-- Mirrored from htmldemo.net/junno/junno/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 13 Jun 2025 17:01:22 GMT -->
+<!-- Mirrored from portotheme.com/html/porto_ecommerce/demo27.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 05 Jul 2025 12:58:29 GMT -->
 </html>
+
+

@@ -80,34 +80,11 @@
     $(this).closest('.dropdown').find('.dropdown-menu').removeClass('show');
   });
 
-  var progresslevel = function () {
-    if ($('div').hasClass('progress-level-bar')) {
-    var bars = document.querySelectorAll('.progress-level-bar > span');
-    setInterval(function(){
-    bars.forEach(function(bar){
-      var t1 = parseFloat(bar.dataset.progress);
-      var t2 = parseFloat(bar.dataset.max);
-      var getWidth = ( t1 / t2) * 100;
-      bar.style.width = getWidth + '%';
-    });
-    }, 500);
-  }}
-
   var collapse_menu = function () {
     $(".button-show-hide").on("click", function () {
       $('.layout-wrap').toggleClass('full-width');
     })
   }
-
-  var fullcheckbox = function () {
-    $('.total-checkbox').on('click', function () {
-      if ( $(this).is(':checked') ) {
-        $(this).closest('.wrap-checkbox').find('.checkbox-item').prop('checked', true);
-      } else {
-        $(this).closest('.wrap-checkbox').find('.checkbox-item').prop('checked', false);
-      }
-    });
-  };
 
   var showpass = function() {
     $(".show-pass").on("click", function () {
@@ -122,25 +99,6 @@
     });
   }
 
-  var gallery = function() {
-    $(".button-list-style").on("click", function () {
-      $(".wrap-gallery-item").addClass("list");
-    });
-    $(".button-grid-style").on("click", function () {
-      $(".wrap-gallery-item").removeClass("list");
-    });
-  }
-
-  var coppy = function() {
-    $(".button-coppy").on("click", function () {
-      myFunction()
-    });
-    function myFunction() {
-      var copyText = document.getElementsByClassName("coppy-content");
-      navigator.clipboard.writeText(copyText.text);
-    }
-  }
-
   var select_colors_theme = function () {
     if ($('div').hasClass("select-colors-theme")) {
       $(".select-colors-theme .item").on("click", function (e) {
@@ -153,11 +111,7 @@
   var icon_function = function () {
     if ($('div').hasClass("list-icon-function")) {
       $(".list-icon-function .trash").on("click", function (e) {
-        $(this).parents(".product-item").remove();
-        $(this).parents(".attribute-item").remove();
-        $(this).parents(".countries-item").remove();
-        $(this).parents(".user-item").remove();
-        $(this).parents(".roles-item").remove();
+        $(this).parents(".item-row").remove();
       })
     }
   }
@@ -190,23 +144,12 @@
    
   }
 
-  var retinaLogos = function() {
-    var retina = window.devicePixelRatio > 1 ? true : false;
-      if(retina) {
-        if ($(".dark-theme").length > 0) {
-          $('#logo_header').attr({src:'images/logo/logo-dark@2x.png',width:'154px',height:'52px'});
-        } else {
-          $('#logo_header').attr({src:'images/logo/logo@2x.png',width:'154px',height:'52px'});
-        }
-      }
-  };  
-
   var preloader = function () {
     setTimeout(function () {
     $("#preload").fadeOut("slow", function () {
         $(this).remove();
     });
-    }, 1000);
+    }, 300);
   };
 
   var variant_picker = function () {
@@ -218,54 +161,70 @@
           .text($(this).data("value"));
       });
     }
-};
+  };
 
-var btnQuantity = function () {
-    $(".minus-btn").on("click", function (e) {
-      e.preventDefault();
-      var $this = $(this);
-      var $input = $this.closest("div").find("input");
-      var value = parseInt($input.val());
+  var flatAccordion = function (class1) {
+    var args = { duration: 200 };
 
-      if (value > 0) {
-        value = value - 1;
+    $(".flat-toggle" + " .toggle-title.active")
+      .siblings(".toggle-content")
+      .show();
+    $(class1 + " .toggle-title").on("click", function () {
+      $(class1 + " " + ".flat-toggle").removeClass("active");
+      $(this).closest(".flat-toggle").toggleClass("active");
+
+      if (!$(this).is(".active")) {
+        $(this)
+          .closest(class1)
+          .find(".toggle-title.active")
+          .toggleClass("active")
+          .next()
+          .slideToggle(args);
+        $(this).toggleClass("active");
+        $(this).next().slideToggle(args);
+      } else {
+        $(class1 + " " + ".flat-toggle").removeClass("active");
+        $(this).toggleClass("active");
+        $(this).next().slideToggle(args);
       }
-
-      $input.val(value);
     });
+  };
 
-    $(".plus-btn").on("click", function (e) {
-      e.preventDefault();
-      var $this = $(this);
-      var $input = $this.closest("div").find("input");
-      var value = parseInt($input.val());
+  var uploadfile = function () {
+    if ($("#myFile").length) {
+        document
+            .getElementById("myFile")
+            .addEventListener("change", function (event) {
+                var file = event.target.files[0];
+                var reader = new FileReader();
 
-      if (value > -1) {
-        value = value + 1;
+                reader.onload = function (e) {
+                    var imgElement = document.getElementById("myFile-input");
+                    imgElement.src = e.target.result;
+                    imgElement.classList.add("has-img");
+                };
+
+                if (file) {
+                    reader.readAsDataURL(file);
+                }
+            });
       }
-
-      $input.val(value);
-    });
-};
-
+  };
 
   // Dom Ready
   $(function () {
     selectImages();
     menuleft();
     tabs();
-    progresslevel();
     collapse_menu();
-    fullcheckbox();
     showpass();
-    gallery();
-    coppy();
     select_colors_theme();
     icon_function();
     box_search();
-    retinaLogos();
     variant_picker();
-    btnQuantity();
+    flatAccordion(".flat-accordion");
+    flatAccordion(".flat-accordion1");
+    uploadfile();
     preloader();
     
   });

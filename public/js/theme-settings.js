@@ -11,15 +11,30 @@
     var dark_light = function () {
         $("body").toggleClass(localStorage.toggled);
         var toggle = $(".button-dark-light");
+
+        // setting dark is default
+        // if (localStorage.toggled === 'dark-theme' || localStorage.toggled === 'light-theme' ) {
+        // } else {
+        //     localStorage.toggled = 'dark-theme';
+        // }
+        // if (localStorage.toggled === 'dark-theme') {
+        //     $("body").addClass("dark-theme");
+        // } else {
+        //     $("body").addClass("light-theme");
+        // }
+        // end setting dark is default
+
         toggle.on("click", function () {
             if (localStorage.toggled != "dark-theme") {
                 $("body").toggleClass("dark-theme", true);
+                $("body").toggleClass("light-theme", false);
                 localStorage.toggled = "dark-theme";
                 $(".theme-dark-light").find(".dark").find("input").prop("checked", true);
                 $("#logo_header").attr({src:tfdark});
                 $("#logo_header_mobile").attr({src:tfdark});
             } else {
                 $("body").toggleClass("dark-theme", false);
+                $("body").toggleClass("light-theme", true);
                 localStorage.toggled = "light-theme";   
                 $(".theme-dark-light").find(".light").find("input").prop("checked", true);
                 $("#logo_header").attr({src:tflight});
@@ -191,8 +206,8 @@
         $(".colors-theme-primary .color-2377FC").on("click", function () {
             $(".layout-wrap").attr("data-theme-primary", "theme-primary-2377FC");
         })
-        $(".colors-theme-primary .color-DE6E49").on("click", function () {
-            $(".layout-wrap").attr("data-theme-primary", "theme-primary-DE6E49");
+        $(".colors-theme-primary .color-FF7433").on("click", function () {
+            $(".layout-wrap").attr("data-theme-primary", "theme-primary-FF7433");
         })
         $(".colors-theme-primary .color-35988D").on("click", function () {
             $(".layout-wrap").attr("data-theme-primary", "theme-primary-35988D");
@@ -224,30 +239,6 @@
         })
     }
 
-    // menu-bg
-    var menu_background = function () {
-        $(".image-menu-background .img-1").on("click", function () {
-            $(".layout-wrap").attr("data-menu-background", "image-menu-background-1");
-            $("#logo_header").attr({src:tfdark});
-        })
-        $(".image-menu-background .img-2").on("click", function () {
-            $(".layout-wrap").attr("data-menu-background", "image-menu-background-2");
-            $("#logo_header").attr({src:tfdark});
-        })
-        $(".image-menu-background .img-3").on("click", function () {
-            $(".layout-wrap").attr("data-menu-background", "image-menu-background-3");
-            $("#logo_header").attr({src:tfdark});
-        })
-        $(".image-menu-background .img-4").on("click", function () {
-            $(".layout-wrap").attr("data-menu-background", "image-menu-background-4");
-            $("#logo_header").attr({src:tfdark});
-        })
-        $(".image-menu-background .img-5").on("click", function () {
-            $(".layout-wrap").attr("data-menu-background", "image-menu-background-5");
-            $("#logo_header").attr({src:tfdark});
-        })
-    }
-
     // clear-all
     var clear2 = function ()  {
         $(".form-theme-color .button-clear-select").on("click", function () {
@@ -257,8 +248,11 @@
             $("body").attr("data-theme-background", "");
             $(".select-colors-theme").find(".active").removeClass("active");
             $(".select-colors-theme").find(".default").addClass("active");
-            $(".image-menu-background").find(".active").removeClass("active");
-            $("#logo_header").attr({src:tflight});
+            if ($("body").hasClass("dark-theme")) {
+                $("#logo_header").attr({src:tfdark});
+            } else {
+                $("#logo_header").attr({src:tflight});
+            }
         })
     }
 
@@ -275,7 +269,6 @@
     colors_header();
     primary_theme();
     theme_background();
-    menu_background();
     clear2();
   });
 

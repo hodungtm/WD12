@@ -6,21 +6,43 @@
       
         var options = {
             series: [{
-            name: 'Website',
+            name: 'Revenue',
+            type: 'column',
             data: [51, 40, 58, 51, 42, 89, 80, 51, 60, 78, 81, 92]
           }, {
-            name: 'E-commerce',
+            name: 'Order',
+            type: 'line',
             data: [31, 32, 45, 32, 34, 52, 41, 31, 40, 28, 51, 42]
-          }, {
-            name: 'Store',
-            data: [21, 22, 35, 22, 24, 42, 31, 21, 30, 18, 41, 30]
           }],
-            chart: {
-            height: 523,
-            type: 'area',
+          chart: {
+            height: 404,
+            type: 'line',
+            stacked: false,
             toolbar: {
               show: false,
             },
+            animations: {
+              enabled: true,
+              easing: 'easeinout',
+              speed: 10,
+              animateGradually: {
+                  enabled: true,
+                  delay: 10
+              },
+              dynamicAnimation: {
+                  enabled: true,
+                  speed: 10
+              }
+            }
+          },
+          plotOptions: {
+            bar: {
+              horizontal: false,
+              borderRadius: 5,
+              borderRadiusApplication: 'end', // 'around', 'end'
+              borderRadiusWhenStacked: 'last', // 'all', 'last'
+              columnWidth: '20px'
+            }
           },
           dataLabels: {
             enabled: false
@@ -28,8 +50,9 @@
           legend: {
             show: false,
           },
-          colors: ['#8F77F3', '#FF5200', '#2377FC'],
+          colors: ['#FF7433', '#8F77F3'],
           stroke: {
+            width: [0, 3],
             curve: 'smooth'
           },
           xaxis: {
@@ -38,26 +61,29 @@
                 colors: '#95989D',
               },
             },
+            tooltip: {
+              enabled: false
+            },
             categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
           },
           responsive: [{
             breakpoint: 991,
             options: {
               chart: {
-                height: 400
+                height: 300
               },
             }
           }],
           yaxis: {
-            labels: {
-              style: {
-                colors: '#95989D',
-              },
-            },
+            show: false,
           },
           tooltip: {
-            x: {
-              format: 'dd/mm/yy'
+            y: {
+              title: {
+                formatter: function (e) {
+                  return e;
+                },
+              },
             },
           },
         };
@@ -73,20 +99,14 @@
   
       /* Function ============ */
       return {
-        init: function () {},
-  
         load: function () {
           chartBar();
         },
-        resize: function () {},
       };
     })();
-  
-    jQuery(document).ready(function () {});
   
     jQuery(window).on("load", function () {
       tfLineChart.load();
     });
   
-    jQuery(window).on("resize", function () {});
 })(jQuery);

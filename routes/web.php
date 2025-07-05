@@ -33,7 +33,8 @@ use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\ProductDetailController;
 use App\Http\Controllers\Client\ListProductClientController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Controllers\Client\HomeController as ClientHomeController;
+
+
 Route::prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 });
@@ -42,7 +43,7 @@ Route::prefix('admin')->group(function () {
 
 
 Route::prefix('client')->name('client.')->group(function () {
-    Route::get('/index', [ClientHomeController::class, 'index']);
+ 
     Route::get('/san-pham', [ListProductClientController::class, 'index'])->name('listproduct');
 
     Route::get('/san-pham/{id}', [ProductDetailController::class, 'show'])->name('product.detail');
@@ -178,9 +179,6 @@ Route::prefix('admin')->group(function () {
     Route::put('/catalog/color/{color}', [CatalogController::class, 'updateColor'])->name('catalog.color.update');
     Route::delete('/catalog/color/{color}', [CatalogController::class, 'destroyColor'])->name('catalog.color.destroy');
 });
-
-
-
 
 
 // Route::get('/user/dashboard', [UserDashboardController::class, 'index']);

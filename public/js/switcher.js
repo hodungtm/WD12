@@ -153,8 +153,8 @@ $(document).ready(function () {
                             '<fieldset class="">' +
                                 '<div class="body-title mb-10">Theme Primary color</div>' +
                                 '<div class="select-colors-theme colors-theme-primary mb-10">' +
-                                    '<div class="item color-2377FC active default"></div>' +
-                                    '<div class="item color-DE6E49"></div>' +
+                                    '<div class="item color-FF7433 active default"></div>' +
+                                    '<div class="item color-2377FC"></div>' +
                                     '<div class="item color-35988D"></div>' +
                                     '<div class="item color-7047D6"></div>' +
                                     '<div class="item color-189D72"></div>' +
@@ -173,26 +173,6 @@ $(document).ready(function () {
                                     '<div class="item color-1F2027"></div>' +
                                     '<div class="more-select">' +
                                         '<img src="images/bg-menu/more.png" alt="">' +
-                                    '</div>' +
-                                '</div>' +
-                            '</fieldset>' +
-                            '<fieldset class="">' +
-                                '<div class="body-title mb-10">Menu with background image</div>' +
-                                '<div class="select-colors-theme image-menu-background mb-10">' +
-                                    '<div class="item image img-1">' +
-                                        '<img src="images/bg-menu/img-1.jpg" alt="">' +
-                                    '</div>' +
-                                    '<div class="item image img-2">' +
-                                        '<img src="images/bg-menu/img-2.jpg" alt="">' +
-                                    '</div>' +
-                                    '<div class="item image img-3">' +
-                                        '<img src="images/bg-menu/img-3.jpg" alt="">' +
-                                    '</div>' +
-                                    '<div class="item image img-4">' +
-                                        '<img src="images/bg-menu/img-4.jpg" alt="">' +
-                                    '</div>' +
-                                    '<div class="item image img-5">' +
-                                        '<img src="images/bg-menu/img-5.jpg" alt="">' +
                                     '</div>' +
                                 '</div>' +
                             '</fieldset>' +

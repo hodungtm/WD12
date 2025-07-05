@@ -13,20 +13,51 @@
             colors: ["#FF5200"],
             chart: {
               type: "area",
-              maxWidth: 96,
-              height: 28,
-              sparkline: { enabled: !0 },
+              height: 117,
+              stacked: false,
+              toolbar: {
+                show: false,
+              },
+              animations: {
+                enabled: true,
+                easing: 'easeinout',
+                speed: 10,
+                animateGradually: {
+                    enabled: true,
+                    delay: 10
+                },
+                dynamicAnimation: {
+                    enabled: true,
+                    speed: 10
+                }
+              }
             },
-            plotOptions: { bar: { columnWidth: "50%" } },
-            xaxis: { crosshairs: { width: 1 } },
-  
-            stroke: {
-              show: true,
-              curve: "smooth",
-              lineCap: "butt",
-              colors: undefined,
-              width: 3,
-              dashArray: 0,
+            plotOptions: {
+              bar: {
+                horizontal: false,
+                columnWidth: '10px',
+                endingShape: 'rounded'
+              },
+            },
+            dataLabels: {
+              enabled: false
+            },
+            legend: {
+              show: false,
+            },
+            yaxis: {
+              show: false,
+            },
+            xaxis: {
+              labels: {
+                show: false
+              },
+              axisTicks: {
+                show: false
+              },
+              tooltip: {
+                enabled: false
+              }
             },
   
             tooltip: {
@@ -41,14 +72,7 @@
               },
               marker: { show: !1 },
             },
-            states: {
-              hover: {
-                filter: {
-                  type: "none",
-                  value: 0,
-                },
-              },
-            },
+            
         },
 
         chart = new ApexCharts(
@@ -62,20 +86,14 @@
   
       /* Function ============ */
       return {
-        init: function () {},
-  
         load: function () {
           chartBar();
         },
-        resize: function () {},
       };
     })();
-  
-    jQuery(document).ready(function () {});
   
     jQuery(window).on("load", function () {
       tfLineChart.load();
     });
-  
-    jQuery(window).on("resize", function () {});
+    
 })(jQuery);
