@@ -88,6 +88,7 @@
                         </select>
                     </div>
 
+
                     <div class="form-group w-full md:w-1/2">
                         <label class="form-label">Phương thức vận chuyển</label>
                         <select name="shipping_method_id" id="shipping-method" class="form-control">
@@ -117,6 +118,44 @@
                             @endforeach
                         </select>
                     </div>
+
+            <div class="form-group">
+                <label>Phương thức vận chuyển</label>
+                <select name="shipping_method_id" id="shipping-method" class="form-control" required>
+                    <option value="">-- Chọn phương thức vận chuyển --</option>
+                    @foreach($shippingMethods as $method)
+                        <option value="{{ $method->id }}" data-fee="{{ $method->fee }}"
+                            {{ old('shipping_method_id') == $method->id ? 'selected' : '' }}>
+                            {{ $method->name }} ({{ number_format($method->fee, 0, ',', '.') }}đ)
+                        </option>
+                    @endforeach
+                </select>
+                <small class="form-text text-muted mt-2">
+                    <strong>Phí vận chuyển:</strong> <span id="shipping-fee">0đ</span>
+                </small>
+            </div>
+<div class="form-group">
+    <label for="discount_code">Mã khuyến mãi</label>
+    <select name="discount_code" class="form-control @error('discount_code') is-invalid @enderror">
+        <option value="">-- Không áp dụng --</option>
+        @foreach($discounts as $discount)
+            <option value="{{ $discount->code }}" {{ old('discount_code') == $discount->code ? 'selected' : '' }}>
+                {{ $discount->code }} - 
+                @if($discount->discount_percent > 0)
+                    Giảm {{ $discount->discount_percent }}%
+                @else
+                    Giảm {{ number_format($discount->discount_amount, 0, ',', '.') }}₫
+                @endif
+            </option>
+        @endforeach
+    </select>
+    @error('discount_code')
+        <span class="text-danger">{{ $message }}</span>
+    @enderror
+</div>
+
+
+
 
                     <div class="form-group w-full">
                         <label class="form-label">Ghi chú</label>

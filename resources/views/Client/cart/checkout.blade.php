@@ -61,7 +61,11 @@
                                                 {{ $variant->size->name ?? '-' }}</small>
                                         </div>
                                     </div>
+
                                     <span>{{ number_format($lineTotal, 0, ',', '.') }}₫</span>
+
+<span>{{ number_format($lineTotal, 0, ',', '.') }}₫</span>
+
                                 </li>
                             @endforeach
 
@@ -113,7 +117,11 @@
                         <div class="form-group mb-3">
                             <label>Phương thức giao hàng</label>
                             <select name="shipping_method_id" id="shippingSelect" class="form-control"
+
                                 onchange="updateShipping()" required>
+
+onchange="updateShipping()" required>
+
                                 @foreach($shippingMethods as $method)
                                     <option value="{{ $method->id }}" data-fee="{{ $method->fee }}">
                                         {{ $method->name }} ({{ number_format($method->fee, 0, ',', '.') }}₫)
@@ -125,10 +133,17 @@
                         <div class="form-group mb-4">
                             <label>Phương thức thanh toán</label>
                             <select name="payment_method" class="form-control" required>
+
                                 <option value="cod">Tiền mặt khi nhận</option>
                                 <option value="bank">Chuyển khoản ngân hàng</option>
                                 <option value="momo">Momo</option>
                                 <option value="zalopay">ZaloPay</option>
+
+                                <option value="Tiền mặt">Tiền mặt khi nhận</option>
+                                <option value="Chuyển khoản">Chuyển khoản ngân hàng</option>
+                                <option value="Momo">Momo</option>
+                                <option value="zaloPay">ZaloPay</option>
+
                             </select>
                         </div>
                          {{-- <form action="{{ url('/momo_payment') }}" method="post">
@@ -174,7 +189,11 @@
     }
 
     window.onload = () => {
+
         updateShipping();
+
+updateShipping();
+
     };
 
      function copyBuyerInfo() {

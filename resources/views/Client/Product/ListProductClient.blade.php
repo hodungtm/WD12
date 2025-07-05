@@ -163,7 +163,11 @@
                                             <p class="text-danger fw-bold">{{ number_format($minVariantPrice, 0, ',', '.') }}₫</p>
                                         @endif
                                         <p class="text-muted small">{{ Str::limit($product->description, 100) }}</p>
+
                                         <a href="#" class="btn btn-sm btn-outline-primary mt-2">Xem chi tiết</a>
+
+                                        <a href="{{ route('client.product.detail', ['id' => $product->id]) }}" class="btn btn-sm btn-outline-primary mt-2">Xem chi tiết</a>
+
                                     </div>
                                 </div>
                             </div>

@@ -42,6 +42,16 @@ class Order_items extends Model
     /**
      * Biến thể sản phẩm liên kết
      */
+
+    public function product()
+    {
+        return $this->belongsTo(Products::class);
+    }
+
+    /**
+     * Biến thể sản phẩm liên kết
+     */
+
     public function productVariant()
     {
         return $this->belongsTo(ProductVariant::class);
