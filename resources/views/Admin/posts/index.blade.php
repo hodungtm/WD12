@@ -123,10 +123,19 @@
     </div>
 </div>
 
+
 <script>
     document.getElementById('check_all').addEventListener('change', function () {
         let checkboxes = document.querySelectorAll('.check_item');
         checkboxes.forEach(cb => cb.checked = this.checked);
     });
 </script>
+
+    <script>
+        document.getElementById('check_all').addEventListener('change', function () {
+            let checkboxes = document.querySelectorAll('.check_item');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+        });
+    </script>
+
 @endsection
