@@ -85,7 +85,9 @@ public function process(Request $request)
         'receiver_phone'     => $request->receiver_phone,
         'receiver_email'     => $user->email,
         'receiver_address'   => $request->receiver_address,
+
         'payment_method'     => $request->payment_method,
+
         'total_price'        => $subtotal, // Giá trị đơn hàng chưa giảm, chưa ship
         'discount_code'      => $discountCode,
         'discount_amount'    => $discountAmount,

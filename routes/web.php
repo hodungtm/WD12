@@ -42,7 +42,11 @@ Route::prefix('admin')->group(function () {
 
 
 Route::prefix('client')->name('client.')->group(function () {
+
+ 
+
     Route::get('/index', [ClientHomeController::class, 'index']);
+
     Route::get('/san-pham', [ListProductClientController::class, 'index'])->name('listproduct');
 
     Route::get('/san-pham/{id}', [ProductDetailController::class, 'show'])->name('product.detail');
@@ -60,7 +64,11 @@ Route::prefix('client')->name('client.')->group(function () {
 
         // Thanh toán
         Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
+
+        Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+
 Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+
         Route::get('/don-hang-thanh-cong/{order}', [CheckoutController::class, 'success'])->name('order.success');
 
     });
@@ -140,7 +148,6 @@ Route::get('admin/audit-logs', [AuditLogController::class, 'index'])->name('admi
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', AdminUserController::class);
     Route::patch('users/{user}/toggle-active', [AdminUserController::class, 'toggleActive'])->name('users.toggle-active');
-    Route::delete('/users/delete-selected', [UserController::class, 'deleteSelected'])->name('users.delete.selected');
 });
 
 // Middleware cho trang overview người dùng
@@ -152,6 +159,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
 // Auth routes
 Auth::routes();
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+
+
 Route::get('user/dashboard', [AccountController::class, 'dashboard'])->name('user.dashboard');
 
 
@@ -180,8 +191,14 @@ Route::prefix('admin')->group(function () {
 });
 
 
+
+// Route::get('/user/dashboard', [UserDashboardController::class, 'index']);
+
+
+
 Route::delete('/products/delete-selected', [ProductsController::class, 'softDeleteSelected'])->name('products.delete.selected');
 
 
 
 // Route::get('/user/dashboard', [UserDashboardController::class, 'index']);
+

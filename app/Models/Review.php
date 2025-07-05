@@ -18,7 +18,6 @@ class Review extends Model
         'so_sao',
         'noi_dung',
         'trang_thai',
-        'ma_san_pham',
     ];
 
     // Quan hệ (sau này)
@@ -27,7 +26,6 @@ class Review extends Model
     //     return $this->belongsTo(User::class, 'ma_nguoi_dung');
     // }
 
-    
     public function product()
     {
         return $this->belongsTo(Products::class, 'product_id');
@@ -36,5 +34,4 @@ class Review extends Model
     {
         return $this->belongsTo(User::class, 'ma_nguoi_dung'); // 'user_id' là khóa ngoại trong bảng reviews
     }
-    
 }

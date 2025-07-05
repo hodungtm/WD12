@@ -15,6 +15,7 @@ use App\Models\ShippingMethod;
 use App\Models\User;
 use App\Models\Size; // Thêm Model Size
 use App\Models\Color; // Thêm Model Color
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -26,6 +27,19 @@ use Illuminate\Validation\ValidationException;
 class OrderController extends Controller
 {
     public function index(Request $request)
+
+{
+    $query = Order::with(['user', 'shippingMethod', 'orderItems']);
+
+    if ($request->has('search') && !empty($request->search)) {
+        $search = $request->search;
+        $query->where('order_code', 'LIKE', '%' . $search . '%');
+    }
+
+    $perPage = $request->input('per_page', 10);  // lấy từ request hoặc mặc định 10
+
+    $orders = $query->latest()->paginate($perPage);
+
     {
         $query = Order::with([
             'user',
@@ -39,9 +53,35 @@ class OrderController extends Controller
             $query->where('order_code', 'LIKE', '%' . $search . '%');
         }
 
+
         // Lấy danh sách đơn hàng mới nhất
         $orders = $query->latest()->get();
 
+    public function show($id)
+    {
+        $order = Order::with([
+            'user',
+            'shippingMethod',
+            'orderItems.product',
+            'orderItems.productVariant.color', // Đảm bảo tải mối quan hệ color
+            'orderItems.productVariant.size',  // Đảm bảo tải mối quan hệ size
+        ])->findOrFail($id);
+
+        return view('admin.orders.show', compact('order'));
+    }
+    public function create()
+    {
+        $users = User::all();
+
+        // Eager load variants + size & color của từng variant
+        $products = Products::with([
+            'variants.size',
+            'variants.color',
+        ])->get();
+
+        $shippingMethods = ShippingMethod::all();
+
+=======
         return view('admin.orders.index', compact('orders'));
     }
 
@@ -68,6 +108,7 @@ class OrderController extends Controller
         ])->get();
 
         $shippingMethods = ShippingMethod::all();
+
 
         $discounts = Discount::where('start_date', '<=', now())
             ->where('end_date', '>=', now())
@@ -151,7 +192,16 @@ class OrderController extends Controller
                     'product_image'   => $product->image ?? $variant->image ?? null,
                     'sku'             => $variant->sku ?? '',
 
+                   
                 ]);
+
+                // Tăng sold cho sản phẩm cha
+                Products::where('id', $product->id)->increment('sold', $quantity);
+
+
+
+                ]);
+
                 $subtotal += $totalPrice;
             }
 
@@ -223,6 +273,16 @@ class OrderController extends Controller
             // 'discount',           // Mã giảm giá (nếu có)
         ])->findOrFail($id);
         $users = User::all(); // Lấy danh sách người dùng
+
+
+        $users = User::all(); // Lấy danh sách người dùng
+
+        // $products = Product::select('id', 'name')->get(); // Nếu dùng khi cập nhật đơn hàng
+
+        $shippingMethods = ShippingMethod::all(); // Lấy tất cả phương thức vận chuyển
+
+        // $discounts = Discount::select('id', 'code', 'discount_type', 'discount_value')->get();
+
 
         // $products = Product::select('id', 'name')->get(); // Nếu dùng khi cập nhật đơn hàng
 

@@ -24,7 +24,7 @@ class ProductDetailController extends Controller
         $productVariants = ProductVariant::where('product_id', $product->id)
             ->with(['size', 'color']) // assuming you've defined relationships
             ->get();
-        return view('Client.Product.productDetail', compact('product', 'reviews', 'comments'));
+        return view('Client.Product.productDetail', compact('product', 'reviews', 'comments', 'productVariants'));
     }
 
     public function submitReview(Request $request, $id)
@@ -32,12 +32,12 @@ class ProductDetailController extends Controller
         $request->validate([
             // 'ten_nguoi_danh_gia' => 'required|string',
             'so_sao' => 'required|integer|min:1|max:5',
-            
+
             'noi_dung' => 'required|string',
         ], [
             // 'ten_nguoi_danh_gia.required' => 'Vui lòng nhập tên',
             'so_sao.required' => 'Vui lòng nhập số sao đánh giá',
-          
+
             'noi_dung.required' => 'Vui lòng nhập nội dung',
         ]);
 
@@ -45,7 +45,7 @@ class ProductDetailController extends Controller
             'product_id' => $id,
             // 'ten_nguoi_danh_gia' => $request->ten_nguoi_danh_gia,
             'so_sao' => $request->so_sao,
-           
+
             'noi_dung' => $request->noi_dung,
         ]);
 

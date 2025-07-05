@@ -1,49 +1,52 @@
-@extends('Admin.Layouts.AdminLayout')
+@extends('admin.layouts.Adminlayout')
 
 @section('main')
+<div class="main-content-inner">
+  <div class="main-content-wrap">
 
-<div class="app-title">
-  <ul class="app-breadcrumb breadcrumb">
-    <li class="breadcrumb-item">Bài viết</li>
-    <li class="breadcrumb-item"><a href="{{ route('posts.edit', $post) }}">Chỉnh sửa bài viết</a></li>
-  </ul>
-</div>
+    <!-- Tiêu đề và breadcrumb -->
+    <div class="flex items-center flex-wrap justify-between gap20 mb-27">
+      <h3>Chỉnh sửa bài viết</h3>
+      <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+        <li><a href="#"><div class="text-tiny">Dashboard</div></a></li>
+        <li><i class="icon-chevron-right"></i></li>
+        <li><a href="{{ route('posts.index') }}"><div class="text-tiny">Bài viết</div></a></li>
+        <li><i class="icon-chevron-right"></i></li>
+        <li><div class="text-tiny">Chỉnh sửa</div></li>
+      </ul>
+    </div>
 
-<div class="row">
-  <div class="col-md-12">
-    <div class="tile">
-      <h3 class="tile-title">Chỉnh sửa bài viết</h3>
+    <!-- Hiển thị lỗi -->
+    @if ($errors->any())
+      <div class="alert alert-danger mb-4">
+        <ul class="mb-0">
+          @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+          @endforeach
+        </ul>
+      </div>
+    @endif
 
-      {{-- Hiển thị lỗi --}}
-      @if ($errors->any())
-        <div class="alert alert-danger">
-          <ul class="mb-0">
-            @foreach ($errors->all() as $error)
-              <li>{{ $error }}</li>
-            @endforeach
-          </ul>
-        </div>
-      @endif
-
-      <form class="row" action="{{ route('posts.update', $post) }}" method="POST" enctype="multipart/form-data">
+    <!-- Form -->
+    <div class="wg-box">
+      <form method="POST" action="{{ route('posts.update', $post) }}" enctype="multipart/form-data" class="grid gap20">
         @csrf
         @method('PUT')
 
-        <div class="form-group col-md-6">
-          <label class="control-label">Tiêu đề</label>
-          <input class="form-control" type="text" name="title" value="{{ old('title', $post->title) }}" required>
+        <div>
+          <label class="body-title mb-2">Tiêu đề bài viết</label>
+          <input type="text" name="title" value="{{ old('title', $post->title) }}" class="form-control">
+          @error('title')
+            <div class="text-danger text-sm mt-1">{{ $message }}</div>
+          @enderror
         </div>
 
-        <div class="form-group col-md-6">
-          <label class="control-label">Trạng thái</label>
-          <select class="form-control" name="status" required>
+        <div>
+          <label class="body-title mb-2">Trạng thái</label>
+          <select name="status" class="form-control">
             <option value="">-- Chọn trạng thái --</option>
             @php
-              $statuses = [
-                  'published' => 'Đã đăng',
-                  'draft' => 'Nháp',
-                  'hidden' => 'Ẩn'
-              ];
+              $statuses = ['published' => 'Đã đăng', 'draft' => 'Nháp', 'hidden' => 'Ẩn'];
             @endphp
             @foreach($statuses as $value => $label)
               <option value="{{ $value }}" {{ old('status', $post->status) == $value ? 'selected' : '' }}>
@@ -51,43 +54,49 @@
               </option>
             @endforeach
           </select>
+          @error('status')
+            <div class="text-danger text-sm mt-1">{{ $message }}</div>
+          @enderror
         </div>
 
-       <div class="form-group col-md-12">
-  <label class="control-label">Nội dung</label>
-  <textarea class="form-control" name="content" id="editor" rows="10" required>{{ old('content', $post->content ?? '') }}</textarea>
-</div>
-
-        <div class="form-group col-md-6">
-          <label class="control-label">Ảnh đại diện</label>
-          <input class="form-control" type="file" name="image">
+        <div>
+          <label class="body-title mb-2">Ảnh đại diện</label>
+          <input type="file" name="image" class="form-control">
           @if ($post->image)
             <div class="mt-2">
-              <img src="{{ asset('storage/' . $post->image) }}" width="150" alt="Ảnh hiện tại" onerror="this.style.display='none'">
+              <img src="{{ asset('storage/' . $post->image) }}" width="150" class="rounded border" alt="Ảnh hiện tại" onerror="this.style.display='none'">
             </div>
           @endif
+          @error('image')
+            <div class="text-danger text-sm mt-1">{{ $message }}</div>
+          @enderror
         </div>
 
-        <div class="form-group col-md-12 mt-3">
-         <button type="submit" class="btn btn-outline-success"><i class="fas fa-save me-1"></i> Cập Nhật</button>
-                            <a href="{{ route('products.index') }}" class="btn btn-outline-danger"><i class="fas fa-times me-1"></i> Hủy bỏ</a>
+        <div>
+          <label class="body-title mb-2">Nội dung bài viết</label>
+          <textarea name="content" id="editor" rows="10" class="form-control">{{ old('content', $post->content ?? '') }}</textarea>
+          @error('content')
+            <div class="text-danger text-sm mt-1">{{ $message }}</div>
+          @enderror
+        </div>
+
+        <div class="flex gap10 mt-4">
+          <button type="submit" class="tf-button">Cập nhật</button>
+          <a href="{{ route('posts.index') }}" class="tf-button style-1">Hủy bỏ</a>
         </div>
       </form>
     </div>
   </div>
 </div>
-
 @endsection
 
 @section('scripts')
-  <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      ClassicEditor
-        .create(document.querySelector('#editor'))
-        .catch(error => {
-          console.error('CKEditor lỗi:', error);
-        });
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<script>
+  ClassicEditor
+    .create(document.querySelector('#editor'))
+    .catch(error => {
+      console.error(error);
     });
-  </script>
+</script>
 @endsection

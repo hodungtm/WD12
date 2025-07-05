@@ -19,7 +19,11 @@
         <div class="container">
             <h3 class="text-center mb-4">Giỏ Hàng Của Bạn</h3>
 
+
+            @if($cartItems->isEmpty())
+
             @if ($cartItems->isEmpty())
+
                 <p class="text-center">Chưa có sản phẩm trong giỏ hàng.</p>
             @else
                 <div class="table-responsive">
@@ -36,10 +40,18 @@
                             </tr>
                         </thead>
                         <tbody>
+
+                            @foreach($cartItems as $item)
+                                @php
+                                    $variant = $item->variant;
+                                    $product = $item->product;
+                                    
+
                             @foreach ($cartItems as $item)
                                 @php
                                     $variant = $item->variant;
                                     $product = $item->product;
+
 
                                     // Ưu tiên ảnh của biến thể → fallback về ảnh sản phẩm
                                     $imagePath = null;
@@ -51,13 +63,21 @@
                                     } else {
                                         $imagePath = 'no-image.jpg'; // fallback ảnh mặc định
                                     }
+
+                                    $price = $variant->price;
+
                                     $price = $variant->price ?? 0; // Nếu variant null → 0
+
                                     $total = $price * $item->quantity;
                                 @endphp
                                 <tr>
                                     <td>
+
+                                        <img src="{{ asset('storage/' . $imagePath) }}" alt="ảnh" width="70" class="img-thumbnail">
+
                                         <img src="{{ asset('storage/' . $imagePath) }}" alt="ảnh" width="70"
                                             class="img-thumbnail">
+
                                     </td>
                                     <td>{{ $product->name }}</td>
                                     <td>
@@ -67,8 +87,13 @@
                                     <td>
                                         <form method="POST" action="{{ route('client.cart.update', $item->id) }}">
                                             @csrf
+
+                                            <input type="number" name="quantity" value="{{ $item->quantity }}" min="1"
+                                                max="{{ $variant->quantity }}" style="width: 70px;">
+
                                             <input type="number" name="quantity" value="{{ $item->quantity }}"
                                                 min="1" max="{{ $variant->quantity ?? 10 }}" style="width: 70px;">
+
                                             <button class="btn btn-sm btn-primary mt-1">Cập nhật</button>
                                         </form>
                                     </td>
@@ -95,4 +120,8 @@
         </div>
     </section>
 
+
 @endsection
+
+@endsection
+

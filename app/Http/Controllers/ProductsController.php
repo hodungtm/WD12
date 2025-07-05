@@ -16,27 +16,19 @@ class ProductsController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Products::with(['category', 'images', 'variants.size', 'variants.color']);
+        $search = $request->input('search');
 
-        // Lọc theo từ khóa
-        if ($request->filled('keyword')) {
-            $keyword = $request->keyword;
-            $query->where(function ($q) use ($keyword) {
-                $q->where('name', 'like', "%$keyword%")
-                  ->orWhereHas('category', function ($q2) use ($keyword) {
-                      $q2->where('ten_danh_muc', 'like', "%$keyword%");
-                  });
-            });
+        $query = Products::with(['category', 'images', 'variants.size', 'variants.color'])
+            ->orderBy('created_at', 'desc');
+
+        if ($search) {
+            $query->where('name', 'like', "%$search%")
+                ->orWhereHas('category', function ($q) use ($search) {
+                    $q->where('name', 'like', "%$search%");
+                });
         }
 
-        // Lọc theo trạng thái
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        // Phân trang
-        $perPage = $request->input('per_page', 10);
-        $products = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
+        $products = $query->paginate(10)->appends($request->query());
 
         return view('admin.products.index', compact('products'));
     }
@@ -143,7 +135,7 @@ class ProductsController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'category_id' => 'required|exists:categories,id',
-            'status' => 'required|in:0,1',
+             'status' => 'required|in:0,1',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'variant_sizes' => 'required|array',
             'variant_colors' => 'required|array',
@@ -152,14 +144,14 @@ class ProductsController extends Controller
             'variant_quantities' => 'required|array',
         ]);
 
-        foreach ($validated['variant_prices'] as $index => $price) {
-            $sale = $validated['variant_sale_prices'][$index];
-            if ($sale > $price) {
-                return redirect()->back()->withInput()->withErrors([
-                    'variant_sale_prices.' . $index => 'Giá sale không được cao hơn giá gốc (biến thể ' . ($index + 1) . ').'
-                ]);
-            }
+         foreach ($validated['variant_prices'] as $index => $price) {
+        $sale = $validated['variant_sale_prices'][$index];
+        if ($sale > $price) {
+            return redirect()->back()->withInput()->withErrors([
+                'variant_sale_prices.' . $index => 'Giá sale không được cao hơn giá gốc (biến thể ' . ($index + 1) . ').'
+            ]);
         }
+    }
 
         $product->update([
             'name' => $validated['name'],
@@ -191,26 +183,27 @@ class ProductsController extends Controller
     }
 
     public function destroy($id)
-    {
-        $product = Products::findOrFail($id);
-
-        if ($product->status == 1) {
-            return redirect()->route('products.index')->with('error', 'Chỉ có thể xóa sản phẩm khi đã xóa mềm!');
-        }
-
-        $product->delete();
-
-        return redirect()->route('products.index')->with('success', 'Xóa sản phẩm thành công!');
+{
+    $product = Products::findOrFail($id);
+     $error = 'Chỉ có thể xóa sản phẩm Khi Đã Xóa Mềm!';
+    if ($product->status == 1) {
+        return redirect()->route('products.index')->with('error', 'Chỉ có thể xóa sản phẩm khi đã xóa mềm!');
     }
 
-    public function softDelete($id)
-    {
-        $product = Products::findOrFail($id);
-        $product->status = 0;
-        $product->save();
+    $product->delete();
 
-        return redirect()->route('products.index')->with('success', 'Xóa mềm Thành Công.');
-    }
+    return redirect()->route('products.index')->with('success', 'Xóa sản phẩm thành công!');
+}
+
+
+      public function softDelete($id)
+{
+    $product = Products::findOrFail($id);
+    $product->status = 0; // Đổi trạng thái sang "đã xóa" hoặc "ẩn"
+    $product->save();
+
+    return redirect()->route('products.index')->with('success', 'Xóa mềm Thành Công.');
+}
 
     public function destroyImage($id)
     {
@@ -223,18 +216,5 @@ class ProductsController extends Controller
         $image->delete();
 
         return back()->with('success', 'Ảnh đã được xóa');
-    }
-
-    public function softDeleteSelected(Request $request)
-    {
-        $ids = $request->input('selected_products');
-
-        if (empty($ids) || !is_array($ids)) {
-            return redirect()->route('products.index')->with('error', 'Vui lòng chọn ít nhất một sản phẩm để xóa.');
-        }
-
-        $updated = Products::whereIn('id', $ids)->update(['status' => 0]);
-
-        return redirect()->route('products.index')->with('success', "Đã xóa mềm {$updated} sản phẩm.");
     }
 }

@@ -10,10 +10,11 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function index(Request $request) 
+    public function index(Request $request)
     {
         $query = User::query();
 
+        // Lọc theo từ khóa tìm kiếm
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
@@ -21,18 +22,15 @@ class UserController extends Controller
             });
         }
 
+        // Lọc theo vai trò
         if ($request->filled('role')) {
-            $query->where('role', strtolower($request->role)); // an toàn, dù URL gửi 'Admin' hay 'admin'
+            $query->where('role', $request->role);
         }
 
-        $users = $query->orderByDesc('id')->paginate(10)->appends($request->query());
+        $users = $query->orderByDesc('id')->paginate(10);
 
         return view('Admin.Users.index', compact('users'));
     }
-
-
-
-
 
     public function show(User $user)
     {
@@ -41,18 +39,18 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        if ($user->role === 'admin' && $user->id !== Auth::id()) {
-            return redirect()->route('admin.users.index')->with('error', 'Bạn chỉ có thể sửa tài khoản admin của chính mình.');
+        // Chỉ cho phép sửa nếu là Admin
+        if ($user->role !== 'admin') {
+            return redirect()->route('admin.users.index')->with('error', 'Không thể chỉnh sửa tài khoản người dùng.');
         }
 
-        return view('Admin.Users.edit', compact('user'));
+        return view('Admin.users.edit', compact('user'));
     }
-
 
     public function update(Request $request, User $user)
     {
-        if ($user->role === 'admin' && $user->id !== Auth::id()) {
-            return redirect()->route('admin.users.index')->with('error', 'Bạn chỉ có thể cập nhật tài khoản admin của chính mình.');
+        if ($user->role !== 'admin') {
+            return redirect()->route('admin.users.index')->with('error', 'Không thể cập nhật tài khoản người dùng.');
         }
 
         $request->validate([
@@ -83,68 +81,33 @@ class UserController extends Controller
 
 
 
-    public function toggleActive(User $user)
-    {
-        // Không được khóa admin nào cả (kể cả chính mình)
-        if ($user->role === 'admin') {
-            return redirect()->back()->with('error', 'Không thể khóa tài khoản admin.');
-        }
-
-        $user->is_active = !$user->is_active;
-        $user->save();
-
-        AuditLog::create([
-            'user_id' => Auth::id(),
-            'action' => 'update',
-            'target_type' => 'User',
-            'target_id' => $user->id,
-            'description' => ($user->is_active ? 'Mở khóa' : 'Khóa') . ' tài khoản: ' . $user->email,
-            'ip_address' => request()->ip(),
-        ]);
-
-        return redirect()->back()->with('success', 'Trạng thái tài khoản đã được cập nhật!');
+   public function toggleActive(User $user)
+{
+    // Không cho phép khóa tài khoản admin
+    if ($user->role === 'admin') {
+        return redirect()->back()->with('error', 'Không thể khóa tài khoản admin.');
     }
+
+    $user->is_active = !$user->is_active;
+    $user->save();
+
+    AuditLog::create([
+        'admin_id' => Auth::id(),
+        'action' => 'update',
+        'target_type' => 'User',
+        'target_id' => $user->id,
+        'description' => ($user->is_active ? 'Mở khóa' : 'Khóa') . ' tài khoản: ' . $user->email,
+        'ip_address' => request()->ip(),
+    ]);
+
+    return redirect()->back()->with('success', 'Trạng thái tài khoản đã được cập nhật!');
+}
 
 
 
     public function destroy(User $user)
     {
-        if ($user->role === 'admin' && $user->id !== Auth::id()) {
-            return redirect()->back()->with('error', 'Bạn chỉ có thể xóa tài khoản admin của chính mình.');
-        }
-
         $user->delete();
-
         return redirect()->route('admin.users.index')->with('success', 'Xóa tài khoản thành công.');
     }
-
-
-    // public function destroyMultiple(Request $request)
-    // {
-    //     $ids = $request->input('selected_users', []);
-    //     if (!empty($ids)) {
-    //         User::whereIn('id', $ids)->delete();
-    //         return redirect()->route('admin.users.index')->with('success', 'Đã xóa các tài khoản được chọn!');
-    //     }
-
-    //     return redirect()->route('admin.users.index')->with('error', 'Không có tài khoản nào được chọn!');
-    // }
-
-    public function deleteSelected(Request $request)
-{
-    $ids = $request->input('selected_users');
-
-    if (!$ids || count($ids) === 0) {
-        return redirect()->back()->with('error', 'Bạn chưa chọn tài khoản nào để xóa.');
-    }
-
-    // Không xóa tài khoản có role là 'admin'
-    $deletedCount = User::whereIn('id', $ids)
-        ->where('role', '!=', 'admin')
-        ->delete();
-
-    return redirect()->route('admin.users.index')
-        ->with('success', "Đã xóa $deletedCount tài khoản đã chọn thành công.");
-}
-
 }
