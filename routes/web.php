@@ -10,6 +10,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuditLogController;
@@ -17,35 +18,54 @@ use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\AttributeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\CommentController;
+
+use App\Http\Controllers\UserDashboardController;
+
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DiscountController;
+
 use App\Http\Controllers\Admin\WishlistController;
+use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\ProductDetailController;
+use App\Http\Controllers\Client\ListProductClientController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
-
-
+use App\Http\Controllers\Client\HomeController as ClientHomeController;
 Route::prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 });
 
 
-Route::get('/', function () {
-    return view('welcome');
-});
-Route::get('/test', function () {
-    return view('client/index');
-});
-Route::get('/test1', function () {
-    return view('Client/Product/productDetail');
-});
+
+
 Route::prefix('client')->name('client.')->group(function () {
+    Route::get('/index', [ClientHomeController::class, 'index']);
+    Route::get('/san-pham', [ListProductClientController::class, 'index'])->name('listproduct');
+
     Route::get('/san-pham/{id}', [ProductDetailController::class, 'show'])->name('product.detail');
     Route::post('/san-pham/{id}/danh-gia', [ProductDetailController::class, 'submitReview'])->name('product.review');
     Route::post('/san-pham/{id}/binh-luan', [ProductDetailController::class, 'submitComment'])->name('product.comment');
+
+  Route::middleware(['auth'])->group(function () {
+        // Giỏ hàng
+        Route::prefix('cart')->name('cart.')->group(function () {
+            Route::get('/', [CartController::class, 'index'])->name('index'); // client.cart.index
+            Route::post('/add/{productId}', [CartController::class, 'addToCart'])->name('add'); // client.cart.add
+            Route::post('/update/{id}', [CartController::class, 'updateQuantity'])->name('update'); // client.cart.update
+            Route::delete('/remove/{id}', [CartController::class, 'remove'])->name('remove'); // client.cart.remove
+        });
+
+        // Thanh toán
+        Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
+Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+        Route::get('/don-hang-thanh-cong/{order}', [CheckoutController::class, 'success'])->name('order.success');
+
+    });
 });
+
 Route::prefix('admin')->group(function () {
     Route::resource('orders', OrderController::class)->names('admin.orders');
 });
@@ -80,7 +100,7 @@ Route::prefix('admin')->name('Admin.')->group(function () {
     Route::get('/comments/trash', [CommentController::class, 'trash'])->name('comments.trash');
     Route::post('/comments/restore/{id}', [CommentController::class, 'restore'])->name('comments.restore');
     Route::delete('/comments/force-delete/{id}', [CommentController::class, 'forceDelete'])->name('comments.forceDelete');
-    Route::get('/comments/{id}/edit', [CommentController::class, 'edit'])->name('comments.edit');
+Route::get('/comments/{id}/edit', [CommentController::class, 'edit'])->name('comments.edit');
     Route::put('/comments/{id}', [CommentController::class, 'update'])->name('comments.update');
     Route::post('/comments/{id}/approve', [CommentController::class, 'approve'])->name('comments.approve');
     Route::get('/comments/{id}', [CommentController::class, 'show'])->name('comments.show');
@@ -131,8 +151,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 // Auth routes
 Auth::routes();
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-    
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('user/dashboard', [AccountController::class, 'dashboard'])->name('user.dashboard');
 
 
 ////// producst/////////////////////////////////////
@@ -158,8 +178,10 @@ Route::prefix('admin')->group(function () {
     Route::put('/catalog/color/{color}', [CatalogController::class, 'updateColor'])->name('catalog.color.update');
     Route::delete('/catalog/color/{color}', [CatalogController::class, 'destroyColor'])->name('catalog.color.destroy');
 });
+
+
 Route::delete('/products/delete-selected', [ProductsController::class, 'softDeleteSelected'])->name('products.delete.selected');
 
 
-////// producst/////////////////////////////////////
 
+// Route::get('/user/dashboard', [UserDashboardController::class, 'index']);

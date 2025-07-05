@@ -20,7 +20,6 @@
                     <tr><th>Mã</th><td>{{ $discount->code }}</td></tr>
                     <tr><th>Mô tả</th><td>{{ $discount->description }}</td></tr>
                     <tr><th>Loại</th><td>{{ ucfirst($discount->type) }}</td></tr>
-                    <tr><th>Giảm theo tiền</th><td>{{ $discount->discount_amount ? number_format($discount->discount_amount) . ' VNĐ' : '-' }}</td></tr>
                     <tr><th>Giảm theo %</th><td>{{ $discount->discount_percent ? $discount->discount_percent . '%' : '-' }}</td></tr>
                     <tr><th>Giá trị giảm tối đa</th><td>{{ $discount->max_discount_amount ? number_format($discount->max_discount_amount) . ' VNĐ' : 'Không giới hạn' }}</td></tr>
                     <tr><th>Đơn hàng tối thiểu</th><td>{{ $discount->min_order_amount ? number_format($discount->min_order_amount) . ' VNĐ' : '-' }}</td></tr>
