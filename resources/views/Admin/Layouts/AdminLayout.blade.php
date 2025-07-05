@@ -221,7 +221,6 @@
                                     </li>
                                 </ul>
                             </div>
-
                             <div class="center-item">
                                 <div class="center-heading">Setting</div>
                                 <ul class="menu-list">

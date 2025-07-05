@@ -10,6 +10,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuditLogController;
@@ -17,36 +18,33 @@ use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\AttributeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\CommentController;
+
+use App\Http\Controllers\UserDashboardController;
+
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DiscountController;
 
-use App\Http\Controllers\Client\CartController;
-
 use App\Http\Controllers\Admin\WishlistController;
-use App\Http\Controllers\AccountController;
-
-use App\Http\Controllers\Client\ProductDetailController;
-use App\Http\Controllers\UserDashboardController;
-use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Client\CheckoutController;
+use App\Http\Controllers\Client\ProductDetailController;
+use App\Http\Controllers\Client\ListProductClientController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Client\HomeController as ClientHomeController;
 Route::prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 });
 
 
-Route::get('/', [ClientHomeController::class, 'index']);
-// Xong home
-Route::get('/test', function () {
-    return view('client/index');
-});
-// Route::get('/test1', function () {
-//     return view('Client/Product/productDetail');
-// });
+
+
 Route::prefix('client')->name('client.')->group(function () {
+    Route::get('/index', [ClientHomeController::class, 'index']);
+    Route::get('/san-pham', [ListProductClientController::class, 'index'])->name('listproduct');
+
     Route::get('/san-pham/{id}', [ProductDetailController::class, 'show'])->name('product.detail');
     Route::post('/san-pham/{id}/danh-gia', [ProductDetailController::class, 'submitReview'])->name('product.review');
     Route::post('/san-pham/{id}/binh-luan', [ProductDetailController::class, 'submitComment'])->name('product.comment');
@@ -152,7 +150,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 // Auth routes
 Auth::routes();
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('user/dashboard', [AccountController::class, 'dashboard'])->name('user.dashboard');
 
