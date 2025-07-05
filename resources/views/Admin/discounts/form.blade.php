@@ -68,27 +68,27 @@
     <div class="form-group col-md-12">
     <label><strong>Loại giảm giá</strong> <span class="text-danger">*</span></label>
     <div>
-        {{-- <div class="form-check form-check-inline">
+        <div class="form-check form-check-inline">
            <input class="form-check-input" type="radio" name="discount_type" id="type_amount" value="amount"
                 {{ old('discount_type', 'amount') == 'amount' ? 'checked' : '' }}>
             <label class="form-check-label" for="type_amount">Giảm theo tiền</label>
-        </div> --}}
+        </div>
         <div class="form-check form-check-inline">
             <input class="form-check-input" type="radio" name="discount_type" id="type_percent" value="percent"
-                {{ old('discount_type', $discount->discount_type ?? 'percent') == 'percent' ? 'checked' : '' }}>
+                {{ old('discount_percent', $discount->discount_percent ?? '') ? 'checked' : '' }}>
             <label class="form-check-label" for="type_percent">Giảm theo phần trăm</label>
         </div>
     </div>
 </div>
 
-{{-- <div class="form-group col-md-6" id="amount_input" style="display: none;">
+<div class="form-group col-md-6" id="amount_input" style="display: none;">
     <label>Giảm theo tiền (VNĐ)</label>
     <input type="number" name="discount_amount" step="1000" min="0"
         class="form-control @error('discount_amount') is-invalid @enderror"
         value="{{ old('discount_amount', $discount->discount_amount ?? '') }}"
         placeholder="Nhập số tiền giảm">
     @error('discount_amount') <div class="invalid-feedback">{{ $message }}</div> @enderror
-</div> --}}
+</div>
 
 <div class="form-group col-md-6" id="percent_input" style="display: none;">
     <label>Giảm theo phần trăm (%)</label>

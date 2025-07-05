@@ -33,17 +33,19 @@ class Order_items extends Model
         return $this->belongsTo(Order::class);
     }
 
-    
-     public function product()
-    {
-        return $this->belongsTo(Products::class);
-    }
-
     /**
-     * Biến thể sản phẩm liên kết
+     * Mỗi OrderItem liên kết với một sản phẩm
      */
-    public function productVariant()
-    {
-        return $this->belongsTo(ProductVariant::class);
-    }
+    // public function product()
+    // {
+    //     return $this->belongsTo(Product::class);
+    // }
+
+    // /**
+    //  * Biến thể sản phẩm liên kết
+    //  */
+    // public function productVariant()
+    // {
+    //     return $this->belongsTo(ProductVariant::class);
+    // }
 }

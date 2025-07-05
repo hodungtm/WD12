@@ -13,9 +13,8 @@ return new class extends Migration
 
             // Khóa ngoại
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
-            $table->foreignId('product_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('product_variant_id')->nullable()->constrained()->nullOnDelete();
-
+            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->foreignId('product_variant_id')->constrained()->onDelete('cascade');
 
             // Giá & số lượng
             $table->integer('quantity');
