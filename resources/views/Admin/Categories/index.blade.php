@@ -1,123 +1,110 @@
-@extends('admin.layouts.AdminLayout')
-
+@extends('Admin.Layouts.AdminLayout')
 @section('main')
 
-  <div class="main-content-inner">
-    <div class="main-content-wrap">
-    <div class="flex items-center flex-wrap justify-between gap20 mb-27">
-      <h3>Danh sách danh mục</h3>
-      <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-      <li><a href="#">
-        <div class="text-tiny">Dashboard</div>
-        </a></li>
-      <li><i class="icon-chevron-right"></i></li>
-      <li><a href="#">
-        <div class="text-tiny">Danh mục</div>
-        </a></li>
-      <li><i class="icon-chevron-right"></i></li>
-      <li>
-        <div class="text-tiny">Danh sách danh mục</div>
-      </li>
-      </ul>
-    </div>
-
-    <div class="wg-box">
-      <div class="flex items-center justify-between gap10 flex-wrap">
-      <div class="wg-filter flex-grow">
-        <form action="{{ route('Admin.categories.index') }}" method="GET" class="form-search flex items-center gap10">
-        <div class="select">
-          <select name="tinh_trang" onchange="this.form.submit()">
-          <option value=""> Tình trạng </option>
-          <option value="1" {{ request('tinh_trang') == '1' ? 'selected' : '' }}>Hiện</option>
-          <option value="0" {{ request('tinh_trang') == '0' ? 'selected' : '' }}>Ẩn</option>
-          </select>
-        </div>
-        <div class="select">
-          <select name="sort" onchange="this.form.submit()">
-          <option value=""> Sắp xếp </option>
-          <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Mới nhất</option>
-          <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Cũ nhất</option>
-          </select>
-        </div>
-        <fieldset class="name">
-          <input type="text" name="keyword" placeholder="Tìm kiếm..." value="{{ request('keyword') }}">
-        </fieldset>
-        <div class="button-submit">
-          <button type="submit"><i class="icon-search"></i></button>
-        </div>
-        </form>
-      </div>
-      <div class="flex gap10">
-        <a href="{{ route('Admin.categories.trash') }}" class="tf-button style-1">
-        <i class="icon-trash"></i> Thùng rác
-        </a>
-        <a class="tf-button style-1 w208" href="{{ route('Admin.categories.create') }}">
-        <i class="icon-plus"></i> Thêm mới
-        </a>
-      </div>
-      </div>
-
-      <div class="wg-table table-all-category mt-3">
-      <ul class="table-title flex mb-14">
-        <li class="col-name">
-        <div class="body-title">Tên danh mục</div>
-        </li>
-        <li class="col-image">
-        <div class="body-title">Ảnh</div>
-        </li>
-        <li class="col-status">
-        <div class="body-title">Tình trạng</div>
-        </li>
-        <li class="col-description">
-        <div class="body-title">Mô tả</div>
-        </li>
-        <li class="col-action">
-        <div class="body-title">Hành động</div>
-        </li>
-      </ul>
-
-      <ul class="flex flex-column">
-        @foreach($categories as $cat)
-      <li class="product-item flex mb-10">
-      <div class="col-name">
-        <a class="body-title-2">{{ $cat->ten_danh_muc }}</a>
-      </div>
-      <div class="col-image">
-        @if($cat->anh)
-      <img src="{{ asset('storage/' . $cat->anh) }}" alt="" style="max-width: 80px; max-height: 80px;">
-      @else
-      <span class="text-muted">Không có ảnh</span>
-      @endif
-      </div>
-      <div class="col-status body-text">{{ $cat->tinh_trang ? 'Hiện' : 'Ẩn' }}</div>
-      <div class="col-description body-text">{{ $cat->mo_ta }}</div>
-      <div class="col-action list-icon-function">
-        <a href="{{ route('Admin.categories.show', $cat->id) }}" class="item eye" title="Xem"><i
-        class="icon-eye"></i></a>
-        <a href="{{ route('Admin.categories.edit', $cat->id) }}" class="item edit" title="Sửa"><i
-        class="icon-edit-3"></i></a>
-        <form action="{{ route('Admin.categories.destroy', $cat->id) }}" method="POST" class="d-inline"
-        onsubmit="return confirm('Bạn có chắc muốn xóa?');">
-        @csrf
-        @method('DELETE')
-        <button type="submit" class="item trash" title="Xóa" style="background: none; border: none;">
-        <i class="icon-trash-2"></i>
-        </button>
-        </form>
-      </div>
-      </li>
-      @endforeach
-      </ul>
-
-      </div>
-
-      <div class="divider mt-3"></div>
-      <div class="flex items-center justify-between flex-wrap gap10">
-      <div class="text-tiny">Tổng: {{ $categories->total() }} danh mục</div>
-      {{ $categories->links('pagination::bootstrap-5') }}
-      </div>
-    </div>
-    </div>
+<main class="app-content">
+  <div class="app-title">
+    <ul class="app-breadcrumb breadcrumb side">
+      <li class="breadcrumb-item active"><a href="#"><b>Danh sách danh mục</b></a></li>
+    </ul>
+    <div id="clock"></div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="tile">
+        <div class="tile-body">
+          <div class="row element-button">
+            <div class="col-sm-2">
+              <a class="btn btn-add btn-sm" href="{{ route('Admin.categories.create') }}" title="Thêm">
+                <i class="fas fa-plus"></i> Tạo mới danh mục
+              </a>
+              <a href="{{ route('Admin.categories.trash') }}" class="btn btn-warning">
+                <i class="fas fa-trash-restore"></i> Thùng rác
+              </a>
+              
+            </div>
+            
+          </div>
+          <form method="GET" action="{{ route('Admin.categories.index') }}" class="row g-3 align-items-center mb-3">
+            <div class="col-auto">
+    <label class="btn btn-primary">
+      <i class="fas fa-filter"></i> Lọc
+    </label>
   </div>
 
-@endsection
+            <div class="col-auto">
+              <select name="tinh_trang" class="form-control" onchange="this.form.submit()">
+                <option value="">-- Tất cả tình trạng --</option>
+                <option value="1" {{ request('tinh_trang') == '1' ? 'selected' : '' }}>Hoạt động</option>
+                <option value="0" {{ request('tinh_trang') == '0' ? 'selected' : '' }}>Không hoạt động</option>
+              </select>
+            </div>
+
+            <div class="col-auto">
+              <select name="sort" class="form-control" onchange="this.form.submit()">
+                <option value="">-- Sắp xếp theo --</option>
+                <option value="desc" {{ request('sort') == 'desc' ? 'selected' : '' }}>Mới nhất</option>
+                <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Cũ nhất</option>
+              </select>
+            </div>
+
+            
+          </form>
+          <form method="GET" action="{{ route('Admin.categories.index') }}" class="input-group mb-3"
+            style="max-width: 300px;">
+            <input type="text" name="keyword" placeholder="Tìm kiếm..." value="{{ $search ?? '' }}" class="form-control"
+              aria-label="Tìm kiếm">
+            <button class="btn btn-outline" type="submit" style="height: calc(2.7rem + 2px);">
+              <i class="bi bi-search"></i>
+            </button>
+          </form>
+
+          <table class="table table-hover table-bordered" id="sampleTable">
+            <thead>
+              <tr>
+                <th width="10"><input type="checkbox" id="all"></th>
+                <th>Tên danh mục</th>
+                <th>Ảnh</th>
+                <th>Tình trạng</th>
+                <th>Mô tả</th> {{-- Cột mô tả mới --}}
+                <th>Chức năng</th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach($categories as $cat)
+            <tr>
+            <td>{{ $cat->id }}</td>
+            <td>{{ $cat->ten_danh_muc }}</td>
+            <td>
+              @if($cat->anh)
+          <img src="{{ asset('storage/' . $cat->anh) }}" width="80" alt="Ảnh danh mục">
+          @else
+          Không có ảnh
+          @endif
+            </td>
+            <td>{{ $cat->tinh_trang ? 'Hiện' : 'Ẩn' }}</td>
+            <td>{{ $cat->mo_ta }}</td> {{-- Hiển thị mô tả --}}
+            <td>
+              <a class="btn btn-primary btn-sm edit" href="{{ route('Admin.categories.edit', $cat->id) }}">
+              <i class="fas fa-edit"></i>
+              </a>
+              <form action="{{ route('Admin.categories.destroy', $cat->id) }}" method="POST" style="display:inline"
+              onsubmit="return confirm('Bạn có chắc muốn xóa?')">
+              @csrf
+              @method('DELETE')
+              <button type="submit" class="btn btn-primary btn-sm trash">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+              </form>
+              <a href="{{ route('Admin.categories.show', $cat->id) }}" class="btn btn-info btn-sm"> <i
+                class="fas fa-eye"></i></a>
+            </td>
+            </tr>
+        @endforeach
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

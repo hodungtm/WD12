@@ -171,11 +171,11 @@
                             <div class="form-group col-md-12">
     <label><strong>Loại giảm giá</strong> <span class="text-danger">*</span></label>
     <div>
-        {{-- <div class="form-check form-check-inline">
+        <div class="form-check form-check-inline">
             <input class="form-check-input" type="radio" name="discount_type" id="type_amount" value="amount"
                 {{ old('discount_type', isset($discount) && $discount->discount_amount ? 'amount' : '') == 'amount' ? 'checked' : '' }}>
             <label class="form-check-label" for="type_amount">Giảm theo tiền</label>
-        </div> --}}
+        </div>
         <div class="form-check form-check-inline">
             <input class="form-check-input" type="radio" name="discount_type" id="type_percent" value="percent"
                 {{ old('discount_type', isset($discount) && $discount->discount_percent ? 'percent' : '') == 'percent' ? 'checked' : '' }}>

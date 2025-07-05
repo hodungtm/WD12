@@ -1,62 +1,55 @@
 @extends('Admin.Layouts.AdminLayout')
-
 @section('main')
-<div class="main-content-inner">
-  <div class="main-content-wrap">
 
-    <!-- Tiêu đề + breadcrumb -->
-    <div class="flex items-center flex-wrap justify-between gap20 mb-27">
-      <h3>Sửa đánh giá #{{ $review->id }}</h3>
-      <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-        <li><a href="#"><div class="text-tiny">Dashboard</div></a></li>
-        <li><i class="icon-chevron-right"></i></li>
-        <li><a href="{{ route('Admin.reviews.index') }}"><div class="text-tiny">Đánh giá</div></a></li>
-        <li><i class="icon-chevron-right"></i></li>
-        <li><div class="text-tiny">Sửa đánh giá</div></li>
-      </ul>
+<main class="app-content">
+  <div class="app-title">
+    <ul class="app-breadcrumb breadcrumb side">
+      <li class="breadcrumb-item active"><a href="#"><b>Sửa Đánh giá {{ $review->id }}</b></a></li>
+    </ul>
+    <div>
+      <a href="{{ route('Admin.reviews.index') }}" class="btn btn-outline-primary btn-sm">
+        ← Quay lại danh sách đánh giá
+      </a>
     </div>
+  </div>
 
-    <!-- Form chỉnh sửa -->
-    <div class="wg-box">
-      <form action="{{ route('Admin.reviews.update', $review->id) }}" method="POST" class="grid gap-4">
+  <div class="tile">
+    <div class="tile-body">
+      <form action="{{ route('Admin.reviews.update', $review->id) }}" method="POST">
         @csrf
         @method('PUT')
 
-        <fieldset class="mb-3">
-          <div class="body-title mb-10">Số sao (1-5)</div>
-          <input type="number" name="so_sao" class="form-control" min="1" max="5"
-            value="{{ old('so_sao', $review->so_sao) }}">
+        <div class="mb-3">
+          <label for="so_sao" class="form-label">Số sao (1-5)</label>
+          <input type="number" name="so_sao" id="so_sao" value="{{ old('so_sao', $review->so_sao) }}" class="form-control" min="1" max="5">
           @error('so_sao')
-            <div class="text-danger mt-1">{{ $message }}</div>
+            <div style="color: red;">{{ $message }}</div>
           @enderror
-        </fieldset>
+        </div>
 
-        <fieldset class="mb-3">
-          <div class="body-title mb-10">Nội dung đánh giá</div>
-          <textarea name="noi_dung" class="form-control" rows="4">{{ old('noi_dung', $review->noi_dung) }}</textarea>
+        <div class="mb-3">
+          <label for="noi_dung" class="form-label">Nội dung đánh giá</label>
+          <textarea name="noi_dung" id="noi_dung" class="form-control" rows="5">{{ old('noi_dung', $review->noi_dung) }}</textarea>
           @error('noi_dung')
-            <div class="text-danger mt-1">{{ $message }}</div>
+            <div style="color: red;">{{ $message }}</div>
           @enderror
-        </fieldset>
+        </div>
 
-        <fieldset class="mb-3">
-          <div class="body-title mb-10">Trạng thái hiển thị</div>
-          <select name="trang_thai" class="form-select">
+        <div class="form-group mb-3">
+          <label for="trang_thai" class="form-label">Trạng thái hiển thị</label>
+          <select name="trang_thai" id="trang_thai" class="form-control @error('trang_thai') is-invalid @enderror">
             <option value="0" {{ old('trang_thai', $review->trang_thai) == 0 ? 'selected' : '' }}>Ẩn</option>
             <option value="1" {{ old('trang_thai', $review->trang_thai) == 1 ? 'selected' : '' }}>Hiển thị</option>
           </select>
           @error('trang_thai')
-            <div class="text-danger mt-1">{{ $message }}</div>
+            <div style="color: red;">{{ $message }}</div>
           @enderror
-        </fieldset>
-
-        <div class="cols gap10 mt-4">
-          <button type="submit" class="tf-button w-full">Cập nhật</button>
-          <a href="{{ route('Admin.reviews.index') }}" class="tf-button style-1 w-full">Hủy</a>
         </div>
+
+        <button type="submit" class="btn btn-primary me-2">Cập nhật</button>
+        <a href="{{ route('Admin.reviews.index') }}" class="btn btn-secondary">Hủy</a>
       </form>
     </div>
-
   </div>
-</div>
-@endsection
+</main>
+

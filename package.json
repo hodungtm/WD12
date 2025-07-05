@@ -1,5 +1,6 @@
 {
     "private": true,
+    "type": "module",
     "scripts": {
         "build": "vite build",
         "dev": "vite"
@@ -15,7 +16,7 @@
         "laravel-vite-plugin": "^1.2.0",
         "postcss": "^8.5.5",
         "sass": "^1.56.1",
-        "tailwindcss": "^4.1.10",
+        "tailwindcss": "^4.1.11",
         "vite": "^6.2.4"
     },
     "dependencies": {

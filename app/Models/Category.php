@@ -22,7 +22,7 @@ class Category extends Model
     ];
 
     // Tạo mối qua hệ với bảng product (1 - N)
-    public function products()
+    public function product()
     {
         return $this->hasMany(Products::class, 'category_id');
     }
