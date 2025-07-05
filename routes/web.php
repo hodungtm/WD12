@@ -120,6 +120,7 @@ Route::get('admin/audit-logs', [AuditLogController::class, 'index'])->name('admi
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', AdminUserController::class);
     Route::patch('users/{user}/toggle-active', [AdminUserController::class, 'toggleActive'])->name('users.toggle-active');
+    Route::delete('/users/delete-selected', [UserController::class, 'deleteSelected'])->name('users.delete.selected');
 });
 
 // Middleware cho trang overview người dùng
