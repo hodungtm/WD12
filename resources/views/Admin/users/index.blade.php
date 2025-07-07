@@ -150,7 +150,8 @@
                                             <span class="badge bg-danger">Bị khóa</span>
                                         @endif
                                     </td>
-                                    <td>{{ $user->created_at->format('d/m/Y H:i') }}</td>
+                                <td>{{ optional($user->created_at)->format('d/m/Y H:i') }}</td>
+
                                     <td>
 
                                         <!-- Xem chi tiết -->

@@ -1,108 +1,118 @@
 @extends('Admin.Layouts.AdminLayout')
 @section('main')
 
-<main class="app-content">
-    <div class="app-title">
-        <ul class="app-breadcrumb breadcrumb side">
-            <li class="breadcrumb-item active"><a href="#"><b>Quản lý Bình luận</b></a></li>
-        </ul>
-        <div id="clock"></div>
+<div class="main-content-inner">
+  <div class="main-content-wrap">
+
+    <!-- Tiêu đề + breadcrumb -->
+    <div class="flex items-center flex-wrap justify-between gap20 mb-27">
+      <h3>Quản lý bình luận</h3>
+      <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+        <li><a href="#"><div class="text-tiny">Dashboard</div></a></li>
+        <li><i class="icon-chevron-right"></i></li>
+        <li><div class="text-tiny">Bình luận</div></li>
+      </ul>
     </div>
 
+    <!-- Thông báo -->
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+      <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="tile">
-                <div class="tile-body">
-                    <div class="row element-button">
-                        {{-- <div class="col-sm-2">
-                            <a href="{{ route('Admin.comments.trash') }}" class="btn btn-warning">
-                                <i class="fas fa-trash-restore"></i> Thùng rác
-                            </a>
-                        </div> --}}
-                    </div>
+    <!-- Bộ lọc -->
+    <form method="GET" action="{{ route('Admin.comments.index') }}" class="flex flex-wrap gap-3 mb-4 align-items-center">
+      <input type="text" name="keyword" class="form-control" placeholder="Tìm sản phẩm, tác giả..."
+        value="{{ request('keyword') }}" style="min-width: 200px; max-width: 300px;">
 
-                    <form method="GET" action="{{ route('Admin.comments.index') }}" class="d-flex mb-3"
-                        style="max-width: 600px;">
-                        <input type="text" name="keyword" class="form-control me-2" placeholder="Tìm kiếm sản phẩm"
-                            value="{{ request('keyword') }}" aria-label="Tìm kiếm sản phẩm">
+      <select name="trang_thai" class="form-select" style="width: 150px;">
+        <option value="">Trạng thái </option>
+        <option value="1" {{ request('trang_thai') === '1' ? 'selected' : '' }}>Đã duyệt</option>
+        <option value="0" {{ request('trang_thai') === '0' ? 'selected' : '' }}>Chưa duyệt</option>
+      </select>
 
-                        <select name="trang_thai" class="form-control me-2" style="width: 150px;">
-                            <option value="">-- Trạng thái --</option>
-                            <option value="1" {{ request('trang_thai') === '1' ? 'selected' : '' }}>Đã duyệt</option>
-                            <option value="0" {{ request('trang_thai') === '0' ? 'selected' : '' }}>Chưa duyệt</option>
-                        </select>
+      <select name="sort" class="form-select " style="width: 150px;">
+        <option value="desc" {{ request('sort') === 'desc' ? 'selected' : '' }}>Mới nhất</option>
+        <option value="asc" {{ request('sort') === 'asc' ? 'selected' : '' }}>Cũ nhất</option>
+      </select>
 
-                        <select name="sort" class="form-control me-2" style="width: 150px;">
-                            <option value="desc" {{ request('sort') === 'desc' ? 'selected' : '' }}>Mới nhất</option>
-                            <option value="asc" {{ request('sort') === 'asc' ? 'selected' : '' }}>Cũ nhất</option>
-                        </select>
+      <button class="tf-button style-1" type="submit">
+        <i class="icon-search me-1"></i> Tìm kiếm
+      </button>
+    </form>
 
-                        <button class="btn btn-outline" type="submit" style="height: calc(2.7rem + 2px);">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </form>
+    <!-- Danh sách bình luận -->
+    <!-- Danh sách bình luận -->
+    <div class="wg-box">
+      <div class="wg-table table-all-user">
 
+        <!-- Tiêu đề bảng -->
+        <ul class="table-title flex gap20 mb-14">
+          <li class="col-id"><div class="body-title">ID</div></li>
+          <li class="col-product"><div class="body-title">Sản phẩm</div></li>
+          <li class="col-author"><div class="body-title">Tác giả</div></li>
+          <li class="col-content"><div class="body-title">Nội dung</div></li>
+          <li class="col-status"><div class="body-title">Trạng thái</div></li>
+          <li class="col-date"><div class="body-title">Ngày tạo</div></li>
+          <li class="col-action"><div class="body-title">Hành động</div></li>
+        </ul>
 
-                    <table class="table table-hover table-bordered" id="sampleTable">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Sản phẩm</th>
-                                <th>Tác giả</th>
-                                <th>Nội dung</th>
-                                <th>Trạng thái</th>
-                                <th>Ngày tạo</th>
-                                <th>Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($comments as $comment)
-                                <tr>
-                                    <td>{{ $comment->id }}</td>
-                                    <td>{{ $comment->product ? $comment->product->name : '[Sản phẩm đã xóa]' }}</td>
-                                    <td>{{ $comment->tac_gia }}</td>
-                                    <td>{{ $comment->noi_dung }}</td>
-                                    <td>
-                                        @if(!$comment->trang_thai)
-                                            <form method="POST" action="{{ route('Admin.comments.approve', $comment->id) }}">
-                                                @csrf
-                                                <input type="hidden" name="keyword" value="{{ request('keyword') }}">
-                                                <input type="hidden" name="page" value="{{ request('page') }}">
-                                                <button type="submit" class="btn btn-success btn-sm">Duyệt</button>
-                                            </form>
-                                        @else
-                                            <span class="badge bg-success">Đã duyệt</span>
-                                        @endif
-                                    </td>
-                                    <td>{{ $comment->created_at->format('d/m/Y') }}</td>
-                                    <td>
-                                        <a href="{{ route('Admin.comments.edit', $comment->id) }}"
-                                            class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
-                                        {{-- <form method="POST" action="{{ route('Admin.comments.destroy', $comment->id) }}"
-                                            style="display:inline" onsubmit="return confirm('Bạn có chắc muốn xóa?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm"><i
-                                                    class="fas fa-trash-alt"></i></button>
-                                        </form> --}}
-                                        <a href="{{ route('Admin.comments.show', $comment->id) }}"
-                                            class="btn btn-info btn-sm">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+        @forelse ($comments as $comment)
+        <ul class="user-item flex gap20 mb-2">
+          <li class="col-id">{{ $comment->id }}</li>
+          <li class="col-product">{{ $comment->product?->name ?? '[Sản phẩm đã xóa]' }}</li>
+          <li class="col-author">{{ $comment->tac_gia }}</li>
+          <li class="col-content">{{ \Illuminate\Support\Str::limit($comment->noi_dung, 40) }}</li>
+          <li class="col-status">
+            @if(!$comment->trang_thai)
+              <form method="POST" action="{{ route('Admin.comments.approve', $comment->id) }}">
+                @csrf
+                <input type="hidden" name="keyword" value="{{ request('keyword') }}">
+                <input type="hidden" name="page" value="{{ request('page') }}">
+                <button type="submit" class="tf-button style-2 small">Duyệt</button>
+              </form>
+            @else
+              <span class="badge bg-success">Đã duyệt</span>
+            @endif
+          </li>
+          <li class="col-date">{{ $comment->created_at->format('d/m/Y') }}</li>
+          <li class="col-action list-icon-function">
+            <a href="{{ route('Admin.comments.show', $comment->id) }}" class="item eye" title="Xem"><i class="icon-eye"></i></a>
+            <a href="{{ route('Admin.comments.edit', $comment->id) }}" class="item edit" title="Sửa"><i class="icon-edit-3"></i></a>
+          </li>
+        </ul>
+        @empty
+          <div class="text-muted px-3">Không có bình luận nào.</div>
+        @endforelse
+      </div>
 
-                    {{ $comments->links('pagination::bootstrap-4') }}
-
-                </div>
-            </div>
+      <!-- Phân trang -->
+      <div class="divider"></div>
+      <div class="flex justify-between align-items-center mt-3">
+        <div class="text-tiny">Tổng: {{ $comments->total() }} bình luận</div>
+        <div>
+          {{ $comments->links('pagination::bootstrap-4') }}
         </div>
+      </div>
     </div>
-</main>
+  </div>
+</div>
+
+<!-- ✅ CSS fix lệch cột -->
+<style>
+  .table-title li,
+  .user-item li {
+    display: flex;
+    align-items: center;
+    padding: 6px 5px;
+  }
+
+  .col-id      { flex: 0.5; min-width: 40px; }
+  .col-product { flex: 1.8; min-width: 140px; }
+  .col-author  { flex: 1.5; min-width: 120px; }
+  .col-content { flex: 2.5; min-width: 200px; }
+  .col-status  { flex: 1.2; min-width: 100px; }
+  .col-date    { flex: 1.2; min-width: 100px; }
+  .col-action  { flex: 1.2; min-width: 120px; display: flex; gap: 10px; }
+</style>
+
+@endsection
