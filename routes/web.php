@@ -164,10 +164,12 @@ Route::prefix('admin')->group(function () {
     Route::post('/catalog/color/store', [CatalogController::class, 'storeColor'])->name('catalog.color.store');
     Route::put('/catalog/color/{color}', [CatalogController::class, 'updateColor'])->name('catalog.color.update');
     Route::delete('/catalog/color/{color}', [CatalogController::class, 'destroyColor'])->name('catalog.color.destroy');
-    
+
 });
 
 Route::get('/search', [App\Http\Controllers\Client\ListProductClientController::class, 'index'])->name('client.search');
+
+Route::delete('/discounts/bulk-delete', [DiscountController::class, 'bulkDelete'])->name('admin.discounts.bulkDelete');
 
 
 

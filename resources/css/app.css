@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.custom-form-lg label,
+.custom-form-lg input,
+.custom-form-lg textarea,
+.custom-form-lg select {
+    font-size: 1.05rem;
+}
+
+.custom-form-lg small {
+    font-size: 0.95rem;
+}
