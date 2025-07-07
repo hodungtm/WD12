@@ -38,9 +38,32 @@
     <link rel="stylesheet" href="{{ asset('assets/css/demo27.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendor/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendor/simple-line-icons/css/simple-line-icons.min.css') }}">
+    <style>
+    /* Menu ngang chỉ 1 dòng, tràn thì cuộn ngang, chuẩn e-commerce */
+    .header .main-nav .menu {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: thin;
+        scrollbar-color: #ccc #f8f9fa;
+    }
+    .header .main-nav .menu::-webkit-scrollbar {
+        height: 6px;
+        background: #f8f9fa;
+    }
+    .header .main-nav .menu::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 3px;
+    }
+    .header .main-nav .menu li {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+    </style>
 </head>
 
-<body>
+<body class="@yield('body-class')">
     <div class="page-wrapper">
         <header class="header">
             <div class="header-top">
@@ -115,75 +138,12 @@
                                 </li>
                                 <li>
                                     <a href="demo27-product.html">Sản phẩm</a>
-                                    <div class="megamenu megamenu-fixed-width">
-                                        <div class="row">
-                                            <div class="col-lg-4">
-                                                <a href="#" class="nolink">PRODUCT PAGES</a>
-                                                <ul class="submenu">
-                                                    <li><a href="demo27-product.html">SIMPLE PRODUCT</a></li>
-                                                    <li><a href="product-variable.html">VARIABLE PRODUCT</a></li>
-                                                    <li><a href="demo27-product.html">SALE PRODUCT</a></li>
-                                                    <li><a href="demo27-product.html">FEATURED & ON SALE</a></li>
-                                                    <li><a href="product-custom-tab.html">WITH CUSTOM TAB</a></li>
-                                                    <li><a href="product-sidebar-left.html">WITH LEFT SIDEBAR</a></li>
-                                                    <li><a href="product-sidebar-right.html">WITH RIGHT SIDEBAR</a></li>
-                                                    <li><a href="product-addcart-sticky.html">ADD CART STICKY</a></li>
-                                                </ul>
-                                            </div><!-- End .col-lg-4 -->
-
-                                            <div class="col-lg-4">
-                                                <a href="#" class="nolink">PRODUCT LAYOUTS</a>
-                                                <ul class="submenu">
-                                                    <li><a href="product-extended-layout.html">EXTENDED LAYOUT</a></li>
-                                                    <li><a href="product-grid-layout.html">GRID IMAGE</a></li>
-                                                    <li><a href="product-full-width.html">FULL WIDTH LAYOUT</a></li>
-                                                    <li><a href="product-sticky-info.html">STICKY INFO</a></li>
-                                                    <li><a href="product-sticky-both.html">LEFT & RIGHT STICKY</a></li>
-                                                    <li><a href="product-transparent-image.html">TRANSPARENT IMAGE</a>
-                                                    </li>
-                                                    <li><a href="product-center-vertical.html">CENTER VERTICAL</a></li>
-                                                    <li><a href="#">BUILD YOUR OWN</a></li>
-                                                </ul>
-                                            </div><!-- End .col-lg-4 -->
-
-                                            <div class="col-lg-4 p-0">
-                                                <div class="menu-banner menu-banner-2">
-                                                    <figure>
-                                                        <img src="{{ asset('assets/images/menu-banner-1.jpg') }}" alt="Menu banner"
-                                                            class="product-promo" width="380" height="790">
-                                                    </figure>
-                                                    <i>OFF</i>
-                                                    <div class="banner-content">
-                                                        <h4>
-                                                            <span class="">UP TO</span><br />
-                                                            <b class="">50%</b>
-                                                        </h4>
-                                                    </div>
-                                                    <a href="demo27-shop.html" class="btn btn-sm btn-dark">SHOP NOW</a>
-                                                </div>
-                                            </div><!-- End .col-lg-4 -->
-                                        </div><!-- End .row -->
-                                    </div><!-- End .megamenu -->
+                                    
                                 </li>
                                 <li class="d-none d-xxl-block"><a href="blog.html">Tin tức</a></li>
                                 <li>
                                     <a href="#">Trang</a>
-                                    <ul>
-                                        <li><a href="wishlist.html">Yêu thích</a></li>
-                                        <li><a href="cart.html">Giỏ hàng</a></li>
-                                        <li><a href="checkout.html">Thanh toán</a></li>
-                                        <li><a href="dashboard.html">Bảng điều khiển</a></li>
-                                        <li><a href="about.html">Về chúng tôi</a></li>
-                                        <li><a href="#">Tin tức
-                                            <ul>
-                                                <li><a href="blog.html">Tin tức</a></li>
-                                                <li><a href="single.html">Bài viết</a></li>
-                                            </ul>
-                                        </a></li>
-                                        <li><a href="contact.html">Liên hệ</a></li>
-                                        <li><a href="login.html">Đăng nhập</a></li>
-                                        <li><a href="forgot-password.html">Quên mật khẩu</a></li>
-                                    </ul>
+                                    
                                 </li>
                                
                             </ul>
@@ -194,29 +154,18 @@
                         <div
                             class="header-icon header-search header-search-inline header-search-category w-lg-max text-right d-none d-sm-block">
                             <a href="#" class="search-toggle" role="button"><i class="icon-magnifier"></i></a>
-                            <form action=" #" method="get">
+                            <form action="{{ route('client.search') }}" method="get">
                                 <div class="header-search-wrapper">
-                                    <input type="search" class="form-control" name="q" id="q"
-                                        placeholder="Tôi muốn tìm..." required>
+                                    <input type="search" class="form-control" name="keyword" id="q"
+                                        placeholder="Tôi muốn tìm..." value="{{ request('keyword') }}" required>
                                     <div class="select-custom font2">
-                                        <select id="cat" name="cat">
+                                        <select id="cat" name="category">
                                             <option value="">All Categories</option>
-                                            <option value="4">Fashion</option>
-                                            <option value="12">- Women</option>
-                                            <option value="13">- Men</option>
-                                            <option value="66">- Jewellery</option>
-                                            <option value="67">- Kids Fashion</option>
-                                            <option value="5">Electronics</option>
-                                            <option value="21">- Smart TVs</option>
-                                            <option value="22">- Cameras</option>
-                                            <option value="63">- Games</option>
-                                            <option value="7">Home &amp; Garden</option>
-                                            <option value="11">Motors</option>
-                                            <option value="31">- Cars and Trucks</option>
-                                            <option value="32">- Motorcycles &amp; Powersports</option>
-                                            <option value="33">- Parts &amp; Accessories</option>
-                                            <option value="34">- Boats</option>
-                                            <option value="57">- Auto Tools &amp; Supplies</option>
+                                            @foreach($categories as $cat)
+                                                <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
+                                                    {{ $cat->ten_danh_muc }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div><!-- End .select-custom -->
                                     <button class="btn icon-magnifier" title="search" type="submit"></button>
@@ -720,38 +669,6 @@
     </a>
 </div>
 </div>
-
-<div class="newsletter-popup mfp-hide bg-img" id="newsletter-popup-form"
-style="background: #f1f1f1 no-repeat center/cover url({{ asset('assets/images/newsletter_popup_bg.jpg') }})">
-<div class="newsletter-popup-content">
-    <img src="{{ asset('assets/images/logo-black.png') }}" alt="Logo" class="logo-newsletter" width="111" height="44">
-    <h2>Đăng ký nhận bản tin</h2>
-
-    <p>
-        Đăng ký nhận thông tin mới nhất về sản phẩm, ưu đãi và khuyến mãi từ Porto.
-    </p>
-
-    <form action="#">
-        <div class="input-group">
-            <input type="email" class="form-control" id="newsletter-email" name="newsletter-email"
-                placeholder="Nhập email của bạn" required />
-            <input type="submit" class="btn btn-primary" value="Gửi" />
-        </div>
-    </form>
-    <div class="newsletter-subscribe">
-        <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" value="0" id="show-again" />
-            <label for="show-again" class="custom-control-label">
-                Không hiển thị lại popup này
-            </label>
-        </div>
-    </div>
-</div><!-- End .newsletter-popup-content -->
-
-<button title="Close (Esc)" type="button" class="mfp-close">
-    ×
-</button>
-</div><!-- End .newsletter-popup -->
 
 <a id="scroll-top" href="#top" title="Lên đầu trang" role="button"><i class="icon-angle-up"></i></a>
 

@@ -115,7 +115,7 @@
     <section class="trendy-section mb-2">
         <div class="container">
             <h2 class="section-title appear-animate" data-animation-name="fadeInUpShorter"
-                data-animation-delay="200">Sản phẩm trending</h2>
+                data-animation-delay="200">Sản phẩm bán chạy</h2>
             <div class="row appear-animate" data-animation-name="fadeInUpShorter" data-animation-delay="200">
                 <div class="products-slider 5col owl-carousel owl-theme" data-owl-options="{ 'margin': 0 }">
                     @foreach($trendingProducts as $product)
