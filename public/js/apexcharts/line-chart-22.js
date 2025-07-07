@@ -45,7 +45,7 @@
           legend: {
             show: false,
           },
-          colors: ['#FF7433', '#8D79F6'],
+          colors: ['#4db7b3', '#8D79F6'],
           stroke: {
             curve: 'smooth'
           },

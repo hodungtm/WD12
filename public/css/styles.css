@@ -1,17 +1,17 @@
 :root {
-  --Main: #FF7433;
+  --Main: #4db7b3;
   --White: #fff;
   --Black: #111;
   --Heading: #0A0A0C;
   --Body-Text: #575864;
   --22-c-55-e: #22C55E;
-  --Style:#FF5200;
+  --Style:#4db7b3;
   --Palette-Green-500: #22C55E;
   --Palette-Blue-Gray-300: #CBD5E1;
   --Palette-Blue-Gray-200: #E2E8F0;
   --Palette-Blue-300: #93C5FD;
   --Palette-Blue-200: #BFDBFE;
-  --Palette-Orange-400: #FB923C;
+  --Palette-Orange-400: #4db7b3;
   --Palette-Red-400: #F87171;
   --Palette-Red-500: #EF4444;
   --Input:#ECF0F4;
@@ -23,12 +23,12 @@
   --bg-table: #f6f8fbcc;
   --bg-table-1: #F7FAFC;
   --Main-Dark: #0A0A0C;
-  --Secondary: #FF7433;
+  --Secondary: #4db7b3;
   --Surface: #C3C1CF;
   --Surface-2: #545454;
   --Surface-3: #F6F6F6;
   --backdrop: #F2F7FB;
-  --hv-item: #fffaf8;
+  --hv-item: #f0f9f8;
 }
 
 /**
@@ -1032,7 +1032,7 @@ a:hover {
   line-height: 17px;
 }
 .body-title-2 span {
-  color: #FF5200;
+  color: #4db7b3;
 }
 
 .body-text {
@@ -1421,7 +1421,7 @@ a:hover {
   gap: 10px;
   border-radius: 4px;
   background: var(--Surface-3);
-  color: #FF5200;
+  color: #4db7b3;
   font-size: 12px;
   font-weight: 500;
 }
@@ -1552,13 +1552,13 @@ a:hover {
   gap: 10px;
   border-radius: 12px;
   background: var(--Surface-3);
-  color: #FF5200;
+  color: #4db7b3;
 }
 .block-warning i {
   font-size: 24px;
 }
 .block-warning div {
-  color: #FF5200;
+  color: #4db7b3;
 }
 .block-warning.type-main {
   background-color: #FFF9F6;
@@ -1662,7 +1662,7 @@ a:hover {
   background-color: #8D79F6;
 }
 .block-legend .dot.t6 {
-  background-color: #FF7433;
+  background-color: #4db7b3;
 }
 .block-legend .dot.t7 {
   background-color: var(--Secondary);
@@ -1693,7 +1693,7 @@ a:hover {
   border: 4px solid #8F77F3;
 }
 .block-legend.style-1 .dot.t4 {
-  border: 4px solid #FF7433;
+  border: 4px solid #4db7b3;
 }
 .block-legend.style-1 .dot.t5 {
   border: 4px solid #FFE99A;
@@ -1878,7 +1878,7 @@ a:hover {
   cursor: pointer;
 }
 .list-icon-function .item.eye {
-  color: #FF7433;
+  color: #4db7b3;
 }
 .list-icon-function .item.edit {
   color: #22C55E;
@@ -2189,7 +2189,7 @@ a:hover {
   background-color: #2377FC;
 }
 .select-colors-theme .item.color-FF7433 {
-  background-color: #FF7433;
+  background-color: #4db7b3;
 }
 .select-colors-theme .item.color-35988D {
   background-color: #35988D;
@@ -3364,7 +3364,7 @@ select option {
   position: absolute;
   inset: 0;
   content: "";
-  background: var(--White);
+  background: #4db7b3;
 }
 .layout-wrap .section-menu-left > .box-logo {
   position: fixed;
@@ -3386,6 +3386,7 @@ select option {
   -o-transition: all 0.3s ease;
   transition: all 0.3s ease;
   z-index: 6;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 .layout-wrap .section-menu-left .section-menu-left-wrap {
   width: 100%;
@@ -3430,11 +3431,11 @@ select option {
   -ms-transition: all 0.3s ease;
   -o-transition: all 0.3s ease;
   transition: all 0.3s ease;
-  fill: #0A0A0C;
+  fill: #ffffff;
 }
 .layout-wrap .section-menu-left .menu-item a .icon i {
   font-size: 24px;
-  color: #0A0A0C;
+  color: #ffffff;
   -webkit-transition: all 0.3s ease;
   -moz-transition: all 0.3s ease;
   -ms-transition: all 0.3s ease;
@@ -3442,7 +3443,7 @@ select option {
   transition: all 0.3s ease;
 }
 .layout-wrap .section-menu-left .menu-item a .text {
-  color: #0A0A0C;
+  color: #ffffff;
   font-size: 16px;
   font-weight: 600;
   line-height: 26px;
@@ -3472,7 +3473,7 @@ select option {
   content: "\e936";
   top: 12px;
   right: 21px;
-  color: #0A0A0C;
+  color: #ffffff;
   font-size: 25px;
   font-family: "icomoon";
   -webkit-transition: all 0.3s ease;
@@ -3494,7 +3495,7 @@ select option {
   padding: 12px 0 12px 76px;
 }
 .layout-wrap .section-menu-left .menu-item.has-children .sub-menu .sub-menu-item.active {
-  background-color: rgb(246, 246, 246);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 .layout-wrap .section-menu-left .menu-item.has-children .sub-menu .sub-menu-item.active::after {
   position: absolute;
@@ -3516,7 +3517,7 @@ select option {
   position: relative;
 }
 .layout-wrap .section-menu-left .menu-item.has-children .sub-menu a .text {
-  color: #0A0A0C;
+  color: #ffffff;
   font-size: 14px;
   line-height: 24px;
 }
@@ -3527,7 +3528,7 @@ select option {
   left: -17px;
   width: 8px;
   height: 8px;
-  border: 1px solid #0A0A0C;
+  border: 1px solid #ffffff;
   border-radius: 50%;
 }
 .layout-wrap .section-menu-left .menu-item.has-children.active > a svg path {
@@ -3559,7 +3560,7 @@ select option {
   color: var(--Secondary);
 }
 .layout-wrap .section-menu-left .menu-item:not(.has-children).active {
-  background-color: var(--Surface-3);
+  background-color: rgba(255, 255, 255, 0.1);
 }
 .layout-wrap .section-menu-left .menu-item:not(.has-children).active::before {
   position: absolute;
@@ -3592,9 +3593,9 @@ select option {
   font-size: 24px;
   width: 28px;
   height: 28px;
-  color: rgb(10, 10, 12);
+  color: #ffffff;
   border-radius: 4px;
-  background-color: rgb(246, 246, 246);
+  background-color: rgba(255, 255, 255, 0.2);
   cursor: pointer;
   transition: all 0.3s, background 0s ease;
 }
@@ -3679,7 +3680,7 @@ select option {
   background-color: #fff;
 }
 .widget-tabs .widget-menu-tab.style-1 .item-title.active .body-title {
-  color: #FF7433;
+  color: #4db7b3;
 }
 .widget-tabs .widget-menu-tab.style-1 .item-title .body-title {
   color: #111111;
@@ -4515,7 +4516,7 @@ select option {
 }
 
 .bg-color-orange {
-  background-color: #FF5200;
+  background-color: #4db7b3;
 }
 
 .bg-color-blue {
@@ -4576,7 +4577,7 @@ select option {
   background: #1d1d1e !important;
 }
 .dark-theme .block-legend .dot.t6 {
-  background-color: #FF7433;
+  background-color: #4db7b3;
 }
 .dark-theme .has-divider-line > * {
   border-color: rgba(255, 255, 255, 0.1) !important;
@@ -5451,7 +5452,7 @@ select option {
 }
 
 [data-theme-primary=theme-primary-FF7433] {
-  --Secondary: #FF7433;
+  --Secondary: #4db7b3;
 }
 
 [data-theme-primary=theme-primary-35988D] {
@@ -5684,6 +5685,20 @@ select option {
     max-width: 100%;
     max-height: unset;
   }
+}
+
+.layout-wrap .section-menu-left .menu-item:hover, .layout-wrap .section-menu-left .menu-item.active {
+  background-color: #43c6c0 !important;
+  color: #fff !important;
+}
+.layout-wrap .section-menu-left .menu-item a:hover .text,
+.layout-wrap .section-menu-left .menu-item.active a .text {
+  color: #fff !important;
+}
+.layout-wrap .section-menu-left .menu-item.has-children .sub-menu .sub-menu-item:hover, 
+.layout-wrap .section-menu-left .menu-item.has-children .sub-menu .sub-menu-item.active {
+  background-color: #5fd1ce !important;
+  color: #fff !important;
 }
 
 /*# sourceMappingURL=styles.css.map */

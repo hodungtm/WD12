@@ -15,7 +15,7 @@ $(function(){
         series: {
             regions: [{
             values: Data,
-            scale: ['#FF9E70','#FF7433'],
+            scale: ['#FF9E70','#4db7b3'],
             normalizeFunction: 'polynomial'
             }]
         },

@@ -28,20 +28,20 @@ class ListProductClientController extends Controller
 
         // Lọc theo danh mục
         if ($request->filled('category')) {
-            $query->where('category_id', $request->category);
+            $query->where('category_id', (int)$request->category);
         }
 
         // Lọc theo màu
         if ($request->filled('color')) {
             $query->whereHas('variants', function ($q) use ($request) {
-                $q->where('color_id', $request->color);
+                $q->where('color_id', (int)$request->color);
             });
         }
 
         // Lọc theo size
         if ($request->filled('size')) {
             $query->whereHas('variants', function ($q) use ($request) {
-                $q->where('size_id', $request->size);
+                $q->where('size_id', (int)$request->size);
             });
         }
         $minPrice = ProductVariant::min('price');
@@ -59,7 +59,7 @@ class ListProductClientController extends Controller
         }
 
         // Xử lý sắp xếp theo giá từ bảng variants
-        $perPage = 9;
+        $perPage = $request->input('count', 12); // Lấy từ request, mặc định 12
 
         if (in_array($request->sort, ['price_asc', 'price_desc'])) {
             $products = $query->get();

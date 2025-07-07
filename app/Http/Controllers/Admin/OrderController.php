@@ -27,61 +27,18 @@ use Illuminate\Validation\ValidationException;
 class OrderController extends Controller
 {
     public function index(Request $request)
-
-{
-    $query = Order::with(['user', 'shippingMethod', 'orderItems']);
-
-    if ($request->has('search') && !empty($request->search)) {
-        $search = $request->search;
-        $query->where('order_code', 'LIKE', '%' . $search . '%');
-    }
-
-    $perPage = $request->input('per_page', 10);  // lấy từ request hoặc mặc định 10
-
-    $orders = $query->latest()->paginate($perPage);
-
     {
-        $query = Order::with([
-            'user',
-            'shippingMethod',
-            'orderItems',
-        ]);
+        $query = Order::with(['user', 'shippingMethod', 'orderItems']);
 
-        // Tìm kiếm theo mã đơn hàng
         if ($request->has('search') && !empty($request->search)) {
             $search = $request->search;
             $query->where('order_code', 'LIKE', '%' . $search . '%');
         }
 
+        $perPage = $request->input('per_page', 10);  // lấy từ request hoặc mặc định 10
 
-        // Lấy danh sách đơn hàng mới nhất
-        $orders = $query->latest()->get();
+        $orders = $query->latest()->paginate($perPage);
 
-    public function show($id)
-    {
-        $order = Order::with([
-            'user',
-            'shippingMethod',
-            'orderItems.product',
-            'orderItems.productVariant.color', // Đảm bảo tải mối quan hệ color
-            'orderItems.productVariant.size',  // Đảm bảo tải mối quan hệ size
-        ])->findOrFail($id);
-
-        return view('admin.orders.show', compact('order'));
-    }
-    public function create()
-    {
-        $users = User::all();
-
-        // Eager load variants + size & color của từng variant
-        $products = Products::with([
-            'variants.size',
-            'variants.color',
-        ])->get();
-
-        $shippingMethods = ShippingMethod::all();
-
-=======
         return view('admin.orders.index', compact('orders'));
     }
 
@@ -97,6 +54,7 @@ class OrderController extends Controller
 
         return view('admin.orders.show', compact('order'));
     }
+
     public function create()
     {
         $users = User::all();
@@ -109,7 +67,6 @@ class OrderController extends Controller
 
         $shippingMethods = ShippingMethod::all();
 
-
         $discounts = Discount::where('start_date', '<=', now())
             ->where('end_date', '>=', now())
             ->where(function ($query) {
@@ -118,7 +75,6 @@ class OrderController extends Controller
             ->get();
         return view('admin.orders.create', compact('users', 'products', 'shippingMethods', 'discounts'));
     }
-
 
     /**
      * Xử lý lưu đơn hàng mới vào cơ sở dữ liệu.
@@ -191,16 +147,10 @@ class OrderController extends Controller
                     'variant_name'    => 'Màu ' . ($variant->color->name ?? '-') . ' / Size ' . ($variant->size->name ?? '-'),
                     'product_image'   => $product->image ?? $variant->image ?? null,
                     'sku'             => $variant->sku ?? '',
-
-                   
                 ]);
 
                 // Tăng sold cho sản phẩm cha
                 Products::where('id', $product->id)->increment('sold', $quantity);
-
-
-
-                ]);
 
                 $subtotal += $totalPrice;
             }
@@ -247,7 +197,6 @@ class OrderController extends Controller
                 }
             }
 
-
             // Tính tổng tiền cần thanh toán
             $finalAmount = max($subtotal + $shippingFee - $discountAmount, 0);
 
@@ -263,7 +212,6 @@ class OrderController extends Controller
         return redirect()->route('admin.orders.index')->with('success', 'Tạo đơn hàng thành công!');
     }
 
-
     public function edit($id)
     {
         $order = Order::with([
@@ -274,31 +222,15 @@ class OrderController extends Controller
         ])->findOrFail($id);
         $users = User::all(); // Lấy danh sách người dùng
 
-
-        $users = User::all(); // Lấy danh sách người dùng
-
-        // $products = Product::select('id', 'name')->get(); // Nếu dùng khi cập nhật đơn hàng
-
         $shippingMethods = ShippingMethod::all(); // Lấy tất cả phương thức vận chuyển
-
-        // $discounts = Discount::select('id', 'code', 'discount_type', 'discount_value')->get();
-
-
-        // $products = Product::select('id', 'name')->get(); // Nếu dùng khi cập nhật đơn hàng
-
-        $shippingMethods = ShippingMethod::all(); // Lấy tất cả phương thức vận chuyển
-
-        // $discounts = Discount::select('id', 'code', 'discount_type', 'discount_value')->get();
 
         return view('admin.orders.edit', compact(
             'order',
             'users',
-            // 'products',
             'shippingMethods',
             // 'discounts'
         ));
     }
-
 
     public function update(Request $request, $id)
     {
