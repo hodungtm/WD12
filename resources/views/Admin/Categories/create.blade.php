@@ -5,10 +5,10 @@
   <div class="main-content-inner">
     <div class="main-content-wrap">
 
-      <div class="flex items-center flex-wrap justify-between gap20 mb-27">
+      <div class="flex items-center flex-wrap justify-between gap20 mb-30">
         <h3>Thêm danh mục</h3>
         <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-          <li><a href="{{ route('admin.dashboard') }}"><div class="text-tiny">Dashboard</div></a></li>
+          <li><a href="{{ route('admin.dashboard') }}"><div class="text-tiny">Bảng điều khiển</div></a></li>
           <li><i class="icon-chevron-right"></i></li>
           <li><a href="{{ route('Admin.categories.index') }}"><div class="text-tiny">Danh mục</div></a></li>
           <li><i class="icon-chevron-right"></i></li>
@@ -23,7 +23,7 @@
           {{-- Tên danh mục --}}
           <fieldset class="name">
             <div class="body-title">Tên danh mục <span class="tf-color-1">*</span></div>
-            <input class="flex-grow" type="text" name="ten_danh_muc" value="{{ old('ten_danh_muc') }}" required>
+            <input class="flex-grow" type="text" name="ten_danh_muc" placeholder="Nhập tên danh mục" value="{{ old('ten_danh_muc') }}" required>
             @error('ten_danh_muc')
               <small class="text-danger">{{ $message }}</small>
             @enderror
@@ -34,11 +34,14 @@
             <div class="body-title">Ảnh đại diện <span class="tf-color-1">*</span></div>
             <div class="upload-image flex-grow">
               <div class="item up-load">
-                <label class="uploadfile" for="anh">
+                <label class="uploadfile h250" for="anh">
                   <span class="icon"><i class="icon-upload-cloud"></i></span>
-                  <span class="body-text">Chọn ảnh hoặc kéo thả</span>
-                  <input type="file" id="anh" name="anh" accept="image/*">
+                  <span class="body-text">Kéo thả hoặc chọn <span class="tf-color">tải ảnh lên</span></span>
+                  <input type="file" id="anh" name="anh" accept="image/*" onchange="previewImage(event)">
                 </label>
+                <div style="margin-top: 10px; text-align: center;">
+                  <img id="preview-image" src="#" alt="Preview" style="display:none; max-width: 200px; max-height: 200px; border-radius: 8px; border: 1px solid #eee;">
+                </div>
               </div>
             </div>
             @error('anh')
@@ -49,7 +52,7 @@
           {{-- Mô tả --}}
           <fieldset class="category">
             <div class="body-title">Mô tả</div>
-            <textarea name="mo_ta" class="flex-grow" rows="3">{{ old('mo_ta') }}</textarea>
+            <textarea name="mo_ta" class="flex-grow" rows="3" placeholder="Nhập mô tả...">{{ old('mo_ta') }}</textarea>
             @error('mo_ta')
               <small class="text-danger">{{ $message }}</small>
             @enderror
@@ -81,5 +84,23 @@
 
     </div>
   </div>
+
+  <script>
+    function previewImage(event) {
+      const input = event.target;
+      const preview = document.getElementById('preview-image');
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+      } else {
+        preview.src = '#';
+        preview.style.display = 'none';
+      }
+    }
+  </script>
 
 @endsection

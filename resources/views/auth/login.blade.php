@@ -14,7 +14,7 @@ body {
 
 .left {
     flex: 1;
-    background: url('storage/banners/2QMhqva4eHfBBGdgbOToUr0mRvTsYBj0AyKocWUn.jpg') no-repeat center center/cover;
+    background: url('{{ asset('images/avatar/2QMhqva4eHfBBGdgbOToUr0mRvTsYBj0AyKocWUn.jpg') }}') no-repeat center center/cover;
 }
 
 .right {
