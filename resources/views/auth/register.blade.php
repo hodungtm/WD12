@@ -1,133 +1,146 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng ký</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            height: 100vh;
-            display: flex;
-        }
-        .left {
-            flex: 1;
-            background: url('{{ asset('images/avatar/2QMhqva4eHfBBGdgbOToUr0mRvTsYBj0AyKocWUn.jpg') }}') no-repeat center center/cover;
-        }
-        .right {
-            flex: 1;
-            background: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 30px;
-        }
-        .login-form {
-            width: 100%;
-            max-width: 400px;
-        }
-        .login-form h1 {
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 24px;
-        }
-        .login-form p {
-            text-align: center;
-            font-size: 14px;
-            color: #555;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            width: 100%;
-            background: #007bff;
-            color: #fff;
-            font-size: 16px;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .signup-link {
-            text-align: center;
-            font-size: 14px;
-            margin-top: 15px;
-        }
-        .signup-link a {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .invalid-feedback {
-            color: red;
-            font-size: 12px;
-            margin-top: 4px;
-        }
-        .is-invalid {
-            border-color: red;
-        }
-    </style>
-</head>
-<body>
-<div class="left"></div>
-<div class="right">
-    <div class="login-form">
-        <h1>Chào mừng bạn 🎉</h1>
-        <p>Đăng ký tài khoản mới để bắt đầu hành trình của bạn cùng chúng tôi.</p>
+@section('body-class', 'login-page')
+@extends('Client.Layouts.ClientLayout')
+@section('main')
+<link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+<style>
+main .register-simple-container {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+}
+main .register-simple-box {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    padding: 36px 32px 32px 32px;
+    max-width: 420px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+main .register-simple-box h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #222d32;
+    text-align: center;
+}
+main .register-simple-box .body-text {
+    color: #555;
+    text-align: center;
+    margin-bottom: 18px;
+}
+main .register-simple-box .form-group {
+    margin-bottom: 16px;
+}
+main .register-simple-box label {
+    color: #222d32;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+main .register-simple-box input[type="text"],
+main .register-simple-box input[type="email"],
+main .register-simple-box input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #f8f9fa;
+    color: #222d32;
+    font-size: 15px;
+}
+main .register-simple-box input:focus {
+    border-color: #20b2aa;
+    outline: none;
+}
+main .register-simple-box button[type="submit"] {
+    width: 100%;
+    background: #20b2aa;
+    color: #fff;
+    font-size: 16px;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 8px;
+    transition: background 0.2s;
+}
+main .register-simple-box button[type="submit"]:hover {
+    background: #179b8a;
+}
+main .register-simple-box .login-link {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 15px;
+}
+main .register-simple-box .login-link a {
+    color: #20b2aa;
+    font-weight: 600;
+    text-decoration: none;
+}
+main .register-simple-box .login-link a:hover {
+    text-decoration: underline;
+}
+@media (max-width: 600px) {
+    main .register-simple-box { padding: 18px 4px; max-width: 98vw; }
+}
+</style>
+<div class="register-simple-container">
+    <div class="register-simple-box">
+        <h2>Đăng ký tài khoản</h2>
+        <div class="body-text">Tạo tài khoản mới để bắt đầu hành trình cùng chúng tôi</div>
+        @if ($errors->any())
+            <div class="alert alert-danger" style="font-size:15px;">
+                <ul style="margin-bottom:0; padding-left:18px;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        @if (session('status'))
+            <div class="alert alert-success" style="font-size:15px;">
+                {{ session('status') }}
+            </div>
+        @endif
         <form method="POST" action="{{ route('register') }}">
             @csrf
             <div class="form-group">
                 <label for="name">Họ và tên</label>
-                <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus
-                       class="@error('name') is-invalid @enderror" placeholder="Nhập họ và tên">
+                <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus placeholder="Nhập họ và tên" class="@error('name') is-invalid @enderror">
                 @error('name')
-                <span class="invalid-feedback">{{ $message }}</span>
+                <span class="invalid-feedback" style="color: #ff4d4f; font-size: 13px;">{{ $message }}</span>
                 @enderror
             </div>
             <div class="form-group">
-                <label for="email">Địa chỉ Email</label>
-                <input id="email" type="email" name="email" value="{{ old('email') }}" required
-                       class="@error('email') is-invalid @enderror" placeholder="Nhập email">
+                <label for="email">Email</label>
+                <input id="email" type="email" name="email" value="{{ old('email') }}" required placeholder="Nhập email" class="@error('email') is-invalid @enderror">
                 @error('email')
-                <span class="invalid-feedback">{{ $message }}</span>
+                <span class="invalid-feedback" style="color: #ff4d4f; font-size: 13px;">{{ $message }}</span>
                 @enderror
             </div>
             <div class="form-group">
                 <label for="password">Mật khẩu</label>
-                <input id="password" type="password" name="password" required
-                       class="@error('password') is-invalid @enderror" placeholder="Tạo mật khẩu">
+                <input id="password" type="password" name="password" required placeholder="Tạo mật khẩu" class="@error('password') is-invalid @enderror">
                 @error('password')
-                <span class="invalid-feedback">{{ $message }}</span>
+                <span class="invalid-feedback" style="color: #ff4d4f; font-size: 13px;">{{ $message }}</span>
                 @enderror
             </div>
             <div class="form-group">
                 <label for="password-confirm">Nhập lại mật khẩu</label>
                 <input id="password-confirm" type="password" name="password_confirmation" required placeholder="Nhập lại mật khẩu">
             </div>
-            <button type="submit">Đăng Ký</button>
+            <button type="submit">Đăng ký</button>
         </form>
-        <div class="signup-link">
-            Đã có tài khoản? <a href="{{ route('login') }}">Đăng nhập</a>
+        <div class="login-link">
+            Đã có tài khoản?
+            <button type="button" onclick="window.location.href='{{ route('login') }}'" style="background: none; border: none; color: #20b2aa; font-weight: 600; text-decoration: none; cursor: pointer; font-size: 15px; padding: 0; margin-left: 4px;">Đăng nhập</button>
         </div>
     </div>
 </div>
-</body>
-</html>
+@endsection

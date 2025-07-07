@@ -167,5 +167,7 @@ Route::prefix('admin')->group(function () {
     
 });
 
+Route::get('/search', [App\Http\Controllers\Client\ListProductClientController::class, 'index'])->name('client.search');
+
 
 
