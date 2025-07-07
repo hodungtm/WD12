@@ -1,3 +1,6 @@
+@php
+    use Illuminate\Support\Facades\Auth;
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
@@ -13,7 +16,7 @@
     <meta name="author" content="SW-THEMES">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="assets/images/icons/favicon.png">
+    <link rel="icon" type="image/x-icon" href="{{ asset('assets/images/icons/favicon.png') }}">
 
 
     <script>
@@ -22,22 +25,45 @@
         };
         ( function ( d ) {
             var wf = d.createElement( 'script' ), s = d.scripts[ 0 ];
-            wf.src = 'assets/js/webfont.js';
+            wf.src = '{{ asset("assets/js/webfont.js") }}';
             wf.async = true;
             s.parentNode.insertBefore( wf, s );
         } )( document );
     </script>
 
     <!-- Plugins CSS File -->
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
 
     <!-- Main CSS File -->
-    <link rel="stylesheet" href="assets/css/demo27.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/vendor/fontawesome-free/css/all.min.css">
-    <link rel="stylesheet" type="text/css" href="assets/vendor/simple-line-icons/css/simple-line-icons.min.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/demo27.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendor/fontawesome-free/css/all.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendor/simple-line-icons/css/simple-line-icons.min.css') }}">
+    <style>
+    /* Menu ngang chỉ 1 dòng, tràn thì cuộn ngang, chuẩn e-commerce */
+    .header .main-nav .menu {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: thin;
+        scrollbar-color: #ccc #f8f9fa;
+    }
+    .header .main-nav .menu::-webkit-scrollbar {
+        height: 6px;
+        background: #f8f9fa;
+    }
+    .header .main-nav .menu::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 3px;
+    }
+    .header .main-nav .menu li {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
+    </style>
 </head>
 
-<body>
+<body class="@yield('body-class')">
     <div class="page-wrapper">
         <header class="header">
             <div class="header-top">
@@ -66,16 +92,26 @@
                     </div>
 
                     <div class="header-right d-none d-lg-flex">
-                        <p class="top-message text-uppercase mr-2">Default Welcome Msg</p>
+                        
                         <div class="header-dropdown dropdown-expanded">
                             <a href="#">Links</a>
                             <div class="header-menu">
                                 <ul>
-                                    <li><a href="dashboard.html">My Account</a></li>
-                                    <li><a href="cart.html">Cart</a></li>
-                                    <li><a href="wishlist.html">My Wishlist</a></li>
-                                    <li><a href="blog.html">Blog</a></li>
-                                    <li><a href="#" class="login-link">Log in</a></li>
+                                    <li><a href="{{ route('user.dashboard') }}">Tài khoản của tôi</a></li>
+                                    <li><a href="cart.html">Giỏ hàng</a></li>
+                                    <li><a href="wishlist.html">Yêu thích</a></li>
+                                    <li><a href="blog.html">Tin tức</a></li>
+                                    @if(Auth::check())
+                                        <li>
+                                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: inline;">
+                                                @csrf
+                                                <button type="submit" style="background:none;border:none;color:inherit;cursor:pointer;padding:0;font:inherit;">Đăng xuất</button>
+                                            </form>
+                                        </li>
+                                        
+                                    @else
+                                        <li><button onclick="window.location.href='{{ route('login') }}'" style="background: none; border: none; color: inherit; cursor: pointer; padding: 0; font: inherit;">Đăng nhập</button></li>
+                                    @endif
                                 </ul>
                             </div>
                         </div>
@@ -88,146 +124,28 @@
                         <button class="mobile-menu-toggler" type="button">
                             <i class="fas fa-bars"></i>
                         </button>
-                        <a href="demo27.html" class="logo">
-                            <img src="assets/images/logo-black.png" alt="Porto Logo" width="111" height="44">
+                        <a href="{{ route('client.index') }}" class="logo">
+                            <img src="{{ asset('assets/images/logo-black.png') }}" alt="Porto Logo" width="111" height="44">
                         </a>
                         <nav class="main-nav">
                             <ul class="menu">
                                 <li class="active">
-                                    <a href="demo27.html">Home</a>
+                                    <a href="{{ route('client.index') }}">Trang chủ</a>
                                 </li>
                                 <li>
-                                    <a href="demo27-shop.html">Shop</a>
-                                    <div class="megamenu megamenu-fixed-width megamenu-3cols">
-                                        <div class="row">
-                                            <div class="col-lg-4">
-                                                <a href="#" class="nolink">VARIATION 1</a>
-                                                <ul class="submenu">
-                                                    <li><a href="category.html">Fullwidth Banner</a></li>
-                                                    <li><a href="category-banner-boxed-slider.html">Boxed Slider
-                                                            Banner</a>
-                                                    </li>
-                                                    <li><a href="category-banner-boxed-image.html">Boxed Image
-                                                            Banner</a>
-                                                    </li>
-                                                    <li><a href="category.html">Left Sidebar</a></li>
-                                                    <li><a href="category-sidebar-right.html">Right Sidebar</a></li>
-                                                    <li><a href="category-off-canvas.html">Off Canvas Filter</a></li>
-                                                    <li><a href="category-horizontal-filter1.html">Horizontal
-                                                            Filter1</a>
-                                                    </li>
-                                                    <li><a href="category-horizontal-filter2.html">Horizontal
-                                                            Filter2</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <a href="#" class="nolink">VARIATION 2</a>
-                                                <ul class="submenu">
-                                                    <li><a href="category-list.html">List Types</a></li>
-                                                    <li><a href="category-infinite-scroll.html">Ajax Infinite Scroll</a>
-                                                    </li>
-                                                    <li><a href="category.html">3 Columns Products</a></li>
-                                                    <li><a href="category-4col.html">4 Columns Products</a></li>
-                                                    <li><a href="category-5col.html">5 Columns Products</a></li>
-                                                    <li><a href="category-6col.html">6 Columns Products</a></li>
-                                                    <li><a href="category-7col.html">7 Columns Products</a></li>
-                                                    <li><a href="category-8col.html">8 Columns Products</a></li>
-                                                </ul>
-                                            </div>
-                                            <div class="col-lg-4 p-0">
-                                                <div class="menu-banner">
-                                                    <figure>
-                                                        <img src="assets/images/menu-banner.jpg" alt="Menu banner"
-                                                            width="300" height="300">
-                                                    </figure>
-                                                    <div class="banner-content">
-                                                        <h4>
-                                                            <span class="">UP TO</span><br />
-                                                            <b class="">50%</b>
-                                                            <i>OFF</i>
-                                                        </h4>
-                                                        <a href="demo27-shop.html" class="btn btn-sm btn-dark">SHOP
-                                                            NOW</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div><!-- End .megamenu -->
+                                    <a href="{{ route('client.listproduct') }}">Cửa hàng</a>
+                                   
                                 </li>
                                 <li>
-                                    <a href="demo27-product.html">Products</a>
-                                    <div class="megamenu megamenu-fixed-width">
-                                        <div class="row">
-                                            <div class="col-lg-4">
-                                                <a href="#" class="nolink">PRODUCT PAGES</a>
-                                                <ul class="submenu">
-                                                    <li><a href="demo27-product.html">SIMPLE PRODUCT</a></li>
-                                                    <li><a href="product-variable.html">VARIABLE PRODUCT</a></li>
-                                                    <li><a href="demo27-product.html">SALE PRODUCT</a></li>
-                                                    <li><a href="demo27-product.html">FEATURED & ON SALE</a></li>
-                                                    <li><a href="product-custom-tab.html">WITH CUSTOM TAB</a></li>
-                                                    <li><a href="product-sidebar-left.html">WITH LEFT SIDEBAR</a></li>
-                                                    <li><a href="product-sidebar-right.html">WITH RIGHT SIDEBAR</a></li>
-                                                    <li><a href="product-addcart-sticky.html">ADD CART STICKY</a></li>
-                                                </ul>
-                                            </div><!-- End .col-lg-4 -->
-
-                                            <div class="col-lg-4">
-                                                <a href="#" class="nolink">PRODUCT LAYOUTS</a>
-                                                <ul class="submenu">
-                                                    <li><a href="product-extended-layout.html">EXTENDED LAYOUT</a></li>
-                                                    <li><a href="product-grid-layout.html">GRID IMAGE</a></li>
-                                                    <li><a href="product-full-width.html">FULL WIDTH LAYOUT</a></li>
-                                                    <li><a href="product-sticky-info.html">STICKY INFO</a></li>
-                                                    <li><a href="product-sticky-both.html">LEFT & RIGHT STICKY</a></li>
-                                                    <li><a href="product-transparent-image.html">TRANSPARENT IMAGE</a>
-                                                    </li>
-                                                    <li><a href="product-center-vertical.html">CENTER VERTICAL</a></li>
-                                                    <li><a href="#">BUILD YOUR OWN</a></li>
-                                                </ul>
-                                            </div><!-- End .col-lg-4 -->
-
-                                            <div class="col-lg-4 p-0">
-                                                <div class="menu-banner menu-banner-2">
-                                                    <figure>
-                                                        <img src="assets/images/menu-banner-1.jpg" alt="Menu banner"
-                                                            class="product-promo" width="380" height="790">
-                                                    </figure>
-                                                    <i>OFF</i>
-                                                    <div class="banner-content">
-                                                        <h4>
-                                                            <span class="">UP TO</span><br />
-                                                            <b class="">50%</b>
-                                                        </h4>
-                                                    </div>
-                                                    <a href="demo27-shop.html" class="btn btn-sm btn-dark">SHOP NOW</a>
-                                                </div>
-                                            </div><!-- End .col-lg-4 -->
-                                        </div><!-- End .row -->
-                                    </div><!-- End .megamenu -->
+                                    <a href="demo27-product.html">Sản phẩm</a>
+                                    
                                 </li>
-                                <li class="d-none d-xxl-block"><a href="blog.html">Blog</a></li>
+                                <li class="d-none d-xxl-block"><a href="blog.html">Tin tức</a></li>
                                 <li>
-                                    <a href="#">Pages</a>
-                                    <ul>
-                                        <li><a href="wishlist.html">Wishlist</a></li>
-                                        <li><a href="cart.html">Shopping Cart</a></li>
-                                        <li><a href="checkout.html">Checkout</a></li>
-                                        <li><a href="dashboard.html">Dashboard</a></li>
-                                        <li><a href="about.html">About Us</a></li>
-                                        <li><a href="#">Blog</a>
-                                            <ul>
-                                                <li><a href="blog.html">Blog</a></li>
-                                                <li><a href="single.html">Blog Post</a></li>
-                                            </ul>
-                                        </li>
-                                        <li><a href="contact.html">Contact Us</a></li>
-                                        <li><a href="login.html">Login</a></li>
-                                        <li><a href="forgot-password.html">Forgot Password</a></li>
-                                    </ul>
+                                    <a href="#">Trang</a>
+                                    
                                 </li>
-                                <li class="d-none d-xxl-block"><a href="#" target="blank">Buy Porto!</a></li>
+                               
                             </ul>
                         </nav>
                     </div>
@@ -236,29 +154,18 @@
                         <div
                             class="header-icon header-search header-search-inline header-search-category w-lg-max text-right d-none d-sm-block">
                             <a href="#" class="search-toggle" role="button"><i class="icon-magnifier"></i></a>
-                            <form action=" #" method="get">
+                            <form action="{{ route('client.search') }}" method="get">
                                 <div class="header-search-wrapper">
-                                    <input type="search" class="form-control" name="q" id="q"
-                                        placeholder="I'm searching for..." required>
+                                    <input type="search" class="form-control" name="keyword" id="q"
+                                        placeholder="Tôi muốn tìm..." value="{{ request('keyword') }}" required>
                                     <div class="select-custom font2">
-                                        <select id="cat" name="cat">
+                                        <select id="cat" name="category">
                                             <option value="">All Categories</option>
-                                            <option value="4">Fashion</option>
-                                            <option value="12">- Women</option>
-                                            <option value="13">- Men</option>
-                                            <option value="66">- Jewellery</option>
-                                            <option value="67">- Kids Fashion</option>
-                                            <option value="5">Electronics</option>
-                                            <option value="21">- Smart TVs</option>
-                                            <option value="22">- Cameras</option>
-                                            <option value="63">- Games</option>
-                                            <option value="7">Home &amp; Garden</option>
-                                            <option value="11">Motors</option>
-                                            <option value="31">- Cars and Trucks</option>
-                                            <option value="32">- Motorcycles &amp; Powersports</option>
-                                            <option value="33">- Parts &amp; Accessories</option>
-                                            <option value="34">- Boats</option>
-                                            <option value="57">- Auto Tools &amp; Supplies</option>
+                                            @foreach($categories as $cat)
+                                                <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
+                                                    {{ $cat->ten_danh_muc }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div><!-- End .select-custom -->
                                     <button class="btn icon-magnifier" title="search" type="submit"></button>
@@ -283,7 +190,7 @@
                                 <a href="#" title="Close (Esc)" class="btn-close">×</a>
 
                                 <div class="dropdownmenu-wrapper custom-scrollbar">
-                                    <div class="dropdown-cart-header">Shopping Cart</div>
+                                    <div class="dropdown-cart-header">Giỏ hàng</div>
                                     <!-- End .dropdown-cart-header -->
 
                                     <div class="dropdown-cart-products">
@@ -300,8 +207,8 @@
                                             </div><!-- End .product-details -->
 
                                             <figure class="product-image-container">
-                                                <a href="demo27-product.html" class="product-image">
-                                                    <img src="assets/images/products/product-1.jpg" alt="product"
+                                                <a href="#" class="product-image">
+                                                    <img src="{{ asset('assets/images/products/product-1.jpg') }}" alt="product"
                                                         width="80" height="80">
                                                 </a>
 
@@ -322,8 +229,8 @@
                                             </div><!-- End .product-details -->
 
                                             <figure class="product-image-container">
-                                                <a href="demo27-product.html" class="product-image">
-                                                    <img src="assets/images/products/product-2.jpg" alt="product"
+                                                <a href="#" class="product-image">
+                                                    <img src="{{ asset('assets/images/products/product-2.jpg') }}" alt="product"
                                                         width="80" height="80">
                                                 </a>
 
@@ -344,8 +251,8 @@
                                             </div><!-- End .product-details -->
 
                                             <figure class="product-image-container">
-                                                <a href="demo27-product.html" class="product-image">
-                                                    <img src="assets/images/products/product-3.jpg" alt="product"
+                                                <a href="#" class="product-image">
+                                                    <img src="{{ asset('assets/images/products/product-3.jpg') }}" alt="product"
                                                         width="80" height="80">
                                                 </a>
                                                 <a href="#" class="btn-remove" title="Remove Product"><span>×</span></a>
@@ -360,9 +267,8 @@
                                     </div><!-- End .dropdown-cart-total -->
 
                                     <div class="dropdown-cart-action">
-                                        <a href="cart.html" class="btn btn-gray btn-block view-cart">View
-                                            Cart</a>
-                                        <a href="checkout.html" class="btn btn-dark btn-block">Checkout</a>
+                                        <a href="cart.html" class="btn btn-gray btn-block view-cart">Xem giỏ hàng</a>
+                                        <a href="checkout.html" class="btn btn-dark btn-block">Thanh toán</a>
                                     </div><!-- End .dropdown-cart-total -->
                                 </div><!-- End .dropdownmenu-wrapper -->
                             </div><!-- End .dropdown-menu -->
@@ -388,7 +294,7 @@
                         <i class="icon-shipping text-white"></i>
 
                         <div class="info-box-content">
-                            <h4 class="text-white">Free Shipping &amp; Return</h4>
+                            <h4 class="text-white">Miễn phí vận chuyển &amp; đổi trả</h4>
                         </div><!-- End .info-box-content -->
                     </div><!-- End .info-box -->
 
@@ -396,7 +302,7 @@
                         <i class="icon-money text-white"></i>
 
                         <div class="info-box-content">
-                            <h4 class="text-white">Money Back Guarantee</h4>
+                            <h4 class="text-white">Hoàn tiền nếu không hài lòng</h4>
                         </div><!-- End .info-box-content -->
                     </div><!-- End .info-box -->
 
@@ -404,7 +310,7 @@
                         <i class="icon-support text-white"></i>
 
                         <div class="info-box-content">
-                            <h4 class="text-white">Online Support 24/7</h4>
+                            <h4 class="text-white">Hỗ trợ trực tuyến 24/7</h4>
                         </div><!-- End .info-box-content -->
                     </div><!-- End .info-box -->
                 </div><!-- End .owl-carousel -->
@@ -425,7 +331,7 @@
                     <div class="info-box">
                         <i class="fab fa-instagram text-white mr-4"></i>
                         <div class="info-box-content">
-                            <h4 class="text-white line-height-1">Follow Us on Instagram</h4>
+                            <h4 class="text-white line-height-1">Theo dõi chúng tôi trên Instagram</h4>
                             <p class="line-height-1">@portoecommerce</p>
                         </div>
                     </div>
@@ -450,17 +356,17 @@
                                 }
                             }
                         }">
-                        <img src="assets/images/demoes/demo27/instagram/instagram1.jpg" alt="instagram"
+                        <img src="{{ asset('assets/images/demoes/demo27/instagram/instagram1.jpg') }}" alt="instagram"
                             width="240" height="240">
-                        <img src="assets/images/demoes/demo27/instagram/instagram2.jpg" alt="instagram"
+                        <img src="{{ asset('assets/images/demoes/demo27/instagram/instagram2.jpg') }}" alt="instagram"
                             width="240" height="240">
-                        <img src="assets/images/demoes/demo27/instagram/instagram3.jpg" alt="instagram"
+                        <img src="{{ asset('assets/images/demoes/demo27/instagram/instagram3.jpg') }}" alt="instagram"
                             width="240" height="240">
-                        <img src="assets/images/demoes/demo27/instagram/instagram4.jpg" alt="instagram"
+                        <img src="{{ asset('assets/images/demoes/demo27/instagram/instagram4.jpg') }}" alt="instagram"
                             width="240" height="240">
-                        <img src="assets/images/demoes/demo27/instagram/instagram5.jpg" alt="instagram"
+                        <img src="{{ asset('assets/images/demoes/demo27/instagram/instagram5.jpg') }}" alt="instagram"
                             width="240" height="240">
-                        <img src="assets/images/demoes/demo27/instagram/instagram6.jpg" alt="instagram"
+                        <img src="{{ asset('assets/images/demoes/demo27/instagram/instagram6.jpg') }}" alt="instagram"
                             width="240" height="240">
                     </div>
                 </div>
@@ -473,18 +379,16 @@
                         <i class="far fa-envelope text-white mr-4"></i>
                         <div class="widget-newsletter-info">
                             <h4 class="line-height-1 text-white">
-                                Get Special Offers and Savings
+                                Nhận ưu đãi và tiết kiệm đặc biệt
                             </h4>
-                            <p class="line-height-1">Get all the latest information on Events,
-                                Sales
-                                and Offers.</p>
+                            <p class="line-height-1">Nhận thông tin mới nhất về sự kiện, khuyến mãi và ưu đãi.</p>
                         </div>
                     </div>
                     <form action="#" class="my-3">
                         <div class="footer-submit-wrapper d-flex">
                             <input type="email" class="form-control font-italic"
-                                placeholder="Enter Your E-mail Address..." size="40" required>
-                            <button type="submit" class="btn btn-sm">Sign Up</button>
+                                placeholder="Nhập email của bạn..." size="40" required>
+                            <button type="submit" class="btn btn-sm">Đăng ký</button>
                         </div>
                     </form>
                 </div>
@@ -502,34 +406,34 @@
         <div class="footer-middle">
             <div class="row">
                 <div class="col-lg-3">
-                    <a href="demo27.html"><img src="assets/images/logo-white.png" alt="Logo" class="logo"></a>
+                    <a href="{{ route('client.index') }}"><img src="{{ asset('assets/images/logo-white.png') }}" alt="Logo" class="logo"></a>
 
-                    <p class="footer-desc">Lorem ipsum dolor sit amet, consectetur adipis.</p>
+                    <p class="footer-desc">Cửa hàng chuyên cung cấp sản phẩm chất lượng cao.</p>
 
                     <div class="ls-0 footer-question mb-3">
-                        <h6 class="mb-0 text-white">QUESTIONS?</h6>
+                        <h6 class="mb-0 text-white">CẦN HỖ TRỢ?</h6>
                         <h3 class="mb-0 text-primary">1-888-123-456</h3>
                     </div>
                 </div><!-- End .col-lg-3 -->
 
                 <div class="col-lg-3">
                     <div class="widget">
-                        <h4 class="widget-title">Account</h4>
+                        <h4 class="widget-title">Tài khoản</h4>
 
                         <div class="row">
                             <div class="col-md-6">
                                 <ul class="links">
-                                    <li><a href="dashboard.html">My Account</a></li>
-                                    <li><a href="#">Track Your Order</a></li>
-                                    <li><a href="#">Payment Methods</a></li>
-                                    <li><a href="#">Shipping Guide</a></li>
+                                    <li><a href="dashboard.html">Tài khoản của tôi</a></li>
+                                    <li><a href="#">Theo dõi đơn hàng</a></li>
+                                    <li><a href="#">Phương thức thanh toán</a></li>
+                                    <li><a href="#">Hướng dẫn vận chuyển</a></li>
                                 </ul>
                             </div>
                             <div class="col-md-6">
                                 <ul class="links">
-                                    <li><a href="#">FAQs</a></li>
-                                    <li><a href="#">Product Support</a></li>
-                                    <li><a href="#">Privacy</a></li>
+                                    <li><a href="#">Câu hỏi thường gặp</a></li>
+                                    <li><a href="#">Hỗ trợ sản phẩm</a></li>
+                                    <li><a href="#">Bảo mật</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -538,22 +442,22 @@
 
                 <div class="col-lg-3">
                     <div class="widget">
-                        <h4 class="widget-title">About</h4>
+                        <h4 class="widget-title">Về chúng tôi</h4>
 
                         <div class="row">
                             <div class="col-md-6">
                                 <ul class="links">
-                                    <li><a href="about.html">About Porto</a></li>
-                                    <li><a href="#">Our Guarantees</a></li>
-                                    <li><a href="#">Terms And Conditions</a></li>
-                                    <li><a href="#">Privacy policy</a></li>
+                                    <li><a href="about.html">Về Porto</a></li>
+                                    <li><a href="#">Cam kết của chúng tôi</a></li>
+                                    <li><a href="#">Điều khoản &amp; điều kiện</a></li>
+                                    <li><a href="#">Chính sách bảo mật</a></li>
                                 </ul>
                             </div>
                             <div class="col-md-6">
                                 <ul class="links">
-                                    <li><a href="#">Return Policy</a></li>
-                                    <li><a href="#">Intellectual Property Claims</a></li>
-                                    <li><a href="#">Site Map</a></li>
+                                    <li><a href="#">Chính sách đổi trả</a></li>
+                                    <li><a href="#">Khiếu nại bản quyền</a></li>
+                                    <li><a href="#">Sơ đồ trang</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -562,21 +466,19 @@
 
                 <div class="col-lg-3">
                     <div class="widget text-lg-right">
-                        <h4 class="widget-title">Features</h4>
+                        <h4 class="widget-title">Tính năng</h4>
 
                         <ul class="links">
-                            <li><a href="#">Powerful Admin Panel</a></li>
-                            <li><a href="#">Mobile &amp; Retina Optimized</a></li>
-                            <li><a href="#">Super Fast HTML Template</a></li>
+                            <li><a href="#">Quản trị mạnh mẽ</a></li>
+                            <li><a href="#">Tối ưu cho di động &amp; retina</a></li>
+                            <li><a href="#">Giao diện HTML siêu nhanh</a></li>
                         </ul>
                     </div><!-- End .widget -->
                 </div><!-- End .col-lg-3 -->
             </div><!-- End .row -->
         </div>
         <div class="footer-bottom">
-            <p class="footer-copyright text-lg-center mb-0">&copy; Porto eCommerce. 2021. All Rights
-                Reserved
-            </p>
+            <p class="footer-copyright text-lg-center mb-0">&copy; Porto eCommerce. 2021. Đã đăng ký bản quyền.</p>
         </div><!-- End .footer-bottom -->
     </div><!-- End .container -->
 </footer><!-- End .footer -->
@@ -597,9 +499,9 @@
     <span class="mobile-menu-close"><i class="fa fa-times"></i></span>
     <nav class="mobile-nav">
         <ul class="mobile-menu">
-            <li><a href="demo27.html">Home</a></li>
-            <li>
-                <a href="demo27-shop.html">Categories</a>
+                                <li><a href="{{ route('client.index') }}">Trang chủ</a></li>
+                                <li>
+                        <a href="{{ route('client.listproduct') }}">Danh mục</a>
                 <ul>
                     <li><a href="category.html">Full Width Banner</a></li>
                     <li><a href="category-banner-boxed-slider.html">Boxed Slider Banner</a></li>
@@ -621,7 +523,7 @@
                 </ul>
             </li>
             <li>
-                <a href="demo27-product.html">Products</a>
+                <a href="demo27-product.html">Sản phẩm</a>
                 <ul>
                     <li>
                         <a href="#" class="nolink">PRODUCT PAGES</a>
@@ -652,48 +554,48 @@
                 </ul>
             </li>
             <li>
-                <a href="#">Pages<span class="tip tip-hot">Hot!</span></a>
+                <a href="#">Trang<span class="tip tip-hot">Hot!</span></a>
                 <ul>
                     <li>
-                        <a href="wishlist.html">Wishlist</a>
+                        <a href="wishlist.html">Yêu thích</a>
                     </li>
                     <li>
-                        <a href="cart.html">Shopping Cart</a>
+                        <a href="cart.html">Giỏ hàng</a>
                     </li>
                     <li>
-                        <a href="checkout.html">Checkout</a>
+                        <a href="checkout.html">Thanh toán</a>
                     </li>
                     <li>
-                        <a href="dashboard.html">Dashboard</a>
+                        <a href="dashboard.html">Bảng điều khiển</a>
                     </li>
                     <li>
-                        <a href="login.html">Login</a>
+                        <a href="login.html">Đăng nhập</a>
                     </li>
                     <li>
-                        <a href="forgot-password.html">Forgot Password</a>
+                        <a href="forgot-password.html">Quên mật khẩu</a>
                     </li>
                 </ul>
             </li>
-            <li><a href="blog.html">Blog</a></li>
+            <li><a href="blog.html">Tin tức</a></li>
             <li>
-                <a href="#">Elements</a>
+                <a href="#">Thành phần</a>
                 <ul class="custom-scrollbar">
                     <li><a href="element-accordions.html">Accordion</a></li>
-                    <li><a href="element-alerts.html">Alerts</a></li>
-                    <li><a href="element-animations.html">Animations</a></li>
-                    <li><a href="element-banners.html">Banners</a></li>
-                    <li><a href="element-buttons.html">Buttons</a></li>
-                    <li><a href="element-call-to-action.html">Call to Action</a></li>
-                    <li><a href="element-countdown.html">Count Down</a></li>
-                    <li><a href="element-counters.html">Counters</a></li>
-                    <li><a href="element-headings.html">Headings</a></li>
-                    <li><a href="element-icons.html">Icons</a></li>
-                    <li><a href="element-info-box.html">Info box</a></li>
-                    <li><a href="element-posts.html">Posts</a></li>
-                    <li><a href="element-products.html">Products</a></li>
-                    <li><a href="element-product-categories.html">Product Categories</a></li>
-                    <li><a href="element-tabs.html">Tabs</a></li>
-                    <li><a href="element-testimonial.html">Testimonials</a></li>
+                    <li><a href="element-alerts.html">Thông báo</a></li>
+                    <li><a href="element-animations.html">Hiệu ứng</a></li>
+                    <li><a href="element-banners.html">Banner</a></li>
+                    <li><a href="element-buttons.html">Nút bấm</a></li>
+                    <li><a href="element-call-to-action.html">Kêu gọi hành động</a></li>
+                    <li><a href="element-countdown.html">Đếm ngược</a></li>
+                    <li><a href="element-counters.html">Bộ đếm</a></li>
+                    <li><a href="element-headings.html">Tiêu đề</a></li>
+                    <li><a href="element-icons.html">Biểu tượng</a></li>
+                    <li><a href="element-info-box.html">Hộp thông tin</a></li>
+                    <li><a href="element-posts.html">Bài viết</a></li>
+                    <li><a href="element-products.html">Sản phẩm</a></li>
+                    <li><a href="element-product-categories.html">Danh mục sản phẩm</a></li>
+                    <li><a href="element-tabs.html">Tab</a></li>
+                    <li><a href="element-testimonial.html">Khách hàng nói</a></li>
                 </ul>
             </li>
         </ul>
@@ -701,29 +603,29 @@
         <ul class="mobile-menu mt-2 mb-2">
             <li class="border-0">
                 <a href="#">
-                    Special Offer!
+                    Ưu đãi đặc biệt!
                 </a>
             </li>
             <li class="border-0">
                 <a href="https://1.envato.market/DdLk5" target="_blank">
-                    Buy Porto!
+                    Mua Porto!
                     <span class="tip tip-hot">Hot</span>
                 </a>
             </li>
         </ul>
 
         <ul class="mobile-menu">
-            <li><a href="login.html">My Account</a></li>
-            <li><a href="contact.html">Contact Us</a></li>
-            <li><a href="blog.html">Blog</a></li>
-            <li><a href="wishlist.html">My Wishlist</a></li>
-            <li><a href="cart.html">Cart</a></li>
-            <li><a href="login.html" class="login-link">Log In</a></li>
+            <li><a href="login.html">Tài khoản của tôi</a></li>
+            <li><a href="contact.html">Liên hệ</a></li>
+            <li><a href="blog.html">Tin tức</a></li>
+            <li><a href="wishlist.html">Yêu thích</a></li>
+            <li><a href="cart.html">Giỏ hàng</a></li>
+            <li><a href="login.html" class="login-link">Đăng nhập</a></li>
         </ul>
     </nav><!-- End .mobile-nav -->
 
     <form class="search-wrapper mb-2" action="#">
-        <input type="text" class="form-control mb-0" placeholder="Search..." required />
+        <input type="text" class="form-control mb-0" placeholder="Tìm kiếm..." required />
         <button class="btn icon-search text-white bg-transparent p-0" type="submit"></button>
     </form>
 
@@ -739,81 +641,49 @@
 </div><!-- End .mobile-menu-container -->
 
 <div class="sticky-navbar">
-<div class="sticky-info">
-    <a href="demo27.html">
-        <i class="icon-home"></i>Home
-    </a>
-</div>
-<div class="sticky-info">
-    <a href="demo27-shop.html" class="">
-        <i class="icon-bars"></i>Categories
-    </a>
-</div>
+    <div class="sticky-info">
+        <a href="{{ route('client.index') }}">
+            <i class="icon-home"></i>Trang chủ
+        </a>
+    </div>
+    <div class="sticky-info">
+        <a href="{{ route('client.listproduct') }}" class="">
+            <i class="icon-bars"></i>Danh mục
+        </a>
+    </div>
 <div class="sticky-info">
     <a href="wishlist.html" class="">
-        <i class="icon-wishlist-2"></i>Wishlist
+        <i class="icon-wishlist-2"></i>Yêu thích
     </a>
 </div>
 <div class="sticky-info">
     <a href="login.html" class="">
-        <i class="icon-user-2"></i>Account
+        <i class="icon-user-2"></i>Tài khoản
     </a>
 </div>
 <div class="sticky-info">
     <a href="cart.html" class="">
         <i class="icon-shopping-cart position-relative">
             <span class="cart-count badge-circle">3</span>
-        </i>Cart
+        </i>Giỏ hàng
     </a>
 </div>
 </div>
 
-<div class="newsletter-popup mfp-hide bg-img" id="newsletter-popup-form"
-style="background: #f1f1f1 no-repeat center/cover url(assets/images/newsletter_popup_bg.jpg)">
-<div class="newsletter-popup-content">
-    <img src="assets/images/logo-black.png" alt="Logo" class="logo-newsletter" width="111" height="44">
-    <h2>Subscribe to newsletter</h2>
-
-    <p>
-        Subscribe to the Porto mailing list to receive updates on new
-        arrivals, special offers and our promotions.
-    </p>
-
-    <form action="#">
-        <div class="input-group">
-            <input type="email" class="form-control" id="newsletter-email" name="newsletter-email"
-                placeholder="Your email address" required />
-            <input type="submit" class="btn btn-primary" value="Submit" />
-        </div>
-    </form>
-    <div class="newsletter-subscribe">
-        <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" value="0" id="show-again" />
-            <label for="show-again" class="custom-control-label">
-                Don't show this popup again
-            </label>
-        </div>
-    </div>
-</div><!-- End .newsletter-popup-content -->
-
-<button title="Close (Esc)" type="button" class="mfp-close">
-    ×
-</button>
-</div><!-- End .newsletter-popup -->
-
-<a id="scroll-top" href="#top" title="Top" role="button"><i class="icon-angle-up"></i></a>
+<a id="scroll-top" href="#top" title="Lên đầu trang" role="button"><i class="icon-angle-up"></i></a>
 
 <!-- Plugins JS File -->
-<script src="assets/js/jquery.min.js"></script>
-<script src="assets/js/bootstrap.bundle.min.js"></script>
-<script src="assets/js/plugins.min.js"></script>
-<script src="assets/js/optional/isotope.pkgd.min.js"></script>
-<script src="assets/js/jquery.appear.min.js"></script>
-<script src="assets/js/jquery.plugin.min.js"></script>
+<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+<script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('assets/js/plugins.min.js') }}"></script>
+<script src="{{ asset('assets/js/nouislider.min.js') }}"></script>
+<script src="{{ asset('assets/js/optional/isotope.pkgd.min.js') }}"></script>
+<script src="{{ asset('assets/js/jquery.appear.min.js') }}"></script>
+<script src="{{ asset('assets/js/jquery.plugin.min.js') }}"></script>
 
 
 <!-- Main JS File -->
-<script src="assets/js/main.min.js"></script>
+<script src="{{ asset('assets/js/main.min.js') }}"></script>
 </body>
 
 

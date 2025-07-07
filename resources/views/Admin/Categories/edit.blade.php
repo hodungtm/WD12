@@ -1,91 +1,111 @@
-@extends('Admin.Layouts.AdminLayout')
+@extends('admin.layouts.AdminLayout')
+
 @section('main')
+  <div class="main-content-inner">
+    <div class="main-content-wrap">
+      <div class="flex items-center flex-wrap justify-between gap20 mb-30">
+        <h3>Sửa danh mục</h3>
+        <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+          <li><a href="{{ route('admin.dashboard') }}"><div class="text-tiny">Bảng điều khiển</div></a></li>
+          <li><i class="icon-chevron-right"></i></li>
+          <li><a href="{{ route('Admin.categories.index') }}"><div class="text-tiny">Danh mục</div></a></li>
+          <li><i class="icon-chevron-right"></i></li>
+          <li><div class="text-tiny">Sửa danh mục</div></li>
+        </ul>
+      </div>
 
-<div class="main-content-inner">
-  <div class="main-content-wrap">
-    <div class="flex items-center flex-wrap justify-between gap20 mb-27">
-      <h3>Sửa danh mục</h3>
-      <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-        <li><a href="{{ route('Admin.categories.index') }}"><div class="text-tiny">Dashboard</div></a></li>
-        <li><i class="icon-chevron-right"></i></li>
-        <li><a href="{{ route('Admin.categories.index') }}"><div class="text-tiny">Danh mục</div></a></li>
-        <li><i class="icon-chevron-right"></i></li>
-        <li><div class="text-tiny">Sửa danh mục</div></li>
-      </ul>
-    </div>
+      <div class="wg-box">
+        <form class="form-new-product form-style-1" action="{{ route('Admin.categories.update', $category->id) }}" method="POST" enctype="multipart/form-data">
+          @csrf
+          @method('PUT')
 
-    <div class="wg-box">
-      <form action="{{ route('Admin.categories.update', $category->id) }}" method="POST" enctype="multipart/form-data" class="form-style-1 form-new-product">
-        @csrf
-        @method('PUT')
+          {{-- Tên danh mục --}}
+          <fieldset class="name">
+            <div class="body-title">Tên danh mục <span class="tf-color-1">*</span></div>
+            <input class="flex-grow" type="text" name="ten_danh_muc" placeholder="Nhập tên danh mục" value="{{ old('ten_danh_muc', $category->ten_danh_muc) }}" required>
+            @error('ten_danh_muc')
+              <small class="text-danger">{{ $message }}</small>
+            @enderror
+          </fieldset>
 
-        {{-- Tên danh mục --}}
-        <fieldset class="name">
-          <div class="body-title">Tên danh mục <span class="tf-color-1">*</span></div>
-          <input type="text" name="ten_danh_muc" class="flex-grow" placeholder="Nhập tên danh mục" value="{{ old('ten_danh_muc', $category->ten_danh_muc) }}" required>
-          @error('ten_danh_muc')
-            <div class="text-danger mt-1">{{ $message }}</div>
-          @enderror
-        </fieldset>
+          {{-- Ảnh hiện tại --}}
+          <fieldset>
+            <div class="body-title">Ảnh hiện tại</div>
+            @if($category->anh)
+              <img id="current-image" src="{{ asset('storage/' . $category->anh) }}" alt="Ảnh danh mục" style="max-width: 120px; max-height: 120px; border-radius: 8px; border: 1px solid #eee; margin-bottom: 10px;">
+            @else
+              <div class="body-text text-muted">Không có ảnh</div>
+            @endif
+          </fieldset>
 
-        {{-- Ảnh hiện tại --}}
-        <fieldset>
-          <div class="body-title">Ảnh hiện tại</div>
-          @if($category->anh)
-            <img src="{{ asset('storage/' . $category->anh) }}" width="100" class="mb-2" alt="Ảnh danh mục">
-          @else
-            <div class="body-text text-muted">Không có ảnh</div>
-          @endif
-        </fieldset>
-
-        {{-- Ảnh mới --}}
-        <fieldset>
-          <div class="body-title">Đổi ảnh</div>
-          <div class="upload-image flex-grow">
-            <div class="item up-load">
-              <label class="uploadfile" for="anh">
-                <span class="icon"><i class="icon-upload-cloud"></i></span>
-                <span class="body-text">Chọn ảnh mới hoặc kéo thả</span>
-                <input type="file" id="anh" name="anh" accept="image/*">
-              </label>
+          {{-- Ảnh mới --}}
+          <fieldset>
+            <div class="body-title">Đổi ảnh</div>
+            <div class="upload-image flex-grow">
+              <div class="item up-load">
+                <label class="uploadfile h250" for="anh">
+                  <span class="icon"><i class="icon-upload-cloud"></i></span>
+                  <span class="body-text">Kéo thả hoặc chọn <span class="tf-color">tải ảnh lên</span></span>
+                  <input type="file" id="anh" name="anh" accept="image/*" onchange="previewImage(event)">
+                </label>
+                <div style="margin-top: 10px; text-align: center;">
+                  <img id="preview-image" src="#" alt="Preview" style="display:none; max-width: 200px; max-height: 200px; border-radius: 8px; border: 1px solid #eee;">
+                </div>
+              </div>
             </div>
+            @error('anh')
+              <small class="text-danger">{{ $message }}</small>
+            @enderror
+          </fieldset>
+
+          {{-- Mô tả --}}
+          <fieldset class="category">
+            <div class="body-title">Mô tả</div>
+            <textarea name="mo_ta" class="flex-grow" rows="3" placeholder="Nhập mô tả...">{{ old('mo_ta', $category->mo_ta) }}</textarea>
+            @error('mo_ta')
+              <small class="text-danger">{{ $message }}</small>
+            @enderror
+          </fieldset>
+
+          {{-- Tình trạng --}}
+          <fieldset class="category">
+            <div class="body-title">Tình trạng</div>
+            <div class="select flex-grow">
+              <select name="tinh_trang" required>
+                <option value="1" {{ old('tinh_trang', $category->tinh_trang) == 1 ? 'selected' : '' }}>Hiện</option>
+                <option value="0" {{ old('tinh_trang', $category->tinh_trang) == 0 ? 'selected' : '' }}>Ẩn</option>
+              </select>
+            </div>
+            @error('tinh_trang')
+              <small class="text-danger">{{ $message }}</small>
+            @enderror
+          </fieldset>
+
+          {{-- Nút cập nhật --}}
+          <div class="bot mt-4">
+            <div></div>
+            <button class="tf-button w208" type="submit">Cập nhật</button>
           </div>
-          @error('anh')
-            <div class="text-danger mt-1">{{ $message }}</div>
-          @enderror
-        </fieldset>
-
-        {{-- Tình trạng --}}
-        <fieldset class="category">
-          <div class="body-title">Tình trạng</div>
-          <div class="select flex-grow">
-            <select name="tinh_trang" required>
-              <option value="1" {{ old('tinh_trang', $category->tinh_trang) == 1 ? 'selected' : '' }}>Hiện</option>
-              <option value="0" {{ old('tinh_trang', $category->tinh_trang) == 0 ? 'selected' : '' }}>Ẩn</option>
-            </select>
-          </div>
-          @error('tinh_trang')
-            <div class="text-danger mt-1">{{ $message }}</div>
-          @enderror
-        </fieldset>
-
-        {{-- Mô tả --}}
-        <fieldset class="name">
-          <div class="body-title">Mô tả</div>
-          <textarea name="mo_ta" class="flex-grow" rows="4" placeholder="Nhập mô tả">{{ old('mo_ta', $category->mo_ta) }}</textarea>
-          @error('mo_ta')
-            <div class="text-danger mt-1">{{ $message }}</div>
-          @enderror
-        </fieldset>
-
-        {{-- Nút cập nhật --}}
-        <div class="bot mt-4">
-          <div></div>
-          <button type="submit" class="tf-button w208">Cập nhật</button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   </div>
-</div>
 
+  <script>
+    function previewImage(event) {
+      const input = event.target;
+      const preview = document.getElementById('preview-image');
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+      } else {
+        preview.src = '#';
+        preview.style.display = 'none';
+      }
+    }
+  </script>
 @endsection

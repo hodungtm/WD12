@@ -56,27 +56,14 @@ class ReviewController extends Controller
         $review = Review::findOrFail($id);
 
         $request->validate([
-            'so_sao' => 'required|integer|min:1|max:5',
-            'noi_dung' => 'required|string',
             'trang_thai' => 'required|boolean',
         ], [
-            'so_sao.required' => 'Vui lòng nhập số sao đánh giá.',
-            'so_sao.integer' => 'Số sao phải là số nguyên.',
-            'so_sao.min' => 'Số sao tối thiểu là 1.',
-            'so_sao.max' => 'Số sao tối đa là 5.',
-
-            'noi_dung.required' => 'Vui lòng nhập nội dung đánh giá.',
-            'noi_dung.string' => 'Nội dung đánh giá phải là chuỗi ký tự.',
-
             'trang_thai.required' => 'Vui lòng chọn trạng thái.',
             'trang_thai.boolean' => 'Trạng thái không hợp lệ.',
         ]);
 
-        $review->update([
-            'so_sao' => $request->so_sao,
-            'noi_dung' => $request->noi_dung,
-            'trang_thai' => $request->trang_thai,
-        ]);
+        $review->trang_thai = $request->trang_thai;
+        $review->save();
 
         return redirect()->route('Admin.reviews.index')->with('success', 'Cập nhật đánh giá thành công!');
     }
@@ -94,26 +81,5 @@ class ReviewController extends Controller
         return redirect()->route('Admin.reviews.index')->with('success', 'Xóa đánh giá thành công (xóa mềm).');
     }
 
-    // Danh sách bản ghi đã xóa mềm
-    public function trash()
-    {
-        $reviews = Review::onlyTrashed()->paginate(10);
-        return view('Admin.reviews.trash', compact('reviews'));
-    }
-
-    // Khôi phục
-    public function restore($id)
-    {
-        $review = Review::onlyTrashed()->where('id', $id)->firstOrFail();
-        $review->restore();
-        return redirect()->route('Admin.reviews.trash')->with('success', 'Khôi phục đánh giá thành công.');
-    }
-
-    // Xóa vĩnh viễn
-    public function forceDelete($id)
-    {
-        $review = Review::onlyTrashed()->where('id', $id)->firstOrFail();
-        $review->forceDelete();
-        return redirect()->route('Admin.reviews.trash')->with('success', 'Xóa đánh giá vĩnh viễn thành công.');
-    }
+    
 }

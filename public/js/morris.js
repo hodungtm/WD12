@@ -23,7 +23,7 @@
         {label: "Website", value: 4.432},
         {label: "Store", value: 5.432},
     ];
-    this.createDonutChart('morris-donut-1', $donutData, ['#FF7433', '#2377FC', '#8F77F3']);
+    this.createDonutChart('morris-donut-1', $donutData, ['#4db7b3', '#2377FC', '#8F77F3']);
   },
 
   $.MorrisCharts = new MorrisCharts, $.MorrisCharts.Constructor = MorrisCharts
