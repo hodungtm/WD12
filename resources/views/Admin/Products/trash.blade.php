@@ -1,24 +1,23 @@
 @extends('admin.layouts.AdminLayout')
-
 @section('main')
     <div class="row">
         <div class="col-md-12">
             <div class="tile card shadow-sm rounded-3 border-0">
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                    </div>
-                @endif
-
-                @if (session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ session('error') }}
-                    </div>
-                @endif
-
                 <div class="tile-body p-4">
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
                     <div class="wg-box">
-                        <div class="flex items-center justify-content-between gap10 flex-wrap">
+                        <div class="flex items-center justify-between gap10 flex-wrap">
                             <div class="wg-filter flex-grow">
                                 <form action="{{ route('products.index') }}" method="GET" class="form-search">
                                     <fieldset class="name">
@@ -30,9 +29,10 @@
                                     </div>
                                 </form>
                             </div>
+
                             <a class="tf-button style-1 w208 btn btn-outline-success btn-sm me-1 mb-1"
-                                href="{{ route('products.create') }}">
-                                <i class="fas fa-plus me-2"></i> Thêm sản phẩm
+                                href="{{ route('products.index') }}">
+                                <i class="fas fa-arrow-left me-2"></i> Quay lại danh sách
                             </a>
 
                             <a href="{{ route('trash') }}" class="item eye" title="Thùng rác">
@@ -66,13 +66,13 @@
                                     <div class="body-title">Ngày tạo</div>
                                 </li>
                                 <li>
-                                    <div class="body-title">Thao tác</div>
+                                    <div class="body-title">Hành động</div>
                                 </li>
                             </ul>
 
                             <ul class="flex flex-column">
                                 @foreach ($products as $product)
-                                    @if ($product->status == 1)
+                                    @if ($product->status == 0)
                                         @php
                                             $variant = $product->variants->first();
                                         @endphp
@@ -95,32 +95,29 @@
                                                 {{ $variant ? number_format($variant->price, 0, ',', '.') . ' VND' : 'Chưa có giá' }}
                                             </div>
                                             <div class="body-text mt-4">
-                                                {{ $variant ? number_format($variant->sale_price, 0, ',', '.') . ' VND' : 'Chưa có KM' }}
+                                                {{ $variant ? number_format($variant->sale_price, 0, ',', '.') . ' VND' : 'Không có KM' }}
                                             </div>
                                             <div class="body-text mt-4">
                                                 {{ $product->category->ten_danh_muc ?? 'Không có danh mục' }}
                                             </div>
                                             <div>
                                                 <div class="{{ $product->status == 1 ? 'block-available' : 'block-stock' }} bg-1 fw-7">
-                                                    {{ $product->status == 1 ? 'Hiển thị' : 'Ẩn' }}
+                                                    {{ $product->status == 1 ? 'Hiển thị' : 'Đã xóa' }}
                                                 </div>
                                             </div>
                                             <div class="body-text mt-4">
                                                 {{ $product->created_at->format('d/m/Y H:i') }}
                                             </div>
                                             <div class="list-icon-function">
-                                                <a href="{{ route('products.show', $product->id) }}" class="item eye" title="Xem chi tiết">
-                                                    <i class="icon-eye"></i>
-                                                </a>
-                                                <a href="{{ route('products.edit', $product->id) }}" class="item edit" title="Chỉnh sửa">
-                                                    <i class="icon-edit-3"></i>
+                                                <a href="{{ route('restore', $product->id) }}" class="item restore" title="Khôi phục sản phẩm">
+                                                    <i class="bi bi-arrow-clockwise"></i>
                                                 </a>
                                                 <form action="{{ route('products.softDelete', $product->id) }}" method="POST"
-                                                    onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');"
+                                                    onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi hệ thống vĩnh viễn?');"
                                                     style="display:inline;">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" style="color: red" title="Xóa sản phẩm">
+                                                    <button type="submit" style="color: red" title="Xóa vĩnh viễn">
                                                         <i class="icon-trash"></i>
                                                     </button>
                                                 </form>
@@ -133,7 +130,7 @@
 
                         <div class="divider"></div>
                         <div class="flex items-center justify-between flex-wrap gap10">
-                            <div class="text-tiny">Hiển thị từ {{ $products->firstItem() }} đến {{ $products->lastItem() }} trong tổng số {{ $products->total() }} sản phẩm</div>
+                            <div class="text-tiny">Hiển thị từ {{ $products->firstItem() }} đến {{ $products->lastItem() }} trong tổng số {{ $products->total() }} sản phẩm đã xoá</div>
                             {{ $products->links('pagination::bootstrap-5') }}
                         </div>
                     </div>

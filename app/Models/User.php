@@ -35,7 +35,7 @@ class User extends Authenticatable
     protected $attributes = [
         'role' => self::ROLE_USER,
     ];
-
+    
     public function isRoleAdmin()
     {
         return $this->role === self::ROLE_ADMIN;
