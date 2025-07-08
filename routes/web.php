@@ -1,21 +1,18 @@
 <?php
-use App\Models\Brand;
-use App\Exports\DiscountsExport;
+
 use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Facades\Excel;
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\BrandController;
+
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CatalogController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\AuditLogController;
+
 use App\Http\Controllers\ProductsController;
-use App\Http\Controllers\AttributeController;
+
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Client\CartController;
@@ -23,7 +20,6 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\CommentController;
 
-use App\Http\Controllers\UserDashboardController;
 
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DiscountController;
@@ -33,26 +29,19 @@ use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\ProductDetailController;
 use App\Http\Controllers\Client\ListProductClientController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Controllers\Client\HomeController as ClientHomeController;
+
+
 Route::prefix('admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 });
 
-
-
-
 Route::prefix('client')->name('client.')->group(function () {
-
- 
-
-    Route::get('/index', [ClientHomeController::class, 'index']);
-
+    Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
     Route::get('/san-pham', [ListProductClientController::class, 'index'])->name('listproduct');
-
     Route::get('/san-pham/{id}', [ProductDetailController::class, 'show'])->name('product.detail');
     Route::post('/san-pham/{id}/danh-gia', [ProductDetailController::class, 'submitReview'])->name('product.review');
+    Route::put('/san-pham/{product}/danh-gia/{review}', [ProductDetailController::class, 'updateReview'])->name('product.review.update');
     Route::post('/san-pham/{id}/binh-luan', [ProductDetailController::class, 'submitComment'])->name('product.comment');
-
   Route::middleware(['auth'])->group(function () {
         // Giỏ hàng
         Route::prefix('cart')->name('cart.')->group(function () {
@@ -64,11 +53,7 @@ Route::prefix('client')->name('client.')->group(function () {
 
         // Thanh toán
         Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
-
         Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
-
-Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
-
         Route::get('/don-hang-thanh-cong/{order}', [CheckoutController::class, 'success'])->name('order.success');
 
     });
@@ -108,7 +93,7 @@ Route::prefix('admin')->name('Admin.')->group(function () {
     Route::get('/comments/trash', [CommentController::class, 'trash'])->name('comments.trash');
     Route::post('/comments/restore/{id}', [CommentController::class, 'restore'])->name('comments.restore');
     Route::delete('/comments/force-delete/{id}', [CommentController::class, 'forceDelete'])->name('comments.forceDelete');
-Route::get('/comments/{id}/edit', [CommentController::class, 'edit'])->name('comments.edit');
+    Route::get('/comments/{id}/edit', [CommentController::class, 'edit'])->name('comments.edit');
     Route::put('/comments/{id}', [CommentController::class, 'update'])->name('comments.update');
     Route::post('/comments/{id}/approve', [CommentController::class, 'approve'])->name('comments.approve');
     Route::get('/comments/{id}', [CommentController::class, 'show'])->name('comments.show');
@@ -126,24 +111,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/admin/discounts/{id}', [DiscountController::class, 'show'])->name('discounts.show');
 });Route::post('admin/discounts/import-excel', [DiscountController::class, 'importExcel'])->name('discounts.importExcel');
 
-//// ADMIM POST----------------------------------------------------////////////
-Route::prefix('admin')->group(function () {
-    Route::resource('posts', PostController::class);
-});
-Route::delete('/posts/delete-selected', [PostController::class, 'deleteSelected'])->name('posts.delete.selected');
-///----------------------------------------------------------------/////////////////
-
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('banners', BannerController::class);
 });
 
-// Quản lý tài khoản Admin và Role
-// Route::prefix('admin')->name('admin.')->group(function () {
-//     Route::resource('admins', AdminController::class);
-//     // Route::resource('roles', RoleController::class);
-// });
 
-Route::get('admin/audit-logs', [AuditLogController::class, 'index'])->name('admin.audit_logs.index');
 // Quản lý tài khoản
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', AdminUserController::class);
@@ -158,17 +130,17 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 // Auth routes
 Auth::routes();
+
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-
-
 
 Route::get('user/dashboard', [AccountController::class, 'dashboard'])->name('user.dashboard');
 
 
-////// producst/////////////////////////////////////
-Route::prefix('admin')->group(function () {
-    Route::resource('products', ProductsController::class);
+//------------------------------------------------------ producst ------------------------------------------------------>
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+
+    Route::get('/trash', [ProductsController::class, 'trash'])->name('trash');
+    Route::get('/products/{id}/restore/', [ProductsController::class, 'restore'])->name('restore');
 
     // Xóa ảnh phụ
     Route::delete('/products/image/{id}', [ProductsController::class, 'destroyImage'])->name('products.image.destroy');
@@ -188,17 +160,26 @@ Route::prefix('admin')->group(function () {
     Route::post('/catalog/color/store', [CatalogController::class, 'storeColor'])->name('catalog.color.store');
     Route::put('/catalog/color/{color}', [CatalogController::class, 'updateColor'])->name('catalog.color.update');
     Route::delete('/catalog/color/{color}', [CatalogController::class, 'destroyColor'])->name('catalog.color.destroy');
+
+
+    Route::delete('/products/delete-selected', [ProductsController::class, 'softDeleteSelected'])->name('products.delete.selected');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::resource('products', ProductsController::class);
+    
 });
+//------------------------------------------------------------------------------------------------------------>
+
+// ---------------------------------------ADMIM POST---------------------------------------------------------->
+Route::prefix('admin')->group(function () {
+    Route::post('admin/discounts/import-excel', [DiscountController::class, 'importExcel'])->name('discounts.importExcel');
+    Route::delete('/posts/delete-selected', [PostController::class, 'deleteSelected'])->name('posts.delete.selected');
+    Route::resource('posts', PostController::class);
+});
+//----------------------------------------------------------------------------------------------------------------------------->
+
+Route::get('/search', [App\Http\Controllers\Client\ListProductClientController::class, 'index'])->name('client.search');
+
+Route::delete('/discounts/bulk-delete', [DiscountController::class, 'bulkDelete'])->name('admin.discounts.bulkDelete');
 
 
-
-// Route::get('/user/dashboard', [UserDashboardController::class, 'index']);
-
-
-
-Route::delete('/products/delete-selected', [ProductsController::class, 'softDeleteSelected'])->name('products.delete.selected');
-
-
-
-// Route::get('/user/dashboard', [UserDashboardController::class, 'index']);
 

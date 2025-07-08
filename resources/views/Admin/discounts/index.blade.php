@@ -44,7 +44,7 @@
                 </div>
             </div>
 
-            <form action="{{ route('admin.discounts.trashed') }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa các mã đã chọn?');">
+            <form action="{{ route('admin.discounts.bulkDelete') }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa các mã đã chọn?');">
                 @csrf
                 @method('DELETE')
                 <div class="wg-table table-all-category mt-3">
@@ -62,7 +62,7 @@
                         <li style="width: 7%">Loại</li>
                         <li style="width: 7%">Hành động</li>
                     </ul>
-                    <ul class="flex flex-column">
+                    <ul class="flex flex-column" id="discount-list">
                         @forelse ($discounts as $discount)
                         <li class="product-item flex mb-10">
                             <div style="width: 3%"><input type="checkbox" name="selected_discounts[]" value="{{ $discount->id }}" class="check_item"></div>
@@ -98,8 +98,9 @@
                             <div class="col-action list-icon-function" style="width: 7%">
                                 <a href="{{ route('admin.discounts.show', $discount->id) }}" class="item eye" title="Xem"><i class="icon-eye"></i></a>
                                 <a href="{{ route('admin.discounts.edit', $discount) }}" class="item edit" title="Sửa"><i class="icon-edit-3"></i></a>
-                                <form action="{{ route('admin.discounts.destroy', $discount) }}" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa?');">
-                                    @csrf @method('DELETE')
+                                <form action="{{ route('admin.discounts.destroy', $discount) }}" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa mã này?');">
+                                    @csrf
+                                    @method('DELETE')
                                     <button type="submit" class="item trash" style="background: none; border: none;"><i class="icon-trash-2"></i></button>
                                 </form>
                             </div>
@@ -116,9 +117,9 @@
             </form>
 
             <div class="divider mt-3"></div>
-            <div class="flex items-center justify-between flex-wrap gap10">
+            <div class="flex items-center justify-between flex-wrap gap10" id="pagination-links">
                 <div class="text-tiny">Tổng: {{ $discounts->total() }} mã giảm giá</div>
-                {{ $discounts->links('pagination::bootstrap-5') }}
+                <div class="ajax-pagination">{!! $discounts->links('pagination::bootstrap-5') !!}</div>
             </div>
         </div>
     </div>
@@ -137,6 +138,32 @@
                 alertBox.style.opacity = 0;
                 setTimeout(() => alertBox.remove(), 500);
             }, 3000);
+        }
+    });
+
+    document.addEventListener("click", function (e) {
+        if (e.target.closest('.ajax-pagination a')) {
+            e.preventDefault();
+            let url = e.target.closest('a').href;
+
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                const newList = doc.getElementById('discount-list');
+                const newPagination = doc.getElementById('pagination-links');
+
+                document.getElementById('discount-list').innerHTML = newList.innerHTML;
+                document.getElementById('pagination-links').innerHTML = newPagination.innerHTML;
+
+                window.history.pushState({}, '', url);
+            });
         }
     });
 </script>

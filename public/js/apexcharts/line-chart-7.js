@@ -50,7 +50,7 @@
           legend: {
             show: false,
           },
-          colors: ['#FF7433', '#8F77F3'],
+          colors: ['#4db7b3', '#8F77F3'],
           stroke: {
             width: [0, 3],
             curve: 'smooth'

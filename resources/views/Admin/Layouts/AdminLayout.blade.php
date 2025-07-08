@@ -89,38 +89,27 @@
                                     </li>
                                     <li class="menu-item has-children">
                                         <a href="javascript:void(0);" class="menu-item-button">
-                                            <div class="icon"><i class="icon-file-plus"></i></div>
-                                            <div class="text">Product</div>
+                                            <div class="icon"><i class="icon-shopping-cart"></i></div>
+                                            <div class="text">Đơn hàng</div>
                                         </a>
                                         <ul class="sub-menu">
-                                            <li class="sub-menu-item">
-                                                <a href="product-list.html" class="">
-                                                    <div class="text">All Products</div>
-                                                </a>
-                                            </li>
-                                            <li class="sub-menu-item">
-                                                <a href="add-product.html" class="">
-                                                    <div class="text">Add Product</div>
-                                                </a>
-                                            </li>
+                                            <li class="sub-menu-item"><a href="{{ route('admin.orders.index') }}">
+                                                    <div class="text">Danh sách đơn hàng</div>
+                                                </a></li>
                                         </ul>
                                     </li>
                                     <li class="menu-item has-children">
                                         <a href="javascript:void(0);" class="menu-item-button">
                                             <div class="icon"><i class="icon-layers"></i></div>
-                                            <div class="text">Category</div>
+                                            <div class="text">Danh mục</div>
                                         </a>
                                         <ul class="sub-menu">
-                                            <li class="sub-menu-item">
-                                                <a href="category-list.html" class="">
-                                                    <div class="text">Category list</div>
-                                                </a>
-                                            </li>
-                                            <li class="sub-menu-item">
-                                                <a href="new-category.html" class="">
-                                                    <div class="text">New category</div>
-                                                </a>
-                                            </li>
+                                            <li class="sub-menu-item"><a href="{{ route('Admin.categories.index') }}">
+                                                    <div class="text">Danh sách danh mục</div>
+                                                </a></li>
+                                            <li class="sub-menu-item"><a href="{{ route('Admin.categories.create') }}">
+                                                    <div class="text">Thêm danh mục</div>
+                                                </a></li>
                                         </ul>
                                     </li>
                                     <li class="menu-item has-children">
@@ -136,16 +125,9 @@
                                             <div class="text">Attributes</div>
                                         </a>
                                         <ul class="sub-menu">
-                                            <li class="sub-menu-item">
-                                                <a href="attributes.html" class="">
-                                                    <div class="text">Attributes</div>
-                                                </a>
-                                            </li>
-                                            <li class="sub-menu-item">
-                                                <a href="add-attributes.html" class="">
-                                                    <div class="text">Add attributes</div>
-                                                </a>
-                                            </li>
+                                            <li class="sub-menu-item"><a href="{{ route('Admin.comments.index') }}">
+                                                    <div class="text">Danh sách bình luận</div>
+                                                </a></li>
                                         </ul>
                                     </li>
                                     <li class="menu-item has-children">
@@ -161,58 +143,72 @@
                                             <div class="text">Order</div>
                                         </a>
                                         <ul class="sub-menu">
-                                            <li class="sub-menu-item">
-                                                <a href="oder-list.html" class="">
-                                                    <div class="text">Order list</div>
-                                                </a>
-                                            </li>
-                                            <li class="sub-menu-item">
-                                                <a href="oder-detail.html" class="">
-                                                    <div class="text">Order detail</div>
-                                                </a>
-                                            </li>
-                                            <li class="sub-menu-item">
-                                                <a href="oder-tracking.html" class="">
-                                                    <div class="text">Order tracking</div>
-                                                </a>
-                                            </li>
+                                            <li class="sub-menu-item"><a href="{{ route('Admin.reviews.index') }}">
+                                                    <div class="text">Danh sách đánh giá</div>
+                                                </a></li>
                                         </ul>
                                     </li>
                                     <li class="menu-item has-children">
                                         <a href="javascript:void(0);" class="menu-item-button">
                                             <div class="icon"><i class="icon-user"></i></div>
-                                            <div class="text">Users</div>
+                                            <div class="text">Người dùng</div>
                                         </a>
                                         <ul class="sub-menu">
-                                            <li class="sub-menu-item">
-                                                <a href="all-user.html" class="">
-                                                    <div class="text">All user</div>
-                                                </a>
-                                            </li>
-                                            <li class="sub-menu-item">
-                                                <a href="add-new-user.html" class="">
-                                                    <div class="text">Add new user</div>
-                                                </a>
-                                            </li>
-                                            <li class="sub-menu-item">
-                                                <a href="login.html" class="">
-                                                    <div class="text">Login</div>
-                                                </a>
-                                            </li>
-                                            <li class="sub-menu-item">
-                                                <a href="sign-up.html" class="">
-                                                    <div class="text">Sign up</div>
-                                                </a>
-                                            </li>
+                                            <li class="sub-menu-item"><a href="{{ route('admin.users.index') }}">
+                                                    <div class="text">Danh sách người dùng</div>
+                                                </a></li>
+                                            <li class="sub-menu-item"><a href="{{ route('admin.users.create') }}">
+                                                    <div class="text">Thêm người dùng</div>
+                                                </a></li>
                                         </ul>
                                     </li>
-                                    <li class="menu-item">
-                                        <a href="{{ route('admin.banners.index') }}" class="menu-item-button">
+                                    <li class="menu-item has-children">
+                                        <a href="javascript:void(0);" class="menu-item-button">
+                                            <div class="icon"><i class="icon-file-text"></i></div>
+                                            <div class="text">Bài viết</div>
+                                        </a>
+                                        <ul class="sub-menu">
+                                            <li class="sub-menu-item"><a href="{{ route('posts.index') }}">
+                                                    <div class="text">Danh sách bài viết</div>
+                                                </a></li>
+                                            <li class="sub-menu-item"><a href="{{ route('posts.create') }}">
+                                                    <div class="text">Thêm bài viết</div>
+                                                </a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="menu-item has-children">
+                                        <a href="javascript:void(0);" class="menu-item-button">
+                                            <div class="icon"><i class="icon-tag"></i></div>
+                                            <div class="text">Mã Giảm Giá</div>
+                                        </a>
+                                        <ul class="sub-menu">
+                                            <li class="sub-menu-item"><a href="{{ route('admin.discounts.index') }}">
+                                                    <div class="text">Danh sách mã giảm giá</div>
+                                                </a></li>
+                                            <li class="sub-menu-item"><a
+                                                    href="{{ route('admin.discounts.create') }}">
+                                                    <div class="text">Thêm mã giảm giá</div>
+                                                </a></li>
+                                            <li class="sub-menu-item"><a
+                                                    href="{{ route('admin.discounts.report') }}">
+                                                    <div class="text">Báo cáo giảm giá</div>
+                                                </a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="menu-item has-children">
+                                        <a href="javascript:void(0);" class="menu-item-button">
                                             <div class="icon"><i class="icon-image"></i></div>
                                             <div class="text">Banners</div>
                                         </a>
+                                        <ul class="sub-menu">
+                                            <li class="sub-menu-item"><a href="{{ route('admin.banners.index') }}">
+                                                    <div class="text">Danh sách banners</div>
+                                                </a></li>
+                                            <li class="sub-menu-item"><a href="{{ route('admin.banners.create') }}">
+                                                    <div class="text">Thêm banner</div>
+                                                </a></li>
+                                        </ul>
                                     </li>
-
                                     <li class="menu-item has-children">
                                         <a href="javascript:void(0);" class="menu-item-button">
                                             <div class="icon">
@@ -226,23 +222,24 @@
                                             <div class="text">Online Store</div>
                                         </a>
                                         <ul class="sub-menu">
-                                            <li class="sub-menu-item">
-                                                <a href="https://themesflat.co/html/ecomus/index.html" class="">
-                                                    <div class="text">View Store</div>
-                                                </a>
-                                            </li>
-                                            <li class="sub-menu-item">
-                                                <a href="store-setting.html" class="">
-                                                    <div class="text">Store Setting</div>
-                                                </a>
-                                            </li>
+                                            <li class="sub-menu-item"><a href="{{ route('admin.banners.index') }}">
+                                                    <div class="text">Danh sách banner</div>
+                                                </a></li>
+                                            <li class="sub-menu-item"><a href="{{ route('admin.banners.create') }}">
+                                                    <div class="text">Thêm banner</div>
+                                                </a></li>
                                         </ul>
                                     </li>
-                                    <li class="menu-item">
-                                        <a href="report.html" class="">
-                                            <div class="icon"><i class="icon-pie-chart"></i></div>
-                                            <div class="text">Report</div>
+                                    <li class="menu-item has-children">
+                                        <a href="javascript:void(0);" class="menu-item-button">
+                                            <div class="icon"><i class="icon-settings"></i></div>
+                                            <div class="text">Thuộc tính sản phẩm</div>
                                         </a>
+                                        <ul class="sub-menu">
+                                            <li class="sub-menu-item"><a href="{{ route('catalog.index') }}">
+                                                    <div class="text">Danh sách thuộc tính</div>
+                                                </a></li>
+                                        </ul>
                                     </li>
                                     <li class="menu-item">
                                         <a href="setting.html" class="">
@@ -254,7 +251,7 @@
                                                         fill="#0A0A0C" />
                                                 </svg>
                                             </div>
-                                            <div class="text">Setting</div>
+                                            <div class="text">Cài Đặt</div>
                                         </a>
                                     </li>
                                     <li class="menu-item">
@@ -280,7 +277,7 @@
                                                         fill="#111111" />
                                                 </svg>
                                             </div>
-                                            <div class="text">Log out</div>
+                                            <div class="text">Đăng Xuất</div>
                                         </a>
                                     </li>
                                 </ul>
@@ -443,8 +440,8 @@
                             <div class="header-grid">
                                 <div class="header-item country">
                                     <select class="image-select no-text">
-                                        <option data-thumbnail="{{ asset('images/country/1.png') }}">ENG</option>
                                         <option data-thumbnail="{{ asset('images/country/9.png') }}">VIE</option>
+                                        {{-- <option data-thumbnail="{{ asset('images/country/1.png') }}">ENG</option>        --}}
                                     </select>
                                 </div>
                                 <div class="header-item button-dark-light">
@@ -719,8 +716,8 @@
                                                         alt="">
                                                 </span>
                                                 <span class="flex flex-column">
-                                                    <span class="body-text text-main-dark">Kristin Watson</span>
-                                                    <span class="text-tiny">Sale Administrator</span>
+                                                    <span class="body-text text-main-dark">Quang Thiện</span>
+                                                    <span class="text-tiny">Quản trị viên bán hàng</span>
                                                 </span>
                                             </span>
                                         </button>
@@ -731,7 +728,15 @@
                                                     <div class="icon">
                                                         <i class="icon-user"></i>
                                                     </div>
-                                                    <div class="body-title-2">Account</div>
+                                                    <div class="body-title-2">Tài khoản</div>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/" class="user-item">
+                                                    <div class="icon">
+                                                        <i class="icon-user"></i>
+                                                    </div>
+                                                    <div class="body-title-2">Trang Người Dùng</div>
                                                 </a>
                                             </li>
                                             <li>
@@ -739,7 +744,7 @@
                                                     <div class="icon">
                                                         <i class="icon-mail"></i>
                                                     </div>
-                                                    <div class="body-title-2">Inbox</div>
+                                                    <div class="body-title-2">Hộp Thư</div>
                                                     <div class="number">27</div>
                                                 </a>
                                             </li>
@@ -748,7 +753,7 @@
                                                     <div class="icon">
                                                         <i class="icon-file-text"></i>
                                                     </div>
-                                                    <div class="body-title-2">Taskboard</div>
+                                                    <div class="body-title-2">Công Việc</div>
                                                 </a>
                                             </li>
                                             <li>
@@ -756,7 +761,7 @@
                                                     <div class="icon">
                                                         <i class="icon-settings"></i>
                                                     </div>
-                                                    <div class="body-title-2">Setting</div>
+                                                    <div class="body-title-2">Cài Đặt</div>
                                                 </a>
                                             </li>
                                             <li>
@@ -764,18 +769,19 @@
                                                     <div class="icon">
                                                         <i class="icon-headphones"></i>
                                                     </div>
-                                                    <div class="body-title-2">Support</div>
+                                                    <div class="body-title-2">Hỗ Trợ</div>
                                                 </a>
                                             </li>
                                             <li>
-                                                <a href="login.html" class="user-item">
+                                                <a href="logout" class="user-item">
                                                     <div class="icon">
                                                         <i class="icon-log-out"></i>
                                                     </div>
-                                                    <div class="body-title-2">Log out</div>
+                                                    <div class="body-title-2">Đăng Xuất</div>
                                                 </a>
                                             </li>
                                         </ul>
+
                                     </div>
                                 </div>
                             </div>
@@ -845,26 +851,3 @@
 <!-- Mirrored from themesflat.co/html/ecomus/admin-ecomus/ by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 05 Jul 2025 17:41:11 GMT -->
 
 </html>
-<style>
-    html,
-    body {
-        height: auto !important;
-        overflow-y: auto !important;
-        overflow-x: hidden !important;
-    }
-
-    body>* {
-        overflow: visible !important;
-    }
-
-    .wrapper,
-    .container,
-    .content-wrapper,
-    .main-content-inner,
-    .main-content-wrap {
-        height: auto !important;
-        overflow: visible !important;
-    }
-
-    /* Scrollable cho trường hợp dài */
-</style>

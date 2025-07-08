@@ -1,150 +1,145 @@
 @extends('admin.layouts.AdminLayout')
 
 @section('main')
-
-    <div class="main-content-inner">
-        <div class="main-content-wrap">
-
-            <div class="flex items-center flex-wrap justify-between gap20 mb-27">
-                <h3>Danh sách sản phẩm</h3>
-                <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-                    <li><a href="#">
-                            <div class="text-tiny">Dashboard</div>
-                        </a></li>
-                    <li><i class="icon-chevron-right"></i></li>
-                    <li><a href="#">
-                            <div class="text-tiny">Ecommerce</div>
-                        </a></li>
-                    <li><i class="icon-chevron-right"></i></li>
-                    <li>
-                        <div class="text-tiny">Danh sách sản phẩm</div>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- product-list -->
-            <div class="wg-box">
-
-                <!-- Thông báo thành công -->
-                @if(session('success'))
+    <div class="row">
+        <div class="col-md-12">
+            <div class="tile card shadow-sm rounded-3 border-0">
+                @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('success') }}
                     </div>
                 @endif
 
-                <div class="title-box">
-                    <i class="icon-coffee"></i>
-                    <div class="body-text">Tìm kiếm theo tên hoặc ID sản phẩm</div>
-                </div>
+                @if (session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ session('error') }}
+                    </div>
+                @endif
 
-                <div class="flex items-center justify-between gap10 flex-wrap">
-                    <!-- Bộ lọc và tìm kiếm -->
-                    <div class="wg-filter flex-grow">
-                        <form action="{{ route('products.index') }}" method="GET" class="form-search">
-                            <fieldset class="name">
-                                <input type="text" placeholder="Tìm kiếm sản phẩm..." name="search"
-                                    value="{{ request('search') }}">
-                            </fieldset>
-                            <div class="button-submit">
-                                <button type="submit"><i class="icon-search"></i></button>
+                <div class="tile-body p-4">
+                    <div class="wg-box">
+                        <div class="flex items-center justify-content-between gap10 flex-wrap">
+                            <div class="wg-filter flex-grow">
+                                <form action="{{ route('products.index') }}" method="GET" class="form-search">
+                                    <fieldset class="name">
+                                        <input type="text" placeholder="Tìm kiếm sản phẩm..." name="search"
+                                            value="{{ request('search') }}">
+                                    </fieldset>
+                                    <div class="button-submit">
+                                        <button type="submit"><i class="icon-search"></i></button>
+                                    </div>
+                                </form>
                             </div>
-                        </form>
+                            <a class="tf-button style-1 w208 btn btn-outline-success btn-sm me-1 mb-1"
+                                href="{{ route('products.create') }}">
+                                <i class="fas fa-plus me-2"></i> Thêm sản phẩm
+                            </a>
+
+                            <a href="{{ route('trash') }}" class="item eye" title="Thùng rác">
+                                <h3 style="color: red;">
+                                    <i class="icon-trash-2"></i>
+                                </h3>
+                            </a>
+                        </div>
+
+                        <div class="wg-table table-product-list mt-3">
+                            <ul class="table-title flex gap20 mb-14">
+                                <li style="width: 200px;">
+                                    <div class="body-title">Tên sản phẩm</div>
+                                </li>
+                                <li>
+                                    <div class="body-title">Mã sản phẩm</div>
+                                </li>
+                                <li>
+                                    <div class="body-title">Giá gốc</div>
+                                </li>
+                                <li>
+                                    <div class="body-title">Giá khuyến mãi</div>
+                                </li>
+                                <li>
+                                    <div class="body-title">Danh mục</div>
+                                </li>
+                                <li>
+                                    <div class="body-title">Trạng thái</div>
+                                </li>
+                                <li>
+                                    <div class="body-title">Ngày tạo</div>
+                                </li>
+                                <li>
+                                    <div class="body-title">Thao tác</div>
+                                </li>
+                            </ul>
+
+                            <ul class="flex flex-column">
+                                @foreach ($products as $product)
+                                    @if ($product->status == 1)
+                                        @php
+                                            $variant = $product->variants->first();
+                                        @endphp
+                                        <li class="wg-product item-row flex" style="align-items: center;">
+                                            <div style="width: 200px;">
+                                                <div class="image" style="width: 40px; height: 40px; float: left; margin-right: 10px;">
+                                                    @if ($product->images->isNotEmpty())
+                                                        <img src="{{ asset('storage/' . $product->images->first()->image) }}"
+                                                            alt="{{ $product->name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;">
+                                                    @else
+                                                        <span class="text-muted">Không có ảnh</span>
+                                                    @endif
+                                                </div>
+                                                <div class="title line-clamp-2 mb-0">
+                                                    <a href="{{ route('products.show', $product->id) }}" class="body-text">{{ $product->name }}</a>
+                                                </div>
+                                            </div>
+                                            <div class="body-text mt-4">{{ $product->product_code }}</div>
+                                            <div class="body-text mt-4">
+                                                {{ $variant ? number_format($variant->price, 0, ',', '.') . ' VND' : 'Chưa có giá' }}
+                                            </div>
+                                            <div class="body-text mt-4">
+                                                {{ $variant ? number_format($variant->sale_price, 0, ',', '.') . ' VND' : 'Chưa có KM' }}
+                                            </div>
+                                            <div class="body-text mt-4">
+                                                {{ $product->category->ten_danh_muc ?? 'Không có danh mục' }}
+                                            </div>
+                                            <div>
+                                                <div class="{{ $product->status == 1 ? 'block-available' : 'block-stock' }} bg-1 fw-7">
+                                                    {{ $product->status == 1 ? 'Hiển thị' : 'Ẩn' }}
+                                                </div>
+                                            </div>
+                                            <div class="body-text mt-4">
+                                                {{ $product->created_at->format('d/m/Y H:i') }}
+                                            </div>
+                                            <div class="list-icon-function">
+                                                <a href="{{ route('products.show', $product->id) }}" class="item eye" title="Xem chi tiết">
+                                                    <i class="icon-eye"></i>
+                                                </a>
+                                                <a href="{{ route('products.edit', $product->id) }}" class="item edit" title="Chỉnh sửa">
+                                                    <i class="icon-edit-3"></i>
+                                                </a>
+                                                <form action="{{ route('products.softDelete', $product->id) }}" method="POST"
+                                                    onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');"
+                                                    style="display:inline;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" style="color: red" title="Xóa sản phẩm">
+                                                        <i class="icon-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </li>
+                                    @endif
+                                @endforeach
+                            </ul>
+                        </div>
+
+                        <div class="divider"></div>
+                        <div class="flex items-center justify-between flex-wrap gap10">
+                            <div class="text-tiny">Hiển thị từ {{ $products->firstItem() }} đến {{ $products->lastItem() }} trong tổng số {{ $products->total() }} sản phẩm</div>
+                            {{ $products->links('pagination::bootstrap-5') }}
+                        </div>
                     </div>
 
-                    <!-- Nút thêm sản phẩm -->
-                    <a class="tf-button style-1 w208" href="{{ route('products.create') }}">
-                        <i class="icon-plus"></i> Thêm sản phẩm
-                    </a>
-                </div>
-
-                <!-- Bảng sản phẩm -->
-                <div class="wg-table table-product-list mt-3">
-                    <ul class="table-title flex gap20 mb-14">
-                        <li>
-                            <div class="body-title">Tên sản phẩm</div>
-                        </li>
-                        <li>
-                            <div class="body-title">Mã SP</div>
-                        </li>
-                        <li>
-                            <div class="body-title">Giá</div>
-                        </li>
-                        <li>
-                            <div class="body-title">Danh mục</div>
-                        </li>
-                        <li>
-                            <div class="body-title">Tồn kho</div>
-                        </li>
-                        <li>
-                            <div class="body-title">Ngày tạo</div>
-                        </li>
-                        <li>
-                            <div class="body-title">Thao tác</div>
-                        </li>
-                    </ul>
-
-                    <ul class="flex flex-column">
-                        @foreach($products as $product)
-                            @php
-                                $variant = $product->variants->first();
-                            @endphp
-                            <li class="product-item gap14">
-                                <div class="image no-bg">
-                                    @if($product->images->isNotEmpty())
-                                        <img src="{{ asset('storage/' . $product->images->first()->image) }}" alt="">
-                                    @else
-                                        <span class="text-muted">No Image</span>
-                                    @endif
-                                </div>
-                                <div class="flex items-center justify-between gap20 flex-grow">
-                                    <div class="name">
-                                        <a href="#" class="body-title-2">{{ $product->name }}</a>
-                                    </div>
-                                    <div class="body-text">#SP-{{ $product->id }}</div>
-                                    <div class="body-text">
-                                        @if($variant)
-                                            {{ number_format($variant->price, 0, ',', '.') }} VND
-                                        @else
-                                            <span class="text-muted">Chưa có giá</span>
-                                        @endif
-                                    </div>
-                                    <div class="body-text">{{ $product->category->ten_danh_muc ?? 'Không có danh mục' }}</div>
-                                    <div class="body-text">
-                                        {{ $product->variants->sum('quantity') }} cái
-                                    </div> {{-- Bạn có thể tính tồn kho ở đây --}}
-                                    <div class="body-text">{{ optional($product->created_at)->format('d/m/Y') }}</div>
-                                    <div class="list-icon-function">
-                                        <a href="{{ route('products.show', $product->id) }}" class="item eye" title="Xem"><i
-                                                class="icon-eye"></i></a>
-                                        <a href="{{ route('products.edit', $product->id) }}" class="item edit" title="Sửa"><i
-                                                class="icon-edit-3"></i></a>
-                                        <form action="{{ route('products.destroy', $product->id) }}" method="POST"
-                                            onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');"
-                                            style="display:inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" style="color: red" title="Xóa"
-                                                ><i class="icon-trash"></i>
-                                            </button>
-                                        </form>
-
-                                    </div>
-                                </div>
-                            </li>
-                        @endforeach
-                    </ul>
-                </div>
-
-                <!-- Phân trang -->
-                <div class="divider mt-3"></div>
-                <div class="flex items-center justify-between flex-wrap gap10">
-                    <div class="text-tiny">Tổng: {{ $products->total() }} sản phẩm</div>
-                    {{ $products->links('pagination::bootstrap-5') }}
                 </div>
             </div>
         </div>
     </div>
-
-
-
 @endsection

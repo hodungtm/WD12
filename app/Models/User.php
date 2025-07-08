@@ -2,51 +2,28 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Address;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Wishlist;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
-    const ROLE_ADMIN ='admin';
-    const ROLE_USER ='user';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    const ROLE_ADMIN = 'admin';
+    const ROLE_USER = 'user';
+
     protected $fillable = [
-    'name',
-    'email',
-    'password',
-    'phone',
-    'gender',
-    'address',
-    'dob',
-    'avatar',
-    'is_active',
-    'role' 
-];
-      
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
+        'name', 'email', 'password', 'phone', 'gender',
+        'address', 'dob', 'avatar', 'is_active', 'role'
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
+
     protected function casts(): array
     {
         return [
@@ -54,12 +31,37 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    protected $attributes = [
-      'role' => self::ROLE_USER,
-    ];
 
-    public function isRoleAdmin(){
-        return $this ->role ===self::ROLE_ADMIN;
-    }
-}
+    protected $attributes = [
+        'role' => self::ROLE_USER,
+    ];
     
+    public function isRoleAdmin()
+    {
+        return $this->role === self::ROLE_ADMIN;
+    }
+
+    public function favorites()
+    {
+        return $this->belongsToMany(Products::class, 'favorites');
+    }
+
+    public function orders()
+{
+    return $this->hasMany(Order::class)->latest();
+}
+
+public function wishlist()
+{
+    return $this->hasMany(Wishlist::class);
+}
+
+// public function address()
+// {
+//     return $this->hasOne(Address::class);
+// }
+
+
+
+}
+

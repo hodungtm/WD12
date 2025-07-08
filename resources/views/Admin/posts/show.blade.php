@@ -66,7 +66,7 @@
             <div class="fw-bold mb-2">{{ $titleLine }}</div>
             {!! $content !!}
           </div>
-        </div>
+        </div> 
 
         <div>
           <label class="body-title">Ngày tạo:</label>
