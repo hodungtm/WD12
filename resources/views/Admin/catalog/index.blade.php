@@ -2,139 +2,150 @@
 
 @section('main')
 
-<div class="main-content-inner">
-    <div class="main-content-wrap">
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+        {{ session('success') }}
+    </div>
+@endif
 
-        <div class="flex items-center flex-wrap justify-between gap20 mb-27">
-            <h3>Quản lý Size & Color</h3>
-            <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-                <li><a href="#"><div class="text-tiny">Dashboard</div></a></li>
-                <li><i class="icon-chevron-right"></i></li>
-                <li><div class="text-tiny">Danh sách Size & Color</div></li>
-            </ul>
-        </div>
+<div class="flex items-center flex-wrap justify-between gap20 mb-30">
+    <h3>Quản lý Size & Color</h3>
+    <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+        <li>
+            <a href="index-2.html"><div class="text-tiny">Dashboard</div></a>
+        </li>
+        <li>
+            <i class="icon-chevron-right"></i>
+        </li>
+        <li>
+            <div class="text-tiny">Size & Color</div>
+        </li>
 
-        <!-- Thông báo thành công -->
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-            </div>
-        @endif
+    </ul>
+</div>
 
+
+<div class="row">
+    <div class="col-md-12">
         <div class="wg-box">
+            <div class="p-4"> 
 
-            <div class="flex items-center justify-between gap10 flex-wrap">
-                <div class="title-box">
-                    <i class="icon-coffee"></i>
-                    <div class="body-text">Thêm mới Size & Color</div>
-                </div>
-            </div>
+                <div class="row g-4">
+                    <div class="col-md-6">
 
-            <div class="flex gap20 mt-3 flex-wrap">
+                        <h3 class="mb-3">Danh sách Size</h3>
 
-                <!-- Size -->
-                <div class="flex-1">
-                    <div class="wg-table mt-3">
-                        <h4>Danh sách Size</h4>
-
-                        <!-- Form Thêm -->
-                        <form method="POST" action="{{ route('catalog.size.store') }}" class="form-search mt-2">
+                        <form method="POST" action="{{ route('catalog.size.store') }}" class="form-style-1 mb-4">
                             @csrf
                             <fieldset class="name">
-                                <input type="text" name="name" placeholder="Tên Size..." required>
+                                <div class="body-title visually-hidden">Thêm Size</div> 
+                                <div class="input-group"> 
+                                    <input type="text" name="name" class="flex-grow" placeholder="Tên Size..." aria-required="true" required>
+
+                                    <button type="submit" class="tf-button" style="min-width: 120px;"> 
+                                        <i class="fas fa-plus me-2"></i> Thêm Size
+                                    </button>
+                                </div>
                             </fieldset>
-                            <div class="button-submit">
-                                <button type="submit"><i class="icon-plus"></i> Thêm Size</button>
-                            </div>
                             @error('name')
                                 <div class="text-danger mt-1">{{ $message }}</div>
                             @enderror
                         </form>
 
-                        <ul class="table-title flex gap20 mt-3 mb-14">
-                            <li><div class="body-title">ID</div></li>
-                            <li><div class="body-title">Tên Size</div></li>
-                            <li><div class="body-title">Hành động</div></li>
-                        </ul>
 
-                        <ul class="flex flex-column">
-                            @foreach($sizes as $item)
-                            <li class="flex items-center justify-between gap20">
-                                <div>{{ $item->id }}</div>
-                                <div class="flex-grow">
-                                    <form method="POST" action="{{ route('catalog.size.update', $item->id) }}" class="flex gap10">
-                                        @csrf
-                                        @method('PUT')
-                                        <input type="text" name="name" value="{{ $item->name }}" class="form-control w-full" required>
-                                        <button type="submit" class="tf-button style-1">Lưu</button>
-                                    </form>
-                                </div>
-                                <div>
-                                    <form method="POST" action="{{ route('catalog.size.destroy', $item->id) }}" onsubmit="return confirm('Bạn có chắc muốn xóa?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="tf-button style-1 danger"><i class="icon-trash"></i> Xóa</button>
-                                    </form>
-                                </div>
-                            </li>
-                            @endforeach
-                        </ul>
+                        <div class="wg-table table-product-list mt-3"> 
+                            <ul class="table-title flex mb-14" style="gap: 10px;">
+                                <li style="flex-basis: 60px;"><div class="body-title">ID</div></li>
+                                <li style="flex-basis: calc(100% - 210px);"><div class="body-title">Tên Size</div></li> 
+                                <li style="flex-basis: 150px;"><div class="body-title">Hành động</div></li>
+                            </ul>
+
+                            <ul class="flex flex-column">
+                                @foreach ($sizes as $item)
+                                    <li class="wg-product item-row" style="gap: 10px;"> 
+                                        <div class="body-text mt-4" style="flex-basis: 60px;">{{ $item->id }}</div>
+                                        <div style="flex-basis: calc(100% - 210px);">
+                                            <form method="POST" action="{{ route('catalog.size.update', $item->id) }}" class="d-flex">
+                                                @csrf
+                                                @method('PUT')
+                                                <input type="text" name="name" value="{{ $item->name }}" class="flex-grow me-2" required> 
+                                                <button type="submit" class="tf-button sm">Lưu</button> 
+                                            </form>
+                                        </div>
+                                        <div class="list-icon-function" style="flex-basis: 150px;">
+                                            <form method="POST" action="{{ route('catalog.size.destroy', $item->id) }}" onsubmit="return confirm('Bạn có chắc muốn xóa?')" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="tf-button danger sm"> 
+                                                    <i class="fas fa-trash-alt"></i> Xóa
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div> 
                     </div>
-                </div>
 
-                <!-- Color -->
-                <div class="flex-1">
-                    <div class="wg-table mt-3">
-                        <h4>Danh sách Color</h4>
+                    <div class="col-md-6">
 
-                        <!-- Form Thêm -->
-                        <form method="POST" action="{{ route('catalog.color.store') }}" class="form-search mt-2">
+                        <h3 class="mb-3">Danh sách Color</h3>
+
+                        <form method="POST" action="{{ route('catalog.color.store') }}" class="form-style-1 mb-4">
                             @csrf
                             <fieldset class="name">
-                                <input type="text" name="name" placeholder="Tên Color..." required>
+                                <div class="body-title visually-hidden">Thêm Color</div>
+                                <div class="input-group">
+                                    <input type="text" name="name" class="flex-grow" placeholder="Tên Color..." aria-required="true" required>
+
+                                    <button type="submit" class="tf-button" style="min-width: 120px;">
+                                        <i class="fas fa-plus me-2"></i> Thêm Color
+                                    </button>
+                                </div>
                             </fieldset>
-                            <div class="button-submit">
-                                <button type="submit"><i class="icon-plus"></i> Thêm Color</button>
-                            </div>
                             @error('name')
                                 <div class="text-danger mt-1">{{ $message }}</div>
                             @enderror
                         </form>
 
-                        <ul class="table-title flex gap20 mt-3 mb-14">
-                            <li><div class="body-title">ID</div></li>
-                            <li><div class="body-title">Tên Color</div></li>
-                            <li><div class="body-title">Hành động</div></li>
-                        </ul>
+                        <div class="wg-table table-product-list mt-3">
+                            <ul class="table-title flex mb-14" style="gap: 10px;">
+                                <li style="flex-basis: 60px;"><div class="body-title">ID</div></li>
+                                <li style="flex-basis: calc(100% - 210px);"><div class="body-title">Tên Color</div></li>
+                                <li style="flex-basis: 150px;"><div class="body-title">Hành động</div></li>
+                            </ul>
 
-                        <ul class="flex flex-column">
-                            @foreach($colors as $item)
-                            <li class="flex items-center justify-between gap20">
-                                <div>{{ $item->id }}</div>
-                                <div class="flex-grow">
-                                    <form method="POST" action="{{ route('catalog.color.update', $item->id) }}" class="flex gap10">
-                                        @csrf
-                                        @method('PUT')
-                                        <input type="text" name="name" value="{{ $item->name }}" class="form-control w-full" required>
-                                        <button type="submit" class="tf-button style-1">Lưu</button>
-                                    </form>
-                                </div>
-                                <div>
-                                    <form method="POST" action="{{ route('catalog.color.destroy', $item->id) }}" onsubmit="return confirm('Bạn có chắc muốn xóa?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="tf-button style-1 danger"><i class="icon-trash"></i> Xóa</button>
-                                    </form>
-                                </div>
-                            </li>
-                            @endforeach
-                        </ul>
+                            <ul class="flex flex-column">
+                                @foreach ($colors as $item)
+                                    <li class="wg-product item-row" style="gap: 10px;">
+                                        <div class="body-text mt-4" style="flex-basis: 60px;">{{ $item->id }}</div>
+                                        <div style="flex-basis: calc(100% - 210px);">
+                                            <form method="POST" action="{{ route('catalog.color.update', $item->id) }}" class="d-flex">
+                                                @csrf
+                                                @method('PUT')
+                                                <input type="text" name="name" value="{{ $item->name }}" class="flex-grow me-2" required>
+                                                <button type="submit" class="tf-button sm">Lưu</button>
+                                            </form>
+                                        </div>
+                                        <div class="list-icon-function" style="flex-basis: 150px;">
+                                            <form method="POST" action="{{ route('catalog.color.destroy', $item->id) }}" onsubmit="return confirm('Bạn có chắc muốn xóa?')" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="tf-button danger sm">
+                                                    <i class="fas fa-trash-alt"></i> Xóa
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div> 
                     </div>
-                </div>
 
-            </div>
+                </div> </div>
         </div>
     </div>
 </div>
 
 @endsection
+

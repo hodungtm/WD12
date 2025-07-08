@@ -59,7 +59,7 @@ class User extends Authenticatable
     ];
 
     public function isRoleAdmin(){
-        return $this ->role ===self::ROLE_ADMIN;
+        return $this ->role === self::ROLE_ADMIN;
     }
 }
     

@@ -111,13 +111,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/admin/discounts/{id}', [DiscountController::class, 'show'])->name('discounts.show');
 });Route::post('admin/discounts/import-excel', [DiscountController::class, 'importExcel'])->name('discounts.importExcel');
 
-//// ADMIM POST----------------------------------------------------////////////
-Route::prefix('admin')->group(function () {
-    Route::resource('posts', PostController::class);
-});
-Route::delete('/posts/delete-selected', [PostController::class, 'deleteSelected'])->name('posts.delete.selected');
-///----------------------------------------------------------------/////////////////
-
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('banners', BannerController::class);
 });
@@ -137,14 +130,17 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
 // Auth routes
 Auth::routes();
+
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('user/dashboard', [AccountController::class, 'dashboard'])->name('user.dashboard');
 
 
-////// producst/////////////////////////////////////
-Route::prefix('admin')->group(function () {
-    Route::resource('products', ProductsController::class);
+//------------------------------------------------------ producst ------------------------------------------------------>
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+
+    Route::get('/trash', [ProductsController::class, 'trash'])->name('trash');
+    Route::get('/products/{id}/restore/', [ProductsController::class, 'restore'])->name('restore');
 
     // Xóa ảnh phụ
     Route::delete('/products/image/{id}', [ProductsController::class, 'destroyImage'])->name('products.image.destroy');
@@ -164,8 +160,21 @@ Route::prefix('admin')->group(function () {
     Route::post('/catalog/color/store', [CatalogController::class, 'storeColor'])->name('catalog.color.store');
     Route::put('/catalog/color/{color}', [CatalogController::class, 'updateColor'])->name('catalog.color.update');
     Route::delete('/catalog/color/{color}', [CatalogController::class, 'destroyColor'])->name('catalog.color.destroy');
-    
+
+    Route::delete('/products/delete-selected', [ProductsController::class, 'softDeleteSelected'])->name('products.delete.selected');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::resource('products', ProductsController::class);
+
 });
+//------------------------------------------------------------------------------------------------------------>
+
+// ---------------------------------------ADMIM POST---------------------------------------------------------->
+Route::prefix('admin')->group(function () {
+    Route::post('admin/discounts/import-excel', [DiscountController::class, 'importExcel'])->name('discounts.importExcel');
+    Route::delete('/posts/delete-selected', [PostController::class, 'deleteSelected'])->name('posts.delete.selected');
+    Route::resource('posts', PostController::class);
+});
+//----------------------------------------------------------------------------------------------------------------------------->
 
 Route::get('/search', [App\Http\Controllers\Client\ListProductClientController::class, 'index'])->name('client.search');
 

@@ -49,17 +49,24 @@ class ProductsController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required',
-            'category_id' => 'required|exists:categories,id',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'variant_sizes' => 'required|array',
-            'variant_colors' => 'required|array',
-            'variant_prices' => 'required|array',
-            'variant_sale_prices' => 'required|array',
-            'variant_quantities' => 'required|array',
-        ]);
+         $request->validate([
+        'name' => 'required|string|max:255',
+        'category_id' => 'required|exists:categories,id',
+        'description' => 'required|string|max:1000', // hoặc nullable nếu không bắt buộc
+        'images' => 'required|array|min:1',
+        'images.*' => 'image|mimes:jpg,jpeg,png,gif|max:2048',
+        'sizes' => 'required|array|min:1',
+        'colors' => 'required|array|min:1',
+    ], [
+        'name.required' => 'Vui lòng nhập tên sản phẩm.',
+        'category_id.required' => 'Vui lòng chọn danh mục.',
+        'category_id.exists' => 'Danh mục không hợp lệ.',
+        'description.required' => 'Vui lòng nhập mô tả sản phẩm.',
+        'images.required' => 'Vui lòng chọn ít nhất một ảnh.',
+        'images.*.image' => 'Tệp tải lên phải là hình ảnh hợp lệ (jpg, png, gif...).',
+        'sizes.required' => 'Vui lòng chọn ít nhất một size.',
+        'colors.required' => 'Vui lòng chọn ít nhất một màu.',
+    ]);
 
         $product_code = $this->generateProductCode();
 
