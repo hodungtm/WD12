@@ -48,12 +48,13 @@ class DiscountController extends Controller
             'code' => $codeRule,
             'description' => 'nullable|max:255',
             'type' => 'required|in:order,product,shipping',
-            'discount_percent' => 'required|numeric|min:1|max:100',
+            'discount_percent' => 'nullable|numeric|min:0|max:100',
+            'discount_amount' => 'nullable|numeric|min:0|max:1000000',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'max_usage' => 'nullable|integer|min:1',
             'min_order_amount' => 'nullable|numeric|min:0',
-            'max_discount_amount' => 'nullable|numeric|min:0'
+            'max_discount_amount' => 'nullable|numeric|min:0',
         ];
     }
 
@@ -66,10 +67,11 @@ class DiscountController extends Controller
             'description.max' => 'Mô tả không được vượt quá 255 ký tự.',
             'type.required' => 'Vui lòng chọn loại mã giảm giá.',
             'type.in' => 'Loại mã giảm giá không hợp lệ.',
-            'discount_percent.required' => 'Phần trăm giảm giá là bắt buộc.',
             'discount_percent.numeric' => 'Phần trăm giảm giá phải là số.',
-            'discount_percent.min' => 'Phần trăm giảm giá tối thiểu là 1%.',
+            'discount_percent.min' => 'Phần trăm giảm giá tối thiểu là 0%.',
             'discount_percent.max' => 'Phần trăm giảm giá tối đa là 100%.',
+            'discount_amount.numeric' => 'Số tiền giảm phải là số.',
+            'discount_amount.min' => 'Số tiền giảm không được âm.',
             'start_date.required' => 'Ngày bắt đầu là bắt buộc.',
             'start_date.date' => 'Ngày bắt đầu không đúng định dạng.',
             'end_date.required' => 'Ngày kết thúc là bắt buộc.',
@@ -85,134 +87,33 @@ class DiscountController extends Controller
     }
 
     public function store(Request $request)
-
-{
-    $validated = $request->validate([
-        'code' => 'required|string|max:255|unique:discounts,code',
-        'description' => 'nullable|string|max:255',
-        'discount_amount' => [
-            'nullable',
-            'numeric',
-            'min:0',
-            'max:1000000',
-            function ($attribute, $value, $fail) use ($request) {
-                if ($value && $request->discount_percent) {
-                    $fail('Chỉ được chọn một trong hai: giảm theo tiền hoặc giảm theo phần trăm.');
-                }
-            },
-        ],
-        'discount_percent' => [
-            'nullable',
-            'numeric',
-            'min:0',
-            'max:100',
-            function ($attribute, $value, $fail) use ($request) {
-                if ($value && $request->discount_amount) {
-                    $fail('Chỉ được chọn một trong hai: giảm theo phần trăm hoặc giảm theo tiền.');
-                }
-            },
-        ],
-        'type' => 'required|in:order,shipping,product',
-        'start_date' => 'required|date',
-        'end_date' => 'required|date|after_or_equal:start_date',
-        'max_usage' => 'nullable|integer|min:1',
-        'min_order_amount' => 'nullable|numeric|min:0',
-        'max_discount_amount' => [
-            'nullable',
-            'numeric',
-            'min:0',
-            function ($attribute, $value, $fail) use ($request) {
-                if ($request->filled('min_order_amount') && $value >= $request->min_order_amount) {
-                    $fail('Giá trị giảm tối đa phải nhỏ hơn giá trị đơn hàng tối thiểu.');
-                }
-            },
-        ],
-    ]);
-
-    if ($request->discount_type === 'amount') {
-        $request->merge(['discount_percent' => null]);
-    } elseif ($request->discount_type === 'percent') {
-        $request->merge(['discount_amount' => null]);
-    }
-
     {
         $validated = $request->validate(
             $this->getValidationRules(),
             $this->getValidationMessages()
         );
 
+        if ($request->discount_amount && $request->discount_percent) {
+            return back()->withErrors(['discount_amount' => 'Chỉ được chọn một trong hai: giảm theo tiền hoặc giảm theo phần trăm.'])->withInput();
+        }
+
+        if ($request->filled('min_order_amount') && $request->filled('max_discount_amount')) {
+            if ($request->max_discount_amount >= $request->min_order_amount) {
+                return back()->withErrors(['max_discount_amount' => 'Giá trị giảm tối đa phải nhỏ hơn giá trị đơn hàng tối thiểu.'])->withInput();
+            }
+        }
+
         if (Discount::create($validated)) {
             return redirect()->route('admin.discounts.index')->with('success', 'Tạo mã giảm giá thành công!');
         }
 
-
         return redirect()->back()->with('error', 'Có lỗi xảy ra khi tạo mã giảm giá!');
     }
-
-}
-
-
 
     public function edit(Discount $discount)
     {
         return view('admin.discounts.edit', compact('discount'));
     }
-
-
-   public function update(Request $request, $id)
-{
-    $discount = Discount::findOrFail($id);
-
-    $request->validate([
-        'discount_amount' => [
-            'nullable',
-            'numeric',
-            'min:0',
-            'max:1000000',
-            function ($attribute, $value, $fail) use ($request) {
-                if ($value && $request->discount_percent) {
-                    $fail('Chỉ được chọn một trong hai: giảm theo tiền hoặc giảm theo phần trăm.');
-                }
-            },
-        ],
-        'discount_percent' => [
-            'nullable',
-            'numeric',
-            'min:0',
-            'max:100',
-            function ($attribute, $value, $fail) use ($request) {
-                if ($value && $request->discount_amount) {
-                    $fail('Chỉ được chọn một trong hai: giảm theo phần trăm hoặc giảm theo tiền.');
-                }
-            },
-        ],
-        'type' => 'required|in:order,shipping,product',
-        'max_discount_amount' => [
-            'nullable',
-            'numeric',
-            'min:0',
-            function ($attribute, $value, $fail) use ($request) {
-                if ($request->filled('min_order_amount') && $value >= $request->min_order_amount) {
-                    $fail('Giá trị giảm tối đa phải nhỏ hơn giá trị đơn hàng tối thiểu.');
-                }
-            },
-        ],
-    ]);
-
-    $validated = $request->validate(
-        $this->getValidationRules(true, $discount->id),
-        $this->getValidationMessages()
-    );
-
-    if ($request->discount_type === 'amount') {
-        $request->merge(['discount_percent' => null]);
-    } elseif ($request->discount_type === 'percent') {
-        $request->merge(['discount_amount' => null]);
-    }
-
-    if ($discount->update($validated)) {
-        return redirect()->route('admin.discounts.index')->with('success', 'Cập nhật mã giảm giá thành công!');
-    } else {
 
     public function update(Request $request, $id)
     {
@@ -223,15 +124,22 @@ class DiscountController extends Controller
             $this->getValidationMessages()
         );
 
+        if ($request->discount_amount && $request->discount_percent) {
+            return back()->withErrors(['discount_amount' => 'Chỉ được chọn một trong hai: giảm theo tiền hoặc giảm theo phần trăm.'])->withInput();
+        }
+
+        if ($request->filled('min_order_amount') && $request->filled('max_discount_amount')) {
+            if ($request->max_discount_amount >= $request->min_order_amount) {
+                return back()->withErrors(['max_discount_amount' => 'Giá trị giảm tối đa phải nhỏ hơn giá trị đơn hàng tối thiểu.'])->withInput();
+            }
+        }
+
         if ($discount->update($validated)) {
             return redirect()->route('admin.discounts.index')->with('success', 'Cập nhật mã giảm giá thành công!');
         }
 
-
         return redirect()->back()->with('error', 'Có lỗi xảy ra khi cập nhật mã giảm giá!');
     }
-}
-
 
     public function destroy(Discount $discount)
     {
