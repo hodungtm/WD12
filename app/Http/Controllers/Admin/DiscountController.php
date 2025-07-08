@@ -184,4 +184,31 @@ class DiscountController extends Controller
         $discount->forceDelete();
         return redirect()->route('admin.discounts.trashed')->with('success', 'Đã xóa mã giảm giá vĩnh viễn');
     }
+
+public function bulkDelete(Request $request)
+{
+    if ($request->filled('selected_discounts')) {
+        Discount::whereIn('id', $request->selected_discounts)->delete();
+
+        return back()->with('success', 'Đã xóa các mã được chọn.');
+    }
+
+    // Nếu chọn xóa tất cả hiển thị
+    if ($request->filled('delete_all')) {
+        $query = Discount::query();
+
+        if ($request->filled('search')) {
+            $query->where('code', 'like', '%' . $request->search . '%');
+        }
+
+        $idsToDelete = $query->pluck('id');
+        Discount::whereIn('id', $idsToDelete)->delete();
+
+        return back()->with('success', 'Đã xóa tất cả mã đang hiển thị.');
+    }
+
+    return back()->with('success', 'Không có mã nào được chọn để xóa.');
+}
+
+
 }

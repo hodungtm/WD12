@@ -3,13 +3,15 @@
 @section('main')
 <style>
     .profile-avatar {
-        width: 100px;
-        height: 100px;
+        width: 120px;
+        height: 120px;
         object-fit: cover;
     }
 
     .sidebar-link:hover {
-        text-decoration: underline;
+        text-decoration: none;
+        transform: translateX(3px);
+        transition: all 0.2s ease;
     }
 
     .stat-box {
@@ -21,6 +23,14 @@
 
     .stat-box h4 {
         margin-bottom: 5px;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .card-header {
+        background: #45B8AC;
+        color: white;
+        font-weight: bold;
     }
 </style>
 
@@ -28,18 +38,44 @@
     <div class="row">
         <!-- Sidebar -->
         <div class="col-md-3 mb-4">
-            <div class="card text-center">
-                <div class="card-body">
-                    <img src="https://via.placeholder.com/100" class="rounded-circle profile-avatar mb-3" alt="avatar">
-                    <h5 class="mb-1">Nguyễn Văn A</h5>
-                    <small class="text-muted">a.nguyen@email.com</small>
-                    <hr>
-                    <ul class="list-unstyled text-start px-3">
-                        <li><a href="#" class="text-decoration-none sidebar-link">📦 Đơn hàng</a></li>
-                        <li><a href="#" class="text-decoration-none sidebar-link">❤️ Yêu thích</a></li>
-                        <li><a href="#" class="text-decoration-none sidebar-link">👤 Thông tin tài khoản</a></li>
-                        <li><a href="#" class="text-decoration-none sidebar-link">📍 Địa chỉ giao hàng</a></li>
-                        <li><a href="#" class="text-decoration-none text-danger sidebar-link">🚪 Đăng xuất</a></li>
+            <div class="card shadow border-0 text-center p-3">
+                <div class="position-relative mx-auto" style="width: 120px; height: 120px;">
+                    <img src="{{ $user->avatar ?? 'https://via.placeholder.com/120' }}"
+                        class="rounded-circle border border-3 border-white shadow profile-avatar"
+                        alt="Avatar">
+                </div>
+                <div class="mt-3">
+                    <h5 class="fw-semibold mb-0">{{ $user->name }}</h5>
+                    <small class="text-muted d-block">{{ $user->email }}</small>
+                </div>
+                <hr class="my-3">
+                <div class="text-start px-3">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="#" class="text-decoration-none d-flex align-items-center text-dark sidebar-link">
+                                <i class="fas fa-box me-2 text-primary"></i> Đơn hàng
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-decoration-none d-flex align-items-center text-dark sidebar-link">
+                                <i class="fas fa-heart me-2 text-danger"></i> Yêu thích
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-decoration-none d-flex align-items-center text-dark sidebar-link">
+                                <i class="fas fa-user me-2 text-info"></i> Thông tin tài khoản
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#" class="text-decoration-none d-flex align-items-center text-dark sidebar-link">
+                                <i class="fas fa-map-marker-alt me-2 text-warning"></i> Địa chỉ giao hàng
+                            </a>
+                        </li>
+                        <li class="mt-3">
+                            <a href="#" class="text-decoration-none d-flex align-items-center text-danger sidebar-link fw-bold">
+                                <i class="fas fa-sign-out-alt me-2"></i> Đăng xuất
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -51,13 +87,13 @@
             <div class="row mb-4">
                 <div class="col-md-6">
                     <div class="stat-box">
-                        <h4>5</h4>
+                        <h4>{{ $user->orders?->count() ?? 0 }}</h4>
                         <small>Sản phẩm đã mua</small>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="stat-box">
-                        <h4>12</h4>
+                        <h4>{{ $user->wishlist?->count() ?? 0 }}</h4>
                         <small>Sản phẩm yêu thích</small>
                     </div>
                 </div>
@@ -69,10 +105,10 @@
                     👤 Thông tin tài khoản
                 </div>
                 <div class="card-body">
-                    <p><strong>Họ tên:</strong> Nguyễn Văn A</p>
-                    <p><strong>Email:</strong> a.nguyen@email.com</p>
-                    <p><strong>Số điện thoại:</strong> 0987654321</p>
-                    <p><strong>Ngày tạo tài khoản:</strong> 01/01/2023</p>
+                    <p><strong>Họ tên:</strong> {{ $user->name }}</p>
+                    <p><strong>Email:</strong> {{ $user->email }}</p>
+                    <p><strong>Số điện thoại:</strong> {{ $user->phone ?? 'Chưa cập nhật' }}</p>
+                    <p><strong>Ngày tạo tài khoản:</strong> {{ $user->created_at->format('d/m/Y') }}</p>
                     <a href="#" class="btn btn-sm btn-outline-secondary">Chỉnh sửa</a>
                 </div>
             </div>
@@ -83,9 +119,9 @@
                     📍 Địa chỉ giao hàng
                 </div>
                 <div class="card-body">
-                    <p><strong>Địa chỉ:</strong> 123 Nguyễn Trãi, Quận 1, TP. HCM</p>
-                    <p><strong>Thành phố:</strong> Hồ Chí Minh</p>
-                    <p><strong>Quốc gia:</strong> Việt Nam</p>
+                    <p><strong>Địa chỉ:</strong> {{ $user->address->detail ?? 'Chưa có' }}</p>
+                    <p><strong>Thành phố:</strong> {{ $user->address->city ?? '' }}</p>
+                    <p><strong>Quốc gia:</strong> {{ $user->address->country ?? 'Việt Nam' }}</p>
                     <a href="#" class="btn btn-sm btn-outline-secondary">Chỉnh sửa</a>
                 </div>
             </div>
@@ -108,30 +144,27 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @forelse($user->orders as $order)
                             <tr>
-                                <td>#1001</td>
-                                <td>2</td>
-                                <td><span class="badge bg-success">Đã giao</span></td>
-                                <td>12/06/2024</td>
-                                <td>1.200.000₫</td>
-                                <td><a href="#" class="btn btn-sm btn-outline-primary">Xem</a></td>
+                                <td>#{{ $order->code }}</td>
+                                <td>{{ $order->total_quantity }}</td>
+                                <td>
+                                    <span class="badge bg-{{ $order->status == 'completed' ? 'success' : 'warning' }}">
+                                        {{ ucfirst($order->status) }}
+                                    </span>
+                                </td>
+                                <td>{{ $order->created_at->format('d/m/Y') }}</td>
+                                <td>{{ number_format($order->total_price) }}₫</td>
+                                <td>
+                                    <a href="{{ route('client.orders.show', $order->id) }}"
+                                        class="btn btn-sm btn-outline-primary">Xem</a>
+                                </td>
                             </tr>
+                            @empty
                             <tr>
-                                <td>#1002</td>
-                                <td>1</td>
-                                <td><span class="badge bg-warning">Đang xử lý</span></td>
-                                <td>24/06/2024</td>
-                                <td>650.000₫</td>
-                                <td><a href="#" class="btn btn-sm btn-outline-primary">Xem</a></td>
+                                <td colspan="6" class="text-center text-muted">Chưa có đơn hàng</td>
                             </tr>
-                            <tr>
-                                <td>#1003</td>
-                                <td>3</td>
-                                <td><span class="badge bg-success">Đã giao</span></td>
-                                <td>01/07/2024</td>
-                                <td>2.500.000₫</td>
-                                <td><a href="#" class="btn btn-sm btn-outline-primary">Xem</a></td>
-                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

@@ -3,9 +3,9 @@
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
+
 use App\Http\Controllers\PostController;
-use App\Http\Controllers\RoleController;
+
 use App\Http\Controllers\UserController;
 
 use App\Http\Controllers\AccountController;
@@ -24,7 +24,7 @@ use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DiscountController;
 
-use App\Http\Controllers\Admin\WishlistController;
+
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\ProductDetailController;
 use App\Http\Controllers\Client\ListProductClientController;
@@ -161,10 +161,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/catalog/color/{color}', [CatalogController::class, 'updateColor'])->name('catalog.color.update');
     Route::delete('/catalog/color/{color}', [CatalogController::class, 'destroyColor'])->name('catalog.color.destroy');
 
-    Route::delete('/products/delete-selected', [ProductsController::class, 'softDeleteSelected'])->name('products.delete.selected');
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-    Route::resource('products', ProductsController::class);
-
 });
 //------------------------------------------------------------------------------------------------------------>
 
@@ -177,6 +173,8 @@ Route::prefix('admin')->group(function () {
 //----------------------------------------------------------------------------------------------------------------------------->
 
 Route::get('/search', [App\Http\Controllers\Client\ListProductClientController::class, 'index'])->name('client.search');
+
+Route::delete('/discounts/bulk-delete', [DiscountController::class, 'bulkDelete'])->name('admin.discounts.bulkDelete');
 
 
 
