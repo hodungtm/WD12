@@ -39,7 +39,8 @@
                     </div>
 
                     <div class="mt-4 d-flex justify-content-end gap-2">
-                        <a href="{{ route('admin.banners.index') }}" class="btn btn-secondary-custom">
+                        <a href="{{ route('admin.banners.index') }}" class="tf-button style-1 btn-cancel"
+                            style="padding: 4px 12px; font-size: 13px; color: #e67e22">
                             <i class="icon-arrow-left"></i> Quay lại
                         </a>
                     </div>
@@ -141,22 +142,32 @@
         outline: none;
     }
 
-    .btn-secondary-custom {
-        background-color: #e5e7eb;
-        color: #333;
-        font-weight: 600;
-        padding: 8px 16px;
-        border-radius: 8px;
-        text-decoration: none;
-        transition: background-color 0.2s;
-    }
-
-    .btn-secondary-custom:hover {
-        background-color: #d1d5db;
-    }
-
     .carousel-inner img {
         object-fit: contain;
     }
+    .btn-cancel {
+    background-color: #fff; /* Nền trắng khi chưa hover */
+    color: #e67e22; /* Chữ cam */
+    border: 1px solid #e67e22;
+    transition: all 0.3s;
+}
+
+/* Icon mặc định màu cam */
+.btn-cancel i {
+    color: #e67e22;
+    transition: all 0.3s;
+}
+
+/* Hover: nền cam đậm, chữ trắng */
+.btn-cancel:hover {
+    background-color: #e67e22 !important; /* Nền cam khi hover */
+    color: #fff !important;                /* Chữ trắng */
+    border-color: #e67e22 !important;
+}
+
+/* Icon hover trắng */
+.btn-cancel:hover i {
+    color: #fff !important;
+}
 </style>
 @endpush

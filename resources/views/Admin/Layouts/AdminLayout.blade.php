@@ -222,12 +222,7 @@
                                             <div class="text">Online Store</div>
                                         </a>
                                         <ul class="sub-menu">
-                                            <li class="sub-menu-item"><a href="{{ route('admin.banners.index') }}">
-                                                    <div class="text">Danh sách banner</div>
-                                                </a></li>
-                                            <li class="sub-menu-item"><a href="{{ route('admin.banners.create') }}">
-                                                    <div class="text">Thêm banner</div>
-                                                </a></li>
+                                            
                                         </ul>
                                     </li>
                                     <li class="menu-item has-children">

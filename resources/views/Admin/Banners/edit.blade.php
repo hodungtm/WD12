@@ -104,13 +104,14 @@
                         </table>
                     </div>
 
-                    <div class="mt-3 d-flex justify-content-end">
-                        <div>
-                            <div id="delete-images-wrapper"></div>
-                            <button type="submit" class="btn btn-warning">Sửa</button>
-                            <a href="{{ route('admin.banners.index') }}" class="btn-secondary-custom">Quay lại</a>
-                        </div>
-                    </div>
+                    <div class="mt-3 d-flex justify-content-end gap-2">
+                        <button type="submit" class="tf-button style-1">
+                            <i class="icon-plus"></i> Cập nhật
+                        </button>
+                        <a href="{{ route('admin.banners.index') }}" class="tf-button style-1 btn-cancel"
+                            style="padding: 4px 12px; font-size: 13px; color: #e67e22">
+                            <i class="icon-x"></i> Hủy
+                        </a>
 
                 </form>
             </div>
@@ -224,8 +225,8 @@
         //             var newCarouselItem = document.createElement('div');
         //             newCarouselItem.classList.add('carousel-item');
         //             newCarouselItem.innerHTML = `
-        //             <img src="${e.target.result}" class="d-block w-100 img-fluid" style="height: 300px; object-fit: cover;" alt="Image ${rowIndex + 1}">
-        //         `;
+    //             <img src="${e.target.result}" class="d-block w-100 img-fluid" style="height: 300px; object-fit: cover;" alt="Image ${rowIndex + 1}">
+    //         `;
 
         //             // Nếu là ảnh đầu tiên, đặt class 'active'
         //             if (carouselInner.children.length === 0) {
@@ -325,40 +326,37 @@
         }
 
         /* ===== BUTTON ===== */
-        .btn-warning,
-        .btn-secondary-custom {
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 8px;
-            transition: background-color 0.2s, color 0.2s;
-            border: none;
-            min-width: 100px;
-            text-align: center;
+
+
+
+
+        .btn-cancel {
+            background-color: #fff;
+            /* Nền trắng khi chưa hover */
+            color: #e67e22;
+            /* Chữ cam */
+            border: 1px solid #e67e22;
+            transition: all 0.3s;
         }
 
-        /* .btn-warning {
-                    background-color: #c19e14;
-                    color: white;
-                } */
-
-        /* .btn-warning:hover {
-                    background-color: #a88612;
-                } */
-
-        .btn-secondary-custom {
-            background-color: #e5e7eb;
-            /* xám nhạt */
-            color: #333;
+        /* Icon mặc định màu cam */
+        .btn-cancel i {
+            color: #e67e22;
+            transition: all 0.3s;
         }
 
+        /* Hover: nền cam đậm, chữ trắng */
+        .btn-cancel:hover {
+            background-color: #e67e22 !important;
+            /* Nền cam khi hover */
+            color: #fff !important;
+            /* Chữ trắng */
+            border-color: #e67e22 !important;
+        }
 
-
-        /* ===== CĂN CHỈNH NÚT ===== */
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
+        /* Icon hover trắng */
+        .btn-cancel:hover i {
+            color: #fff !important;
         }
     </style>
 @endpush

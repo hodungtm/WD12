@@ -95,37 +95,44 @@
 
 
                     <div class="mt-3 d-flex justify-content-end gap-2">
-                        <button type="submit" class="btn btn-warning">
+                        <button type="submit" class="tf-button style-1">
                             <i class="icon-plus"></i> Thêm
                         </button>
-                        <a href="{{ route('admin.banners.index') }}" class="btn btn-secondary-custom">
+                        <a href="{{ route('admin.banners.index') }}" class="tf-button style-1 btn-cancel"
+                            style="padding: 4px 12px; font-size: 13px; color: #e67e22">
                             <i class="icon-x"></i> Hủy
                         </a>
+
+
+
+
                     </div>
                 </form>
             </div>
 
             <div class="mt-5">
-    <div class="card">
-        <div class="card-header">
-            <h5 class="mb-0">Xem trước slide</h5>
-        </div>
-        <div class="card-body">
-            <div id="bannerCarousel" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner" id="carouselImages">
-                    {{-- Ảnh sẽ được JS thêm ở đây --}}
-                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Xem trước slide</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="bannerCarousel" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner" id="carouselImages">
+                                {{-- Ảnh sẽ được JS thêm ở đây --}}
+                            </div>
 
-                <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                </button>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel"
+                                data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel"
+                                data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-</div>
 
 
         </div>
@@ -134,14 +141,14 @@
 
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-    let rowCount = 1;
+        document.addEventListener('DOMContentLoaded', function() {
+            let rowCount = 1;
 
-    document.getElementById('add-row').addEventListener('click', function () {
-        let tableBody = document.getElementById('image-table-body');
-        let newRow = document.createElement('tr');
+            document.getElementById('add-row').addEventListener('click', function() {
+                let tableBody = document.getElementById('image-table-body');
+                let newRow = document.createElement('tr');
 
-        newRow.innerHTML = `
+                newRow.innerHTML = `
             <td class="d-flex align-items-center">
                 <div class="d-flex align-items-center">
                     <img id="preview_${rowCount}" 
@@ -164,46 +171,46 @@
             </td>
         `;
 
-        tableBody.appendChild(newRow);
-        rowCount++;
-    });
-});
+                tableBody.appendChild(newRow);
+                rowCount++;
+            });
+        });
 
 
 
 
         function previewImageAndAddToSlideshow(input, rowIndex) {
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            // Cập nhật ảnh nhỏ bên cạnh input
-            const previewImg = document.getElementById(`preview_${rowIndex}`);
-            if (previewImg) {
-                previewImg.src = e.target.result;
-            }
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Cập nhật ảnh nhỏ bên cạnh input
+                    const previewImg = document.getElementById(`preview_${rowIndex}`);
+                    if (previewImg) {
+                        previewImg.src = e.target.result;
+                    }
 
-            // Tìm carousel item theo preview id
-            const carouselInner = document.getElementById('carouselImages');
-            const existingItem = carouselInner.querySelector(`[data-preview-id="preview_${rowIndex}"]`);
+                    // Tìm carousel item theo preview id
+                    const carouselInner = document.getElementById('carouselImages');
+                    const existingItem = carouselInner.querySelector(`[data-preview-id="preview_${rowIndex}"]`);
 
-            if (existingItem) {
-                // Nếu đã tồn tại: cập nhật ảnh
-                const carouselImg = existingItem.querySelector('img');
-                if (carouselImg) {
-                    carouselImg.src = e.target.result;
-                    carouselImg.alt = `Slide ${rowIndex + 1}`;
-                }
-            } else {
-                // Nếu chưa có thì tạo mới
-                const newItem = document.createElement('div');
-                newItem.classList.add('carousel-item');
-                newItem.setAttribute('data-preview-id', `preview_${rowIndex}`);
+                    if (existingItem) {
+                        // Nếu đã tồn tại: cập nhật ảnh
+                        const carouselImg = existingItem.querySelector('img');
+                        if (carouselImg) {
+                            carouselImg.src = e.target.result;
+                            carouselImg.alt = `Slide ${rowIndex + 1}`;
+                        }
+                    } else {
+                        // Nếu chưa có thì tạo mới
+                        const newItem = document.createElement('div');
+                        newItem.classList.add('carousel-item');
+                        newItem.setAttribute('data-preview-id', `preview_${rowIndex}`);
 
-                if (carouselInner.children.length === 0) {
-                    newItem.classList.add('active');
-                }
+                        if (carouselInner.children.length === 0) {
+                            newItem.classList.add('active');
+                        }
 
-                newItem.innerHTML = `
+                        newItem.innerHTML = `
                     <div class="d-flex justify-content-center align-items-center" style="height: 300px;">
                         <img src="${e.target.result}" class="img-fluid rounded"
                              style="max-height: 100%; max-width: 100%; object-fit: contain;"
@@ -211,45 +218,44 @@
                     </div>
                 `;
 
-                carouselInner.appendChild(newItem);
-            }
-        };
+                        carouselInner.appendChild(newItem);
+                    }
+                };
 
-        reader.readAsDataURL(input.files[0]);
-    }
-}
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
 
 
 
 
         // Xoá dòng ảnh được thêm mới
         function removeRow(btn) {
-    const row = btn.closest('tr');
-    const img = row.querySelector('img');
+            const row = btn.closest('tr');
+            const img = row.querySelector('img');
 
-    if (img) {
-        const previewId = img.id;
+            if (img) {
+                const previewId = img.id;
 
-        const carouselItems = document.querySelectorAll('#carouselImages .carousel-item');
-        carouselItems.forEach(item => {
-            if (item.getAttribute('data-preview-id') === previewId) {
-                item.remove();
+                const carouselItems = document.querySelectorAll('#carouselImages .carousel-item');
+                carouselItems.forEach(item => {
+                    if (item.getAttribute('data-preview-id') === previewId) {
+                        item.remove();
+                    }
+                });
             }
-        });
-    }
 
-    row.remove();
+            row.remove();
 
-    // Cập nhật lại class active nếu không còn item active
-    const activeItem = document.querySelector('#carouselImages .carousel-item.active');
-    if (!activeItem) {
-        const firstItem = document.querySelector('#carouselImages .carousel-item');
-        if (firstItem) {
-            firstItem.classList.add('active');
+            // Cập nhật lại class active nếu không còn item active
+            const activeItem = document.querySelector('#carouselImages .carousel-item.active');
+            if (!activeItem) {
+                const firstItem = document.querySelector('#carouselImages .carousel-item');
+                if (firstItem) {
+                    firstItem.classList.add('active');
+                }
+            }
         }
-    }
-}
-
     </script>
 @endpush
 
@@ -315,11 +321,38 @@
             gap: 10px;
             margin-top: 20px;
         }
+
         #carouselImages .carousel-item img {
-    object-fit: contain;
-    max-height: 100%;
-    max-width: 100%;
+            object-fit: contain;
+            max-height: 100%;
+            max-width: 100%;
+        }
+
+        .btn-cancel {
+    background-color: #fff; /* Nền trắng khi chưa hover */
+    color: #e67e22; /* Chữ cam */
+    border: 1px solid #e67e22;
+    transition: all 0.3s;
 }
+
+/* Icon mặc định màu cam */
+.btn-cancel i {
+    color: #e67e22;
+    transition: all 0.3s;
+}
+
+/* Hover: nền cam đậm, chữ trắng */
+.btn-cancel:hover {
+    background-color: #e67e22 !important; /* Nền cam khi hover */
+    color: #fff !important;                /* Chữ trắng */
+    border-color: #e67e22 !important;
+}
+
+/* Icon hover trắng */
+.btn-cancel:hover i {
+    color: #fff !important;
+}
+
 
     </style>
 @endpush

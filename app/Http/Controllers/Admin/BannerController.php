@@ -67,7 +67,7 @@ class BannerController extends Controller
             }
         }
         // dd($banner);
-        return redirect()->route('admin.banners.index')->with('success', 'Thêm banner và ảnh thành công');
+        return redirect()->route('admin.banners.index')->with('success', 'Thêm banner thành công');
     }
 
 
