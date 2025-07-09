@@ -112,11 +112,72 @@
     min-width: 180px;
 }
 
-
-    </style>
+#alert-stack {
+    position: fixed;
+    top: 32px;
+    right: 32px;
+    left: auto;
+    transform: none;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    width: auto;
+    min-width: 320px;
+    max-width: 90vw;
+    pointer-events: none;
+}
+.custom-alert {
+    position: relative;
+    background: #20b2aa;
+    color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+    font-size: 1.08rem;
+    padding: 18px 28px 18px 56px;
+    border: 1.5px solid #179b8a;
+    font-weight: 500;
+    line-height: 1.6;
+    min-width: 320px;
+    max-width: 420px;
+    margin: 0 0 0 auto;
+    animation: slideInDown 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+    will-change: opacity, transform;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    pointer-events: auto;
+}
+.custom-alert .icon-warning {
+    position: absolute;
+    left: 22px;
+    top: 22px;
+    font-size: 1.5em;
+    color: #fff;
+    opacity: 0.85;
+}
+.custom-alert .close {
+    position: absolute;
+    top: 10px;
+    right: 18px;
+    color: #fff;
+    font-size: 1.2em;
+    opacity: 0.7;
+    background: none;
+    border: none;
+}
+@keyframes slideInDown {
+    0% { opacity: 0; transform: translateY(-80px) scale(0.85); }
+    60% { opacity: 1; transform: translateY(10px) scale(1.05); }
+    80% { opacity: 1; transform: translateY(-2px) scale(0.98); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+</style>
 </head>
 
 <body class="@yield('body-class')">
+    @include('components.alert')
     <div class="page-wrapper">
         <header class="header">
             <div class="header-top">
@@ -772,6 +833,22 @@
 
     <!-- Main JS File -->
     <script src="{{ asset('assets/js/main.min.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            setTimeout(function() {
+                $('.custom-alert').alert('close');
+            }, 3500);
+        });
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#alert-stack .custom-alert').each(function(i, el) {
+                setTimeout(function() {
+                    $(el).fadeOut(400, function() { $(this).remove(); });
+                }, 3000 + i * 300); // Cái sau trễ hơn cái trước 0.3s
+            });
+        });
+    </script>
 </body>
 
 

@@ -30,15 +30,7 @@
                     </ul>
                 </div>
 
-                @if ($errors->any())
-                    <div class="alert alert-danger mb-3">
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+                {{-- XÓA ĐOẠN HIỂN THỊ LỖI/THÔNG BÁO Ở ĐÂY --}}
 
                 <div class="wg-box">
                     <form class="form-new-product form-style-1" action="{{ route('posts.update', $post) }}" method="POST"

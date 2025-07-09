@@ -37,6 +37,17 @@
                         </div>
                     @endif
 
+
+        <div class="wg-box">
+            <form action="{{ route('admin.banners.update', $banner->id) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+
+                <div class="form-group mt-3">
+                    <label>Tiêu đề:</label>
+                    <input type="text" name="tieu_de" class="form-control" value="{{ old('tieu_de', $banner->tieu_de) }}">
+                </div>
+
                     <div class="form-group mt-3">
                         <label>Tiêu đề:</label>
                         <input type="text" name="tieu_de" class="form-control @error('tieu_de') is-invalid @enderror"
@@ -47,6 +58,7 @@
                         <label>Nội dung:</label>
                         <textarea name="noi_dung" class="form-control @error('noi_dung') is-invalid @enderror">{{ old('noi_dung', $banner->noi_dung) }}</textarea>
                     </div>
+
 
                     <div class="form-group mt-3">
                         <label>Loại banner:</label>

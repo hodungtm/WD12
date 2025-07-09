@@ -4,17 +4,7 @@
         <div class="col-md-12">
             <div class="tile card shadow-sm rounded-3 border-0">
                 <div class="tile-body p-4">
-                    @if (session('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-
-                    @if (session('error'))
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            {{ session('error') }}
-                        </div>
-                    @endif
+                    {{-- XÓA ĐOẠN HIỂN THỊ LỖI/THÔNG BÁO Ở ĐÂY --}}
 
                     <div class="wg-box">
                         <div class="flex items-center justify-between gap10 flex-wrap">

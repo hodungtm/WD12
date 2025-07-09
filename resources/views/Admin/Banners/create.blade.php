@@ -21,6 +21,19 @@
                     class="mt-3">
                     @csrf
 
+
+        <div class="wg-box">
+            <div class="flex items-center justify-between gap10 flex-wrap">
+                <div class="wg-filter flex-grow">
+                    {{-- XÓA ĐOẠN HIỂN THỊ LỖI/THÔNG BÁO Ở ĐÂY --}}
+                </div>
+                <div class="flex gap10">
+                    <a href="{{ route('admin.banners.index') }}" class="tf-button style-1">
+                        <i class="icon-arrow-left"></i> Quay lại
+                    </a>
+                </div>
+            </div>
+
                     @if (session('success'))
                         <div class="alert alert-success mt-3">{{ session('success') }}</div>
                     @endif
@@ -34,6 +47,7 @@
                             </ul>
                         </div>
                     @endif
+
 
                     <div class="form-group mt-3">
                         <label class="form-label">Tiêu đề:</label>

@@ -7,6 +7,15 @@
                 <h5 class="mb-0">Chỉnh sửa đơn hàng</h5>
             </div>
             <div class="card-body">
+@extends('Admin.layouts.AdminLayout')
+
+@section('main')
+    <div class="container-fluid">
+        <div class="card mb-4">
+            <div class="card-header border-bottom">
+                <h5 class="mb-0">Chỉnh sửa đơn hàng</h5>
+            </div>
+            <div class="card-body">
                 {{-- HIỂN THỊ THÔNG BÁO TỪ SESSION --}}
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">

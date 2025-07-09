@@ -2,12 +2,6 @@
 
 @section('main')
 
-@if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-        {{ session('success') }}
-    </div>
-@endif
-
 <div class="flex items-center flex-wrap justify-between gap20 mb-30">
     <h3>Quản lý Size & Color</h3>
     <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">

@@ -16,9 +16,7 @@
     
 
     <!-- Thông báo -->
-    @if(session('success'))
-      <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
+    
 
     <!-- Bộ lọc + chọn số dòng -->
    

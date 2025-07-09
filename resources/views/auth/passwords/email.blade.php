@@ -74,11 +74,6 @@ main .reset-email-simple-box button[type="submit"]:hover {
     <div class="reset-email-simple-box">
         <h2>Quên mật khẩu 🔐</h2>
         <p>Vui lòng nhập địa chỉ email của bạn để nhận liên kết đặt lại mật khẩu.</p>
-        @if (session('status'))
-            <div class="alert-success">
-                {{ session('status') }}
-            </div>
-        @endif
         <form method="POST" action="{{ route('password.email') }}">
             @csrf
             <div class="form-group" style="text-align:left;">
