@@ -15,6 +15,7 @@ class User extends Authenticatable
     const ROLE_ADMIN = 'admin';
     const ROLE_USER = 'user';
 
+
     protected $fillable = [
         'name', 'email', 'password', 'phone', 'gender',
         'address', 'dob', 'avatar', 'is_active', 'role'
@@ -35,7 +36,7 @@ class User extends Authenticatable
     protected $attributes = [
         'role' => self::ROLE_USER,
     ];
-    
+
     public function isRoleAdmin()
     {
         return $this->role === self::ROLE_ADMIN;
