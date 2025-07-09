@@ -15,19 +15,7 @@
         <div class="wg-box">
             <div class="flex items-center justify-between gap10 flex-wrap">
                 <div class="wg-filter flex-grow">
-                    @if (session('success'))
-                        <div class="alert alert-success mt-3">{{ session('success') }}</div>
-                    @endif
-
-                    @if ($errors->any())
-                        <div class="alert alert-danger mt-3">
-                            <ul class="mb-0">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
+                    {{-- XÓA ĐOẠN HIỂN THỊ LỖI/THÔNG BÁO Ở ĐÂY --}}
                 </div>
                 <div class="flex gap10">
                     <a href="{{ route('admin.banners.index') }}" class="tf-button style-1">

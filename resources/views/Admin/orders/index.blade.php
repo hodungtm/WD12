@@ -40,12 +40,7 @@
                 </div>
 
                 {{-- Thông báo Flash Session --}}
-                @if(session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
-                @if(session('error'))
-                    <div class="alert alert-danger">{{ session('error') }}</div>
-                @endif
+                {{-- XÓA ĐOẠN HIỂN THỊ LỖI/THÔNG BÁO Ở ĐÂY --}}
 
                 <table class="table table-hover table-bordered" id="sampleTable">
                     <thead>

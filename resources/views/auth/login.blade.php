@@ -118,19 +118,7 @@ main .login-simple-box .register-link a:hover {
     <div class="login-simple-box">
         <h2>Đăng nhập</h2>
         <div class="body-text">Vui lòng nhập email và mật khẩu để đăng nhập</div>
-        @if (
-$errors->any())
-            <div class="alert alert-danger" style="font-size:15px;">
-                @foreach ($errors->all() as $error)
-                    <div>{{ $error }}</div>
-                @endforeach
-            </div>
-        @endif
-        @if (session('status'))
-            <div class="alert alert-success" style="font-size:15px;">
-                {{ session('status') }}
-            </div>
-        @endif
+        {{-- XÓA ĐOẠN HIỂN THỊ LỖI/THÔNG BÁO Ở ĐÂY --}}
         <form method="POST" action="{{ route('login') }}">
             @csrf
             <div class="form-group">

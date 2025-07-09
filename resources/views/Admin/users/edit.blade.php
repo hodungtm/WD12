@@ -15,19 +15,7 @@
       <h3 class="tile-title">Chỉnh sửa tài khoản người dùng</h3>
 
       {{-- Hiển thị lỗi --}}
-      @if ($errors->any())
-        <div class="alert alert-danger">
-          <ul class="mb-0">
-            @foreach ($errors->all() as $error)
-              <li>{{ $error }}</li>
-            @endforeach
-          </ul>
-        </div>
-      @endif
-
-      @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-      @endif
+      {{-- XÓA ĐOẠN HIỂN THỊ LỖI/THÔNG BÁO Ở ĐÂY --}}
 
       <form class="row" action="{{ route('admin.users.update', $user) }}" method="POST" enctype="multipart/form-data">
         @csrf

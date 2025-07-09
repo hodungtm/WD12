@@ -94,20 +94,6 @@ main .register-simple-box .login-link a:hover {
     <div class="register-simple-box">
         <h2>Đăng ký tài khoản</h2>
         <div class="body-text">Tạo tài khoản mới để bắt đầu hành trình cùng chúng tôi</div>
-        @if ($errors->any())
-            <div class="alert alert-danger" style="font-size:15px;">
-                <ul style="margin-bottom:0; padding-left:18px;">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-        @if (session('status'))
-            <div class="alert alert-success" style="font-size:15px;">
-                {{ session('status') }}
-            </div>
-        @endif
         <form method="POST" action="{{ route('register') }}">
             @csrf
             <div class="form-group">

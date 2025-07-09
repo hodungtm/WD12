@@ -18,11 +18,7 @@
             </ul>
         </div>
 
-        @if (session('success'))
-            <div class="alert alert-success mt-3" id="success-alert">
-                {{ session('success') }}
-            </div>
-        @endif
+        {{-- XÓA ĐOẠN HIỂN THỊ LỖI/THÔNG BÁO Ở ĐÂY --}}
 
         <div class="wg-box mt-3">
             <div class="flex items-center justify-between gap10 flex-wrap mb-3">

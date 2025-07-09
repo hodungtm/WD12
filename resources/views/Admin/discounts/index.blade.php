@@ -16,12 +16,6 @@
             </ul>
         </div>
 
-        @if(session('success'))
-            <div class="alert alert-success mt-3" id="success-alert">
-                {{ session('success') }}
-            </div>
-        @endif
-
         <div class="wg-box">
             <div class="flex items-center justify-between gap10 flex-wrap mb-3">
                 <div class="wg-filter flex-grow">
@@ -132,13 +126,7 @@
     });
 
     document.addEventListener('DOMContentLoaded', () => {
-        const alertBox = document.getElementById('success-alert');
-        if (alertBox) {
-            setTimeout(() => {
-                alertBox.style.opacity = 0;
-                setTimeout(() => alertBox.remove(), 500);
-            }, 3000);
-        }
+        // XÓA ĐOẠN HIỂN THỊ LỖI/THÔNG BÁO Ở ĐÂY
     });
 
     document.addEventListener("click", function (e) {

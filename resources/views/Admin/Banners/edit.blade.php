@@ -17,20 +17,6 @@
                 @csrf
                 @method('PUT')
 
-                @if (session('success'))
-                    <div class="alert alert-success mt-3">{{ session('success') }}</div>
-                @endif
-
-                @if ($errors->any())
-                    <div class="alert alert-danger mt-3">
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
                 <div class="form-group mt-3">
                     <label>Tiêu đề:</label>
                     <input type="text" name="tieu_de" class="form-control" value="{{ old('tieu_de', $banner->tieu_de) }}">
