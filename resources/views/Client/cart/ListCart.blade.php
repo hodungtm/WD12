@@ -1,126 +1,127 @@
 @extends('Client.Layouts.ClientLayout')
-
 @section('main')
-<main class="main">
-    <div class="container my-5">
-        <!-- Thanh bước tiến độ -->
-        <ul class="checkout-progress-bar d-flex justify-content-center flex-wrap mb-4">
-            <li class="active"><a href="#">Shopping Cart</a></li>
-            <li><a href="{{ route('client.checkout.show') }}">Checkout</a></li>
-            <li class="disabled"><a href="#">Order Complete</a></li>
-        </ul>
 
-        @if($cartItems->isEmpty())
-            <h4 class="text-center">Chưa có sản phẩm trong giỏ hàng.</h4>
-        @else
-            @php
-                $subtotal = $cartItems->sum(fn($item) => $item->variant->price * $item->quantity);
-            @endphp
-
-            <form action="{{ route('client.checkout.show') }}" method="GET">
-                <div class="row">
-                    <div class="col-lg-8">
-                        <div class="table-responsive">
-                            <table class="table table-bordered text-center align-middle">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th><input type="checkbox" id="check-all"></th>
-                                        <th>Ảnh</th>
-                                        <th>Tên sản phẩm</th>
-                                        <th>Đơn giá</th>
-                                        <th>Số lượng</th>
-                                        <th>Thành tiền</th>
-                                        <th>Xóa</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($cartItems as $item)
-                                        @php
-                                            $variant = $item->variant;
-                                            $product = $item->product;
-                                            $imagePath = $product->images->first()->image ?? 'no-image.jpg';
-                                            $price = $variant->price;
-                                            $total = $price * $item->quantity;
-                                        @endphp
-                                        <tr>
-                                            <td>
-                                                <input type="checkbox" name="selected_items[]" value="{{ $item->id }}" class="item-checkbox">
-                                            </td>
-                                            <td>
-                                                <img src="{{ asset('storage/' . $imagePath) }}" width="60" class="img-thumbnail">
-                                            </td>
-                                            <td class="text-start">
-                                                <strong>{{ $product->name }}</strong><br>
-                                                <small>Màu: {{ $variant->color->name ?? '-' }}<br>Size: {{ $variant->size->name ?? '-' }}</small>
-                                            </td>
-                                            <td>{{ number_format($price, 0, ',', '.') }}₫</td>
-                                            <td style="width: 100px;">
-                                                <form action="{{ route('client.cart.update', $item->id) }}" method="POST">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <input type="number" name="quantity" value="{{ $item->quantity }}" min="1"
-                                                        class="form-control form-control-sm text-center quantity-input">
-                                                </form>
-                                            </td>
-                                            <td>{{ number_format($total, 0, ',', '.') }}₫</td>
-                                            <td>
-                                                <form action="{{ route('client.cart.remove', $item->id) }}" method="POST">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button class="btn btn-sm btn-danger">x</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="d-flex justify-content-between mt-3">
-                            <button type="submit" class="btn btn-success px-4 py-2">
-                                THANH TOÁN SẢN PHẨM ĐÃ CHỌN
-                            </button>
-                            <a href="{{ route('client.checkout.show') }}" class="btn btn-dark px-4 py-2">
-                                THANH TOÁN TOÀN BỘ
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-4 mt-4 mt-lg-0">
-                        <div class="border p-4">
-                            <h4 class="mb-3 fw-bold">TỔNG ĐƠN HÀNG</h4>
-                            <table class="table">
-                                <tr>
-                                    <td>Tạm tính</td>
-                                    <td class="text-end">{{ number_format($subtotal, 0, ',', '.') }}₫</td>
-                                </tr>
-                                <tr>
-                                    <th>Tổng cộng</th>
-                                    <th class="text-end">{{ number_format($subtotal, 0, ',', '.') }}₫</th>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
+    <nav class="breadcrumb-section theme1 bg-lighten2 pt-110 pb-110">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="title text-dark text-capitalize">Giỏ hàng</h2>
+                    <ol class="breadcrumb bg-transparent justify-content-center">
+                        <li class="breadcrumb-item"><a href="{{ route('home') }}">Trang chủ</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Giỏ hàng</li>
+                    </ol>
                 </div>
-            </form>
-        @endif
-    </div>
-</main>
+            </div>
+        </div>
+    </nav>
+
+    <section class="whish-list-section theme1 pt-80 pb-80">
+        <div class="container">
+            <h3 class="text-center mb-4">Giỏ Hàng Của Bạn</h3>
+
+
+            @if($cartItems->isEmpty())
+
+            @if ($cartItems->isEmpty())
+
+                <p class="text-center">Chưa có sản phẩm trong giỏ hàng.</p>
+            @else
+                <div class="table-responsive">
+                    <table class="table text-center align-middle">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Ảnh</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Biến thể</th>
+                                <th>Số lượng</th>
+                                <th>Giá</th>
+                                <th>Tổng</th>
+                                <th>Xóa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach($cartItems as $item)
+                                @php
+                                    $variant = $item->variant;
+                                    $product = $item->product;
+                                    
+
+                            @foreach ($cartItems as $item)
+                                @php
+                                    $variant = $item->variant;
+                                    $product = $item->product;
+
+
+                                    // Ưu tiên ảnh của biến thể → fallback về ảnh sản phẩm
+                                    $imagePath = null;
+
+                                    if ($variant && $variant->images && $variant->images->first()) {
+                                        $imagePath = $variant->images->first()->image;
+                                    } elseif ($product && $product->images && $product->images->first()) {
+                                        $imagePath = $product->images->first()->image;
+                                    } else {
+                                        $imagePath = 'no-image.jpg'; // fallback ảnh mặc định
+                                    }
+
+                                    $price = $variant->price;
+
+                                    $price = $variant->price ?? 0; // Nếu variant null → 0
+
+                                    $total = $price * $item->quantity;
+                                @endphp
+                                <tr>
+                                    <td>
+
+                                        <img src="{{ asset('storage/' . $imagePath) }}" alt="ảnh" width="70" class="img-thumbnail">
+
+                                        <img src="{{ asset('storage/' . $imagePath) }}" alt="ảnh" width="70"
+                                            class="img-thumbnail">
+
+                                    </td>
+                                    <td>{{ $product->name }}</td>
+                                    <td>
+                                        Màu: {{ $variant->color->name ?? '-' }} <br>
+                                        Size: {{ $variant->size->name ?? '-' }}
+                                    </td>
+                                    <td>
+                                        <form method="POST" action="{{ route('client.cart.update', $item->id) }}">
+                                            @csrf
+
+                                            <input type="number" name="quantity" value="{{ $item->quantity }}" min="1"
+                                                max="{{ $variant->quantity }}" style="width: 70px;">
+
+                                            <input type="number" name="quantity" value="{{ $item->quantity }}"
+                                                min="1" max="{{ $variant->quantity ?? 10 }}" style="width: 70px;">
+
+                                            <button class="btn btn-sm btn-primary mt-1">Cập nhật</button>
+                                        </form>
+                                    </td>
+                                    <td>{{ number_format($price, 0, ',', '.') }}₫</td>
+                                    <td>{{ number_format($total, 0, ',', '.') }}₫</td>
+                                    <td>
+                                        <form action="{{ route('client.cart.remove', $item->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-end mt-4">
+                    <a href="{{ route('client.checkout.show') }}" class="btn theme-btn--dark1 btn--lg">Thanh toán</a>
+
+                </div>
+            @endif
+        </div>
+    </section>
+
+
 @endsection
 
-@section('scripts')
-<script>
-    document.querySelectorAll('.quantity-input').forEach(function(input) {
-        input.addEventListener('change', function () {
-            this.closest('form').submit();
-        });
-    });
-
-    document.getElementById('check-all').addEventListener('change', function () {
-        const checked = this.checked;
-        document.querySelectorAll('.item-checkbox').forEach(function (checkbox) {
-            checkbox.checked = checked;
-        });
-    });
-</script>
 @endsection
+
