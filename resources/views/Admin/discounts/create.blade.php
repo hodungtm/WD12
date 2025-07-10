@@ -21,8 +21,6 @@
 
                     @include('admin.discounts.form')
 
-                    <button type="submit" class="btn btn-primary">Lưu lại</button>
-                    <a href="{{ route('admin.discounts.index') }}" class="btn btn-secondary">Hủy bỏ</a>
                 </form>
             </div>
         </div>

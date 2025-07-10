@@ -17,12 +17,13 @@ class AdminMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
-    {
-        if (Auth::check() || !Auth::user()->isRoleAdmin()){
-            return redirect()->route('home')->withErrors('Bạn Không Có Quyền Đăng Nhập Trang Này');
-        }
-        return $next($request);
-
+   public function handle(Request $request, Closure $next): Response
+{
+    if (!Auth::check() || !Auth::user()->isRoleAdmin()) {
+        return redirect()->route('home')->withErrors('Bạn Không Có Quyền Đăng Nhập Trang Này');
     }
+
+    return $next($request);
+}
+
 }

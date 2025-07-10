@@ -15,9 +15,9 @@ return new class extends Migration
             $table->softDeletes(); // tạo deleted_at nullable
         });
 
-        Schema::table('reviews', function (Blueprint $table) {
-            $table->softDeletes();
-        });
+        // Schema::table('reviews', function (Blueprint $table) {
+        //     $table->softDeletes();
+        // });
     }
 
     /**
@@ -29,8 +29,8 @@ return new class extends Migration
             $table->dropSoftDeletes();
         });
 
-        Schema::table('reviews', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-        });
+        // Schema::table('reviews', function (Blueprint $table) {
+        //     $table->dropSoftDeletes();
+        // });
     }
 };

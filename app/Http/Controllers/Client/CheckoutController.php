@@ -144,6 +144,7 @@ $cartItems = Cart::with(['product', 'variant'])
         return redirect()->route('client.checkout.show')->with('error', 'Thanh toán thất bại hoặc bị hủy.');
     }
 
+
     public function storeOrder($request, $cartItems, $discountCode, $discountAmount, $shippingFee, $subtotal, $finalAmount)
     {
         $order = Order::create([
@@ -161,6 +162,7 @@ $cartItems = Cart::with(['product', 'variant'])
             'discount_code'      => $discountCode,
             'discount_amount'    => $discountAmount,
             'final_amount'       => $finalAmount,
+
         ]);
 
         foreach ($cartItems as $item) {

@@ -51,6 +51,11 @@ class CatalogController extends Controller
     return redirect()->back()->with('success', 'Đã cập nhật Size!');
 }
 
+public function destroySize(Size $size)
+{
+    $size->delete();
+    return redirect()->back()->with('success', 'Đã xóa Size!');
+}
 
 
     // Color

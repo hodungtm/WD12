@@ -1,55 +1,52 @@
 @extends('Admin.Layouts.AdminLayout')
+
 @section('main')
-
-<main class="app-content">
-  <div class="app-title">
-    <ul class="app-breadcrumb breadcrumb side">
-      <li class="breadcrumb-item active"><a href="#"><b>Sửa Đánh giá {{ $review->id }}</b></a></li>
-    </ul>
-    <div>
-      <a href="{{ route('Admin.reviews.index') }}" class="btn btn-outline-primary btn-sm">
-        ← Quay lại danh sách đánh giá
-      </a>
+<div class="main-content-inner" style="padding-top: 10px; margin-top: 0;">
+  <div class="main-content-wrap" style="padding-top: 0; margin-top: 0;">
+    <div class="flex items-center flex-wrap justify-between gap20 mb-30">
+      <h3>Sửa đánh giá #{{ $review->id }}</h3>
+      <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+        <li><a href="#"><div class="text-tiny">Bảng điều khiển</div></a></li>
+        <li><i class="icon-chevron-right"></i></li>
+        <li><a href="{{ route('Admin.reviews.index') }}"><div class="text-tiny">Đánh giá</div></a></li>
+        <li><i class="icon-chevron-right"></i></li>
+        <li><div class="text-tiny">Sửa đánh giá</div></li>
+      </ul>
     </div>
-  </div>
-
-  <div class="tile">
-    <div class="tile-body">
-      <form action="{{ route('Admin.reviews.update', $review->id) }}" method="POST">
+    <div class="wg-box">
+      <form action="{{ route('Admin.reviews.update', $review->id) }}" method="POST" class="form-style-1" style="max-width:520px; width:100%; margin-left:0; margin-right:auto;">
         @csrf
         @method('PUT')
-
-        <div class="mb-3">
-          <label for="so_sao" class="form-label">Số sao (1-5)</label>
-          <input type="number" name="so_sao" id="so_sao" value="{{ old('so_sao', $review->so_sao) }}" class="form-control" min="1" max="5">
-          @error('so_sao')
-            <div style="color: red;">{{ $message }}</div>
-          @enderror
+        <fieldset class="mb-4 flex items-center gap20" style="align-items:center;">
+          <div class="body-title" style="min-width:160px; max-width:200px; text-align:left;">Số sao</div>
+          <div style="flex:1; min-width:0; max-width:120px;">
+            <input type="number" class="form-control" value="{{ $review->so_sao }}" style="width:100%;" readonly disabled>
+          </div>
+        </fieldset>
+        <fieldset class="mb-4 flex items-center gap20" style="align-items:center;">
+          <div class="body-title" style="min-width:160px; max-width:200px; text-align:left;">Nội dung đánh giá</div>
+          <div style="flex:1; min-width:0;">
+            <textarea class="form-control" rows="4" style="width:100%; max-width:340px; min-width:180px; resize:vertical; text-align:left;" readonly disabled>{{ $review->noi_dung }}</textarea>
+          </div>
+        </fieldset>
+        <fieldset class="mb-4 flex items-center gap20" style="align-items:center;">
+          <div class="body-title" style="min-width:160px; max-width:200px; text-align:left;">Trạng thái hiển thị</div>
+          <div style="flex:1; min-width:0; max-width:220px;">
+            <select name="trang_thai" class="form-select" style="width:100%; text-align:left;">
+              <option value="1" {{ old('trang_thai', $review->trang_thai) == 1 ? 'selected' : '' }}>Hiển thị</option>
+              <option value="0" {{ old('trang_thai', $review->trang_thai) == 0 ? 'selected' : '' }}>Ẩn</option>
+            </select>
+            @error('trang_thai')
+              <div class="text-danger mt-1">{{ $message }}</div>
+            @enderror
+          </div>
+        </fieldset>
+        <div class="bot mt-4 flex gap10 justify-end">
+          <button type="submit" class="tf-button w208">Cập nhật</button>
+          <a href="{{ route('Admin.reviews.index') }}" class="tf-button style-1 w208">Hủy</a>
         </div>
-
-        <div class="mb-3">
-          <label for="noi_dung" class="form-label">Nội dung đánh giá</label>
-          <textarea name="noi_dung" id="noi_dung" class="form-control" rows="5">{{ old('noi_dung', $review->noi_dung) }}</textarea>
-          @error('noi_dung')
-            <div style="color: red;">{{ $message }}</div>
-          @enderror
-        </div>
-
-        <div class="form-group mb-3">
-          <label for="trang_thai" class="form-label">Trạng thái hiển thị</label>
-          <select name="trang_thai" id="trang_thai" class="form-control @error('trang_thai') is-invalid @enderror">
-            <option value="0" {{ old('trang_thai', $review->trang_thai) == 0 ? 'selected' : '' }}>Ẩn</option>
-            <option value="1" {{ old('trang_thai', $review->trang_thai) == 1 ? 'selected' : '' }}>Hiển thị</option>
-          </select>
-          @error('trang_thai')
-            <div style="color: red;">{{ $message }}</div>
-          @enderror
-        </div>
-
-        <button type="submit" class="btn btn-primary me-2">Cập nhật</button>
-        <a href="{{ route('Admin.reviews.index') }}" class="btn btn-secondary">Hủy</a>
       </form>
     </div>
   </div>
-</main>
-
+</div>
+@endsection

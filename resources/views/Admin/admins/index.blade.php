@@ -2,9 +2,6 @@
 
 @section('main')
     <div class="app-title">
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
         <ul class="app-breadcrumb breadcrumb side">
             <li class="breadcrumb-item active"><a href="#"><b>Danh sách tài khoản Admin</b></a></li>
         </ul>

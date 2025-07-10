@@ -1,119 +1,129 @@
 @extends('Admin.Layouts.AdminLayout')
+
 @section('main')
-
-<main class="app-content">
-    <div class="app-title">
-        <ul class="app-breadcrumb breadcrumb side">
-            <li class="breadcrumb-item active"><a href="#"><b>Quản lý Đánh giá</b></a></li>
-        </ul>
-        <div id="clock"></div>
+<div class="main-content-inner" style="padding-top: 10px; margin-top: 0;">
+  <div class="main-content-wrap" style="padding-top: 0; margin-top: 0;">
+    <div class="flex items-center flex-wrap justify-between gap20 mb-30">
+      <h3>Danh sách đánh giá</h3>
+      <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+        <li><a href="#"><div class="text-tiny">Bảng điều khiển</div></a></li>
+        <li><i class="icon-chevron-right"></i></li>
+        <li><div class="text-tiny">Đánh giá</div></li>
+      </ul>
     </div>
-
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
-    <div class="row">
-        <div class="col-md-12">
-            <div class="tile">
-                <div class="tile-body">
-                    <div class="row element-button">
-                        <div class="col-sm-2">
-                            <a href="{{ route('Admin.reviews.trash') }}" class="btn btn-warning">
-                                <i class="fas fa-trash-restore"></i> Thùng rác
-                            </a>
-                        </div>
-                    </div>
-
-
-                    <form action="{{ route('Admin.reviews.index') }}" method="GET" class="d-flex mb-3"
-                        style="max-width: 700px; gap: 10px;">
-
-                        <!-- Input tìm kiếm sản phẩm -->
-                        <input type="text" name="product_name" class="form-control" placeholder="Tìm theo sản phẩm..."
-                            value="{{ request('product_name') }}" style="max-width: 250px;" autocomplete="off">
-
-                        <!-- Lọc theo số sao -->
-                        <select name="so_sao" class="form-control" style="max-width: 120px;">
-                            <option value="">-- Số sao --</option>
-                            @for ($i = 1; $i <= 5; $i++)
-                                <option value="{{ $i }}" {{ (request('so_sao') == $i) ? 'selected' : '' }}>{{ $i }} sao
-                                </option>
-                            @endfor
-                        </select>
-
-                        <!-- Lọc theo trạng thái -->
-                        <select name="trang_thai" class="form-control" style="max-width: 140px;">
-                            <option value="">-- Trạng thái --</option>
-                            <option value="1" {{ (request('trang_thai') === '1') ? 'selected' : '' }}>Hiển thị</option>
-                            <option value="0" {{ (request('trang_thai') === '0') ? 'selected' : '' }}>Ẩn</option>
-                        </select>
-
-                        <!-- Sắp xếp đánh giá -->
-                        <select name="sort" class="form-control" style="max-width: 180px;">
-                            <option value="">-- Sắp xếp --</option>
-                            <option value="newest" {{ (request('sort') == 'newest') ? 'selected' : '' }}>Mới nhất</option>
-                            <option value="oldest" {{ (request('sort') == 'oldest') ? 'selected' : '' }}>Cũ nhất</option>
-                        </select>
-
-                        <button class="btn btn-outline" type="submit" style="height: calc(2.7rem + 2px);">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </form>
-
-
-                    <table class="table table-hover table-bordered" id="sampleTable">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Người dùng</th>
-                                <th>Sản phẩm</th>
-                                <th>Số sao</th>
-                                <th>Nội dung</th>
-                                <th>Trạng thái</th>
-                                <th>Ngày tạo</th>
-                                <th>Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($reviews as $review)
-                                                    <tr>
-                                                        <td>{{ $review->id }}</td>
-                                                        <td>{{ $review->user->name ?? 'N/A' }}</td>
-                                                        <td>{{ $review->product->name ?? 'N/A' }}</td>
-                                                        <td>{{ $review->so_sao }}</td>
-                                                        <td>{{ Str::limit($review->noi_dung, 50) }}</td>
-                                                        <td>
-                                                            {!! $review->trang_thai
-                                ? '<span class="badge bg-success">Hiển thị</span>'
-                                : '<span class="badge bg-secondary">Ẩn</span>'
-                                                                                                                                                                                                                                                                                    !!}
-                                                        </td>
-                                                        <td>{{ $review->created_at->format('d/m/Y') }}</td>
-                                                        <td>
-                                                            <a href="{{ route('Admin.reviews.edit', $review->id) }}"
-                                                                class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
-                                                            <form action="{{ route('Admin.reviews.destroy', $review->id) }}" method="POST"
-                                                                style="display:inline-block" onsubmit="return confirm('Bạn có chắc muốn xóa?')">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button class="btn btn-danger btn-sm" type="submit"><i
-                                                                        class="fas fa-trash-alt"></i></button>
-                                                            </form>
-                                                            <a href="{{ route('Admin.reviews.show', $review->id) }}" class="btn btn-info btn-sm"
-                                                                title="Xem chi tiết">
-                                                                <i class="fas fa-eye"></i>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-
-                    {{ $reviews->links('pagination::bootstrap-4') }}
-
-                </div>
+    <div class="wg-box">
+      <div class="flex items-center gap10 mb-3" style="color:#1abc9c; font-size:16px;">
+        <i class="icon-coffee" style="font-size:20px;"></i>
+        <span>Tip: Bạn có thể tìm kiếm theo <b>ID</b>, <b>người dùng</b> hoặc <b>sản phẩm</b> để lọc nhanh.</span>
+      </div>
+      <div class="flex items-center justify-between gap10 flex-wrap">
+        <div class="wg-filter flex-grow">
+          <form action="{{ route('Admin.reviews.index') }}" method="GET" class="form-search flex items-center gap10">
+            <div class="flex items-center gap10">
+              <label for="per_page" class="text-tiny" style="color:#222;">Hiển thị</label>
+              <select name="per_page" id="per_page" class="form-select" style="width: 70px;" onchange="this.form.submit()">
+                @foreach([10, 20, 50, 100] as $num)
+                  <option value="{{ $num }}" {{ request('per_page', 10) == $num ? 'selected' : '' }}>{{ $num }}</option>
+                @endforeach
+              </select>
+              <span class="text-tiny" style="color:#222;">dòng</span>
             </div>
+            <input type="text" name="product_name" class="form-control" placeholder="Tìm theo sản phẩm..." value="{{ request('product_name') }}" style="height: 40px; min-width: 180px;">
+            <select name="so_sao" class="form-select" style="height: 40px; min-width: 90px;">
+              <option value="">Số sao</option>
+              @for ($i = 1; $i <= 5; $i++)
+                <option value="{{ $i }}" {{ request('so_sao') == $i ? 'selected' : '' }}>{{ $i }} sao</option>
+              @endfor
+            </select>
+            <select name="trang_thai" class="form-select" style="height: 40px; min-width: 110px;">
+              <option value="">Trạng thái</option>
+              <option value="1" {{ request('trang_thai') == '1' ? 'selected' : '' }}>Hiển thị</option>
+              <option value="0" {{ request('trang_thai') == '0' ? 'selected' : '' }}>Ẩn</option>
+            </select>
+            <select name="sort" class="form-select" style="height: 40px; min-width: 100px;">
+              <option value="">Sắp xếp</option>
+              <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Mới nhất</option>
+              <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Cũ nhất</option>
+            </select>
+            <button class="tf-button style-1" type="submit" style="height: 40px; min-width: 40px; display: flex; align-items: center; justify-content: center;">
+              <i class="icon-search"></i>
+            </button>
+          </form>
         </div>
+      </div>
+      <div class="wg-table table-all-category mt-3" style="display: inline-block; min-width: unset; width: auto; max-width: 100%;">
+        <ul class="table-title flex mb-14" style="gap:0;">
+          <li style="width:60px; text-align:center;"><div class="body-title">ID</div></li>
+          <li style="width:140px; text-align:center;"><div class="body-title">Người dùng</div></li>
+          <li style="width:140px; text-align:center;"><div class="body-title">Sản phẩm</div></li>
+          <li style="width:80px; text-align:center;"><div class="body-title">Số sao</div></li>
+          <li style="width:220px; text-align:center;"><div class="body-title">Nội dung</div></li>
+          <li style="width:100px; text-align:center;"><div class="body-title">Trạng thái</div></li>
+          <li style="width:120px; text-align:center;"><div class="body-title">Ngày tạo</div></li>
+          <li style="width:120px; text-align:center;"><div class="body-title">Hành động</div></li>
+        </ul>
+        <ul class="flex flex-column">
+          @forelse ($reviews as $review)
+            <li class="wg-product item-row flex align-items-center mb-10" style="gap:0;">
+              <div style="width:60px; text-align:center;">{{ $review->id }}</div>
+              <div style="width:140px; text-align:center;">{{ $review->user->name ?? 'N/A' }}</div>
+              <div style="width:140px; text-align:center;">{{ $review->product->name ?? 'N/A' }}</div>
+              <div style="width:80px; text-align:center;">{{ $review->so_sao }} ⭐</div>
+              <div style="width:220px; text-align:center;">{{ Str::limit($review->noi_dung, 60) }}</div>
+              <div style="width:100px; text-align:center;">
+                @if($review->trang_thai)
+                  <span class="badge-status badge-instock">Hiện</span>
+                @else
+                  <span class="badge-status badge-outstock">Ẩn</span>
+                @endif
+              </div>
+              <div style="width:120px; text-align:center;">{{ $review->created_at->format('d/m/Y') }}</div>
+              <div class="list-icon-function" style="width:120px; text-align:center;">
+                <a href="{{ route('Admin.reviews.show', $review->id) }}" class="item eye" title="Xem"><i class="icon-eye"></i></a>
+                <a href="{{ route('Admin.reviews.edit', $review->id) }}" class="item edit" title="Sửa"><i class="icon-edit-3"></i></a>
+                <form action="{{ route('Admin.reviews.destroy', $review->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa?');" style="display:inline">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit" title="Xóa" style="background: none; border: none;">
+                    <i class="icon-trash-2" style="color: red; font-size: 22px;"></i>
+                  </button>
+                </form>
+              </div>
+            </li>
+          @empty
+            <div class="text-muted px-3">Không có đánh giá nào.</div>
+          @endforelse
+        </ul>
+      </div>
+      <div class="divider mt-3"></div>
+      <div class="flex items-center justify-between flex-wrap gap10">
+        <div class="text-tiny">Tổng: {{ $reviews->total() }} đánh giá</div>
+        {{ $reviews->appends(request()->query())->links('pagination::bootstrap-5') }}
+      </div>
     </div>
-</main>
+  </div>
+</div>
+
+<style>
+  .badge-status {
+    display: inline-block;
+    padding: 6px 18px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    background: #f3f7f6;
+    color: #1abc9c;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
+    margin-top: 2px;
+  }
+  .badge-instock {
+    background: #f3f7f6;
+    color: #1abc9c;
+  }
+  .badge-outstock {
+    background: #fbeee7;
+    color: #e67e22;
+  }
+</style>
+@endsection
