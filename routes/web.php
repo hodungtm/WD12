@@ -64,11 +64,14 @@ Route::prefix('client')->name('client.')->group(function () {
         // Thanh toán
         Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
         Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
+        // Route::post('/momo_payment', [CheckoutController::class, 'momoPayment'])->name('momo.payment');
+        // Route::get('/momo_return', [CheckoutController::class, 'momoReturn'])->name('momo.return');
         Route::get('/don-hang-thanh-cong/{order}', [CheckoutController::class, 'success'])->name('order.success');
 
     });
 });
-
+Route::get('/momo_payment', [CheckoutController::class, 'momoPayment'])->name('momo.payment');
+Route::get('/momo_return', [CheckoutController::class, 'momoReturn'])->name('momo.return');
 Route::prefix('admin')->group(function () {
     Route::resource('orders', OrderController::class)->names('admin.orders');
 });
