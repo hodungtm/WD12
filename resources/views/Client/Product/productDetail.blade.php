@@ -183,9 +183,9 @@
 
                             <input type="hidden" name="variant_id" id="selected_variant_id">
                             
-                            <button type="submit" class="btn btn-dark add-cart mr-2" title="Thêm vào giỏ hàng" id="add-to-cart-btn" disabled>
-                                Thêm vào giỏ hàng
-                            </button>
+                            <button type="submit" class="btn btn-dark add-cart mr-2" id="add-to-cart-btn" disabled>
+    Thêm vào giỏ hàng
+</button>
 
                             <a href="{{ route('client.cart.index') }}" class="btn btn-gray view-cart d-none">Xem giỏ hàng</a>
                         </div>
@@ -583,12 +583,11 @@
 
         // Chọn màu
         document.querySelectorAll('.color-option').forEach(option => {
-            option.addEventListener('click', function() {
+            option.addEventListener('click', function () {
                 document.querySelectorAll('.color-option').forEach(o => o.classList.remove('active'));
                 this.classList.add('active');
                 selectedColorId = this.dataset.colorId;
 
-                // Cập nhật trạng thái size
                 updateSizeOptions();
                 updateVariantSelection();
             });
@@ -596,121 +595,114 @@
 
         // Chọn size
         document.querySelectorAll('.size-option').forEach(option => {
-            option.addEventListener('click', function() {
+            option.addEventListener('click', function () {
                 document.querySelectorAll('.size-option').forEach(o => o.classList.remove('active'));
                 this.classList.add('active');
                 selectedSizeId = this.dataset.sizeId;
 
-                // Cập nhật trạng thái color
                 updateColorOptions();
                 updateVariantSelection();
             });
         });
 
+        // Cập nhật size theo màu
         function updateSizeOptions() {
-            // Nếu đã chọn màu, chỉ enable size có tồn tại với màu đó
             if (selectedColorId) {
                 document.querySelectorAll('.size-option').forEach(option => {
                     const sizeId = option.dataset.sizeId;
-                    // Kiểm tra có variant với colorId và sizeId này không
                     const exists = window.variants.some(v =>
                         String(v.color_id) === String(selectedColorId) && String(v.size_id) === String(sizeId)
                     );
-                    if (exists) {
-                        option.classList.remove('disabled');
-                    } else {
-                        option.classList.add('disabled');
-                        option.classList.remove('active');
-                        if (selectedSizeId === sizeId) selectedSizeId = null;
-                    }
+                    option.classList.toggle('disabled', !exists);
+                    if (!exists && selectedSizeId === sizeId) selectedSizeId = null;
                 });
             } else {
-                // Nếu chưa chọn màu, enable hết
-                document.querySelectorAll('.size-option').forEach(option => {
-                    option.classList.remove('disabled');
-                });
+                document.querySelectorAll('.size-option').forEach(option => option.classList.remove('disabled'));
             }
         }
 
+        // Cập nhật màu theo size
         function updateColorOptions() {
-            // Nếu đã chọn size, chỉ enable color có tồn tại với size đó
             if (selectedSizeId) {
                 document.querySelectorAll('.color-option').forEach(option => {
                     const colorId = option.dataset.colorId;
-                    // Kiểm tra có variant với colorId và sizeId này không
                     const exists = window.variants.some(v =>
                         String(v.size_id) === String(selectedSizeId) && String(v.color_id) === String(colorId)
                     );
-                    if (exists) {
-                        option.classList.remove('disabled');
-                    } else {
-                        option.classList.add('disabled');
-                        option.classList.remove('active');
-                        if (selectedColorId === colorId) selectedColorId = null;
-                    }
+                    option.classList.toggle('disabled', !exists);
+                    if (!exists && selectedColorId === colorId) selectedColorId = null;
                 });
             } else {
-                // Nếu chưa chọn size, enable hết
-                document.querySelectorAll('.color-option').forEach(option => {
-                    option.classList.remove('disabled');
-                });
+                document.querySelectorAll('.color-option').forEach(option => option.classList.remove('disabled'));
             }
         }
 
+        // Cập nhật giá và variant_id khi đủ lựa chọn
         function updateVariantSelection() {
+            const priceBox = document.querySelector('.product-filtered-price');
+            const variantIdInput = document.getElementById('selected_variant_id');
+            const addBtn = document.getElementById('add-to-cart-btn');
+            const priceDisplay = document.getElementById('selected-price-display');
+            const oldPriceDisplay = document.getElementById('old-price-display');
+            const quantityInput = document.getElementById('quantity-input');
+
             if (selectedColorId && selectedSizeId) {
                 const variant = window.variants.find(v =>
                     String(v.color_id) === String(selectedColorId) && String(v.size_id) === String(selectedSizeId)
                 );
+
                 if (variant) {
-                    document.getElementById('selected-price-display').textContent = '₫' + parseInt(variant.price).toLocaleString('vi-VN');
-                    if (variant.old_price) {
-                        document.getElementById('old-price-display').textContent = '₫' + parseInt(variant.old_price).toLocaleString('vi-VN');
-                    } else {
-                        document.getElementById('old-price-display').textContent = '';
-                    }
-                    document.getElementById('selected_variant_id').value = variant.id;
-                    document.getElementById('quantity-input').setAttribute('max', variant.stock);
-                    document.querySelector('.product-filtered-price').classList.remove('d-none');
-                    document.getElementById('add-to-cart-btn').disabled = false;
+                    priceDisplay.textContent = '₫' + parseInt(variant.price).toLocaleString('vi-VN');
+                    oldPriceDisplay.textContent = variant.old_price ? '₫' + parseInt(variant.old_price).toLocaleString('vi-VN') : '';
+                    variantIdInput.value = variant.id;
+                    quantityInput.setAttribute('max', variant.stock);
+                    priceBox.classList.remove('d-none');
+                    addBtn.disabled = false;
                 } else {
-                    document.querySelector('.product-filtered-price').classList.add('d-none');
-                    document.getElementById('add-to-cart-btn').disabled = true;
-                    document.getElementById('selected_variant_id').value = '';
+                    clearSelection();
                 }
             } else {
-                document.querySelector('.product-filtered-price').classList.add('d-none');
-                document.getElementById('add-to-cart-btn').disabled = true;
-                document.getElementById('selected_variant_id').value = '';
+                priceBox.classList.add('d-none');
+                addBtn.disabled = true;
+                variantIdInput.value = '';
             }
         }
 
         // Xóa lựa chọn
-        window.clearSelection = function() {
-            document.querySelectorAll('.color-option').forEach(o => o.classList.remove('active', 'disabled'));
-            document.querySelectorAll('.size-option').forEach(o => o.classList.remove('active', 'disabled'));
+        window.clearSelection = function () {
             selectedColorId = null;
             selectedSizeId = null;
+
+            document.querySelectorAll('.color-option, .size-option').forEach(o => {
+                o.classList.remove('active', 'disabled');
+            });
+
             document.querySelector('.product-filtered-price').classList.add('d-none');
             document.getElementById('add-to-cart-btn').disabled = true;
             document.getElementById('selected_variant_id').value = '';
         };
 
-        // Rating stars
+        // Bắt form submit: cảnh báo nếu chưa chọn đủ
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const variantId = document.getElementById('selected_variant_id').value;
+            if (!variantId) {
+                e.preventDefault();
+                alert('Vui lòng chọn đầy đủ màu sắc và kích thước trước khi thêm vào giỏ hàng!');
+            }
+        });
+
+        // Đánh giá sao (nếu có)
         document.querySelectorAll('.rating-stars a').forEach((star, index) => {
-            star.addEventListener('click', function(e) {
+            star.addEventListener('click', function (e) {
                 e.preventDefault();
                 const rating = index + 1;
                 document.getElementById('rating').value = rating;
                 document.querySelectorAll('.rating-stars a').forEach((s, i) => {
-                    if (i < rating) {
-                        s.classList.add('active');
-                    } else {
-                        s.classList.remove('active');
-                    }
+                    s.classList.toggle('active', i < rating);
                 });
             });
         });
     });
 </script>
+
 @endsection

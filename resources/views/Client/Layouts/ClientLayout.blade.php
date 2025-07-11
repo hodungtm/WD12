@@ -239,7 +239,7 @@
                             <div class="header-menu">
                                 <ul>
                                     <li><a href="{{ route('user.dashboard') }}">Tài khoản của tôi</a></li>
-                                    <li><a href="cart.html">Giỏ hàng</a></li>
+                                    <li><a href="{{ route('client.cart.index') }}">Giỏ hàng</a></li>
                                     <li><a href="wishlist.html">Yêu thích</a></li>
                                     <li><a href="blog.html">Tin tức</a></li>
 
