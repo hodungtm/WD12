@@ -124,6 +124,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', AdminUserController::class);
     Route::patch('users/{user}/toggle-active', [AdminUserController::class, 'toggleActive'])->name('users.toggle-active');
+    // 👉 Thêm 2 route mới để đổi mật khẩu
+    Route::get('users/{user}/change-password', [AdminUserController::class, 'editPassword'])->name('users.edit-password');
+    Route::put('users/{user}/change-password', [AdminUserController::class, 'updatePassword'])->name('users.update-password');
+    Route::post('users/{user}/verify-password', [AdminUserController::class, 'verifyPasswordAjax'])->name('users.verify-password.post');
 });
 
 // Middleware cho trang overview người dùng

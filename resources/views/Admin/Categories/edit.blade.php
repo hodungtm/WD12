@@ -1,25 +1,20 @@
-@extends('admin.layouts.AdminLayout')
+@extends('Admin.Layouts.AdminLayout')
 
 @section('main')
   <div class="main-content-inner">
     <div class="main-content-wrap">
       <div class="flex items-center flex-wrap justify-between gap20 mb-30">
-        <h3>Sửa danh mục</h3>
+        <h3>Chỉnh sửa danh mục</h3>
         <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-          <li><a href="{{ route('admin.dashboard') }}"><div class="text-tiny">Bảng điều khiển</div></a></li>
+          <li><a href="#"><div class="text-tiny">Dashboard</div></a></li>
           <li><i class="icon-chevron-right"></i></li>
-          <li><a href="{{ route('Admin.categories.index') }}"><div class="text-tiny">Danh mục</div></a></li>
-          <li><i class="icon-chevron-right"></i></li>
-          <li><div class="text-tiny">Sửa danh mục</div></li>
+          <li><div class="text-tiny">Danh mục</div></li>
         </ul>
       </div>
-
       <div class="wg-box">
         <form class="form-new-product form-style-1" action="{{ route('Admin.categories.update', $category->id) }}" method="POST" enctype="multipart/form-data">
           @csrf
           @method('PUT')
-
-          {{-- Tên danh mục --}}
           <fieldset class="name">
             <div class="body-title">Tên danh mục <span class="tf-color-1">*</span></div>
             <input class="flex-grow" type="text" name="ten_danh_muc" placeholder="Nhập tên danh mục" value="{{ old('ten_danh_muc', $category->ten_danh_muc) }}" required>
@@ -27,8 +22,6 @@
               <small class="text-danger">{{ $message }}</small>
             @enderror
           </fieldset>
-
-          {{-- Ảnh hiện tại --}}
           <fieldset>
             <div class="body-title">Ảnh hiện tại</div>
             @if($category->anh)
@@ -37,8 +30,6 @@
               <div class="body-text text-muted">Không có ảnh</div>
             @endif
           </fieldset>
-
-          {{-- Ảnh mới --}}
           <fieldset>
             <div class="body-title">Đổi ảnh</div>
             <div class="upload-image flex-grow">
@@ -57,8 +48,6 @@
               <small class="text-danger">{{ $message }}</small>
             @enderror
           </fieldset>
-
-          {{-- Mô tả --}}
           <fieldset class="category">
             <div class="body-title">Mô tả</div>
             <textarea name="mo_ta" class="flex-grow" rows="3" placeholder="Nhập mô tả...">{{ old('mo_ta', $category->mo_ta) }}</textarea>
@@ -66,8 +55,6 @@
               <small class="text-danger">{{ $message }}</small>
             @enderror
           </fieldset>
-
-          {{-- Tình trạng --}}
           <fieldset class="category">
             <div class="body-title">Tình trạng</div>
             <div class="select flex-grow">
@@ -80,8 +67,6 @@
               <small class="text-danger">{{ $message }}</small>
             @enderror
           </fieldset>
-
-          {{-- Nút cập nhật --}}
           <div class="bot mt-4">
             <div></div>
             <button class="tf-button w208" type="submit">Cập nhật</button>
@@ -90,7 +75,6 @@
       </div>
     </div>
   </div>
-
   <script>
     function previewImage(event) {
       const input = event.target;

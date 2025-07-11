@@ -4,7 +4,7 @@
 <main class="main">
     <div class="container my-5">
         <!-- Thanh bước tiến độ -->
-       <h1>Giỏ Hàng Của Bạn </h1>
+        <h1 class="mb-4">Giỏ Hàng Của Bạn</h1>
 
         @if($cartItems->isEmpty())
             <h4 class="text-center">Chưa có sản phẩm trong giỏ hàng.</h4>
@@ -72,14 +72,14 @@
                             </table>
                         </div>
 
-                         <div class="d-flex justify-content-between mt-3">
-        <button type="submit" class="btn btn-success" name="mode" value="selected">
-            THANH TOÁN SẢN PHẨM ĐÃ CHỌN
-        </button>
-        <button type="submit" class="btn btn-dark" name="mode" value="all">
-            THANH TOÁN TOÀN BỘ
-        </button>
-    </div>
+                        <div class="d-flex justify-content-between mt-3">
+                            <button type="submit" class="btn btn-success px-4 py-2">
+                                THANH TOÁN SẢN PHẨM ĐÃ CHỌN
+                            </button>
+                            <a href="{{ route('client.checkout.show') }}" class="btn btn-dark px-4 py-2">
+                                THANH TOÁN TOÀN BỘ
+                            </a>
+                        </div>
                     </div>
 
                     <div class="col-lg-4 mt-4 mt-lg-0">
