@@ -61,8 +61,19 @@
                             @enderror
                         </fieldset>
                         <fieldset class="upload">
-                            <div class="body-title mb-10">Thêm ảnh</div>
-                            <input type="file" name="images[]" class="form-control" multiple>
+                            <div class="body-title mb-10">Thêm ảnh sản phẩm <span class="tf-color-1">*</span></div>
+                            <div class="upload-image flex-grow">
+                                <div class="item up-load">
+                                    <label class="uploadfile h250" for="images">
+                                        <span class="icon"><i class="icon-upload-cloud"></i></span>
+                                        <span class="body-text">Kéo thả hoặc chọn <span class="tf-color">tải ảnh lên</span></span>
+                                        <input type="file" id="images" name="images[]" accept="image/*" multiple onchange="previewImages(event)">
+                                    </label>
+                                    <div style="margin-top: 10px; text-align: center;">
+                                        <div id="preview-images" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
+                                    </div>
+                                </div>
+                            </div>
                             @error('images.*')
                                 <div class="text-danger small mt-1">{{ $message }}</div>
                             @enderror
@@ -231,4 +242,30 @@
             });
         }
     </script>
+@endsection
+
+@section('scripts')
+<script>
+    function previewImages(event) {
+        const input = event.target;
+        const preview = document.getElementById('preview-images');
+        preview.innerHTML = '';
+        if (input.files) {
+            Array.from(input.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.maxWidth = '120px';
+                    img.style.maxHeight = '120px';
+                    img.style.borderRadius = '8px';
+                    img.style.border = '1px solid #eee';
+                    img.style.marginRight = '8px';
+                    preview.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            });
+        }
+    }
+</script>
 @endsection

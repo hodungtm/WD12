@@ -17,62 +17,59 @@
             <div class="col-lg-8">
                 <div class="wg-box">
                     <div class="form-group">
-                        <label class="form-label">Tiêu đề</label>
+                        <label>Tiêu đề</label>
                         <input type="text" class="form-control" readonly value="{{ $banner->tieu_de }}">
                     </div>
 
                     <div class="form-group mt-3">
-                        <label class="form-label">Nội dung</label>
+                        <label>Nội dung</label>
                         <textarea class="form-control" rows="4" readonly>{{ $banner->noi_dung }}</textarea>
                     </div>
 
                     <div class="form-group mt-3">
-                        <label class="form-label">Loại banner</label>
+                        <label>Loại banner</label>
                         <input type="text" class="form-control" readonly value="{{ $banner->loai_banner }}">
                     </div>
 
                     <div class="form-group mt-3">
-                        <label class="form-label">Trạng thái</label><br>
+                        <label>Trạng thái</label><br>
                         <span class="badge {{ $banner->trang_thai === 'hien' ? 'bg-success' : 'bg-warning' }}">
                             {{ $banner->trang_thai === 'hien' ? 'Hiển thị' : 'Ẩn' }}
                         </span>
                     </div>
 
-                    <div class="mt-4 d-flex justify-content-end gap-2">
-                        <a href="{{ route('admin.banners.index') }}" class="tf-button style-1 btn-cancel"
-                            style="padding: 4px 12px; font-size: 13px; color: #e67e22">
-                            <i class="icon-arrow-left"></i> Quay lại
-                        </a>
+                    <div class="mt-4 d-flex justify-end gap10">
+                        <a href="{{ route('admin.banners.index') }}" class="btn btn-secondary">Quay lại</a>
                     </div>
                 </div>
             </div>
 
-            <!-- Carousel nhỏ -->
+            <!-- Carousel -->
             <div class="col-lg-4">
                 <div class="wg-box text-center">
                     <div id="bannerCarouselModal" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner" id="previewCarouselSmall">
+                        <div class="carousel-inner">
                             @foreach ($banner->hinhAnhBanner as $key => $hinhAnh)
                             <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
-                                <div class="d-flex justify-content-center align-items-center" style="height: 250px;">
-                                    <img src="{{ Storage::url($hinhAnh->hinh_anh) }}" 
-                                         class="img-fluid rounded shadow-sm"
-                                         style="max-height: 100%; object-fit: contain;"
-                                         alt="Banner {{ $banner->id }} Image {{ $key + 1 }}">
-                                </div>
+                                <img src="{{ Storage::url($hinhAnh->hinh_anh) }}" class="d-block mx-auto img-fluid" alt="Banner {{ $banner->id }} Image {{ $key + 1 }}">
                             </div>
                             @endforeach
                         </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarouselModal" data-bs-slide="prev">
+
+                        <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarouselModal"
+                            data-bs-slide="prev">
                             <span class="carousel-control-prev-icon"></span>
+                            <span class="visually-hidden">Previous</span>
                         </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#bannerCarouselModal" data-bs-slide="next">
+                        <button class="carousel-control-next" type="button" data-bs-target="#bannerCarouselModal"
+                            data-bs-slide="next">
                             <span class="carousel-control-next-icon"></span>
+                            <span class="visually-hidden">Next</span>
                         </button>
                     </div>
 
                     <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#imageModal">
-                        <i class="icon-maximize"></i> Xem lớn
+                        Xem lớn
                     </button>
                 </div>
             </div>
@@ -80,33 +77,31 @@
     </div>
 </div>
 
-<!-- Modal xem lớn -->
+<!-- Modal -->
 <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Xem ảnh lớn</h5>
+                <h5 class="modal-title">Xem lớn</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
             </div>
             <div class="modal-body">
                 <div id="bannerCarousel" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-inner" id="previewCarouselLarge">
+                    <div class="carousel-inner">
                         @foreach ($banner->hinhAnhBanner as $key => $hinhAnh)
                         <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
-                            <div class="d-flex justify-content-center align-items-center" style="height: 500px;">
-                                <img src="{{ Storage::url($hinhAnh->hinh_anh) }}" 
-                                     class="img-fluid rounded shadow"
-                                     style="max-height: 100%; max-width: 100%; object-fit: contain;"
-                                     alt="Slide {{ $key + 1 }}">
-                            </div>
+                            <img src="{{ Storage::url($hinhAnh->hinh_anh) }}" class="d-block w-100 img-fluid"
+                                alt="Banner {{ $banner->id }} Image {{ $key + 1 }}">
                         </div>
                         @endforeach
                     </div>
                     <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev">
                         <span class="carousel-control-prev-icon"></span>
+                        <span class="visually-hidden">Previous</span>
                     </button>
                     <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next">
                         <span class="carousel-control-next-icon"></span>
+                        <span class="visually-hidden">Next</span>
                     </button>
                 </div>
             </div>
@@ -117,57 +112,13 @@
 
 @push('styles')
 <style>
-    .form-group label,
-    .form-label {
-        font-weight: 600;
-        font-size: 15px;
-        color: #222;
-        margin-bottom: 6px;
-    }
-
-    input.form-control,
-    textarea.form-control {
-        font-size: 15px;
-        padding: 10px 14px;
-        border-radius: 10px;
-        border: 1px solid #ccc;
-        background-color: #fff;
-        color: #333;
-    }
-
-    input.form-control:focus,
-    textarea.form-control:focus {
-        border-color: #6366f1;
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-        outline: none;
-    }
-
     .carousel-inner img {
+        max-height: 400px;
         object-fit: contain;
     }
-    .btn-cancel {
-    background-color: #fff; /* Nền trắng khi chưa hover */
-    color: #e67e22; /* Chữ cam */
-    border: 1px solid #e67e22;
-    transition: all 0.3s;
-}
-
-/* Icon mặc định màu cam */
-.btn-cancel i {
-    color: #e67e22;
-    transition: all 0.3s;
-}
-
-/* Hover: nền cam đậm, chữ trắng */
-.btn-cancel:hover {
-    background-color: #e67e22 !important; /* Nền cam khi hover */
-    color: #fff !important;                /* Chữ trắng */
-    border-color: #e67e22 !important;
-}
-
-/* Icon hover trắng */
-.btn-cancel:hover i {
-    color: #fff !important;
-}
 </style>
+@endpush
+
+@push('scripts')
+<script></script>
 @endpush
