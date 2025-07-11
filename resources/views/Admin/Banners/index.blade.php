@@ -131,16 +131,6 @@
                     @endforelse
                 </div>
 
-    <div class="wg-box">
-      <div class="flex items-center justify-between gap10 flex-wrap">
-        <div class="wg-filter flex-grow">
-          <form method="GET" action="{{ route('admin.banners.index') }}" class="form-search flex items-center gap10">
-            <fieldset class="name">
-              <input type="text" name="search" placeholder="Tìm kiếm..." value="{{ request('search') }}">
-            </fieldset>
-            <div class="button-submit">
-              <button type="submit"><i class="icon-search"></i></button>
-
                 <!-- Phân trang -->
                 <div class="divider"></div>
                 <div class="flex justify-between align-items-center mt-3">
@@ -149,18 +139,12 @@
                         {{ $banners->links('pagination::bootstrap-4') }}
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
 @endsection
 <script>
-
-  document.addEventListener('DOMContentLoaded', function () {
-    // XÓA ĐOẠN HIỂN THỊ LỖI/THÔNG BÁO Ở ĐÂY
-  });
-
     document.addEventListener('DOMContentLoaded', function() {
         const alertBox = document.getElementById('success-alert');
         if (alertBox) {
@@ -172,7 +156,6 @@
             }, 3000);
         }
     });
-
 </script>
 
 <style>
