@@ -183,9 +183,9 @@
 
                             <input type="hidden" name="variant_id" id="selected_variant_id">
                             
-                            <button type="submit" class="btn btn-dark add-cart mr-2" title="Thêm vào giỏ hàng" id="add-to-cart-btn" disabled>
-                                Thêm vào giỏ hàng
-                            </button>
+                            <button type="submit" class="btn btn-dark add-cart mr-2" id="add-to-cart-btn" disabled>
+    Thêm vào giỏ hàng
+</button>
 
                             <a href="{{ route('client.cart.index') }}" class="btn btn-gray view-cart d-none">Xem giỏ hàng</a>
                         </div>

@@ -52,7 +52,6 @@ Route::prefix('client')->name('client.')->group(function () {
             Route::post('/update/{id}', [CartController::class, 'updateQuantity'])->name('update'); // client.cart.update
             Route::delete('/remove/{id}', [CartController::class, 'remove'])->name('remove'); // client.cart.remove
         });
-
         // Thanh toán
         Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
         Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
@@ -60,6 +59,9 @@ Route::prefix('client')->name('client.')->group(function () {
 
     });
 });
+
+Route::get('/momo_payment', [CheckoutController::class, 'momoPayment'])->name('momo.payment');
+Route::get('/momo_return', [CheckoutController::class, 'momoReturn'])->name('momo.return');
 
 Route::prefix('admin')->group(function () {
     Route::resource('orders', OrderController::class)->names('admin.orders');
