@@ -39,6 +39,7 @@
     <link rel="shortcut icon" href="{{ asset('images/favicon.png') }}">
     <link rel="apple-touch-icon-precomposed" href="{{ asset('images/favicon.png') }}">
 
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 
     <style>
 #alert-stack {
@@ -837,6 +838,7 @@
 
     <!-- Javascript -->
     <script src="{{ asset('js/jquery.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('js/bootstrap-select.min.js') }}"></script>
     <script src="{{ asset('js/zoom.js') }}"></script>
@@ -859,6 +861,9 @@
     <script defer src="{{ asset('js/theme-settings.js') }}"></script>
     <script src="{{ asset('js/main.js') }}"></script>
     @yield('scripts')
+
+    @stack('scripts')
+    @stack('styles')
 
 
     <script>
