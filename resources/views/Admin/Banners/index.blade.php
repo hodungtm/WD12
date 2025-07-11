@@ -16,6 +16,16 @@
       </ul>
     </div>
 
+
+                <!-- Phân trang -->
+                <div class="divider"></div>
+                <div class="flex justify-between align-items-center mt-3">
+                    <div class="text-tiny">Tổng: {{ $banners->total() }} banner</div>
+                    <div>
+                        {{ $banners->links('pagination::bootstrap-4') }}
+                    </div>
+                </div>
+
     <div class="wg-box">
       <div class="flex items-center justify-between gap10 flex-wrap">
         <div class="wg-filter flex-grow">
@@ -25,6 +35,7 @@
             </fieldset>
             <div class="button-submit">
               <button type="submit"><i class="icon-search"></i></button>
+
             </div>
           </form>
         </div>
@@ -94,6 +105,18 @@
 </div>
 
 <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const alertBox = document.getElementById('success-alert');
+        if (alertBox) {
+            setTimeout(() => {
+                alertBox.classList.add('fade');
+                alertBox.style.transition = "opacity 0.5s";
+                alertBox.style.opacity = 0;
+                setTimeout(() => alertBox.remove(), 500);
+            }, 3000);
+        }
+    });
   document.addEventListener('DOMContentLoaded', function () {
     // XÓA ĐOẠN HIỂN THỊ LỖI/THÔNG BÁO Ở ĐÂY
   });

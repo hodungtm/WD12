@@ -4,7 +4,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-..." crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-..."
+    crossorigin="anonymous"></script>
 
 <head>
     <meta charset="UTF-8">
@@ -16,6 +17,11 @@
     <meta name="keywords" content="HTML5 Template" />
     <meta name="description" content="Porto - Bootstrap eCommerce Template">
     <meta name="author" content="SW-THEMES">
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+    
+
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/images/icons/favicon.png') }}">
@@ -71,110 +77,130 @@
             flex-shrink: 0;
             white-space: nowrap;
         }
-     /* Làm đẹp các mục trong dropdown */
-.dropdown-menu .dropdown-item,
-.dropdown-menu .dropdown-item-text {
-    padding: 8px 16px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #333;
-    background-color: transparent;
-    border: none;
-    white-space: nowrap;
-    transition: background-color 0.2s, color 0.2s;
-}
 
-/* Hover đẹp hơn */
-.dropdown-menu .dropdown-item:hover {
-    background-color: #f0f0f0;
-    color: #000;
-}
+        /* Làm đẹp các mục trong dropdown */
+        .dropdown-menu .dropdown-item,
+        .dropdown-menu .dropdown-item-text {
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            background-color: transparent;
+            border: none;
+            white-space: nowrap;
+            transition: background-color 0.2s, color 0.2s;
+        }
 
-/* Tách biệt mục "Trang Quản Trị" */
-.dropdown-menu .admin-link {
-    font-weight: 600;
-    color: #0056b3;
-}
+        /* Hover đẹp hơn */
+        .dropdown-menu .dropdown-item:hover {
+            background-color: #f0f0f0;
+            color: #000;
+        }
 
-/* Tên người dùng */
-.dropdown-menu .dropdown-item-text {
-    font-weight: 600;
-    color: #666;
-    font-size: 13px;
-    padding: 8px 16px;
-    border-bottom: 1px solid #e9ecef;
-    margin-bottom: 4px;
-}
+        /* Tách biệt mục "Trang Quản Trị" */
+        .dropdown-menu .admin-link {
+            font-weight: 600;
+            color: #0056b3;
+        }
 
-/* Tùy chọn thêm: đổ bóng nhẹ dropdown */
-.dropdown-menu {
-    border-radius: 6px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
-    min-width: 180px;
-}
+        /* Tên người dùng */
+        .dropdown-menu .dropdown-item-text {
+            font-weight: 600;
+            color: #666;
+            font-size: 13px;
+            padding: 8px 16px;
+            border-bottom: 1px solid #e9ecef;
+            margin-bottom: 4px;
+        }
 
-#alert-stack {
-    position: fixed;
-    top: 32px;
-    right: 32px;
-    left: auto;
-    transform: none;
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 12px;
-    width: auto;
-    min-width: 320px;
-    max-width: 90vw;
-    pointer-events: none;
-}
-.custom-alert {
-    position: relative;
-    background: #20b2aa;
-    color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.13);
-    font-size: 1.08rem;
-    padding: 18px 28px 18px 56px;
-    border: 1.5px solid #179b8a;
-    font-weight: 500;
-    line-height: 1.6;
-    min-width: 320px;
-    max-width: 420px;
-    margin: 0 0 0 auto;
-    animation: slideInDown 0.7s cubic-bezier(.68,-0.55,.27,1.55);
-    will-change: opacity, transform;
-    backface-visibility: hidden;
-    display: flex;
-    align-items: center;
-    pointer-events: auto;
-}
-.custom-alert .icon-warning {
-    position: absolute;
-    left: 22px;
-    top: 22px;
-    font-size: 1.5em;
-    color: #fff;
-    opacity: 0.85;
-}
-.custom-alert .close {
-    position: absolute;
-    top: 10px;
-    right: 18px;
-    color: #fff;
-    font-size: 1.2em;
-    opacity: 0.7;
-    background: none;
-    border: none;
-}
-@keyframes slideInDown {
-    0% { opacity: 0; transform: translateY(-80px) scale(0.85); }
-    60% { opacity: 1; transform: translateY(10px) scale(1.05); }
-    80% { opacity: 1; transform: translateY(-2px) scale(0.98); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-</style>
+        /* Tùy chọn thêm: đổ bóng nhẹ dropdown */
+        .dropdown-menu {
+            border-radius: 6px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+            min-width: 180px;
+        }
+
+        #alert-stack {
+            position: fixed;
+            top: 32px;
+            right: 32px;
+            left: auto;
+            transform: none;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 12px;
+            width: auto;
+            min-width: 320px;
+            max-width: 90vw;
+            pointer-events: none;
+        }
+
+        .custom-alert {
+            position: relative;
+            background: #20b2aa;
+            color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.13);
+            font-size: 1.08rem;
+            padding: 18px 28px 18px 56px;
+            border: 1.5px solid #179b8a;
+            font-weight: 500;
+            line-height: 1.6;
+            min-width: 320px;
+            max-width: 420px;
+            margin: 0 0 0 auto;
+            animation: slideInDown 0.7s cubic-bezier(.68, -0.55, .27, 1.55);
+            will-change: opacity, transform;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            pointer-events: auto;
+        }
+
+        .custom-alert .icon-warning {
+            position: absolute;
+            left: 22px;
+            top: 22px;
+            font-size: 1.5em;
+            color: #fff;
+            opacity: 0.85;
+        }
+
+        .custom-alert .close {
+            position: absolute;
+            top: 10px;
+            right: 18px;
+            color: #fff;
+            font-size: 1.2em;
+            opacity: 0.7;
+            background: none;
+            border: none;
+        }
+
+        @keyframes slideInDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-80px) scale(0.85);
+            }
+
+            60% {
+                opacity: 1;
+                transform: translateY(10px) scale(1.05);
+            }
+
+            80% {
+                opacity: 1;
+                transform: translateY(-2px) scale(0.98);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+    </style>
 </head>
 
 <body class="@yield('body-class')">
@@ -218,33 +244,35 @@
                                     <li><a href="blog.html">Tin tức</a></li>
 
                                     <li>
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" style="background: none; border: none; color: inherit; cursor: pointer; padding: 0; font: inherit;"
-                                            data-toggle="dropdown" aria-expanded="false">
-                                            My Account
-                                        </button>
-                                        <div class="dropdown-menu dropdown-menu-right">
-                                            @guest
-                                                <a href="{{ route('login') }}" class="dropdown-item" >Đăng Nhập</a>
-                                                <a href="{{ route('register') }}" class="dropdown-item">Đăng Ký</a>
-                                            @else
-                                                <span
-                                                    class="dropdown-item-text font-weight-bold">{{ Auth::user()->name }}</span>
-                                                <a class="dropdown-item" href="{{ route('logout') }}"
-                                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                                    Đăng Xuất
-                                                </a>
-                                                <form id="logout-form" action="{{ route('logout') }}" method="POST"
-                                                    class="d-none">
-                                                    @csrf
-                                                </form>
-                                            @endguest
-                                            @if (Auth::check() && Auth::user()->isRoleAdmin())
-                                            <a href="{{ route('products.index') }}" class="dropdown-item">Trang Quản Trị</a>
-                                             @endif
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-sm btn-light dropdown-toggle"
+                                                style="background: none; border: none; color: inherit; cursor: pointer; padding: 0; font: inherit;"
+                                                data-toggle="dropdown" aria-expanded="false">
+                                                My Account
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                @guest
+                                                    <a href="{{ route('login') }}" class="dropdown-item">Đăng Nhập</a>
+                                                    <a href="{{ route('register') }}" class="dropdown-item">Đăng Ký</a>
+                                                @else
+                                                    <span
+                                                        class="dropdown-item-text font-weight-bold">{{ Auth::user()->name }}</span>
+                                                    <a class="dropdown-item" href="{{ route('logout') }}"
+                                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                                        Đăng Xuất
+                                                    </a>
+                                                    <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                                        class="d-none">
+                                                        @csrf
+                                                    </form>
+                                                @endguest
+                                                @if (Auth::check() && Auth::user()->isRoleAdmin())
+                                                    <a href="{{ route('products.index') }}" class="dropdown-item">Trang
+                                                        Quản Trị</a>
+                                                @endif
+                                            </div>
                                         </div>
-                                    </div>
-                                  </li>
+                                    </li>
 
                                 </ul>
                             </div>
@@ -288,7 +316,8 @@
                     <div class="header-right">
                         <div
                             class="header-icon header-search header-search-inline header-search-category w-lg-max text-right d-none d-sm-block">
-                            <a href="#" class="search-toggle" role="button"><i class="icon-magnifier"></i></a>
+                            <a href="#" class="search-toggle" role="button"><i
+                                    class="icon-magnifier"></i></a>
                             <form action="{{ route('client.search') }}" method="get">
                                 <div class="header-search-wrapper">
                                     <input type="search" class="form-control" name="keyword" id="q"
@@ -845,7 +874,9 @@
         $(document).ready(function() {
             $('#alert-stack .custom-alert').each(function(i, el) {
                 setTimeout(function() {
-                    $(el).fadeOut(400, function() { $(this).remove(); });
+                    $(el).fadeOut(400, function() {
+                        $(this).remove();
+                    });
                 }, 3000 + i * 300); // Cái sau trễ hơn cái trước 0.3s
             });
         });
