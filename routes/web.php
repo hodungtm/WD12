@@ -31,8 +31,8 @@ use App\Http\Controllers\Client\ListProductClientController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Client\UserController as ClientUserController;
 use App\Http\Controllers\Client\WishlistController as ClientWishlistController;
-use App\Http\Controllers\Client\BlogController;
-use App\Http\Controllers\Client\ContactController;
+// use App\Http\Controllers\Client\BlogController;
+// use App\Http\Controllers\Client\ContactController;
 
 
 
