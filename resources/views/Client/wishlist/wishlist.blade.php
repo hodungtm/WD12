@@ -129,6 +129,12 @@
     .btn.btn-quickview:hover {
         background-color: #e2e6ea;
     }
+
+    .product-default .product-action .icon-heart:before {
+        content: "";
+        color: #da5555;
+        /* background-color: #da5555 */
+    }
 </style>
 @endsection
 @section('main')
@@ -261,9 +267,11 @@
     function submitForm(formId) {
         const form = document.getElementById(formId);
         if (form) form.submit();
+        
     }
 
     function submitDeleteForm(formId) {
+        console.log(formId);
         if (confirm("Bạn có chắc chắn muốn xoá sản phẩm yêu thích này không?")) {
             submitForm(formId);
         }

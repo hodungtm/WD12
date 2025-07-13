@@ -864,7 +864,8 @@ use Illuminate\Support\Facades\Auth;
     <script src="{{ asset('assets/js/optional/isotope.pkgd.min.js') }}"></script>
     <script src="{{ asset('assets/js/jquery.appear.min.js') }}"></script>
     <script src="{{ asset('assets/js/jquery.plugin.min.js') }}"></script>
-
+    
+    @yield('js')
 
     <!-- Main JS File -->
     <script src="{{ asset('assets/js/main.min.js') }}"></script>

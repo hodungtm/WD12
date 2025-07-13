@@ -35,11 +35,13 @@ class WishlistController extends Controller
         }
 
         $userId = auth()->id();
+
+        // Nếu chưa có thì mới thêm
         $exists = Wishlist::where('user_id', $userId)
-        ->where('product_id', $id)
-        ->exists();
-        
-        if ($exists) {
+            ->where('product_id', $id)
+            ->exists();
+
+        if (!$exists) {
             Wishlist::create([
                 'user_id' => $userId,
                 'product_id' => $id,
@@ -48,6 +50,7 @@ class WishlistController extends Controller
 
         return back()->with('success', 'Đã thêm vào danh sách yêu thích!');
     }
+
 
 
     public function remove($id)

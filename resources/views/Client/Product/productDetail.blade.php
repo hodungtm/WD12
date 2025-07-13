@@ -213,7 +213,7 @@
         </div><!-- End .product-single-container -->
 
         <div class="product-single-tabs">
-            <ul class="nav nav-tabs" role="tablist">
+            <ul class="nav nav-tabs" r  ole="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" id="product-tab-desc" data-toggle="tab" href="#product-desc-content" role="tab" aria-controls="product-desc-content" aria-selected="true">Mô tả</a>
                 </li>
