@@ -24,12 +24,15 @@ use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DiscountController;
 
-use App\Http\Controllers\Admin\WishlistController;
+
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\ProductDetailController;
 use App\Http\Controllers\Client\ListProductClientController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Client\UserController as ClientUserController;
+use App\Http\Controllers\Client\WishlistController as ClientWishlistController;
+use App\Http\Controllers\Client\BlogController;
+use App\Http\Controllers\Client\ContactController;
 
 
 
@@ -44,7 +47,17 @@ Route::prefix('client')->name('client.')->group(function () {
     Route::post('/san-pham/{id}/danh-gia', [ProductDetailController::class, 'submitReview'])->name('product.review');
     Route::put('/san-pham/{product}/danh-gia/{review}', [ProductDetailController::class, 'updateReview'])->name('product.review.update');
     Route::post('/san-pham/{id}/binh-luan', [ProductDetailController::class, 'submitComment'])->name('product.comment');
-  Route::middleware(['auth'])->group(function () {
+
+    // Route::get('/gioi-thieu', [IntroductionController::class, 'index'])->name('gioithieu');
+
+
+    Route::get('/lien-he', [ContactController::class, 'show'])->name('contact.show');
+    Route::post('/lien-he', [ContactController::class, 'submit'])->name('contact.submit');
+
+
+    Route::get('/tin-tuc', [BlogController::class, 'index'])->name('listblog');
+    Route::get('/tin-tuc/{id}', [BlogController::class, 'show'])->name('listblog.detail');
+    Route::middleware(['auth'])->group(function () {
         // Giỏ hàng
         Route::prefix('cart')->name('cart.')->group(function () {
             Route::get('/', [CartController::class, 'index'])->name('index'); // client.cart.index
@@ -52,11 +65,15 @@ Route::prefix('client')->name('client.')->group(function () {
             Route::post('/update/{id}', [CartController::class, 'updateQuantity'])->name('update'); // client.cart.update
             Route::delete('/remove/{id}', [CartController::class, 'remove'])->name('remove'); // client.cart.remove
         });
+        Route::prefix('wishlist')->name('wishlist.')->group(function () {
+            Route::get('/', [ClientWishlistController::class, 'index'])->name('index'); // client.wishlist.index
+            Route::post('/add/{id}', [ClientWishlistController::class, 'add'])->name('add'); // client.wishlist.add
+            Route::delete('/remove/{id}', [ClientWishlistController::class, 'remove'])->name('remove'); // client.wishlist.remove
+        });
         // Thanh toán
         Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
         Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
         Route::get('/don-hang-thanh-cong/{order}', [CheckoutController::class, 'success'])->name('order.success');
-
     });
 });
 
@@ -102,6 +119,10 @@ Route::prefix('admin')->name('Admin.')->group(function () {
     Route::post('/comments/{id}/approve', [CommentController::class, 'approve'])->name('comments.approve');
     Route::get('/comments/{id}', [CommentController::class, 'show'])->name('comments.show');
     Route::delete('/comments/{id}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
+    Route::get('contacts', [App\Http\Controllers\Admin\ContactController::class, 'index'])->name('contacts.index');
+    Route::get('contacts/{id}', [App\Http\Controllers\Admin\ContactController::class, 'show'])->name('contacts.show');
+    Route::delete('contacts/{id}', [App\Http\Controllers\Admin\ContactController::class, 'destroy'])->name('contacts.destroy');
 });
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('discounts', DiscountController::class)->except(['show']);
@@ -113,7 +134,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('discounts/delete-all', [DiscountController::class, 'deleteAll'])->name('discounts.deleteAll');
     Route::delete('discounts/{id}/force-delete', [DiscountController::class, 'forceDelete'])->name('discounts.forceDelete');
     Route::get('/admin/discounts/{id}', [DiscountController::class, 'show'])->name('discounts.show');
-});Route::post('admin/discounts/import-excel', [DiscountController::class, 'importExcel'])->name('discounts.importExcel');
+});
+Route::post('admin/discounts/import-excel', [DiscountController::class, 'importExcel'])->name('discounts.importExcel');
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('banners', BannerController::class);
@@ -185,7 +207,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::delete('/products/delete-selected', [ProductsController::class, 'softDeleteSelected'])->name('products.delete.selected');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::resource('products', ProductsController::class);
-
 });
 //------------------------------------------------------------------------------------------------------------>
 
@@ -201,5 +222,6 @@ Route::get('/search', [App\Http\Controllers\Client\ListProductClientController::
 
 Route::delete('/discounts/bulk-delete', [DiscountController::class, 'bulkDelete'])->name('admin.discounts.bulkDelete');
 
+Auth::routes();
 
-
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

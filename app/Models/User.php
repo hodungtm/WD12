@@ -17,12 +17,21 @@ class User extends Authenticatable
 
 
     protected $fillable = [
-        'name', 'email', 'password', 'phone', 'gender',
-        'address', 'dob', 'avatar', 'is_active', 'role'
+        'name',
+        'email',
+        'password',
+        'phone',
+        'gender',
+        'address',
+        'dob',
+        'avatar',
+        'is_active',
+        'role'
     ];
 
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
     protected function casts(): array
@@ -48,21 +57,20 @@ class User extends Authenticatable
     }
 
     public function orders()
-{
-    return $this->hasMany(Order::class)->latest();
+    {
+        return $this->hasMany(Order::class)->latest();
+    }
+
+    public function wishlist()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
+    // public function address()
+    // {
+    //     return $this->hasOne(Address::class);
+    // }
+
+
+
 }
-
-public function wishlist()
-{
-    return $this->hasMany(Wishlist::class);
-}
-
-// public function address()
-// {
-//     return $this->hasOne(Address::class);
-// }
-
-
-
-}
-
