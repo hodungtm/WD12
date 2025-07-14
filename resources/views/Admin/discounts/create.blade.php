@@ -1,29 +1,28 @@
-@extends('Admin.Layouts.AdminLayout')
-
-@section('title', isset($discount) ? 'Chỉnh sửa mã giảm giá' : 'Thêm mã giảm giá')
+@extends('admin.layouts.AdminLayout')
 
 @section('main')
-<div class="app-title">
-    <ul class="app-breadcrumb breadcrumb">
-        <li class="breadcrumb-item"><a href="{{ route('admin.discounts.index') }}">Danh sách mã giảm giá</a></li>
-        <li class="breadcrumb-item active">{{ isset($discount) ? 'Chỉnh sửa' : 'Thêm mới' }}</li>
-    </ul>
-</div>
-
-<div class="row">
-    <div class="col-md-12">
-        <div class="tile">
-            <h3 class="tile-title">{{ isset($discount) ? 'Chỉnh sửa mã giảm giá' : 'Thêm mã giảm giá' }}</h3>
-            <div class="tile-body">
-                <form action="{{ isset($discount) ? route('admin.discounts.update', $discount->id) : route('admin.discounts.store') }}" method="POST">
-                    @csrf
-                    @if(isset($discount)) @method('PUT') @endif
-
-                    @include('admin.discounts.form')
-
-                </form>
+    <div class="main-content-inner">
+        <div class="main-content-wrap">
+            <div class="flex items-center flex-wrap justify-between gap20 mb-30">
+                <h3>Thêm mã giảm giá</h3>
+                <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+                    <li><a href="{{ route('admin.discounts.index') }}">
+                            <div class="text-tiny">Dashboard</div>
+                        </a></li>
+                    <li><i class="icon-chevron-right"></i></li>
+                    <li><a href="{{ route('admin.discounts.index') }}">
+                            <div class="text-tiny">Ecommerce</div>
+                        </a></li>
+                    <li><i class="icon-chevron-right"></i></li>
+                    <li>
+                        <div class="text-tiny">Thêm mã giảm giá</div>
+                    </li>
+                </ul>
             </div>
+            <form action="{{ route('admin.discounts.store') }}" method="POST">
+                @csrf
+                @include('Admin.discounts.form')
+            </form>
         </div>
     </div>
-</div>
 @endsection

@@ -45,11 +45,11 @@
                                 </tr>
                                 <tr>
                                     <th>Ngày tạo:</th>
-                                    <td>{{ $admin->created_at->format('d/m/Y H:i') }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Ngày cập nhật:</th>
-                                    <td>{{ $admin->updated_at->format('d/m/Y H:i') }}</td>
+                                                            <td>{{ $admin->created_at ? $admin->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Ngày cập nhật:</th>
+                        <td>{{ $admin->updated_at ? $admin->updated_at->format('d/m/Y H:i') : 'N/A' }}</td>
                                 </tr>
                             </table>
                         </div>

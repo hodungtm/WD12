@@ -144,7 +144,7 @@ use Illuminate\Support\Facades\Auth;
             border-radius: 12px;
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.13);
             font-size: 1.08rem;
-            padding: 18px 28px 18px 56px;
+            padding: 18px 28px 18px 18px;
             border: 1.5px solid #179b8a;
             font-weight: 500;
             line-height: 1.6;
@@ -158,14 +158,17 @@ use Illuminate\Support\Facades\Auth;
             align-items: center;
             pointer-events: auto;
         }
-
         .custom-alert .icon-warning {
-            position: absolute;
-            left: 22px;
-            top: 22px;
-            font-size: 1.5em;
+            margin-right: 16px;
+            font-size: 1.7em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            min-height: 32px;
             color: #fff;
             opacity: 0.85;
+            margin-top: 6px;
         }
 
         .custom-alert .close {
@@ -200,21 +203,30 @@ use Illuminate\Support\Facades\Auth;
                 transform: translateY(0) scale(1);
             }
         }
-
-        .wishlist-count {
-            position: absolute;
-            top: -5px;
-            right: -8px;
-            background-color: #ff4d4f;
-            /* đỏ nổi bật */
-            color: #fff;
-            font-size: 12px;
-            font-weight: bold;
-            border-radius: 50%;
-            padding: 2px 6px;
-            line-height: 1;
-            min-width: 20px;
-            text-align: center;
+        #mini-cart-overlay {
+            display: none;
+            position: fixed; top: 0; right: 0; bottom: 0; left: 0;
+            z-index: 2000;
+            background: rgba(0,0,0,0.3);
+        }
+        #mini-cart-content {
+            position: absolute; top: 0; right: 0;
+            width: 340px; max-width: 100vw; height: 100%;
+            background: #fff;
+            box-shadow: -2px 0 16px rgba(0,0,0,0.12);
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.35s cubic-bezier(.77,0,.18,1);
+        }
+        #mini-cart-overlay.open #mini-cart-content {
+            transform: translateX(0);
+        }
+        #mini-cart-close {
+            position: absolute; top: 16px; right: 16px;
+            background: #222; color: #fff; border: none;
+            border-radius: 50%; width: 36px; height: 36px;
+            font-size: 22px; cursor: pointer; z-index: 10;
+            display: flex; align-items: center; justify-content: center;
         }
     </style>
 </head>
@@ -361,97 +373,8 @@ use Illuminate\Support\Facades\Auth;
                             <a href="#" title="Cart" class="dropdown-toggle cart-toggle" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
                                 <i class="minicart-icon"></i>
-                                <span class="cart-count badge-circle">3</span>
+                                <span class="cart-count badge-circle">0</span>
                             </a>
-
-                            <div class="cart-overlay"></div>
-
-                            <div class="dropdown-menu mobile-cart">
-                                <a href="#" title="Close (Esc)" class="btn-close">×</a>
-
-                                <div class="dropdownmenu-wrapper custom-scrollbar">
-                                    <div class="dropdown-cart-header">Giỏ hàng</div>
-                                    <!-- End .dropdown-cart-header -->
-
-                                    <div class="dropdown-cart-products">
-                                        <div class="product">
-                                            <div class="product-details">
-                                                <h4 class="product-title">
-                                                    <a href="demo27-product.html">Ultimate 3D Bluetooth Speaker</a>
-                                                </h4>
-
-                                                <span class="cart-product-info">
-                                                    <span class="cart-product-qty">1</span>
-                                                    × $99.00
-                                                </span>
-                                            </div><!-- End .product-details -->
-
-                                            <figure class="product-image-container">
-                                                <a href="#" class="product-image">
-                                                    <img src="{{ asset('assets/images/products/product-1.jpg') }}"
-                                                        alt="product" width="80" height="80">
-                                                </a>
-
-                                                <a href="#" class="btn-remove" title="Remove Product"><span>×</span></a>
-                                            </figure>
-                                        </div><!-- End .product -->
-
-                                        <div class="product">
-                                            <div class="product-details">
-                                                <h4 class="product-title">
-                                                    <a href="demo27-product.html">Brown Women Casual HandBag</a>
-                                                </h4>
-
-                                                <span class="cart-product-info">
-                                                    <span class="cart-product-qty">1</span>
-                                                    × $35.00
-                                                </span>
-                                            </div><!-- End .product-details -->
-
-                                            <figure class="product-image-container">
-                                                <a href="#" class="product-image">
-                                                    <img src="{{ asset('assets/images/products/product-2.jpg') }}"
-                                                        alt="product" width="80" height="80">
-                                                </a>
-
-                                                <a href="#" class="btn-remove" title="Remove Product"><span>×</span></a>
-                                            </figure>
-                                        </div><!-- End .product -->
-
-                                        <div class="product">
-                                            <div class="product-details">
-                                                <h4 class="product-title">
-                                                    <a href="demo27-product.html">Circled Ultimate 3D Speaker</a>
-                                                </h4>
-
-                                                <span class="cart-product-info">
-                                                    <span class="cart-product-qty">1</span>
-                                                    × $35.00
-                                                </span>
-                                            </div><!-- End .product-details -->
-
-                                            <figure class="product-image-container">
-                                                <a href="#" class="product-image">
-                                                    <img src="{{ asset('assets/images/products/product-3.jpg') }}"
-                                                        alt="product" width="80" height="80">
-                                                </a>
-                                                <a href="#" class="btn-remove" title="Remove Product"><span>×</span></a>
-                                            </figure>
-                                        </div><!-- End .product -->
-                                    </div><!-- End .cart-product -->
-
-                                    <div class="dropdown-cart-total">
-                                        <span>SUBTOTAL:</span>
-
-                                        <span class="cart-total-price float-right">$134.00</span>
-                                    </div><!-- End .dropdown-cart-total -->
-
-                                    <div class="dropdown-cart-action">
-                                        <a href="cart.html" class="btn btn-gray btn-block view-cart">Xem giỏ hàng</a>
-                                        <a href="checkout.html" class="btn btn-dark btn-block">Thanh toán</a>
-                                    </div><!-- End .dropdown-cart-total -->
-                                </div><!-- End .dropdownmenu-wrapper -->
-                            </div><!-- End .dropdown-menu -->
                         </div><!-- End .dropdown -->
                     </div>
                 </div>
@@ -865,14 +788,24 @@ use Illuminate\Support\Facades\Auth;
     <script src="{{ asset('assets/js/jquery.appear.min.js') }}"></script>
     <script src="{{ asset('assets/js/jquery.plugin.min.js') }}"></script>
 
-
+@yield('js')
     <!-- Main JS File -->
     <script src="{{ asset('assets/js/main.min.js') }}"></script>
     <script>
+        function updateCartCount() {
+            fetch("{{ route('cart.mini') }}")
+              .then(res => res.json())
+              .then(data => {
+                document.querySelectorAll('.cart-count').forEach(el => {
+                  el.textContent = data.count || 0;
+                });
+              });
+        }
         $(document).ready(function() {
             setTimeout(function() {
                 $('.custom-alert').alert('close');
             }, 3500);
+            updateCartCount();
         });
     </script>
     <script>
@@ -886,6 +819,75 @@ use Illuminate\Support\Facades\Auth;
             });
         });
     </script>
+    <!-- Mini Cart Overlay -->
+    <div id="mini-cart-overlay">
+        <div id="mini-cart-content">
+            <div id="mini-cart-body" style="padding:28px 20px 20px 20px;"></div>
+        </div>
+    </div>
+    <script>
+function showAlert(message, type = 'success') {
+    const icon = type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-triangle"></i>';
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'custom-alert';
+    alertDiv.innerHTML = `<span class="icon-warning">${icon}</span> ${message} <button type="button" class="close" onclick="this.parentElement.remove()"><span aria-hidden="true">&times;</span></button>`;
+    document.getElementById('alert-stack').appendChild(alertDiv);
+    setTimeout(() => { alertDiv.remove(); }, 3500);
+}
+
+// Thêm hàm renderMiniCart
+function renderMiniCart(data) {
+    const overlay = document.getElementById('mini-cart-overlay');
+    const content = document.getElementById('mini-cart-body');
+    let html = `<h3 style='font-size:1.4rem;font-weight:700;margin-bottom:18px;'>Giỏ hàng</h3>`;
+    if(data.items.length === 0) {
+        html += `<div style='padding:24px 0;text-align:center;'>Chưa có sản phẩm nào.</div>`;
+    } else {
+        data.items.forEach(item => {
+          html += `<div style='display:flex;align-items:center;margin-bottom:18px;gap:12px;position:relative;'>
+            <img src='${item.image}' width='56' height='56' style='object-fit:cover;border:1px solid #eee;border-radius:6px;'>
+            <div style='flex:1;'>
+              <a href='${item.link}' style='font-weight:600;color:#222;font-size:1.1rem;'>${item.name}</a><br>
+              <span style='font-size:0.97rem;color:#666;'>${item.variant.color ? 'Màu: '+item.variant.color : ''} ${item.variant.size ? 'Size: '+item.variant.size : ''}</span><br>
+              <span style='font-size:1rem;'>${item.qty} × <b>${item.price.toLocaleString('vi-VN')}</b></span>
+            </div>
+            <form method='POST' action='/client/cart/remove/${item.id}' style='display:inline;'>@csrf <input type='hidden' name='_method' value='DELETE'><button type='submit' style='background:none;border:none;color:#c00;font-size:1.3rem;position:absolute;top:0;right:0;cursor:pointer;' title='Xóa'>&times;</button></form>
+          </div>`;
+        });
+        html += `<div style='border-top:1px solid #eee;margin:18px 0 10px;'></div>`;
+        html += `<div style='font-size:1.1rem;font-weight:600;margin-bottom:18px;'>Tạm tính: <span style='float:right;'>${data.subtotal.toLocaleString('vi-VN')}</span></div>`;
+        html += `<a href='{{ route('client.cart.index') }}' class='btn btn-gray btn-block view-cart' style='width:100%;margin-bottom:10px;'>XEM GIỎ HÀNG</a>`;
+        html += `<a href='{{ route('client.checkout.show') }}' class='btn btn-dark btn-block' style='width:100%;'>THANH TOÁN</a>`;
+    }
+    content.innerHTML = html;
+    overlay.style.display = 'block';
+    setTimeout(() => overlay.classList.add('open'), 10);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var cartIcon = document.querySelector('.dropdown.cart-dropdown > a');
+    if(cartIcon) cartIcon.id = 'header-cart-icon';
+    const overlay = document.getElementById('mini-cart-overlay');
+    const content = document.getElementById('mini-cart-body');
+    if(cartIcon) {
+        cartIcon.addEventListener('click', function(e) {
+            e.preventDefault();
+            fetch("{{ route('cart.mini') }}")
+              .then(res => res.json())
+              .then(data => {
+                renderMiniCart(data);
+              });
+        });
+    }
+    // Đóng mini cart khi click ra ngoài vùng content
+    overlay.addEventListener('mousedown', function(e) {
+        if (e.target === overlay) {
+            overlay.classList.remove('open');
+            setTimeout(() => { overlay.style.display = 'none'; }, 350);
+        }
+    });
+});
+</script>
 </body>
 
 

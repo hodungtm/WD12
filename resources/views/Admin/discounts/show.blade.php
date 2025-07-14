@@ -1,56 +1,98 @@
-@extends('Admin.Layouts.AdminLayout')
-
-@section('title', 'Chi tiết mã giảm giá')
+@extends('admin.layouts.AdminLayout')
 
 @section('main')
-<div class="container-fluid px-0">
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb bg-white px-3 py-2 rounded shadow-sm border-start border-4" style="border-color: #41BFBF;">
-            <li class="breadcrumb-item"><a href="{{ route('admin.discounts.index') }}">Danh sách mã</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Chi tiết mã giảm giá</li>
-        </ol>
-    </nav>
-
-    <!-- Card -->
-    <div class="card shadow-sm border-0">
-        <div class="card-header text-white" style="background-color: #41BFBF;">
-            <h5 class="mb-0"><i class="fas fa-ticket-alt me-2"></i>Chi tiết mã giảm giá</h5>
-        </div>
-
-        <div class="card-body px-4 py-3">
-            @php
-                function field($label, $value) {
-                    return "
-                    <div class='row mb-3'>
-                        <label class='col-sm-4 col-form-label text-muted fw-semibold'>$label:</label>
-                        <div class='col-sm-8'>$value</div>
+    <div class="main-content-inner">
+        <div class="main-content-wrap">
+            <div class="flex items-center flex-wrap justify-between gap20 mb-27">
+                <h3>Chi tiết mã giảm giá: {{ $discount->code }}</h3>
+                <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+                    <li><a href="{{ route('admin.discounts.index') }}">
+                            <div class="text-tiny">Mã giảm giá</div>
+                        </a></li>
+                    <li><i class="icon-chevron-right"></i></li>
+                    <li>
+                        <div class="text-tiny">Chi tiết</div>
+                    </li>
+                </ul>
+            </div>
+            {{-- Box: Thông tin mã giảm giá --}}
+            <div class="wg-box mb-30">
+                <div class="title-box">
+                    <i class="icon-percent"></i>
+                    <div class="body-text">Thông tin mã giảm giá</div>
+                </div>
+                <div class="flex flex-wrap gap20 mb-4">
+                    <div class="w-full md:w-1/2">
+                        <label class="body-title">Mã giảm giá:</label>
+                        <p>{{ $discount->code }}</p>
                     </div>
-                    ";
-                }
-            @endphp
-
-            {!! field('Mã giảm giá', $discount->code) !!}
-            {!! field('Loại mã', match($discount->type) {
-                'order' => '<span class="badge bg-primary">Theo đơn hàng</span>',
-                'shipping' => '<span class="badge bg-success">Phí vận chuyển</span>',
-                'product' => '<span class="badge bg-warning text-dark">Sản phẩm</span>',
-                default => '<span class="badge bg-secondary">Khác</span>',
-            }) !!}
-            {!! field('Mô tả', $discount->description ?? 'Không có mô tả') !!}
-            {!! field('Giảm (%)', $discount->discount_percent ? $discount->discount_percent . '%' : '-') !!}
-            {!! field('Giảm tối đa', $discount->max_discount_amount ? number_format($discount->max_discount_amount) . ' VNĐ' : 'Không giới hạn') !!}
-            {!! field('Đơn hàng tối thiểu', $discount->min_order_amount ? number_format($discount->min_order_amount) . ' VNĐ' : '-') !!}
-            {!! field('Số lượt sử dụng tối đa', $discount->max_usage ?? 'Không giới hạn') !!}
-            {!! field('Ngày bắt đầu', \Carbon\Carbon::parse($discount->start_date)->format('d/m/Y')) !!}
-            {!! field('Ngày kết thúc', \Carbon\Carbon::parse($discount->end_date)->format('d/m/Y')) !!}
-        </div>
-
-        <div class="card-footer bg-light text-end">
-            <a href="{{ route('admin.discounts.index') }}" class="btn" style="background-color: #41BFBF; color: white;">
-                <i class="fas fa-arrow-left me-1"></i> Quay lại
-            </a>
+                    <div class="w-full md:w-1/2">
+                        <label class="body-title">Loại mã:</label>
+                        <p>
+                            @if($discount->type === 'order')
+                                <span class="badge-status badge-instock">Đơn hàng</span>
+                            @elseif($discount->type === 'shipping')
+                                <span class="badge-status badge-outstock">Vận chuyển</span>
+                            @elseif($discount->type === 'product')
+                                <span class="badge-status badge-instock">Sản phẩm</span>
+                            @else
+                                <span class="badge-status badge-outstock">Khác</span>
+                            @endif
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {{-- Box: Điều kiện áp dụng --}}
+            <div class="wg-box mb-30">
+                <div class="title-box">
+                    <i class="icon-settings"></i>
+                    <div class="body-text">Điều kiện áp dụng</div>
+                </div>
+                <div class="flex flex-wrap gap20 mb-4">
+                    <div class="w-full md:w-1/2">
+                        <label class="body-title">Ngày bắt đầu:</label>
+                        <p>{{ $discount->start_date ? \Carbon\Carbon::parse($discount->start_date)->format('d/m/Y') : '-' }}</p>
+                    </div>
+                    <div class="w-full md:w-1/2">
+                        <label class="body-title">Ngày kết thúc:</label>
+                        <p>{{ $discount->end_date ? \Carbon\Carbon::parse($discount->end_date)->format('d/m/Y') : '-' }}</p>
+                    </div>
+                    <div class="w-full md:w-1/2">
+                        <label class="body-title">Phần trăm giảm giá:</label>
+                        <p>{{ $discount->discount_percent ? $discount->discount_percent . '%' : '-' }}</p>
+                    </div>
+                    <div class="w-full md:w-1/2">
+                        <label class="body-title">Giảm tối đa:</label>
+                        <p>{{ $discount->max_discount_amount ? number_format($discount->max_discount_amount) . ' VNĐ' : 'Không giới hạn' }}</p>
+                    </div>
+                    <div class="w-full md:w-1/2">
+                        <label class="body-title">Đơn hàng tối thiểu:</label>
+                        <p>{{ $discount->min_order_amount ? number_format($discount->min_order_amount) . ' VNĐ' : '-' }}</p>
+                    </div>
+                    <div class="w-full md:w-1/2">
+                        <label class="body-title">Số lượt sử dụng tối đa:</label>
+                        <p>{{ $discount->max_usage ?? 'Không giới hạn' }}</p>
+                    </div>
+                </div>
+            </div>
+            {{-- Box: Mô tả --}}
+            <div class="wg-box mb-30">
+                <div class="title-box">
+                    <i class="icon-file-text"></i>
+                    <div class="body-text">Mô tả</div>
+                </div>
+                <div class="flex flex-wrap gap20 mb-4">
+                    <div class="w-full">
+                        <label class="body-title">Mô tả:</label>
+                        <p>{!! nl2br(e($discount->description)) !!}</p>
+                    </div>
+                </div>
+            </div>
+                <div class="flex gap10 mt-4">
+                    <a href="{{ route('admin.discounts.edit', $discount) }}" class="tf-button"><i class="icon-edit-3 me-1"></i> Chỉnh sửa</a>
+                    <a href="{{ route('admin.discounts.index') }}" class="tf-button style-1"><i class="icon-arrow-left me-1"></i> Quay lại</a>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 @endsection

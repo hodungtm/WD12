@@ -39,12 +39,12 @@
                 data-animation-delay="200">Danh mục sản phẩm</h2>
             <div class="categories-slider owl-carousel owl-theme mb-4 appear-animate" data-owl-options="{ 'margin': 2, 'nav': false, 'items': 1, 'responsive': { '992': { 'items': 4 }, '1200': { 'items': 5 } } }" data-animation-name="fadeInUpShorter" data-animation-delay="200">
                 @foreach($categories as $category)
-                <div class="product-category">
+                <a href="{{ route('client.listproduct', ['category' => $category->id]) }}" class="product-category" style="text-decoration: none;">
                     <img src="{{ asset('storage/' . $category->anh) }}" alt="icon" width="60" height="60">
                     <div class="category-content">
                         <h3 class="font2 ls-0 text-uppercase mb-0">{{ $category->ten_danh_muc }}</h3>
                     </div>
-                </div>
+                </a>
                 @endforeach
             </div>
         </div>
@@ -100,8 +100,22 @@
                                 @endif
                             </div>
                             <div class="product-action">
-                                <a href="#" class="btn-icon-wish" title="wishlist"><i class="icon-heart"></i></a>
-                                <a href="{{ route('client.product.detail', $product->id) }}" class="btn-icon btn-add-cart product-type-simple"><i class="icon-shopping-cart"></i><span>THÊM VÀO GIỎ</span></a>
+                                <a href="#" class="btn-icon-wish" title="Yêu thích"
+                                           onclick="event.preventDefault(); document.getElementById('add-wishlist-{{ $product->id }}').submit();">
+                                            <i class="icon-heart"></i>
+                                        </a>
+                                        <form id="add-wishlist-{{ $product->id }}" action="{{ route('client.wishlist.add', $product->id) }}" method="POST" style="display:none;">
+                                            @csrf
+                                        </form>
+                                <form action="{{ route('client.cart.add', $product->id) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    <input type="hidden" name="variant_id" value="{{ $product->variants->first()->id ?? '' }}">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" class="btn-icon btn-add-cart" >
+                                        
+                                        <i class="icon-shopping-cart"></i><span>THÊM VÀO GIỎ</span>
+                                    </button>
+                                </form>
                                 <a href="{{ route('client.product.detail', $product->id) }}" class="btn-quickview" title="Quick View"><i class="fas fa-external-link-alt"></i></a>
                             </div>
                         </div>
@@ -163,8 +177,22 @@
                                 @endif
                             </div>
                             <div class="product-action">
-                                <a href="#" class="btn-icon-wish" title="wishlist"><i class="icon-heart"></i></a>
-                                <a href="{{ route('client.product.detail', $product->id) }}" class="btn-icon btn-add-cart product-type-simple"><i class="icon-shopping-cart"></i><span>THÊM VÀO GIỎ</span></a>
+                                <a href="#" class="btn-icon-wish" title="Yêu thích"
+                                           onclick="event.preventDefault(); document.getElementById('add-wishlist-{{ $product->id }}').submit();">
+                                            <i class="icon-heart"></i>
+                                        </a>
+                                        <form id="add-wishlist-{{ $product->id }}" action="{{ route('client.wishlist.add', $product->id) }}" method="POST" style="display:none;">
+                                            @csrf
+                                        </form>
+                                <form action="{{ route('client.cart.add', $product->id) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    <input type="hidden" name="variant_id" value="{{ $product->variants->first()->id ?? '' }}">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" class="btn-icon btn-add-cart" >
+                                        
+                                        <i class="icon-shopping-cart"></i><span>THÊM VÀO GIỎ</span>
+                                    </button>
+                                </form>
                                 <a href="{{ route('client.product.detail', $product->id) }}" class="btn-quickview" title="Quick View"><i class="fas fa-external-link-alt"></i></a>
                             </div>
                         </div>
@@ -209,33 +237,65 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-12">
-                    <div class="blog-init slick-nav">
-                        @foreach($posts as $post)
-                        <div class="slider-item">
-                            <div class="single-blog">
-                                <a class="blog-thumb mb-20 zoom-in d-block overflow-hidden" href="#">
-                                    <img src="{{ $post->image ? asset('storage/' . $post->image) : asset('assets/images/no-image.png') }}" alt="{{ $post->title }}"
-                                        style="height: 200px; object-fit: cover;">
-                                </a>
-                                <div class="blog-post-content">
-                                    <a class="blog-link theme-color d-inline-block mb-10 text-uppercase"
-                                        href="#">Tin tức</a>
-                                    <h3 class="title text-capitalize mb-15">
-                                        <a href="#">{{ $post->title }}</a>
-                                    </h3>
-                                    <h5 class="sub-title">
-                                        Đăng bởi <a class="blog-link theme-color mx-1" href="#">Quản trị viên</a>
-                                        {{ $post->created_at->format('d/m/Y') }}
-                                    </h5>
-                                </div>
+                @foreach($posts as $post)
+                <div class="col-md-4 col-sm-6 mb-4">
+                    <div class="single-blog h-100 d-flex flex-column shadow-sm rounded-3 p-2 bg-white" style="transition: box-shadow 0.2s; min-height: 370px;">
+                        <a class="blog-thumb mb-3 d-block overflow-hidden rounded-3" 
+                           href="{{ route('client.listblog.detail', $post->id) }}">
+                            <img src="{{ $post->image ? asset('storage/' . $post->image) : asset('assets/images/no-image.png') }}" 
+                                 alt="{{ $post->title }}" style="height: 200px; object-fit: cover; width: 100%; border-radius: 8px; transition: transform 0.2s;">
+                        </a>
+                        <div class="blog-post-content flex-grow-1 d-flex flex-column">
+                            <h3 class="title text-capitalize mb-2" style="font-size: 1.1rem; font-weight: bold;">
+                                <a href="{{ route('client.listblog.detail', $post->id) }}" class="text-dark">{{ $post->title }}</a>
+                            </h3>
+                            <div class="mb-2 text-muted" style="font-size: 0.95rem;">
+                                <i class="fa fa-calendar"></i> {{ $post->created_at->format('d/m/Y') }}
                             </div>
+                            <div class="mb-3" style="font-size: 0.98rem; color: #555;">
+                                {{ \Illuminate\Support\Str::limit(strip_tags($post->content), 80) }}
+                            </div>
+                            <a href="{{ route('client.listblog.detail', $post->id) }}" class="btn btn-dark btn-sm align-self-start mb-3">Xem chi tiết</a>
                         </div>
-                        @endforeach
                     </div>
                 </div>
+                @endforeach
             </div>
         </div>
     </section>
 </main>
 @endsection
+<style>
+.product-default .btn-add-cart i {
+    display: inline-block !important;
+}
+.product-action {
+    display: flex;
+    justify-content: center;
+    gap: 8px; /* khoảng cách giữa các nút, có thể điều chỉnh */
+}
+
+.product-action a.btn-icon-wish,
+.product-action a.btn-quickview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.single-blog {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #fff;
+    transition: box-shadow 0.2s;
+    min-height: 370px;
+}
+.single-blog:hover {
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+}
+.blog-thumb img {
+    border-radius: 8px;
+    transition: transform 0.2s;
+}
+.blog-thumb:hover img {
+    transform: scale(1.04);
+}
+</style>

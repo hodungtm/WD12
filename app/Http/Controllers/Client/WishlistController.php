@@ -17,7 +17,7 @@ class WishlistController extends Controller
             'product.variants.size',
             'product.variants.color',
         ])
-            ->where('user_id', auth()->id())
+            ->where('user_id', Auth::id())
             ->get();
         $banners = Banner::with('hinhAnhBanner')
             ->where('loai_banner', 'slider')
@@ -30,16 +30,16 @@ class WishlistController extends Controller
 
     public function add($id)
     {
-        if (!auth()->check()) {
+        if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Bạn cần đăng nhập để thêm sản phẩm vào yêu thích.');
         }
 
-        $userId = auth()->id();
+        $userId = Auth::id();
         $exists = Wishlist::where('user_id', $userId)
         ->where('product_id', $id)
         ->exists();
         
-        if ($exists) {
+        if (!$exists) {
             Wishlist::create([
                 'user_id' => $userId,
                 'product_id' => $id,
@@ -54,7 +54,7 @@ class WishlistController extends Controller
     {
         // dd($id, auth()->id());
         $wishlist = Wishlist::where('id', $id)
-            ->where('user_id', auth()->id())
+            ->where('user_id', Auth::id())
             ->first();
         // dd($wishlist);
         if ($wishlist) {

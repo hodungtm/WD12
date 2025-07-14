@@ -130,7 +130,7 @@
                                             <span class="badge bg-secondary">Khóa</span>
                                         @endif
                                     </td>
-                                    <td>{{ $admin->created_at->format('d/m/Y H:i') }}</td>
+                                    <td>{{ $admin->created_at ? $admin->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
                                     <td>
                                         <a href="{{ route('admin.admins.edit', $admin) }}" class="btn btn-primary btn-sm"
                                             title="Sửa">

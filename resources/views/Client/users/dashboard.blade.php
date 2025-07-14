@@ -119,7 +119,7 @@
 
                         <!-- Tab 2: Chỉnh sửa -->
                         <div class="tab-pane fade" id="edit" role="tabpanel">
-                            <form method="POST" action="{{ route('user.updateInfo') }}">
+                            <form method="POST" action="{{ route('user.updateInfo') }}" enctype="multipart/form-data">
                                 @csrf
                                 <div class="mb-3">
                                     <label class="form-label">Họ tên</label>
@@ -128,6 +128,22 @@
                                 <div class="mb-3">
                                     <label class="form-label">Số điện thoại</label>
                                     <input type="text" name="phone" class="form-control" value="{{ $user->phone }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Giới tính</label>
+                                    <select name="gender" class="form-control">
+                                        <option value="" {{ $user->gender == null ? 'selected' : '' }}>Chưa chọn</option>
+                                        <option value="male" {{ $user->gender == 'male' ? 'selected' : '' }}>Nam</option>
+                                        <option value="female" {{ $user->gender == 'female' ? 'selected' : '' }}>Nữ</option>
+                                        <option value="other" {{ $user->gender == 'other' ? 'selected' : '' }}>Khác</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Ảnh đại diện</label>
+                                    <input type="file" name="avatar" class="form-control" accept="image/*">
+                                    @if($user->avatar)
+                                        <img src="{{ $user->avatar }}" alt="Avatar" class="mt-2 rounded-circle" style="width:60px;height:60px;object-fit:cover;">
+                                    @endif
                                 </div>
                                 <button class="btn btn-success">Lưu thay đổi</button>
                             </form>
@@ -199,38 +215,46 @@
     </div>
 </div>
 
-            <!-- Lịch sử đơn hàng -->
-            <div class="card">
-                <div class="card-header">📦 Lịch sử đơn hàng</div>
-                <div class="card-body p-0">
-                    <table class="table mb-0 table-hover">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Mã đơn</th>
-                                <th>Số lượng</th>
-                                <th>Trạng thái</th>
-                                <th>Ngày đặt</th>
-                                <th>Tổng tiền</th>
-                                <th>Chi tiết</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($user->orders as $order)
-                            <tr>
-                                <td>#{{ $order->code }}</td>
-                                <td>{{ $order->total_quantity }}</td>
-                                <td><span class="badge bg-{{ $order->status == 'completed' ? 'success' : 'warning' }}">{{ ucfirst($order->status) }}</span></td>
-                                <td>{{ $order->created_at->format('d/m/Y') }}</td>
-                                <td>{{ number_format($order->total_price) }}₫</td>
-                                <td><a href="{{ route('client.orders.show', $order->id) }}" class="btn btn-sm btn-outline-primary">Xem</a></td>
-                            </tr>
-                            @empty
-                            <tr><td colspan="6" class="text-center text-muted">Chưa có đơn hàng</td></tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <!-- Lịch sử mua hàng (theo sản phẩm) -->
+<div class="card">
+    <div class="card-header">📦 Lịch sử mua hàng</div>
+    <div class="card-body p-0">
+        <table class="table mb-0 table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Giá</th>
+                    <th>Ngày đặt</th>
+                    <th>Trạng thái</th>
+                    <th>Chi tiết</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($orderItems as $item)
+                <tr>
+                    <td>#{{ $item->order->code ?? '' }}</td>
+                    <td>{{ $item->product->name ?? 'Sản phẩm đã xóa' }}</td>
+                    <td>{{ $item->quantity }}</td>
+                    <td>{{ number_format($item->price) }}₫</td>
+                    <td>{{ $item->order->created_at->format('d/m/Y') ?? '' }}</td>
+                    <td>
+                        <span class="badge bg-{{ $item->order->status == 'completed' ? 'success' : 'warning' }}">
+                            {{ ucfirst($item->order->status) }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{{ route('client.orders.show', $item->order_id) }}" class="btn btn-sm btn-outline-primary">Xem</a>
+                    </td>
+                </tr>
+                @empty
+                <tr><td colspan="7" class="text-center text-muted">Chưa có sản phẩm nào đã mua</td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
 
         </div>
     </div>

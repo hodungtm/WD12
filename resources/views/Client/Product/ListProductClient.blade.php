@@ -22,7 +22,24 @@
         font-weight: 600;
         text-decoration: underline;
     }
-    
+    .product-default .btn-add-cart i {
+        display: inline-block !important;
+    }
+    .product-default .btn-add-cart i {
+    display: inline-block !important;
+}
+.product-action {
+    display: flex;
+    justify-content: center;
+    gap: 8px; /* khoảng cách giữa các nút, có thể điều chỉnh */
+}
+
+.product-action a.btn-icon-wish,
+.product-action a.btn-quickview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 </style>
     <div class="category-banner-container bg-gray">
         <div class="container">
@@ -192,14 +209,23 @@
                                         @endif
                                     </div><!-- End .price-box -->
                                     <div class="product-action">
-                                        <a href="#" class="btn-icon-wish" title="Yêu thích"><i class="icon-heart"></i></a>
-                                        <a href="{{ route('client.product.detail', ['id' => $product->id]) }}"
-                                            class="btn-icon btn-add-cart product-type-simple">
-                                            <i class="icon-shopping-cart"></i><span>THÊM VÀO GIỎ</span>
+                                        <a href="#" class="btn-icon-wish" title="Yêu thích"
+                                           onclick="event.preventDefault(); document.getElementById('add-wishlist-{{ $product->id }}').submit();">
+                                            <i class="icon-heart"></i>
                                         </a>
-                                        <a href="#" class="btn-quickview" title="Xem nhanh">
-                                            <i class="fas fa-external-link-alt"></i>
-                                        </a>
+                                        <form id="add-wishlist-{{ $product->id }}" action="{{ route('client.wishlist.add', $product->id) }}" method="POST" style="display:none;">
+                                            @csrf
+                                        </form>
+                                        <form action="{{ route('client.cart.add', $product->id) }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            <input type="hidden" name="variant_id" value="{{ $product->variants->first()->id ?? '' }}">
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button type="submit" class="btn-icon btn-add-cart" >
+                                                
+                                                <i class="icon-shopping-cart"></i><span>THÊM VÀO GIỎ</span>
+                                            </button>
+                                        </form>
+                                        <a href="{{ route('client.product.detail', $product->id) }}" class="btn-quickview" title="Quick View"><i class="fas fa-external-link-alt"></i></a>
                                     </div>
                                 </div><!-- End .product-details -->
                             </div>

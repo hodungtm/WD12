@@ -58,39 +58,61 @@ class UserController extends Controller
     }
 
     public function update(Request $request, User $user)
-    {
-        $auth = Auth::user();
+{
+    $auth = Auth::user();
 
-        // Admin chỉ được cập nhật chính mình
-        if (!($auth->id === $user->id && $auth->role === 'admin')) {
-            return redirect()->route('admin.users.index')->with('error', 'Bạn chỉ có thể cập nhật thông tin của chính mình.');
-        }
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'gender' => 'nullable|in:male,female,other',
-            'avatar' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
-            'password' => 'nullable|min:6',
-        ]);
-
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->gender = $request->gender;
-
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
-        }
-
-        if ($request->hasFile('avatar')) {
-            $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            $user->avatar = $avatarPath;
-        }
-
-        $user->save();
-
-        return redirect()->route('admin.users.index')->with('success', 'Cập nhật tài khoản thành công!');
+    // Chỉ cho phép admin sửa chính mình
+    if (!($auth->id === $user->id && $auth->role === 'admin')) {
+        return redirect()->route('admin.users.index')
+                         ->with('error', 'Bạn chỉ có thể cập nhật thông tin của chính mình.');
     }
+
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+        'gender' => 'nullable|in:male,female,other',
+        'avatar' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+        'password' => 'nullable|min:6',
+    ]);
+
+    // Kiểm tra thay đổi
+    $dataChanged = false;
+
+    if ($user->name !== $request->name) {
+        $user->name = $request->name;
+        $dataChanged = true;
+    }
+
+    if ($user->email !== $request->email) {
+        $user->email = $request->email;
+        $dataChanged = true;
+    }
+
+    if ($user->gender !== $request->gender) {
+        $user->gender = $request->gender;
+        $dataChanged = true;
+    }
+
+    if ($request->filled('password')) {
+        $user->password = Hash::make($request->password);
+        $dataChanged = true;
+    }
+
+    if ($request->hasFile('avatar')) {
+        $avatarPath = $request->file('avatar')->store('avatars', 'public');
+        $user->avatar = $avatarPath;
+        $dataChanged = true;
+    }
+
+    if ($dataChanged) {
+        $user->save();
+        return redirect()->route('admin.users.edit', $user)
+                         ->with('success', 'Cập nhật thông tin thành công!');
+    } else {
+        return redirect()->route('admin.users.edit', $user)
+                         ->with('info', 'Không có thay đổi nào được thực hiện.');
+    }
+}
 
     public function editPassword(User $user)
     {
@@ -102,20 +124,31 @@ class UserController extends Controller
     }
 
     public function updatePassword(Request $request, User $user)
-    {
-        if (Auth::id() !== $user->id) {
-            return redirect()->route('admin.users.index')->with('error', 'Không thể đổi mật khẩu tài khoản khác.');
-        }
-
-        $request->validate([
-            'password' => 'required|string|min:6|confirmed',
-        ]);
-
-        $user->password = Hash::make($request->password);
-        $user->save();
-
-        return redirect()->route('admin.users.edit-password', $user)->with('success', 'Đổi mật khẩu thành công!');
+{
+    // Ngăn đổi mật khẩu tài khoản khác
+    if (Auth::id() !== $user->id) {
+        return redirect()->route('admin.users.index')
+                         ->with('error', 'Không thể đổi mật khẩu tài khoản khác.');
     }
+
+    // Validate các trường
+    $request->validate([
+        'current_password' => 'required',
+        'password' => 'required|string|min:6|confirmed',
+    ]);
+
+    // Kiểm tra mật khẩu cũ
+    if (!Hash::check($request->current_password, $user->password)) {
+        return back()->withErrors(['current_password' => 'Mật khẩu hiện tại không đúng.'])->withInput();
+    }
+
+    // Cập nhật mật khẩu mới
+    $user->password = Hash::make($request->password);
+    $user->save();
+
+    return redirect()->route('admin.users.edit-password', $user)
+                     ->with('success', 'Đổi mật khẩu thành công!');
+}
 
     public function verifyPasswordAjax(Request $request, User $user)
     {

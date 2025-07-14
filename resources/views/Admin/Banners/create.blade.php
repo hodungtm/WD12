@@ -1,358 +1,133 @@
 @extends('Admin.Layouts.AdminLayout')
 
 @section('main')
-    <div class="main-content-inner">
-        <div class="main-content-wrap">
-            <div class="flex items-center flex-wrap justify-between gap20 mb-27">
-                <h3>Thêm banner mới</h3>
-                <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-                    <li><a href="#">
-                            <div class="text-tiny">Dashboard</div>
-                        </a></li>
-                    <li><i class="icon-chevron-right"></i></li>
-                    <li>
-                        <div class="text-tiny">Thêm banner</div>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="wg-box">
-                <form action="{{ route('admin.banners.store') }}" method="POST" enctype="multipart/form-data"
-                    class="mt-3">
-                    @csrf
-
-                    @if (session('success'))
-                        <div class="alert alert-success mt-3">{{ session('success') }}</div>
-                    @endif
-
-                    @if ($errors->any())
-                        <div class="alert alert-danger mt-3">
-                            <ul class="mb-0">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
-                    <div class="form-group mt-3">
-                        <label class="form-label">Tiêu đề:</label>
-                        <input type="text" name="tieu_de" class="form-control" value="{{ old('tieu_de') }}"
-                            placeholder="Tiêu đề cho banner">
-                    </div>
-
-                    <div class="form-group mt-3">
-                        <label class="form-label">Nội dung:</label>
-                        <textarea name="noi_dung" class="form-control" placeholder="Nội dung của banner">{{ old('noi_dung') }}</textarea>
-                    </div>
-
-                    <div class="form-group mt-3">
-                        <label class="form-label">Loại Banner:</label>
-                        <select name="loai_banner" class="form-control">
-                            <option value="slider" {{ old('loai_banner') == 'slider' ? 'selected' : '' }}>Slideshow</option>
-                            <option value="footer" {{ old('loai_banner') == 'footer' ? 'selected' : '' }}>Footer</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group mt-3">
-                        <label class="form-label">Trạng thái:</label>
-                        <select name="trang_thai" class="form-control">
-                            <option value="hien" {{ old('trang_thai') == 'hien' ? 'selected' : '' }}>Hiển thị</option>
-                            <option value="an" {{ old('trang_thai') == 'an' ? 'selected' : '' }}>Ẩn</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-choices-input mt-3">
-                        <div class="d-flex justify-content-between align-items-end">
-                            <label class="form-label">Ảnh slide</label>
-                            <div id="add-row" class="btn btn-success btn-sm mb-2">+</div>
-                        </div>
-
-                        <table class="table align-middle mb-0">
-                            <tbody id="image-table-body">
-                                <tr>
-                                    <td class="d-flex align-items-center">
-                                        <div class="d-flex align-items-center">
-                                            <img id="preview_0"
-                                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrVLGzO55RQXipmjnUPh09YUtP-BW3ZTUeAA&s"
-                                                width="50px" style="object-fit: cover;">
-
-                                            <input type="file" name="list_image[new_0]" class="form-control mx-2"
-                                                onchange="previewImageAndAddToSlideshow(this, 0)">
-
-                                            <button type="button"
-                                                class="btn btn-light text-danger d-flex justify-content-center align-items-center rounded-circle p-2"
-                                                style="width: 40px; height: 40px;" onclick="removeRow(this)"
-                                                title="Xoá ảnh">
-                                                <i class="icon-trash-2" style="font-size: 20px;"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-
-                    <div class="mt-3 d-flex justify-content-end gap-2">
-                        <button type="submit" class="tf-button style-1">
-                            <i class="icon-plus"></i> Thêm
-                        </button>
-                        <a href="{{ route('admin.banners.index') }}" class="tf-button style-1 btn-cancel"
-                            style="padding: 4px 12px; font-size: 13px; color: #e67e22">
-                            <i class="icon-x"></i> Hủy
-                        </a>
-
-
-
-
-                    </div>
-                </form>
-            </div>
-
-            <div class="mt-5">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Xem trước slide</h5>
-                    </div>
-                    <div class="card-body">
-                        <div id="bannerCarousel" class="carousel slide" data-bs-ride="carousel">
-                            <div class="carousel-inner" id="carouselImages">
-                                {{-- Ảnh sẽ được JS thêm ở đây --}}
-                            </div>
-
-                            <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel"
-                                data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel"
-                                data-bs-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            </button>
-                        </div>
-                    </div>
+<div class="main-content-inner">
+    <div class="main-content-wrap">
+        <div class="flex items-center flex-wrap justify-between gap20 mb-30">
+            <div class="title-box flex items-center gap10">
+                <i class="icon-image" style="font-size: 32px; color: #1abc9c;"></i>
+                <div>
+                    <h3 style="margin-bottom:2px;">Thêm Banner mới</h3>
+                    <div class="body-text text-muted" style="font-size:15px;">Tạo mới banner quảng cáo cho hệ thống</div>
                 </div>
             </div>
-
-
+            <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+                <li><a href="{{ route('admin.dashboard') }}"><div class="text-tiny">Dashboard</div></a></li>
+                <li><i class="icon-chevron-right"></i></li>
+                <li><a href="{{ route('admin.banners.index') }}"><div class="text-tiny">Banner</div></a></li>
+                <li><i class="icon-chevron-right"></i></li>
+                <li><div class="text-tiny">Thêm mới</div></li>
+            </ul>
+        </div>
+        <div class="wg-box mb-30">
+            <form action="{{ route('admin.banners.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <fieldset class="mb-4">
+                    <div class="body-title mb-10">Tiêu đề</div>
+                    <input type="text" name="tieu_de" class="form-control mb-10" value="{{ old('tieu_de') }}" placeholder="Tiêu đề cho banner">
+                    @error('tieu_de')
+                        <div class="text-danger mt-1 small">{{ $message }}</div>
+                    @enderror
+                </fieldset>
+                <fieldset class="mb-4">
+                    <div class="body-title mb-10">Nội dung</div>
+                    <textarea name="noi_dung" class="form-control mb-10" rows="3" placeholder="Nội dung của banner">{{ old('noi_dung') }}</textarea>
+                    @error('noi_dung')
+                        <div class="text-danger mt-1 small">{{ $message }}</div>
+                    @enderror
+                </fieldset>
+                <fieldset class="mb-4">
+                    <div class="body-title mb-10">Loại Banner</div>
+                    <select name="loai_banner" class="form-control mb-10">
+                        <option value="slider" {{ old('loai_banner') == 'slider' ? 'selected' : '' }}>Slideshow</option>
+                        <option value="footer" {{ old('loai_banner') == 'footer' ? 'selected' : '' }}>Footer</option>
+                    </select>
+                    @error('loai_banner')
+                        <div class="text-danger mt-1 small">{{ $message }}</div>
+                    @enderror
+                </fieldset>
+                <fieldset class="mb-4">
+                    <div class="body-title mb-10">Trạng thái</div>
+                    <select name="trang_thai" class="form-control mb-10">
+                        <option value="hien" {{ old('trang_thai') == 'hien' ? 'selected' : '' }}>Hiển thị</option>
+                        <option value="an" {{ old('trang_thai') == 'an' ? 'selected' : '' }}>Ẩn</option>
+                    </select>
+                    @error('trang_thai')
+                        <div class="text-danger mt-1 small">{{ $message }}</div>
+                    @enderror
+                </fieldset>
+                <fieldset class="mb-4">
+                    <div class="body-title mb-10">Ảnh banner</div>
+                    <div class="upload-image flex-grow">
+                        <div class="item up-load">
+                            <label class="uploadfile h250" for="hinh_anh">
+                                <span class="icon"><i class="icon-upload-cloud"></i></span>
+                                <span class="body-text">Kéo thả hoặc chọn <span class="tf-color">tải ảnh lên</span></span>
+                                <input type="file" id="hinh_anh" name="list_image[]" accept="image/*" multiple onchange="previewBannerImages(event)">
+                            </label>
+                        </div>
+                    </div>
+                    <div id="preview-banner-images" style="display:flex; gap:10px; flex-wrap:nowrap; margin-top:16px; align-items:center;"></div>
+                    @error('list_image.*')
+                        <div class="text-danger small mt-1">{{ $message }}</div>
+                    @enderror
+                </fieldset>
+                <div class="flex justify-end gap10 mt-3">
+                    <button type="submit" class="tf-button btn-sm w-auto px-3 py-2"><i class="icon-plus"></i> Thêm</button>
+                    <a href="{{ route('admin.banners.index') }}" class="tf-button style-3 btn-sm w-auto px-3 py-2"><i class="icon-x"></i> Hủy</a>
+                </div>
+            </form>
         </div>
     </div>
-@endsection
-
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let rowCount = 1;
-
-            document.getElementById('add-row').addEventListener('click', function() {
-                let tableBody = document.getElementById('image-table-body');
-                let newRow = document.createElement('tr');
-
-                newRow.innerHTML = `
-            <td class="d-flex align-items-center">
-                <div class="d-flex align-items-center">
-                    <img id="preview_${rowCount}" 
-                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrVLGzO55RQXipmjnUPh09YUtP-BW3ZTUeAA&s" 
-                         width="50px" style="object-fit: cover;">
-
-                    <input type="file" 
-                           name="list_image[new_${rowCount}]" 
-                           class="form-control mx-2" 
-                           onchange="previewImageAndAddToSlideshow(this, ${rowCount})">
-
-                    <button type="button"
-                        class="btn btn-light text-danger d-flex justify-content-center align-items-center rounded-circle p-2"
-                        style="width: 40px; height: 40px;" 
-                        onclick="removeRow(this)" 
-                        title="Xoá ảnh">
-                        <i class="icon-trash-2" style="font-size: 20px;"></i>
-                    </button>
-                </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    let rowCount = 1;
+    document.getElementById('add-row').addEventListener('click', function () {
+        const tableBody = document.getElementById('image-table-body');
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td class="d-flex align-items-center gap10">
+                <img id="preview_${rowCount}" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrVLGzO55RQXipmjnUPh09YUtP-BW3ZTUeAA&s" width="60" style="border-radius:8px; border:1.5px solid #eee; margin-right:8px;">
+                <input type="file" name="list_image[id_${rowCount}]" class="form-control mx-2" onchange="previewImageAndAddToSlideshow(this, ${rowCount})" style="width:100%;">
+                <button class="btn btn-light remove-row" onclick="removeRow(this)"><i class="icon-trash"></i></button>
             </td>
         `;
-
-                tableBody.appendChild(newRow);
-                rowCount++;
-            });
-        });
-
-
-
-
-        function previewImageAndAddToSlideshow(input, rowIndex) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    // Cập nhật ảnh nhỏ bên cạnh input
-                    const previewImg = document.getElementById(`preview_${rowIndex}`);
-                    if (previewImg) {
-                        previewImg.src = e.target.result;
-                    }
-
-                    // Tìm carousel item theo preview id
-                    const carouselInner = document.getElementById('carouselImages');
-                    const existingItem = carouselInner.querySelector(`[data-preview-id="preview_${rowIndex}"]`);
-
-                    if (existingItem) {
-                        // Nếu đã tồn tại: cập nhật ảnh
-                        const carouselImg = existingItem.querySelector('img');
-                        if (carouselImg) {
-                            carouselImg.src = e.target.result;
-                            carouselImg.alt = `Slide ${rowIndex + 1}`;
-                        }
-                    } else {
-                        // Nếu chưa có thì tạo mới
-                        const newItem = document.createElement('div');
-                        newItem.classList.add('carousel-item');
-                        newItem.setAttribute('data-preview-id', `preview_${rowIndex}`);
-
-                        if (carouselInner.children.length === 0) {
-                            newItem.classList.add('active');
-                        }
-
-                        newItem.innerHTML = `
-                    <div class="d-flex justify-content-center align-items-center" style="height: 300px;">
-                        <img src="${e.target.result}" class="img-fluid rounded"
-                             style="max-height: 100%; max-width: 100%; object-fit: contain;"
-                             alt="Slide ${rowIndex + 1}">
-                    </div>
-                `;
-
-                        carouselInner.appendChild(newItem);
-                    }
-                };
-
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-
-
-
-        // Xoá dòng ảnh được thêm mới
-        function removeRow(btn) {
-            const row = btn.closest('tr');
-            const img = row.querySelector('img');
-
-            if (img) {
-                const previewId = img.id;
-
-                const carouselItems = document.querySelectorAll('#carouselImages .carousel-item');
-                carouselItems.forEach(item => {
-                    if (item.getAttribute('data-preview-id') === previewId) {
-                        item.remove();
-                    }
-                });
-            }
-
-            row.remove();
-
-            // Cập nhật lại class active nếu không còn item active
-            const activeItem = document.querySelector('#carouselImages .carousel-item.active');
-            if (!activeItem) {
-                const firstItem = document.querySelector('#carouselImages .carousel-item');
-                if (firstItem) {
-                    firstItem.classList.add('active');
-                }
-            }
-        }
-    </script>
-@endpush
-
-@push('styles')
-    <style>
-        /* ===== FORM CHUNG ===== */
-        .form-group label,
-        .form-label {
-            font-size: 15px;
-            font-weight: 600;
-            color: #222;
-            margin-bottom: 6px;
-            display: block;
-        }
-
-        input.form-control,
-        textarea.form-control,
-        select.form-control {
-            font-size: 15px;
-            padding: 10px 14px;
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            background-color: #fff;
-            color: #333;
-            transition: 0.2s ease;
-        }
-
-        input.form-control:hover,
-        textarea.form-control:hover,
-        select.form-control:hover {
-            border-color: #6366f1;
-        }
-
-        input.form-control:focus,
-        textarea.form-control:focus,
-        select.form-control:focus {
-            border-color: #6366f1;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-            outline: none;
-        }
-
-        /* ===== BUTTON ===== */
-        .btn-warning,
-        .btn-secondary-custom {
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 8px;
-            transition: background-color 0.2s, color 0.2s;
-            border: none;
-            min-width: 100px;
-            text-align: center;
-        }
-
-        .btn-secondary-custom {
-            background-color: #e5e7eb;
-            color: #333;
-        }
-
-        /* ===== CĂN CHỈNH NÚT ===== */
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        #carouselImages .carousel-item img {
-            object-fit: contain;
-            max-height: 100%;
-            max-width: 100%;
-        }
-
-        .btn-cancel {
-    background-color: #fff; /* Nền trắng khi chưa hover */
-    color: #e67e22; /* Chữ cam */
-    border: 1px solid #e67e22;
-    transition: all 0.3s;
+        tableBody.appendChild(newRow);
+        rowCount++;
+    });
+});
+function previewImageAndAddToSlideshow(input, rowIndex) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            document.getElementById(`preview_${rowIndex}`).src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
 }
-
-/* Icon mặc định màu cam */
-.btn-cancel i {
-    color: #e67e22;
-    transition: all 0.3s;
+function removeRow(btn) {
+    btn.closest('tr').remove();
 }
-
-/* Hover: nền cam đậm, chữ trắng */
-.btn-cancel:hover {
-    background-color: #e67e22 !important; /* Nền cam khi hover */
-    color: #fff !important;                /* Chữ trắng */
-    border-color: #e67e22 !important;
+function previewBannerImages(event) {
+    const preview = document.getElementById('preview-banner-images');
+    preview.innerHTML = '';
+    Array.from(event.target.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.maxWidth = '80px';
+            img.style.maxHeight = '80px';
+            img.style.borderRadius = '8px';
+            img.style.border = '1.5px solid #eee';
+            img.style.marginRight = '8px';
+            img.style.background = '#fff';
+            img.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)';
+            preview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    });
 }
-
-/* Icon hover trắng */
-.btn-cancel:hover i {
-    color: #fff !important;
-}
-
-
-    </style>
-@endpush
+</script>
+@endsection
