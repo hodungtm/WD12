@@ -222,10 +222,7 @@ Route::get('/search', [App\Http\Controllers\Client\ListProductClientController::
 
 Route::delete('/discounts/bulk-delete', [DiscountController::class, 'bulkDelete'])->name('admin.discounts.bulkDelete');
 
-Auth::routes();
-
-<<<<<<< HEAD
 Route::post('/chatbot', [HomeController::class, 'respond']);
-=======
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
->>>>>>> main
+
+
+
