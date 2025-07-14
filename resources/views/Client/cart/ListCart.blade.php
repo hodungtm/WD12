@@ -4,11 +4,7 @@
 <main class="main">
     <div class="container my-5">
         <!-- Thanh bước tiến độ -->
-        <ul class="checkout-progress-bar d-flex justify-content-center flex-wrap mb-4">
-            <li class="active"><a href="#">Shopping Cart</a></li>
-            <li><a href="{{ route('client.checkout.show') }}">Checkout</a></li>
-            <li class="disabled"><a href="#">Order Complete</a></li>
-        </ul>
+        <h1 class="mb-4">Giỏ Hàng Của Bạn</h1>
 
         @if($cartItems->isEmpty())
             <h4 class="text-center">Chưa có sản phẩm trong giỏ hàng.</h4>

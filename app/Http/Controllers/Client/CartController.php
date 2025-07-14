@@ -31,26 +31,25 @@ public function index()
 }
 
 
-  public function addToCart(Request $request, $productId)
+public function addToCart(Request $request, $productId)
 {
     $product = Products::findOrFail($productId);
     $variantId = $request->input('variant_id');
     $quantity = (int) $request->input('quantity', 1);
-
-    if ($variantId) {
-        $variant = ProductVariant::find($variantId);
-        if (!$variant) {
-            return back()->withErrors(['variant_id' => 'Biến thể không tồn tại.']);
-        }
-
-        $stock = $variant->quantity;
-    } else {
-        $stock = $product->quantity;
-    }
-
     $userId = Auth::id();
 
-    // Kiểm tra giỏ hàng hiện có
+    if (!$variantId) {
+        return back()->with('error', 'Vui lòng chọn đầy đủ màu và kích thước.');
+    }
+
+    $variant = ProductVariant::find($variantId);
+    if (!$variant) {
+        return back()->with('error', 'Biến thể không tồn tại.');
+    }
+
+    $stock = $variant->quantity;
+
+    // Kiểm tra tồn tại
     $existing = Cart::where('user_id', $userId)
         ->where('product_id', $productId)
         ->where('variant_id', $variantId)
@@ -60,12 +59,9 @@ public function index()
     $newQty = $currentQty + $quantity;
 
     if ($newQty > $stock) {
-      return back()->with('error', 'Không thể thêm ' . $quantity . ' sản phẩm. Hiện bạn đã có ' . $currentQty . ' sản phẩm trong giỏ. Tồn kho chỉ còn ' . $stock . '.');
-
-
+        return back()->with('error', 'Không thể thêm ' . $quantity . ' sản phẩm. Hiện bạn đã có ' . $currentQty . ' sản phẩm trong giỏ. Tồn kho chỉ còn ' . $stock . '.');
     }
 
-    // Thêm hoặc cập nhật giỏ hàng
     if ($existing) {
         $existing->increment('quantity', $quantity);
     } else {

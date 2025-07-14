@@ -1,5 +1,5 @@
 @php
-    use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth;
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -20,6 +20,10 @@
 
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+<<<<<<< HEAD
+=======
+    @yield('css')
+>>>>>>> main
 
 
     {{-- chatbot --}}
@@ -204,6 +208,7 @@
             }
         }
 
+<<<<<<< HEAD
         .chatbot-toggle {
             position: fixed;
             bottom: 20px;
@@ -220,6 +225,22 @@
             display: none;
             /* Ẩn ban đầu */
             z-index: 1040;
+=======
+        .wishlist-count {
+            position: absolute;
+            top: -5px;
+            right: -8px;
+            background-color: #ff4d4f;
+            /* đỏ nổi bật */
+            color: #fff;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 50%;
+            padding: 2px 6px;
+            line-height: 1;
+            min-width: 20px;
+            text-align: center;
+>>>>>>> main
         }
     </style>
 </head>
@@ -260,9 +281,9 @@
                             <div class="header-menu">
                                 <ul>
                                     <li><a href="{{ route('user.dashboard') }}">Tài khoản của tôi</a></li>
-                                    <li><a href="cart.html">Giỏ hàng</a></li>
-                                    <li><a href="wishlist.html">Yêu thích</a></li>
-                                    <li><a href="blog.html">Tin tức</a></li>
+                                    <li><a href="{{ route('client.cart.index') }}">Giỏ hàng</a></li>
+                                    <li><a href="{{ route('client.wishlist.index') }}">Yêu thích</a></li>
+                                    <li><a href="{{ route('client.listblog') }}">Tin tức</a></li>
 
                                     <li>
                                         <div class="btn-group">
@@ -273,23 +294,23 @@
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-right">
                                                 @guest
-                                                    <a href="{{ route('login') }}" class="dropdown-item">Đăng Nhập</a>
-                                                    <a href="{{ route('register') }}" class="dropdown-item">Đăng Ký</a>
+                                                <a href="{{ route('login') }}" class="dropdown-item">Đăng Nhập</a>
+                                                <a href="{{ route('register') }}" class="dropdown-item">Đăng Ký</a>
                                                 @else
-                                                    <span
-                                                        class="dropdown-item-text font-weight-bold">{{ Auth::user()->name }}</span>
-                                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                                        Đăng Xuất
-                                                    </a>
-                                                    <form id="logout-form" action="{{ route('logout') }}" method="POST"
-                                                        class="d-none">
-                                                        @csrf
-                                                    </form>
+                                                <span class="dropdown-item-text font-weight-bold">{{ Auth::user()->name
+                                                    }}</span>
+                                                <a class="dropdown-item" href="{{ route('logout') }}"
+                                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                                    Đăng Xuất
+                                                </a>
+                                                <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                                    class="d-none">
+                                                    @csrf
+                                                </form>
                                                 @endguest
                                                 @if (Auth::check() && Auth::user()->isRoleAdmin())
-                                                    <a href="{{ route('products.index') }}" class="dropdown-item">Trang
-                                                        Quản Trị</a>
+                                                <a href="{{ route('products.index') }}" class="dropdown-item">Trang
+                                                    Quản Trị</a>
                                                 @endif
                                             </div>
                                         </div>
@@ -324,10 +345,9 @@
                                     <a href="demo27-product.html">Sản phẩm</a>
 
                                 </li>
-                                <li class="d-none d-xxl-block"><a href="blog.html">Tin tức</a></li>
+                                <li class="d-none d-xxl-block"><a href="{{ route('client.listblog') }}">Tin tức</a></li>
                                 <li>
-                                    <a href="#">Trang</a>
-
+                                    <a href="{{ route('client.contact.show') }}">Liên hệ</a>
                                 </li>
 
                             </ul>
@@ -337,8 +357,7 @@
                     <div class="header-right">
                         <div
                             class="header-icon header-search header-search-inline header-search-category w-lg-max text-right d-none d-sm-block">
-                            <a href="#" class="search-toggle" role="button"><i
-                                    class="icon-magnifier"></i></a>
+                            <a href="#" class="search-toggle" role="button"><i class="icon-magnifier"></i></a>
                             <form action="{{ route('client.search') }}" method="get">
                                 <div class="header-search-wrapper">
                                     <input type="search" class="form-control" name="keyword" id="q"
@@ -347,10 +366,10 @@
                                         <select id="cat" name="category">
                                             <option value="">All Categories</option>
                                             @foreach ($categories as $cat)
-                                                <option value="{{ $cat->id }}"
-                                                    {{ request('category') == $cat->id ? 'selected' : '' }}>
-                                                    {{ $cat->ten_danh_muc }}
-                                                </option>
+                                            <option value="{{ $cat->id }}" {{ request('category')==$cat->id ? 'selected'
+                                                : '' }}>
+                                                {{ $cat->ten_danh_muc }}
+                                            </option>
                                             @endforeach
                                         </select>
                                     </div><!-- End .select-custom -->
@@ -359,14 +378,14 @@
                             </form>
                         </div><!-- End .header-search -->
 
-                        <a href="wishlist.html" class="header-icon">
+                        <a href="{{ route('client.wishlist.index') }}" class="header-icon position-relative">
                             <i class="icon-wishlist-2 line-height-1"></i>
+                            <span class="wishlist-count">{{ $wishlistCount }}</span>
                         </a>
 
                         <div class="dropdown cart-dropdown">
                             <a href="#" title="Cart" class="dropdown-toggle cart-toggle" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                data-display="static">
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
                                 <i class="minicart-icon"></i>
                                 <span class="cart-count badge-circle">3</span>
                             </a>
@@ -399,8 +418,7 @@
                                                         alt="product" width="80" height="80">
                                                 </a>
 
-                                                <a href="#" class="btn-remove"
-                                                    title="Remove Product"><span>×</span></a>
+                                                <a href="#" class="btn-remove" title="Remove Product"><span>×</span></a>
                                             </figure>
                                         </div><!-- End .product -->
 
@@ -422,8 +440,7 @@
                                                         alt="product" width="80" height="80">
                                                 </a>
 
-                                                <a href="#" class="btn-remove"
-                                                    title="Remove Product"><span>×</span></a>
+                                                <a href="#" class="btn-remove" title="Remove Product"><span>×</span></a>
                                             </figure>
                                         </div><!-- End .product -->
 
@@ -444,8 +461,7 @@
                                                     <img src="{{ asset('assets/images/products/product-3.jpg') }}"
                                                         alt="product" width="80" height="80">
                                                 </a>
-                                                <a href="#" class="btn-remove"
-                                                    title="Remove Product"><span>×</span></a>
+                                                <a href="#" class="btn-remove" title="Remove Product"><span>×</span></a>
                                             </figure>
                                         </div><!-- End .product -->
                                     </div><!-- End .cart-product -->
@@ -467,8 +483,7 @@
                 </div>
             </div>
             <div class="header-bottom">
-                <div class="owl-carousel info-boxes-slider"
-                    data-owl-options="{
+                <div class="owl-carousel info-boxes-slider" data-owl-options="{
                         'items': 1,
                         'dots': false,
                         'loop': false,
@@ -529,8 +544,7 @@
                         </div>
 
                         <div class="col-md-8 col-lg-9 p-0">
-                            <div class="instagram-carousel owl-carousel owl-theme"
-                                data-owl-options="{
+                            <div class="instagram-carousel owl-carousel owl-theme" data-owl-options="{
                             'items': 2,
                             'dots': false,
                             'responsive': {
@@ -587,12 +601,9 @@
                         </div>
                         <div class="footer-right text-lg-right">
                             <div class="social-icons my-3">
-                                <a href="#" class="social-icon social-facebook icon-facebook"
-                                    target="_blank"></a>
-                                <a href="#" class="social-icon social-twitter icon-twitter"
-                                    target="_blank"></a>
-                                <a href="#" class="social-icon social-linkedin fab fa-linkedin-in"
-                                    target="_blank"></a>
+                                <a href="#" class="social-icon social-facebook icon-facebook" target="_blank"></a>
+                                <a href="#" class="social-icon social-twitter icon-twitter" target="_blank"></a>
+                                <a href="#" class="social-icon social-linkedin fab fa-linkedin-in" target="_blank"></a>
                             </div><!-- End .social-icons -->
                         </div>
                     </div>
@@ -602,9 +613,8 @@
                 <div class="footer-middle">
                     <div class="row">
                         <div class="col-lg-3">
-                            <a href="{{ route('client.index') }}"><img
-                                    src="{{ asset('assets/images/logo-white.png') }}" alt="Logo"
-                                    class="logo"></a>
+                            <a href="{{ route('client.index') }}"><img src="{{ asset('assets/images/logo-white.png') }}"
+                                    alt="Logo" class="logo"></a>
 
                             <p class="footer-desc">Cửa hàng chuyên cung cấp sản phẩm chất lượng cao.</p>
 
@@ -757,7 +767,7 @@
                         <a href="#">Trang<span class="tip tip-hot">Hot!</span></a>
                         <ul>
                             <li>
-                                <a href="wishlist.html">Yêu thích</a>
+                                <a href="{{ route('client.wishlist.index') }}">Yêu thích</a>
                             </li>
                             <li>
                                 <a href="cart.html">Giỏ hàng</a>
@@ -776,7 +786,7 @@
                             </li>
                         </ul>
                     </li>
-                    <li><a href="blog.html">Tin tức</a></li>
+                    <li><a href="{{ route('client.listblog') }}">Tin tức</a></li>
                     <li>
                         <a href="#">Thành phần</a>
                         <ul class="custom-scrollbar">
@@ -816,9 +826,9 @@
 
                 <ul class="mobile-menu">
                     <li><a href="login.html">Tài khoản của tôi</a></li>
-                    <li><a href="contact.html">Liên hệ</a></li>
-                    <li><a href="blog.html">Tin tức</a></li>
-                    <li><a href="wishlist.html">Yêu thích</a></li>
+                    <li><a href="{{ route('client.contact.show') }}">Liên hệ</a></li>
+                    <li><a href="{{ route('client.listblog') }}">Tin tức</a></li>
+                    <li><a href="{{ route('client.wishlist.index') }}">Yêu thích</a></li>
                     <li><a href="cart.html">Giỏ hàng</a></li>
                     <li><a href="login.html" class="login-link">Đăng nhập</a></li>
                 </ul>
@@ -852,7 +862,7 @@
             </a>
         </div>
         <div class="sticky-info">
-            <a href="wishlist.html" class="">
+            <a href="{{ route('client.wishlist.index') }}" class="">
                 <i class="icon-wishlist-2"></i>Yêu thích
             </a>
         </div>
@@ -880,7 +890,8 @@
     <script src="{{ asset('assets/js/optional/isotope.pkgd.min.js') }}"></script>
     <script src="{{ asset('assets/js/jquery.appear.min.js') }}"></script>
     <script src="{{ asset('assets/js/jquery.plugin.min.js') }}"></script>
-
+    
+    @yield('js')
 
     <!-- Main JS File -->
     <script src="{{ asset('assets/js/main.min.js') }}"></script>
