@@ -20,7 +20,7 @@ class AdminMiddleware
    public function handle(Request $request, Closure $next): Response
 {
     if (!Auth::check() || !Auth::user()->isRoleAdmin()) {
-        return redirect()->route('home')->withErrors('Bạn Không Có Quyền Đăng Nhập Trang Này');
+        return redirect()->route('home')->withErrors('Chào Bạn Đến Với Website Của Chúng Tôi');
     }
 
     return $next($request);
