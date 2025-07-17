@@ -264,6 +264,84 @@
         </div>
     </section>
 </main>
+<!-- Nút Robot -->
+  <div class="chatbot-toggle">
+   <button class="btn rounded-circle p-3 text-white" style="background-color: #4DB7B3;" onclick="toggleChat()">
+      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" width="30" height="30" alt="Chatbot">
+    </button>
+  </div>
+
+  <!-- Khung Chat -->
+  <div class="chatbot-container" id="chatbox">
+    <div class="card h-100 shadow d-flex flex-column">
+      <div class="card-header  text-white" style="background-color: #4DB7B3;" >
+        🤖 Hỗ trợ khách hàng 
+      </div>
+      <div class="card-body flex-grow-1 overflow-auto" id="chat-body">
+        <!-- Nội dung chat -->
+      </div>
+      <div class="card-footer p-2">
+        <div class="input-group">
+          <input type="text" id="message" class="form-control" placeholder="Nhập câu hỏi...">
+         <button class="btn text-white" style="background-color: #4DB7B3;" onclick="sendMessage()">Gửi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap + JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+  let isFirstOpen = true; // đánh dấu lần mở đầu tiên
+
+  function toggleChat() {
+    const chatbox = document.getElementById('chatbox');
+    const isHidden = (chatbox.style.display === 'none' || chatbox.style.display === '');
+
+    if (isHidden) {
+      chatbox.style.display = 'block';
+
+      // 👉 Chào khách hàng chỉ lần đầu
+      if (isFirstOpen) {
+        appendMessage('bot', '🤖 Xin chào! Mình có thể hỗ trợ gì cho bạn hôm nay?');
+        isFirstOpen = false;
+      }
+    } else {
+      chatbox.style.display = 'none';
+    }
+  }
+
+  function appendMessage(sender, text) {
+    const chatBody = document.getElementById('chat-body');
+    const div = document.createElement('div');
+    div.className = 'mb-2 text-' + (sender === 'user' ? 'end text-primary' : 'start text-dark');
+    div.innerText = text;
+    chatBody.appendChild(div);
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  function sendMessage() {
+    const input = document.getElementById('message');
+    const message = input.value.trim();
+    if (!message) return;
+
+    appendMessage('user', message);
+    input.value = '';
+
+    fetch('/chatbot', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({ message })
+    })
+    .then(res => res.json())
+    .then(data => appendMessage('bot', data.reply))
+    .catch(() => appendMessage('bot', 'Đã xảy ra lỗi, vui lòng thử lại.'));
+  }
+</script>
 @endsection
 <style>
 .product-default .btn-add-cart i {

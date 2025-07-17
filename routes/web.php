@@ -14,26 +14,27 @@ use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\ProductsController;
 
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Client\BlogController;
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\ReviewController;
+use App\Http\Controllers\Client\OrderController;
+
+
 use App\Http\Controllers\Admin\CommentController;
-
-
 use App\Http\Controllers\Admin\CategoryController;
+
+
 use App\Http\Controllers\Admin\DiscountController;
-
-
+use App\Http\Controllers\Client\ContactController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\ProductDetailController;
 use App\Http\Controllers\Client\ListProductClientController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Client\UserController as ClientUserController;
-use App\Http\Controllers\Client\WishlistController as ClientWishlistController;
-use App\Http\Controllers\Client\BlogController;
-use App\Http\Controllers\Client\ContactController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
+use App\Http\Controllers\Client\WishlistController as ClientWishlistController;
 
 
 Route::prefix('admin')->group(function () {
@@ -44,7 +45,7 @@ Route::prefix('client')->name('client.')->group(function () {
     Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
     Route::get('/san-pham', [ListProductClientController::class, 'index'])->name('listproduct');
     Route::get('/san-pham/{id}', [ProductDetailController::class, 'show'])->name('product.detail');
-  
+
     Route::post('/san-pham/{id}/danh-gia', [ProductDetailController::class, 'submitReview'])->name('product.review');
     Route::put('/san-pham/{product}/danh-gia/{review}', [ProductDetailController::class, 'updateReview'])->name('product.review.update');
     Route::post('/san-pham/{id}/binh-luan', [ProductDetailController::class, 'submitComment'])->name('product.comment');
@@ -61,10 +62,10 @@ Route::prefix('client')->name('client.')->group(function () {
     Route::middleware(['auth'])->group(function () {
         // Giỏ hàng
         Route::prefix('cart')->name('cart.')->group(function () {
-            Route::get('/', [CartController::class, 'index'])->name('index'); 
-            Route::post('/add/{productId}', [CartController::class, 'addToCart'])->name('add'); 
-            Route::put('/update-all', [CartController::class, 'updateAll'])->name('updateAll'); 
-            Route::delete('/remove/{id}', [CartController::class, 'remove'])->name('remove'); 
+            Route::get('/', [CartController::class, 'index'])->name('index');
+            Route::post('/add/{productId}', [CartController::class, 'addToCart'])->name('add');
+            Route::put('/update-all', [CartController::class, 'updateAll'])->name('updateAll');
+            Route::delete('/remove/{id}', [CartController::class, 'remove'])->name('remove');
         });
         Route::prefix('wishlist')->name('wishlist.')->group(function () {
             Route::get('/', [ClientWishlistController::class, 'index'])->name('index'); // client.wishlist.index
@@ -75,8 +76,11 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
         Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
         Route::get('/don-hang-thanh-cong/{order}', [CheckoutController::class, 'success'])->name('order.success');
+        //Theo dõi đơn hàng
+        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+        Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
     });
-    Route::get('orders/{id}', [ClientOrderController::class, 'show'])->name('orders.show');
 });
 
 Route::get('/momo_payment', [CheckoutController::class, 'momoPayment'])->name('momo.payment');
@@ -210,7 +214,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
 // ---------------------------------------ADMIM POST---------------------------------------------------------->
 Route::prefix('admin')->group(function () {
-    Route::post('admin/discounts/import-excel', [DiscountController::class, 'importExcel'])->name('discounts.importExcel');
     Route::resource('posts', PostController::class);
 });
 //----------------------------------------------------------------------------------------------------------------------------->
@@ -219,7 +222,7 @@ Route::get('/search', [App\Http\Controllers\Client\ListProductClientController::
 
 Route::delete('/discounts/bulk-delete', [DiscountController::class, 'bulkDelete'])->name('admin.discounts.bulkDelete');
 
+
 Route::get('/cart/mini', [\App\Http\Controllers\Client\CartController::class, 'miniCart'])->name('cart.mini');
 
-
-
+Route::post('/chatbot', [HomeController::class, 'respond']);

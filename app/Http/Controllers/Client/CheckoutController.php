@@ -66,7 +66,7 @@ $cartItems = Cart::with(['product', 'variant'])
             return back()->with('error', 'Không tìm thấy sản phẩm được chọn.');
         }
 
-        $subtotal = $cartItems->sum(fn($item) => $item->variant->price * $item->quantity);
+        $subtotal = $cartItems->sum(fn($item) => $item->variant->sale_price * $item->quantity);
 
         $discountCode = $request->discount_code;
         $discountAmount = 0;

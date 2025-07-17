@@ -182,7 +182,7 @@
     }
     
     </style>
-@section('scripts')
+@section('js')
     <script>
         function confirmDelete(id) {
 	if (confirm('Bạn có chắc chắn muốn xoá sản phẩm này?')) {

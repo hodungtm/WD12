@@ -54,7 +54,7 @@ class ProductDetailController extends Controller
             ->take(5)
             ->with(['images', 'variants', 'category', 'reviews'])
             ->get();
-
+       
         return view('Client.Product.productDetail', compact('product', 'reviews', 'comments', 'productVariants', 'hasPurchased','hasReviewed', 'relatedProducts'));
     }
 

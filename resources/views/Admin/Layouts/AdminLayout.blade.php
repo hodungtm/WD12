@@ -17,7 +17,7 @@
 
     <!-- Mobile Specific Metas -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Theme Style -->
     <link rel="stylesheet" type="text/css" href="{{ asset('css/animate.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/animation.css') }}">

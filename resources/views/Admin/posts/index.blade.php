@@ -89,10 +89,10 @@
                                     <div class="list-icon-function flex justify-center gap10" style="flex-basis: 120px;">
                                         <a href="{{ route('posts.show', $post) }}" class="item eye" title="Xem"><i class="icon-eye"></i></a>
                                         <a href="{{ route('posts.edit', $post) }}" class="item edit" title="Sửa"><i class="icon-edit-3"></i></a>
-                                        <form action="{{ route('posts.destroy', $post) }}" method="POST" style="display:inline;">
+                                        <form action="{{ route('posts.destroy', $post) }}" method="POST" style="display:inline-block;">
                                             @csrf @method('DELETE')
-                                            <button type="submit" class="item trash" onclick="return confirm('Bạn có chắc muốn xóa?')">
-                                                <i class="icon-trash-2"></i>
+                                            <button type="submit" style="color: red" onclick="return confirm('Bạn có chắc muốn xóa?')">
+                                                <i class="icon-trash" style="color: red; font-size: 20px;"></i>
                                             </button>
                                         </form>
                                     </div>

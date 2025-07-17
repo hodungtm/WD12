@@ -50,6 +50,7 @@ class WishlistController extends Controller
     }
 
 
+
     public function remove($id)
     {
         // dd($id, auth()->id());

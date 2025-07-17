@@ -22,7 +22,10 @@ use Illuminate\Support\Facades\Auth;
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
     @yield('css')
 
-
+    {{-- chatbot --}}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    {{-- endchatbot --}}
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/images/icons/favicon.png') }}">
 
@@ -119,7 +122,23 @@ use Illuminate\Support\Facades\Auth;
             box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
             min-width: 180px;
         }
+        .chatbot-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
 
+        .chatbot-container {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 360px;
+            height: 500px;
+            display: none;
+            /* Ẩn ban đầu */
+            z-index: 1040;
+        }
         #alert-stack {
             position: fixed;
             top: 32px;
@@ -266,7 +285,7 @@ use Illuminate\Support\Facades\Auth;
                             <a href="#">Links</a>
                             <div class="header-menu">
                                 <ul>
-                                    <li><a href="{{ route('user.dashboard') }}">Tài khoản của tôi</a></li>
+                                    
                                     <li><a href="{{ route('client.cart.index') }}">Giỏ hàng</a></li>
                                     <li><a href="{{ route('client.wishlist.index') }}">Yêu thích</a></li>
                                     <li><a href="{{ route('client.listblog') }}">Tin tức</a></li>
@@ -285,10 +304,13 @@ use Illuminate\Support\Facades\Auth;
                                                 @else
                                                 <span class="dropdown-item-text font-weight-bold">{{ Auth::user()->name
                                                     }}</span>
+                                                <a class="dropdown-item" href="{{ route('user.dashboard') }}">Tài khoản của tôi</a>
+                                                <a class="dropdown-item" href="{{ route('client.orders.index') }}">Đơn hàng</a>
                                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                                     Đăng Xuất
                                                 </a>
+                                                
                                                 <form id="logout-form" action="{{ route('logout') }}" method="POST"
                                                     class="d-none">
                                                     @csrf
