@@ -3,16 +3,11 @@
 @section('main')
 <main class="main">
     <div class="container my-5">
-        <!-- Thanh bước tiến độ -->
         <h1 class="mb-4">Giỏ Hàng Của Bạn</h1>
 
         @if($cartItems->isEmpty())
             <h4 class="text-center">Chưa có sản phẩm trong giỏ hàng.</h4>
         @else
-            @php
-                $subtotal = $cartItems->sum(fn($item) => $item->variant->price * $item->quantity);
-            @endphp
-
             <form action="{{ route('client.checkout.show') }}" method="GET">
                 <div class="row">
                     <div class="col-lg-8">
@@ -20,7 +15,10 @@
                             <table class="table table-bordered text-center align-middle">
                                 <thead class="table-dark">
                                     <tr>
-                                        <th><input type="checkbox" id="check-all"></th>
+                                        <th>
+                                            <input type="checkbox" id="check-all">
+                                        </th>
+
                                         <th>Ảnh</th>
                                         <th>Tên sản phẩm</th>
                                         <th>Đơn giá</th>
@@ -42,27 +40,21 @@
                                             <td>
                                                 <input type="checkbox" name="selected_items[]" value="{{ $item->id }}" class="item-checkbox">
                                             </td>
-                                            <td>
-                                                <img src="{{ asset('storage/' . $imagePath) }}" width="60" class="img-thumbnail">
-                                            </td>
+                                            <td><img src="{{ asset('storage/' . $imagePath) }}" width="60" class="img-thumbnail"></td>
                                             <td class="text-start">
                                                 <strong>{{ $product->name }}</strong><br>
                                                 <small>Màu: {{ $variant->color->name ?? '-' }}<br>Size: {{ $variant->size->name ?? '-' }}</small>
                                             </td>
                                             <td>{{ number_format($price, 0, ',', '.') }}₫</td>
                                             <td style="width: 100px;">
-                                                <form action="{{ route('client.cart.update', $item->id) }}" method="POST">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <input type="number" name="quantity" value="{{ $item->quantity }}" min="1"
-                                                        class="form-control form-control-sm text-center quantity-input">
-                                                </form>
+                                                <input type="number" value="{{ $item->quantity }}" min="1"
+                                                       class="form-control form-control-sm text-center quantity-input"
+                                                       data-price="{{ $price }}" data-id="{{ $item->id }}">
                                             </td>
-                                            <td>{{ number_format($total, 0, ',', '.') }}₫</td>
+                                            <td class="item-total">{{ number_format($total, 0, ',', '.') }}₫</td>
                                             <td>
                                                 <form action="{{ route('client.cart.remove', $item->id) }}" method="POST">
-                                                    @csrf
-                                                    @method('DELETE')
+                                                    @csrf @method('DELETE')
                                                     <button class="btn btn-sm btn-danger">x</button>
                                                 </form>
                                             </td>
@@ -72,27 +64,27 @@
                             </table>
                         </div>
 
-                        <div class="d-flex justify-content-between mt-3">
-                            <button type="submit" class="btn btn-success px-4 py-2">
-                                THANH TOÁN SẢN PHẨM ĐÃ CHỌN
+                        <div class="d-flex justify-content-end mt-3">
+                            <button type="submit" class="btn btn-primary px-4 py-2">
+                                THANH TOÁN
                             </button>
-                            <a href="{{ route('client.checkout.show') }}" class="btn btn-dark px-4 py-2">
-                                THANH TOÁN TOÀN BỘ
-                            </a>
                         </div>
                     </div>
 
                     <div class="col-lg-4 mt-4 mt-lg-0">
+                        @php
+                            $subtotal = $cartItems->sum(fn($item) => $item->variant->price * $item->quantity);
+                        @endphp
                         <div class="border p-4">
                             <h4 class="mb-3 fw-bold">TỔNG ĐƠN HÀNG</h4>
                             <table class="table">
                                 <tr>
                                     <td>Tạm tính</td>
-                                    <td class="text-end">{{ number_format($subtotal, 0, ',', '.') }}₫</td>
+                                    <td class="text-end" id="subtotal">{{ number_format($subtotal, 0, ',', '.') }}₫</td>
                                 </tr>
                                 <tr>
                                     <th>Tổng cộng</th>
-                                    <th class="text-end">{{ number_format($subtotal, 0, ',', '.') }}₫</th>
+                                    <th class="text-end" id="total">{{ number_format($subtotal, 0, ',', '.') }}₫</th>
                                 </tr>
                             </table>
                         </div>
@@ -106,17 +98,70 @@
 
 @section('scripts')
 <script>
-    document.querySelectorAll('.quantity-input').forEach(function(input) {
+    function formatCurrency(value) {
+        return new Intl.NumberFormat('vi-VN').format(value) + '₫';
+    }
+
+    function updateTotals() {
+        let subtotal = 0;
+        document.querySelectorAll('tbody tr').forEach(row => {
+            const input = row.querySelector('.quantity-input');
+            const price = parseInt(input.dataset.price);
+            const qty = parseInt(input.value);
+            const itemTotal = price * qty;
+            row.querySelector('.item-total').textContent = formatCurrency(itemTotal);
+            subtotal += itemTotal;
+        });
+        document.getElementById('subtotal').textContent = formatCurrency(subtotal);
+        document.getElementById('total').textContent = formatCurrency(subtotal);
+    }
+
+    // Cập nhật số lượng bằng AJAX
+    document.querySelectorAll('.quantity-input').forEach(input => {
         input.addEventListener('change', function () {
-            this.closest('form').submit();
+            const qty = this.value;
+            const cartId = this.dataset.id;
+            const row = this.closest('tr');
+
+            fetch(`/client/cart/update-quantity/${cartId}`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        'X-Requested-With': 'XMLHttpRequest'
+    },
+    body: JSON.stringify({
+        quantity: qty
+    })
+})
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const totalCell = row.querySelector('.item-total');
+                    totalCell.textContent = formatCurrency(data.item_total);
+                    updateTotals();
+                } else {
+                    alert(data.message || 'Cập nhật thất bại.');
+                }
+            })
+            .catch(err => {
+                alert('Lỗi mạng!');
+                console.error(err);
+            });
         });
     });
 
-    document.getElementById('check-all').addEventListener('change', function () {
-        const checked = this.checked;
-        document.querySelectorAll('.item-checkbox').forEach(function (checkbox) {
-            checkbox.checked = checked;
+  document.addEventListener('DOMContentLoaded', function () {
+    const checkAll = document.getElementById('check-all');
+    if (checkAll) {
+        checkAll.addEventListener('change', function () {
+            const checked = this.checked;
+            document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = checked);
         });
-    });
+    }
+});
+
+
+    updateTotals();
 </script>
 @endsection

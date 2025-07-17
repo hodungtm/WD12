@@ -34,6 +34,7 @@ public function index()
 public function addToCart(Request $request, $productId)
 {
     $product = Products::findOrFail($productId);
+    $productId = $request->input('product_id');
     $variantId = $request->input('variant_id');
     $quantity = (int) $request->input('quantity', 1);
     $userId = Auth::id();
@@ -72,19 +73,32 @@ public function addToCart(Request $request, $productId)
             'quantity'   => $quantity,
         ]);
     }
+    return redirect()->route('client.cart.index')
+        ->with('success', 'Đã thêm vào giỏ hàng.');
 
-    return redirect()->route('client.cart.index')->with('success', 'Đã thêm vào giỏ hàng.');
 }
 
 
-   public function updateQuantity(Request $request, $id)
+public function updateQuantityAjax(Request $request, $id)
 {
-    $cartItem = Cart::where('id', $id)->firstOrFail();
-    $cartItem->update([
-        'quantity' => $request->input('quantity')
+    $cartItem = Cart::where('id', $id)->where('user_id', Auth::id())->first();
+    if (!$cartItem) {
+        return response()->json(['status' => 'error', 'message' => 'Không tìm thấy sản phẩm'], 404);
+    }
+
+    $qty = max(1, (int) $request->input('quantity'));
+    $cartItem->quantity = $qty;
+    $cartItem->save();
+
+    $itemTotal = $cartItem->variant->price * $qty;
+
+    return response()->json([
+        'status' => 'success',
+        'item_total' => $itemTotal
     ]);
-    return back()->with('success', 'Cập nhật số lượng thành công.');
 }
+
+
 
 public function remove($id)
 {

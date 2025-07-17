@@ -49,7 +49,7 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::prefix('cart')->name('cart.')->group(function () {
             Route::get('/', [CartController::class, 'index'])->name('index'); // client.cart.index
             Route::post('/add/{productId}', [CartController::class, 'addToCart'])->name('add'); // client.cart.add
-            Route::post('/update/{id}', [CartController::class, 'updateQuantity'])->name('update'); // client.cart.update
+            Route::post('/update-quantity/{id}', [CartController::class, 'updateQuantityAjax']);
             Route::delete('/remove/{id}', [CartController::class, 'remove'])->name('remove'); // client.cart.remove
         });
         // Thanh toán
