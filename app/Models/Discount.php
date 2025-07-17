@@ -3,11 +3,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Discount extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     // Nếu muốn Laravel tự cast các trường ngày tháng
     protected $dates = ['start_date', 'end_date', 'deleted_at'];

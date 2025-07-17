@@ -8,18 +8,7 @@ use Illuminate\Support\Facades\Storage;
 class PostController extends Controller
 {
 
-    public function deleteSelected(Request $request)
-{
-    $ids = $request->input('selected_posts');
-
-    if (!$ids || count($ids) == 0) {
-        return redirect()->back()->with('error', 'Bạn chưa chọn bài viết nào để xóa.');
-    }
-
-    Post::whereIn('id', $ids)->delete();
-
-    return redirect()->route('posts.index')->with('success', 'Đã xóa các bài viết đã chọn thành công.');
-}
+    // Đã xóa hàm deleteSelected
 
    public function index(Request $request)
 {

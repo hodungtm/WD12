@@ -17,7 +17,7 @@
 
     <!-- Mobile Specific Metas -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Theme Style -->
     <link rel="stylesheet" type="text/css" href="{{ asset('css/animate.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/animation.css') }}">
@@ -756,10 +756,10 @@
                                             id="dropdownMenuButton3" data-bs-toggle="dropdown" aria-expanded="false">
                                             <span class="header-user wg-user">
                                                 <span class="image">
-                                                    <img src="{{ asset('images/avatar/avata.jpg') }}" alt="">
+                                                    <img src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : asset('images/avatar/avata.jpg') }}" alt="" style="width:40px;height:40px;object-fit:cover;">
                                                 </span>
                                                 <span class="flex flex-column">
-                                                    <span class="body-text text-main-dark">Quang Thiện</span>
+                                                    <span class="body-text text-main-dark">{{ Auth::user()->name }}</span>
                                                     <span class="text-tiny">Quản trị viên bán hàng</span>
                                                 </span>
                                             </span>
@@ -864,7 +864,7 @@
     <!-- Javascript -->
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+    {{-- <script src="{{ asset('js/bootstrap.min.js') }}"></script> --}}
     <script src="{{ asset('js/bootstrap-select.min.js') }}"></script>
     <script src="{{ asset('js/zoom.js') }}"></script>
     <script src="{{ asset('js/morris.min.js') }}"></script>

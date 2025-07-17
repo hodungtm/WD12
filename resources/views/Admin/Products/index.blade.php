@@ -16,20 +16,54 @@
                     <i class="icon-book-open"></i>
                     <div class="body-text">Tìm kiếm sản phẩm theo tên hoặc lọc theo danh mục.</div>
                 </div>
-                <div class="flex items-center justify-between gap10 flex-wrap mb-3">
-                    <div class="wg-filter flex-grow">
-                        <form method="GET" action="{{ route('products.index') }}" class="form-search mt-2">
-                            <fieldset class="name">
-                                <input type="text" placeholder="Tìm kiếm sản phẩm..." name="search" value="{{ request('search') }}">
-                            </fieldset>
-                            <div class="button-submit">
-                                <button type="submit"><i class="icon-search"></i></button>
-                            </div>
-                        </form>
+                <div class="flex flex-column gap10 mb-3">
+                    <form method="GET" action="{{ route('products.index') }}" class="form-search w-100" style="margin-bottom: 10px;">
+                        <div class="search-input" style="width: 100%; position: relative;">
+                            <input type="text" placeholder="Tìm kiếm sản phẩm..." name="search" value="{{ request('search') }}" style="width: 100%; min-width: 200px;">
+                            <button type="submit" class="btn d-flex align-items-center justify-content-center" style="height: 38px; width: 38px; padding: 0; border: 1.5px solid #1abc9c; background: #fff; position: absolute; right: 5px; top: 50%; transform: translateY(-50%);">
+                                <i class="icon-search" style="font-size: 18px; margin: 0; color: #1abc9c;"></i>
+                            </button>
+                        </div>
+                    </form>
+                    <div class="flex items-center justify-between gap10 flex-wrap">
+                        <div class="flex gap10 flex-wrap align-items-center">
+                            <form method="GET" action="{{ route('products.index') }}" class="flex gap10 flex-wrap align-items-center" style="margin-bottom: 0;">
+                                <input type="hidden" name="search" value="{{ request('search') }}">
+                                <select name="category_id" class="form-select" style="width: 150px;">
+                                    <option value="">-- Danh mục --</option>
+                                    @foreach($categories as $cat)
+                                        <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->ten_danh_muc }}</option>
+                                    @endforeach
+                                </select>
+                                <select name="status" class="form-select" style="width: 120px;">
+                                    <option value="">-- Trạng thái --</option>
+                                    <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Hiển thị</option>
+                                    <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Ẩn</option>
+                                </select>
+                                <select name="sort_created" class="form-select" style="width: 120px;">
+                                    <option value="">-- Ngày tạo --</option>
+                                    <option value="desc" {{ request('sort_created') === 'desc' ? 'selected' : '' }}>Mới nhất</option>
+                                    <option value="asc" {{ request('sort_created') === 'asc' ? 'selected' : '' }}>Cũ nhất</option>
+                                </select>
+                                <select name="sort_price" class="form-select" style="width: 120px;">
+                                    <option value="">-- Giá --</option>
+                                    <option value="asc" {{ request('sort_price') === 'asc' ? 'selected' : '' }}>Tăng dần</option>
+                        color: ;    <option value="desc" {{ request('sort_price') === 'desc' ? 'selected' : '' }}>Giảm dần</option>
+                                </select>
+                                <button type="submit" class="btn d-flex align-items-center justify-content-center" style="height: 38px; width: 38px; padding: 0; border: 1.5px solid #1abc9c; background: #fff;">
+                                    <i class="icon-filter" style="font-size: 18px; margin: 0; color: #1abc9c;"></i>
+                                </button>
+                            </form>
+                        </div>
+                        <div class="flex gap10">
+                            <a href="{{ route('products.create') }}" class="tf-button style-1 w200">
+                                <i class="icon-plus"></i> Thêm sản phẩm
+                            </a>
+                            <a href="{{ route('trash') }}" class="tf-button style-1 w150 btn btn-outline-danger">
+                                <i class="icon-trash-2"></i> Thùng rác
+                            </a>
+                        </div>
                     </div>
-                    <a href="{{ route('products.create') }}" class="tf-button style-1 w200">
-                        <i class="icon-plus"></i> Thêm sản phẩm
-                    </a>
                 </div>
                 <div class="wg-table table-product-list mt-3">
                     <ul class="table-title flex mb-14" style="gap: 2px;">
@@ -71,7 +105,7 @@
                                         {{ $product->status == 1 ? 'Hiển thị' : 'Ẩn' }}
                                     </div>
                                 </div>
-                                <div class="body-text mt-4" style="flex-basis: 120px;">{{ $product->created_at->format('d/m/Y H:i') }}</div>
+                                <div class="body-text mt-4" style="flex-basis: 120px;">{{ $product->created_at ? $product->created_at->format('d/m/Y H:i') : 'N/A' }}</div>
                                 <div class="list-icon-function" style="flex-basis: 120px;">
                                     <a href="{{ route('products.show', $product->id) }}" class="item eye"><i class="icon-eye"></i></a>
                                     <a href="{{ route('products.edit', $product->id) }}" class="item edit"><i class="icon-edit-3"></i></a>
@@ -79,7 +113,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" style="color: red" title="Xóa sản phẩm">
-                                            <i class="icon-trash"></i>
+                                            <i class="icon-trash" style="color: red; font-size: 20px;"></i>
                                         </button>
                                     </form>
                                 </div>

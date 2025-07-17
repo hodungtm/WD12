@@ -17,20 +17,46 @@ class ProductsController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $category_id = $request->input('category_id');
+        $status = $request->input('status');
+        $sort_created = $request->input('sort_created');
+        $sort_price = $request->input('sort_price');
 
         $query = Products::with(['category', 'images', 'variants.size', 'variants.color'])
-            ->orderBy('created_at', 'desc');
+            ->when($search, function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                  ->orWhereHas('category', function ($q2) use ($search) {
+                      $q2->where('ten_danh_muc', 'like', "%$search%")
+                        ->orWhere('name', 'like', "%$search%") ;
+                  });
+            })
+            ->when($category_id, function ($q) use ($category_id) {
+                $q->where('category_id', $category_id);
+            })
+            ->when($status !== null && $status !== '', function ($q) use ($status) {
+                $q->where('status', $status);
+            });
 
-        if ($search) {
-            $query->where('name', 'like', "%$search%")
-                ->orWhereHas('category', function ($q) use ($search) {
-                    $q->where('name', 'like', "%$search%");
-                });
+        // Sắp xếp theo ngày tạo
+        if ($sort_created === 'asc') {
+            $query->orderBy('created_at', 'asc');
+        } elseif ($sort_created === 'desc') {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        // Sắp xếp theo giá (min price của variants)
+        if ($sort_price) {
+            $query->withMin('variants', 'price');
+            if ($sort_price === 'asc') {
+                $query->orderBy('variants_min_price', 'asc');
+            } elseif ($sort_price === 'desc') {
+                $query->orderBy('variants_min_price', 'desc');
+            }
         }
 
         $products = $query->paginate(10)->appends($request->query());
-
-        return view('admin.products.index', compact('products'));
+        $categories = \App\Models\Category::all();
+        return view('admin.products.index', compact('products', 'categories'));
     }
 
     public function admin()
@@ -204,12 +230,21 @@ class ProductsController extends Controller
 
 
       public function softDelete($id)
-{
-    $product = Products::findOrFail($id);
-    $product->status = 0; // Đổi trạng thái sang "đã xóa" hoặc "ẩn"
-    $product->save();
+    {
+        $product = Products::findOrFail($id);
+        $product->status = 0; // Đổi trạng thái sang "đã xóa" hoặc "ẩn"
+        $product->save();
+        $product->delete(); // Thực hiện xóa mềm thực sự
 
-    return redirect()->route('products.index')->with('success', 'Xóa mềm Thành Công.');
+        return redirect()->route('products.index')->with('success', 'Xóa mềm Thành Công.');
+    }
+public function trash()
+{
+    // Lấy danh sách sản phẩm đã xóa mềm, phân trang 10 sản phẩm/trang
+    $products = Products::onlyTrashed()->paginate(10);
+
+    // Trả về view đã có sẵn, truyền biến $products vào
+    return view('Admin.Products.trash', compact('products'));
 }
 
     public function destroyImage($id)
@@ -223,5 +258,25 @@ class ProductsController extends Controller
         $image->delete();
 
         return back()->with('success', 'Ảnh đã được xóa');
+    }
+
+    // Khôi phục sản phẩm đã xóa mềm
+    public function restore($id)
+    {
+        $product = Products::onlyTrashed()->findOrFail($id);
+        $product->restore();
+        $product->status = 1; // Hiển thị lại sản phẩm
+        $product->save();
+
+        return redirect()->route('trash')->with('success', 'Khôi phục sản phẩm thành công!');
+    }
+
+    // Xóa vĩnh viễn sản phẩm
+    public function forceDelete($id)
+    {
+        $product = Products::onlyTrashed()->findOrFail($id);
+        $product->forceDelete();
+
+        return redirect()->route('trash')->with('success', 'Đã xóa vĩnh viễn sản phẩm!');
     }
 }

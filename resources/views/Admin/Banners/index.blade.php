@@ -2,336 +2,123 @@
 @section('title', 'Danh sách banner | Quản trị Admin')
 
 @section('main')
-    <div class="main-content-inner" style="padding-top: 10px; margin-top: 0;">
-        <div class="main-content-wrap" style="padding-top: 0; margin-top: 0;">
-            <!-- Tiêu đề + breadcrumb -->
-            <div class="flex items-center flex-wrap justify-between gap20 mb-30">
-                <h3>Danh sách banner</h3>
-                <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-                    <li><a href="#">
-                            <div class="text-tiny">Dashboard</div>
-                        </a></li>
-                    <li><i class="icon-chevron-right"></i></li>
-                    <li>
-                        <div class="text-tiny">Banner</div>
-                    </li>
-                </ul>
-
-            </div>
-
-            @if (session('success'))
-                <div class="alert alert-success" id="success-alert">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-
-            <div class="wg-box">
-                <!-- Dòng hướng dẫn tìm kiếm -->
-                <div class="flex items-center gap10 mb-3" style="color:#1abc9c; font-size:16px;">
-                    <i class="icon-coffee" style="font-size:20px;"></i>
-                    <span>Tip: Bạn có thể tìm kiếm banner theo <b>tiêu đề</b> hoặc dùng <b>bộ lọc</b> để lọc nhanh banner.</span>
-                </div>
-
-                <form method="GET" action="{{ route('admin.banners.index') }}"
-                    class="flex flex-wrap gap-3 mb-4 align-items-center">
-                    <div class="flex items-center gap10">
-                        <label for="per_page" class="text-tiny" style="color:#222;">Hiển thị</label>
-                        <select name="per_page" id="per_page" class="form-select" style="width: 70px;"
-                            onchange="this.form.submit()">
-                            @foreach ([5, 10, 20] as $num)
-                                <option value="{{ $num }}" {{ request('per_page', 5) == $num ? 'selected' : '' }}>
-                                    {{ $num }}</option>
-                            @endforeach
-                        </select>
-                        <span class="text-tiny" style="color:#222;">dòng</span>
-                    </div>
-                    <input type="text" name="search" class="form-control" placeholder="Tìm tiêu đề..."
-                        value="{{ request('search') }}" style="min-width: 200px; max-width: 300px;">
-                    <select name="loai_banner" class="form-select" style="width: 150px;">
-                        <option value="">Loại banner</option>
-                        <option value="slider" {{ request('loai_banner') == 'slider' ? 'selected' : '' }}>Slider</option>
-                        <option value="footer" {{ request('loai_banner') == 'footer' ? 'selected' : '' }}>Footer</option>
-                    </select>
-                    <select name="trang_thai" class="form-select" style="width: 150px;">
-                        <option value="">Trạng thái </option>
-                        <option value="hien" {{ request('trang_thai') == 'hien' ? 'selected' : '' }}>Hiển thị</option>
-                        <option value="an" {{ request('trang_thai') == 'an' ? 'selected' : '' }}>Ẩn</option>
-                    </select>
-                    <button class="tf-button style-1 " type="submit" style="padding: 4px 12px; font-size: 10px;">
-                        <i class="icon-search me-1" style="font-size: 10px;"></i> Tìm kiếm
-                    </button>
-                    <a href="{{ route('admin.banners.create') }}" class="tf-button style-1"
-                        style="padding: 4px 12px; font-size: 10px;">
-                        <i class="icon-plus me-1" style="font-size: 10px;"></i> Thêm banner
-                    </a>
-                </form>
-
-                <div class="wg-table table-all-user">
-                    <!-- Tiêu đề bảng -->
-                    <ul class="table-title flex gap0 mb-14 table-row-align">
-                        <li class="col-id">
-                            <div class="body-title">ID</div>
-                        </li>
-                        <li class="col-title">
-                            <div class="body-title">Tiêu đề</div>
-                        </li>
-                        <li class="col-images">
-                            <div class="body-title">Ảnh</div>
-                        </li>
-                        <li class="col-type">
-                            <div class="body-title">Loại banner</div>
-                        </li>
-                        <li class="col-status">
-                            <div class="body-title">Trạng thái</div>
-                        </li>
-                        <li class="col-action">
-                            <div class="body-title">Hành động</div>
-                        </li>
-                    </ul>
-
-                    @forelse ($banners as $banner)
-                        <ul class="user-item flex gap0 mb-0 table-row-align" style="border-bottom:1px solid #f2f2f2;">
-                            <li class="col-id">{{ $banner->id }}</li>
-                            <li class="col-title">{{ $banner->tieu_de }}</li>
-                            <li class="col-images">
-                                @if ($banner->hinhAnhBanner && $banner->hinhAnhBanner->count())
-                                    @foreach ($banner->hinhAnhBanner as $img)
-                                        <img src="{{ asset('storage/' . $img->hinh_anh) }}" alt="ảnh banner"
-                                            style="max-width: 60px; max-height: 60px; border-radius: 4px;">
-                                    @endforeach
-                                @else
-                                    <span class="text-muted">Chưa có ảnh</span>
-                                @endif
-                            </li>
-                            <li class="col-type">{{ $banner->loai_banner }}</li>
-                            <li class="col-status">
-                                @if ($banner->trang_thai === 'hien')
-                                    <span class="badge-status badge-instock">Hiển thị</span>
-                                @else
-                                    <span class="badge-status badge-outstock">Ẩn</span>
-                                @endif
-                            </li>
-                            <li class="col-action">
-                                <a href="{{ route('admin.banners.show', $banner->id) }}" title="Xem"
-                                    class="action-icon"><i class="icon-eye"></i></a>
-                                <a href="{{ route('admin.banners.edit', $banner->id) }}" title="Sửa"
-                                    class="action-icon edit"><i class="icon-edit-3"></i></a>
-                                <form action="{{ route('admin.banners.destroy', $banner->id) }}" method="POST"
-                                    class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa banner này?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" title="Xóa" class="action-icon" style="color: #e74c3c;"><i
-                                            class="icon-trash-2"></i></button>
-                                </form>
-                            </li>
-                        </ul>
-                    @empty
-                        <div class="text-muted px-3">Chưa có banner nào.</div>
-                    @endforelse
-                </div>
-
-                <!-- Phân trang -->
-                <div class="divider"></div>
-                <div class="flex justify-between align-items-center mt-3">
-                    <div class="text-tiny">Tổng: {{ $banners->total() }} banner</div>
-                    <div>
-                        {{ $banners->links('pagination::bootstrap-4') }}
-                    </div>
-                </div>
-            </div>
+<div class="main-content-inner">
+  <div class="main-content-wrap">
+    <div class="flex items-center flex-wrap justify-between gap20 mb-30">
+      <div class="title-box flex items-center gap10">
+        <i class="icon-image" style="font-size: 32px; color: #1abc9c;"></i>
+        <div>
+          <h3 style="margin-bottom:2px;">Quản lý Banner</h3>
+          <div class="body-text text-muted" style="font-size:15px;">Quản lý các banner quảng cáo trên hệ thống</div>
         </div>
+      </div>
+      <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+        <li><a href="{{ route('admin.dashboard') }}"><div class="text-tiny">Dashboard</div></a></li>
+        <li><i class="icon-chevron-right"></i></li>
+        <li><div class="text-tiny">Banner</div></li>
+      </ul>
     </div>
-
+    <div class="wg-box">
+      <div class="title-box mb-2">
+        <i class="icon-book-open"></i>
+        <div class="body-text">Tìm kiếm banner theo tiêu đề, loại hoặc trạng thái.</div>
+      </div>
+      <div class="flex flex-column gap10 mb-3">
+        <form method="GET" action="{{ route('admin.banners.index') }}" class="form-search w-100" style="margin-bottom: 10px;">
+          <div class="search-input" style="width: 100%; position: relative;">
+            <input type="text" placeholder="Tìm kiếm banner..." name="search" value="{{ request('search') }}" style="width: 100%; min-width: 200px;">
+            <button type="submit" class="btn d-flex align-items-center justify-content-center" style="height: 38px; width: 38px; padding: 0; border: 1.5px solid #1abc9c; background: #fff; position: absolute; right: 5px; top: 50%; transform: translateY(-50%);">
+              <i class="icon-search" style="font-size: 18px; margin: 0; color: #1abc9c;"></i>
+            </button>
+          </div>
+        </form>
+        <div class="flex items-center justify-between gap10 flex-wrap">
+          <div class="flex gap10 flex-wrap align-items-center">
+            <form method="GET" action="{{ route('admin.banners.index') }}" class="flex gap10 flex-wrap align-items-center" style="margin-bottom: 0;">
+              <input type="hidden" name="search" value="{{ request('search') }}">
+              <select name="loai_banner" class="form-select" style="width: 150px;">
+                <option value="">-- Loại banner --</option>
+                @foreach($loaiBanners as $loai)
+                  <option value="{{ $loai }}" {{ request('loai_banner') == $loai ? 'selected' : '' }}>{{ $loai }}</option>
+                @endforeach
+              </select>
+              <select name="trang_thai" class="form-select" style="width: 120px;">
+                <option value="">-- Trạng thái --</option>
+                <option value="hien" {{ request('trang_thai') == 'hien' ? 'selected' : '' }}>Hiện</option>
+                <option value="an" {{ request('trang_thai') == 'an' ? 'selected' : '' }}>Ẩn</option>
+              </select>
+              <select name="per_page" class="form-select" style="width: 110px;">
+                <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10 dòng</option>
+                <option value="20" {{ request('per_page', 10) == 20 ? 'selected' : '' }}>20 dòng</option>
+                <option value="50" {{ request('per_page', 10) == 50 ? 'selected' : '' }}>50 dòng</option>
+                <option value="100" {{ request('per_page', 10) == 100 ? 'selected' : '' }}>100 dòng</option>
+              </select>
+              <button type="submit" class="btn d-flex align-items-center justify-content-center" style="height: 38px; width: 38px; padding: 0; border: 1.5px solid #1abc9c; background: #fff;">
+                <i class="icon-filter" style="font-size: 18px; margin: 0; color: #1abc9c;"></i>
+              </button>
+            </form>
+          </div>
+          <div class="flex gap10">
+            <a class="tf-button style-1 w200" href="{{ route('admin.banners.create') }}">
+              <i class="icon-plus"></i> Thêm banner
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="wg-table table-product-list mt-3">
+        <ul class="table-title flex mb-14" style="gap:2px;">
+          <li style="flex-basis: 60px; text-align:center;"><div class="body-title">ID</div></li>
+          <li style="flex-basis: 220px; text-align:center;"><div class="body-title">Tiêu đề</div></li>
+          <li style="flex-basis: 180px; text-align:center;"><div class="body-title">Ảnh</div></li>
+          <li style="flex-basis: 140px; text-align:center;"><div class="body-title">Loại banner</div></li>
+          <li style="flex-basis: 120px; text-align:center;"><div class="body-title">Trạng thái</div></li>
+          <li style="flex-basis: 140px; text-align:center;"><div class="body-title">Hành động</div></li>
+        </ul>
+        <ul class="flex flex-column">
+          @forelse ($banners as $banner)
+          <li class="wg-product item-row" style="gap:2px; align-items:center; border-bottom:1px solid #f0f0f0;">
+            <div class="body-text mt-4" style="flex-basis: 60px; text-align:center;">#{{ $banner->id }}</div>
+            <div class="body-text mt-4" style="flex-basis: 220px; text-align:center;">{{ $banner->tieu_de }}</div>
+            <div style="flex-basis: 180px; text-align:center;">
+              @if ($banner->hinhAnhBanner && $banner->hinhAnhBanner->count())
+                <div class="flex gap5 justify-center flex-wrap">
+                  @foreach ($banner->hinhAnhBanner as $img)
+                    <img src="{{ asset('storage/' . $img->hinh_anh) }}" alt="ảnh banner" style="max-width: 60px; max-height: 60px; border-radius: 8px; margin-right: 3px; margin-bottom: 2px; border:1px solid #eee; transition:0.2s; cursor:pointer;" onmouseover="this.style.transform='scale(1.12)'" onmouseout="this.style.transform='scale(1)'">
+                  @endforeach
+                </div>
+              @else
+                <span class="text-muted">Chưa có ảnh</span>
+              @endif
+            </div>
+            <div class="body-text mt-4" style="flex-basis: 140px; text-align:center;">{{ $banner->loai_banner }}</div>
+            <div style="flex-basis: 120px; text-align:center;">
+              <div class="{{ $banner->trang_thai === 'hien' ? 'block-available' : 'block-stock' }} bg-1 fw-7" style="display: inline-block; min-width: 80px; text-align: center; border-radius: 8px; padding: 6px 18px; font-size: 15px; font-weight: 600; background: #f3f7f6; color: {{ $banner->trang_thai === 'hien' ? '#1abc9c' : '#e67e22' }}; letter-spacing: 0.5px; vertical-align: middle; margin-top: 2px;">
+                {{ $banner->trang_thai === 'hien' ? 'Hiện' : 'Ẩn' }}
+              </div>
+            </div>
+            <div class="list-icon-function flex justify-center gap10" style="flex-basis: 140px;">
+              <a href="{{ route('admin.banners.show', $banner->id) }}" class="item eye" title="Xem"><i class="icon-eye"></i></a>
+              <a href="{{ route('admin.banners.edit', $banner->id) }}" class="item edit" title="Sửa"><i class="icon-edit-3"></i></a>
+              <form action="{{ route('admin.banners.destroy', $banner->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa banner này không?');" style="display:inline;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" style="color: red" title="Xóa banner">
+                  <i class="icon-trash" style="color: red; font-size: 20px;"></i>
+                </button>
+              </form>
+            </div>
+          </li>
+          @empty
+          <li class="text-center text-muted py-3">Chưa có banner nào.</li>
+          @endforelse
+        </ul>
+      </div>
+      <div class="divider"></div>
+      <div class="flex items-center justify-between flex-wrap gap10">
+        <div class="text-tiny">Hiển thị từ {{ $banners->firstItem() }} đến {{ $banners->lastItem() }} trong tổng số {{ $banners->total() }} banner</div>
+        {{ $banners->appends(request()->query())->links('pagination::bootstrap-5') }}
+      </div>
+    </div>
+  </div>
+</div>
 @endsection
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const alertBox = document.getElementById('success-alert');
-        if (alertBox) {
-            setTimeout(() => {
-                alertBox.classList.add('fade');
-                alertBox.style.transition = "opacity 0.5s";
-                alertBox.style.opacity = 0;
-                setTimeout(() => alertBox.remove(), 500);
-            }, 3000);
-        }
-    });
-</script>
-
-<style>
-    /* Cấu trúc bảng */
-    .table-title,
-    .user-item {
-        width: 100%;
-    }
-
-    .table-title li,
-    .user-item li {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        padding: 14px 10px;
-        font-size: 16px;
-        box-sizing: border-box;
-        word-break: break-word;
-        background: none;
-        border: none;
-        min-height: 48px;
-    }
-
-    .table-row-align {
-        align-items: stretch !important;
-    }
-
-    /* Các cột */
-    .col-id {
-        flex: 0.5 0 40px;
-        min-width: 40px;
-        justify-content: flex-start;
-    }
-
-    .col-title {
-        flex: 1.8 0 140px;
-        min-width: 140px;
-        justify-content: flex-start;
-    }
-
-    .col-images {
-        flex: 2.5 0 200px;
-        min-width: 200px;
-        justify-content: flex-start;
-        display: flex;
-        gap: 6px;
-        flex-wrap: wrap;
-    }
-
-    .col-type {
-        flex: 1.2 0 140px;
-        min-width: 140px;
-        justify-content: flex-start;
-    }
-
-    .col-status {
-        flex: 1.2 0 140px;
-        min-width: 140px;
-        justify-content: flex-start;
-    }
-
-    .col-action {
-        flex: 1.2 0 120px;
-        min-width: 120px;
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        justify-content: flex-start;
-    }
-
-    /* Badge trạng thái */
-    .badge-status {
-        display: inline-block;
-        padding: 6px 18px;
-        border-radius: 8px;
-        font-size: 15px;
-        font-weight: 600;
-        background: #f3f7f6;
-        color: #1abc9c;
-        letter-spacing: 0.5px;
-        vertical-align: middle;
-        margin-top: 2px;
-    }
-
-    .badge-instock {
-        background: #f3f7f6;
-        color: #1abc9c;
-    }
-
-    .badge-outstock {
-        background: #fbeee7;
-        color: #e67e22;
-    }
-
-    /* Ảnh banner */
-    .col-images img {
-        max-width: 80px;
-        max-height: 80px;
-        border-radius: 6px;
-        border: 1px solid #ddd;
-    }
-
-    /* Icon hành động */
-    .action-icon {
-        color: #2d9cdb;
-        font-size: 20px;
-        margin-right: 8px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transition: color 0.2s;
-    }
-
-    .action-icon.edit {
-        color: #f7b731;
-        margin-right: 0;
-    }
-
-    /* Breadcrumb */
-    .breadcrumbs .text-tiny {
-        font-size: 13px;
-        color: #999;
-    }
-
-    .breadcrumbs li i {
-        color: #ccc;
-    }
-
-    /* Responsive & căn chỉnh */
-    @media (max-width: 1200px) {
-        .col-title {
-            min-width: 120px;
-        }
-
-        .col-images {
-            min-width: 150px;
-        }
-    }
-
-    @media (max-width: 900px) {
-
-        .table-title li,
-        .user-item li {
-            font-size: 15px;
-        }
-
-        .col-images {
-            min-width: 120px;
-        }
-    }
-
-    /* Giao diện layout chính */
-    /* html, */
-    /* body {
-        height: auto !important;
-        overflow-y: auto !important;
-        overflow-x: hidden !important;
-    } */
-
-    /* .main-content-inner,
-    .main-content-wrap {
-        overflow: visible !important;
-        min-height: 100vh;
-    }
-
-    .wg-box {
-        overflow: visible;
-    } */
-    html, body {
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    height: auto !important;
-}
-
-* {
-    overflow: visible !important;
-}
-
-</style>

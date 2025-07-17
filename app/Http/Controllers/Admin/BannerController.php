@@ -43,7 +43,16 @@ class BannerController extends Controller
                      ->paginate($perPage)
                      ->appends($request->query());
 
-    return view('admin.banners.index', compact('banners'));
+    // Nếu lấy từ DB (giả sử cột loai_banner là enum hoặc có danh sách cố định)
+    $loaiBanners = Banner::distinct()->pluck('loai_banner')->filter()->values();
+
+    // Hoặc hardcode nếu chỉ có vài loại cố định
+    $loaiBanners = ['Slider', 'Sidebar', 'Popup', 'Top', 'Bottom'];
+
+    return view('admin.banners.index', [
+        'banners' => $banners,
+        'loaiBanners' => $loaiBanners,
+    ]);
 }
 
 

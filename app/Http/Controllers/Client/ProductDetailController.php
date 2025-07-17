@@ -19,7 +19,7 @@ class ProductDetailController extends Controller
     public function show($id)
     {
         $product = Products::with('images', 'variants.size', 'variants.color')->findOrFail($id);
-        $reviews = Review::with('user')->where('product_id', $id)->latest()->get();
+        $reviews = Review::with('user')->where('product_id', $id)->where('trang_thai', 1)->latest()->get();
         $comments = Comment::where('product_id', $product->id)
             ->whereNull('deleted_at')
             ->where('trang_thai', 1)
@@ -29,23 +29,23 @@ class ProductDetailController extends Controller
             ->with(['size', 'color'])
             ->get();
 
-        $canReview = false;
-        $user = Auth::user();
-        if ($user) {
-            $hasPurchased = Order::where('user_id', $user->id)
-                ->where('status', 'Hoàn thành')
-                ->whereHas('orderItems', function($q) use ($product) {
-                    $q->where('product_id', $product->id);
-                })->exists();
-            if ($hasPurchased) {
-                $review = Review::where('product_id', $product->id)
-                    ->where('ma_nguoi_dung', $user->id)
-                    ->first();
-                if (!$review) {
-                    $canReview = true;
+            $user = Auth::user();
+
+            $hasPurchased = false;
+            $hasReviewed = false;
+    
+            if ($user) {
+                $hasPurchased = Order::where('user_id', $user->id)
+                    ->where('status', 'Hoàn thành')
+                    ->whereHas('orderItems', fn($q) => $q->where('product_id', $id))
+                    ->exists();
+    
+                if ($hasPurchased) {
+                    $hasReviewed = Review::where('product_id', $id)
+                        ->where('ma_nguoi_dung', $user->id)
+                        ->exists();
                 }
             }
-        }
 
         // Lấy 5 sản phẩm liên quan cùng danh mục, mới nhất trước, loại trừ sản phẩm đang xem
         $relatedProducts = Products::where('category_id', $product->category_id)
@@ -54,8 +54,8 @@ class ProductDetailController extends Controller
             ->take(5)
             ->with(['images', 'variants', 'category', 'reviews'])
             ->get();
-
-        return view('Client.Product.productDetail', compact('product', 'reviews', 'comments', 'productVariants', 'canReview', 'relatedProducts'));
+       
+        return view('Client.Product.productDetail', compact('product', 'reviews', 'comments', 'productVariants', 'hasPurchased','hasReviewed', 'relatedProducts'));
     }
 
     public function submitReview(Request $request, $id)

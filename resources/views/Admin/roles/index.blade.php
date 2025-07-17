@@ -64,7 +64,7 @@
                                     <td>{{ $role->id }}</td>
                                     <td>{{ $role->name }}</td>
                                     <td>{{ $role->description ?? '-' }}</td>
-                                    <td>{{ $role->created_at->format('d/m/Y H:i') }}</td>
+                                    <td>{{ $role->created_at ? $role->created_at->format('d/m/Y H:i') : 'N/A' }}</td>
                                     <td>
                                         <a href="{{ route('admin.roles.edit', $role) }}" class="btn btn-primary btn-sm" title="Sửa">
                                             <i class="fas fa-edit"></i>

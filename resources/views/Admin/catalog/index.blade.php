@@ -14,7 +14,6 @@
         <li>
             <div class="text-tiny">Size & Color</div>
         </li>
-
     </ul>
 </div>
 
@@ -22,21 +21,21 @@
 <div class="row">
     <div class="col-md-12">
         <div class="wg-box">
-            <div class="p-4"> 
+            <div class="p-4">
 
                 <div class="row g-4">
-                    <div class="col-md-6">
+                    <div class="col-12">
 
                         <h3 class="mb-3">Danh sách Size</h3>
 
                         <form method="POST" action="{{ route('catalog.size.store') }}" class="form-style-1 mb-4">
                             @csrf
                             <fieldset class="name">
-                                <div class="body-title visually-hidden">Thêm Size</div> 
-                                <div class="input-group"> 
-                                    <input type="text" name="name" class="flex-grow" placeholder="Tên Size..." aria-required="true" required>
+                                <div class="body-title visually-hidden">Thêm Size</div>
+                                <div class="input-group d-flex"> {{-- THAY ĐỔI: Thêm d-flex --}}
+                                    <input type="text" name="name" class="form-control me-2" placeholder="Tên Size..." aria-required="true" required> {{-- THAY ĐỔI: Bỏ flex-grow, thêm form-control me-2 --}}
 
-                                    <button type="submit" class="tf-button" style="min-width: 120px;"> 
+                                    <button type="submit" class="tf-button" style="min-width: 120px;">
                                         <i class="fas fa-plus me-2"></i> Thêm Size
                                     </button>
                                 </div>
@@ -47,30 +46,30 @@
                         </form>
 
 
-                        <div class="wg-table table-product-list mt-3"> 
+                        <div class="wg-table table-product-list mt-3">
                             <ul class="table-title flex mb-14" style="gap: 10px;">
                                 <li style="flex-basis: 60px;"><div class="body-title">ID</div></li>
-                                <li style="flex-basis: calc(100% - 210px);"><div class="body-title">Tên Size</div></li> 
+                                <li style="flex-basis: calc(100% - 210px);"><div class="body-title">Tên Size</div></li>
                                 <li style="flex-basis: 150px;"><div class="body-title">Hành động</div></li>
                             </ul>
 
                             <ul class="flex flex-column">
                                 @foreach ($sizes as $item)
-                                    <li class="wg-product item-row" style="gap: 10px;"> 
+                                    <li class="wg-product item-row" style="gap: 10px;">
                                         <div class="body-text mt-4" style="flex-basis: 60px;">{{ $item->id }}</div>
                                         <div style="flex-basis: calc(100% - 210px);">
                                             <form method="POST" action="{{ route('catalog.size.update', $item->id) }}" class="d-flex">
                                                 @csrf
                                                 @method('PUT')
-                                                <input type="text" name="name" value="{{ $item->name }}" class="flex-grow me-2" required> 
-                                                <button type="submit" class="tf-button sm">Lưu</button> 
+                                                <input type="text" name="name" value="{{ $item->name }}" class="flex-grow me-2" required>
+                                                <button type="submit" class="tf-button sm">Lưu</button>
                                             </form>
                                         </div>
                                         <div class="list-icon-function" style="flex-basis: 150px;">
                                             <form method="POST" action="{{ route('catalog.size.destroy', $item->id) }}" onsubmit="return confirm('Bạn có chắc muốn xóa?')" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="tf-button danger sm"> 
+                                                <button type="submit" class="tf-button danger sm">
                                                     <i class="fas fa-trash-alt"></i> Xóa
                                                 </button>
                                             </form>
@@ -78,10 +77,10 @@
                                     </li>
                                 @endforeach
                             </ul>
-                        </div> 
+                        </div>
                     </div>
-
-                    <div class="col-md-6">
+                    <hr class="my-4">
+                    <div class="col-12">
 
                         <h3 class="mb-3">Danh sách Color</h3>
 
@@ -89,8 +88,8 @@
                             @csrf
                             <fieldset class="name">
                                 <div class="body-title visually-hidden">Thêm Color</div>
-                                <div class="input-group">
-                                    <input type="text" name="name" class="flex-grow" placeholder="Tên Color..." aria-required="true" required>
+                                <div class="input-group d-flex"> {{-- THAY ĐỔI: Thêm d-flex --}}
+                                    <input type="text" name="name" class="form-control me-2" placeholder="Tên Color..." aria-required="true" required> {{-- THAY ĐỔI: Bỏ flex-grow, thêm form-control me-2 --}}
 
                                     <button type="submit" class="tf-button" style="min-width: 120px;">
                                         <i class="fas fa-plus me-2"></i> Thêm Color
@@ -133,7 +132,7 @@
                                     </li>
                                 @endforeach
                             </ul>
-                        </div> 
+                        </div>
                     </div>
 
                 </div> </div>
@@ -142,4 +141,3 @@
 </div>
 
 @endsection
-

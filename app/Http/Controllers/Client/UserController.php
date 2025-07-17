@@ -17,13 +17,21 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
+            'gender' => 'nullable|in:male,female,other',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         /** @var User $user */
         $user = Auth::user();
         $user->name = $request->name;
         $user->phone = $request->phone;
-        $user->address = $request->address;
+        $user->gender = $request->gender;
+        // Xử lý upload avatar
+        if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
+            $path = $file->store('avatars', 'public');
+            $user->avatar = '/storage/' . $path;
+        }
         $user->save();
 
         return back()->with('success_info', 'Cập nhật thông tin thành công!');

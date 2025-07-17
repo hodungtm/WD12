@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Models\Post;
 use App\Models\Banner;
 use App\Models\Category;
-use App\Models\Discount;
 use App\Models\Products;
 use Illuminate\Http\Request;
 
@@ -39,6 +39,10 @@ class HomeController extends Controller
             ->orderByDesc('sold')
             ->take(10)
             ->get();
+
+       
+        
+
         // Blog/tin tức
         $posts = Post::where('status', 'published')->latest()->take(6)->get();
 
@@ -50,18 +54,19 @@ class HomeController extends Controller
             ->get();
 
         // Discount (nếu muốn dùng cho banner khuyến mãi)
-
+ 
 
         return view('Client.index', compact(
             'banners',
             'categories',
             'products',
             'trendingProducts',
-
+           
             'posts',
             'footerBanners'
-
+            
         ));
+
     }
     public function respond(Request $request)
     {
@@ -100,8 +105,7 @@ class HomeController extends Controller
     'địa chỉ' => '🤖 Shop có nhiều chi nhánh tại Hà Nội và TP.HCM. Ngoài ra, bạn có thể đặt hàng ngay trên web và giao tận nhà nhé.',
 
     'hết hàng' => '🤖 Nếu sản phẩm bạn cần đang hết, bạn có thể để lại tên và số điện thoại, shop sẽ báo ngay khi hàng về.',
-
-    'size' => '🤖 Sản phẩm có đủ size từ trẻ em đến người lớn. Nếu bạn cần tư vấn chọn size giày hoặc áo, hãy cho mình biết chiều cao và cân nặng nha.',
+'size' => '🤖 Sản phẩm có đủ size từ trẻ em đến người lớn. Nếu bạn cần tư vấn chọn size giày hoặc áo, hãy cho mình biết chiều cao và cân nặng nha.',
 
     'tư vấn' => '🤖 Bạn cần tư vấn sản phẩm nào cụ thể ạ? Giày, vợt, bóng, hay quần áo để mình hỗ trợ tốt hơn nhé.',
 
