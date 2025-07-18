@@ -49,7 +49,7 @@
                         class="col-md-4 col-xl-2 offset-xl-2 d-flex justify-content-center justify-content-lg-start my-5 my-lg-0">
                         <div class="d-flex flex-column justify-content-center">
                             <h3 class="text-left text-light text-uppercase m-0">Ưu đãi</h3>
-                            <h2 class="text-uppercase m-b-1">Giảm 20%</h2>
+                            <h2 class="text-uppercase m-b-1">{{ isset($pageTitle) ? $pageTitle : 'Cửa hàng' }}</h2>
                             <h3 class="font-weight-bold text-uppercase heading-border ml-0 m-b-3">Thể thao</h3>
                         </div>
                     </div>
