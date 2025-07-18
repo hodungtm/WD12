@@ -175,22 +175,5 @@ class OrderController extends Controller
         }
     }
 
-    public function destroy($id)
-    {
-        $order = Order::findOrFail($id);
-
-        try {
-            DB::transaction(function () use ($order) {
-                Order_items::where('order_id', $order->id)->delete();
-
-                $order->delete();
-            });
-
-            return redirect()->route('admin.orders.index')
-                ->with('success', 'Đơn hàng đã được xóa thành công!');
-        } catch (\Exception $e) {
-            return redirect()->route('admin.orders.index')
-                ->with('error', 'Có lỗi xảy ra khi xóa đơn hàng: ' . $e->getMessage());
-        }
-    }
+    
 }

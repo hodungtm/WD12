@@ -4,6 +4,7 @@
 @section('main')
 <div class="main-content-inner">
   <div class="main-content-wrap">
+    
     <div class="flex items-center flex-wrap justify-between gap20 mb-30">
       <div class="title-box flex items-center gap10">
         <i class="icon-image" style="font-size: 32px; color: #1abc9c;"></i>
@@ -18,6 +19,19 @@
         <li><div class="text-tiny">Banner</div></li>
       </ul>
     </div>
+    @if (session('success'))
+                <div class="alert"
+                    style="background: #d4edda; color: #155724; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 600;">
+                    <i class="icon-check-circle" style="margin-right: 6px;"></i> {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="alert"
+                    style="background: #f8d7da; color: #721c24; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 600;">
+                    <i class="icon-alert-triangle" style="margin-right: 6px;"></i> {{ session('error') }}
+                </div>
+            @endif
     <div class="wg-box">
       <div class="title-box mb-2">
         <i class="icon-book-open"></i>

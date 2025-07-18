@@ -143,7 +143,7 @@
                 <!-- section-menu-left -->
                 <div class="section-menu-left">
                     <div class="box-logo">
-                        <a href="index-2.html" id="site-logo-inner">
+                        <a href="{{ route('admin.dashboard') }}" id="site-logo-inner">
                             <img class="" id="logo_header" alt=""
                                 src="{{ asset('https://themesflat.co/html/ecomus/images/logo/logo.svg') }}"
                                 data-light="{{ asset('https://themesflat.co/html/ecomus/images/logo/logo.svg') }}"

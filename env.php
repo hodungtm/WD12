@@ -63,6 +63,7 @@ MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
 MAIL_USERNAME=quangthien15104@gmail.com
 MAIL_PASSWORD=ltdjmyxcwkxfvjbz
+
 MAIL_FROM_ADDRESS="quangthien15104@gmail.com"
 MAIL_FROM_NAME="SHOP PHỤ KIỆN THỂ THAO"
 

@@ -89,27 +89,38 @@ class DashboardController extends Controller
         $categoryId = $request->get('category_id');
 
         // Top sản phẩm bán chạy theo danh mục và theo thời gian
-        $topProductsQuery = ProductVariant::select('product_id', DB::raw('SUM(quantity) as sold'))
-            ->with('product')
-            ->groupBy('product_id')
+        $topProductsQuery = DB::table('order_items')
+            ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->select('products.id as product_id', DB::raw('SUM(order_items.quantity) as sold'))
+            ->groupBy('products.id')
             ->orderByDesc('sold');
+
+        // Lọc theo danh mục nếu có
         if ($categoryId) {
-            $topProductsQuery->whereHas('product', function($q) use ($categoryId) {
-                $q->where('category_id', $categoryId);
-            });
+            $topProductsQuery->where('products.category_id', $categoryId);
         }
+
         // Lọc theo thời gian
         if ($type === 'month') {
-            $topProductsQuery->whereMonth('created_at', $now->month)->whereYear('created_at', $now->year);
+            $topProductsQuery->whereMonth('order_items.created_at', $now->month)
+                ->whereYear('order_items.created_at', $now->year);
         } elseif ($type === 'year') {
-            $topProductsQuery->whereYear('created_at', $now->year);
+            $topProductsQuery->whereYear('order_items.created_at', $now->year);
         } elseif ($type === 'today') {
             $selectedDate = $request->get('date', $now->toDateString());
-            $topProductsQuery->whereDate('created_at', $selectedDate);
+            $topProductsQuery->whereDate('order_items.created_at', $selectedDate);
         } else { // week
-            $topProductsQuery->whereBetween('created_at', [$currentStart, $currentEnd]);
+            $topProductsQuery->whereBetween('order_items.created_at', [$currentStart, $currentEnd]);
         }
+
+        // Lấy top 5 sản phẩm
         $topProducts = $topProductsQuery->take(5)->get();
+
+        // Lấy thông tin sản phẩm để hiển thị
+        $topProducts = $topProducts->map(function ($item) {
+            $item->product = \App\Models\Products::find($item->product_id);
+            return $item;
+        });
 
         // Sản phẩm sắp hết hàng theo danh mục
         $lowStockQuery = ProductVariant::where('quantity', '<=', 5)->with('product');

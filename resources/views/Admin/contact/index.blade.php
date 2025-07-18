@@ -3,6 +3,19 @@
 @section('main')
   <div class="main-content-inner" style="padding-top: 10px; margin-top: 0;">
     <div class="main-content-wrap" style="padding-top: 0; margin-top: 0;">
+      @if (session('success'))
+                <div class="alert"
+                    style="background: #d4edda; color: #155724; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 600;">
+                    <i class="icon-check-circle" style="margin-right: 6px;"></i> {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="alert"
+                    style="background: #f8d7da; color: #721c24; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 600;">
+                    <i class="icon-alert-triangle" style="margin-right: 6px;"></i> {{ session('error') }}
+                </div>
+            @endif
       <div class="flex items-center flex-wrap justify-between gap20 mb-30">
         <h3>Danh sách liên hệ</h3>
         <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
