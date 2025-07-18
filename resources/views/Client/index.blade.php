@@ -53,7 +53,7 @@
     <section class="popular-products">
         <div class="container">
             <h2 class="section-title appear-animate" data-animation-name="fadeInUpShorter"
-                data-animation-delay="200">Sản phẩm nổi bật</h2>
+                data-animation-delay="200"><a href="{{ route('client.products.featured') }}" target="_blank">Sản phẩm nổi bật</a></h2>
             <div class="row">
                 <div class="products-slider 5col owl-carousel owl-theme appear-animate" data-owl-options="{ 'margin': 0 }" data-animation-name="fadeInUpShorter" data-animation-delay="200">
                     @foreach($products as $product)
@@ -129,7 +129,7 @@
     <section class="trendy-section mb-2">
         <div class="container">
             <h2 class="section-title appear-animate" data-animation-name="fadeInUpShorter"
-                data-animation-delay="200">Sản phẩm bán chạy</h2>
+                data-animation-delay="200"><a href="{{ route('client.products.best_sellers') }}" target="_blank">Sản phẩm bán chạy</a></h2>
             <div class="row appear-animate" data-animation-name="fadeInUpShorter" data-animation-delay="200">
                 <div class="products-slider 5col owl-carousel owl-theme" data-owl-options="{ 'margin': 0 }">
                     @foreach($trendingProducts as $product)

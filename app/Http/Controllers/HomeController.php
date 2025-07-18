@@ -68,6 +68,35 @@ class HomeController extends Controller
         ));
 
     }
+    public function bestSellers()
+{
+    $products = Products::withCount('orderItems')
+        ->with(['category', 'images', 'variants'])
+        ->orderByDesc('order_items_count')
+        ->paginate(20);
+    $categories = \App\Models\Category::all();
+    $colors = \App\Models\Color::all();
+    $sizes = \App\Models\Size::all();
+    $minPrice = \App\Models\ProductVariant::min('price');
+    $maxPrice = \App\Models\ProductVariant::max('price');
+    $pageTitle = 'Sản phẩm bán chạy';
+    return view('Client.Product.ListProductClient', compact('products', 'categories', 'colors', 'sizes', 'minPrice', 'maxPrice', 'pageTitle'));
+}
+
+public function featured()
+{
+    $products = Products::withAvg('reviews', 'so_sao')
+        ->with(['category', 'images', 'variants'])
+        ->orderByDesc('reviews_avg_so_sao')
+        ->paginate(20);
+    $categories = \App\Models\Category::all();
+    $colors = \App\Models\Color::all();
+    $sizes = \App\Models\Size::all();
+    $minPrice = \App\Models\ProductVariant::min('price');
+    $maxPrice = \App\Models\ProductVariant::max('price');
+    $pageTitle = 'Sản phẩm nổi bật';
+    return view('Client.Product.ListProductClient', compact('products', 'categories', 'colors', 'sizes', 'minPrice', 'maxPrice', 'pageTitle'));
+}
     public function respond(Request $request)
     {
         $message = strtolower($request->input('message'));

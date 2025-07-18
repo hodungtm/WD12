@@ -45,7 +45,8 @@ Route::prefix('client')->name('client.')->group(function () {
     Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
     Route::get('/san-pham', [ListProductClientController::class, 'index'])->name('listproduct');
     Route::get('/san-pham/{id}', [ProductDetailController::class, 'show'])->name('product.detail');
-
+    Route::get('/san-pham-ban-chay', [HomeController::class, 'bestSellers'])->name('products.best_sellers');
+    Route::get('/san-pham-noi-bat', [HomeController::class, 'featured'])->name('products.featured');
     Route::post('/san-pham/{id}/danh-gia', [ProductDetailController::class, 'submitReview'])->name('product.review');
     Route::put('/san-pham/{product}/danh-gia/{review}', [ProductDetailController::class, 'updateReview'])->name('product.review.update');
     Route::post('/san-pham/{id}/binh-luan', [ProductDetailController::class, 'submitComment'])->name('product.comment');

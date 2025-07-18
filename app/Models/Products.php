@@ -37,4 +37,8 @@ public function comments()
 {
     return $this->hasMany(Comment::class, 'product_id');
 }
+public function orderItems()
+{
+    return $this->hasMany(Order_items::class, 'product_id');
+}
 }
