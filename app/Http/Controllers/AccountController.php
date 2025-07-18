@@ -9,11 +9,16 @@ class AccountController extends Controller
 {
 
     public function dashboard()
-{
-    $user = \Auth::user();
-    $orderItems = $user->orderItems()->with(['order', 'product'])->latest('created_at')->get();
-    return view('Client.users.dashboard', compact('user', 'orderItems'));
-}
+    {
+        $user = \Auth::user();
+        $orderItems = $user->orderItems()->with(['order', 'product'])->latest('created_at')->get();
+        $wishlists = $user->wishlist()->with([
+            'product.images',
+            'product.variants.size',
+            'product.variants.color',
+        ])->get();
+        return view('Client.users.dashboard', compact('user', 'orderItems', 'wishlists'));
+    }
 
 
 }

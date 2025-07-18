@@ -2,6 +2,7 @@
 @section('main')
 <div class="main-content-inner">
     <div class="main-content-wrap">
+        
         <div class="flex items-center flex-wrap justify-between gap20 mb-30">
             <h3>Danh sách đơn hàng</h3>
             <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
@@ -10,6 +11,19 @@
                 <li><div class="text-tiny">Đơn hàng</div></li>
             </ul>
         </div>
+        @if (session('success'))
+                <div class="alert"
+                    style="background: #d4edda; color: #155724; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 600;">
+                    <i class="icon-check-circle" style="margin-right: 6px;"></i> {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="alert"
+                    style="background: #f8d7da; color: #721c24; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 600;">
+                    <i class="icon-alert-triangle" style="margin-right: 6px;"></i> {{ session('error') }}
+                </div>
+            @endif
         <div class="wg-box">
             <div class="title-box">
                 <i class="icon-book-open"></i>
@@ -98,11 +112,7 @@
                             <div class="list-icon-function" style="flex-basis: 160px;">
                                 <a href="{{ route('admin.orders.show', $order->id) }}" class="item eye"><i class="icon-eye"></i></a>
                                 <a href="{{ route('admin.orders.edit', $order->id) }}" class="item edit"><i class="icon-edit-3"></i></a>
-                                <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" style="color: red" title="Xóa đơn hàng"><i class="icon-trash" style="color: red; font-size: 20px;"></i></button>
-                                </form>
+                                
                             </div>
                         </li>
                     @empty

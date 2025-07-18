@@ -3,6 +3,7 @@
 @section('main')
 <div class="main-content-inner">
 <div class="main-content-wrap">
+    
     <div class="flex items-center flex-wrap justify-between gap20 mb-30">
         <h3>Dashboard</h3>
 
@@ -12,7 +13,19 @@
             <li><div class="text-tiny">Tổng quan</div></li>
         </ul>
     </div>
+    @if (session('success'))
+    <div class="alert"
+        style="background: #d4edda; color: #155724; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 600;">
+        <i class="icon-check-circle" style="margin-right: 6px;"></i> {{ session('success') }}
+    </div>
+@endif
 
+@if (session('error'))
+    <div class="alert"
+        style="background: #f8d7da; color: #721c24; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 600;">
+        <i class="icon-alert-triangle" style="margin-right: 6px;"></i> {{ session('error') }}
+    </div>
+@endif
     <form method="GET" action="" class="mb-3 d-flex align-items-center gap-2 position-relative">
         <input type="text" name="q" class="form-control w-auto dashboard-search" style="min-width:220px;" placeholder="Tìm kiếm sản phẩm, đơn hàng, khách hàng, mã giảm giá..." value="{{ request('q') }}">
         <button type="submit" class="btn btn-primary dashboard-search-btn"><i class="fas fa-search"></i> Tìm kiếm</button>

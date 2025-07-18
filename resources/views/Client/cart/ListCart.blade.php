@@ -213,7 +213,16 @@
             document.getElementById('subtotal').textContent = formatCurrency(subtotal);
             document.getElementById('total').textContent = formatCurrency(subtotal);
         }
-
+        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+    // Lấy tất cả checkbox sản phẩm
+    const checkboxes = document.querySelectorAll('.item-checkbox');
+    // Kiểm tra có cái nào được chọn không
+    const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+    if (!anyChecked) {
+        // Nếu chưa chọn cái nào thì tick hết
+        checkboxes.forEach(cb => cb.checked = true);
+    }
+});
     
 
         updateTotals();

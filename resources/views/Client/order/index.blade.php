@@ -41,23 +41,28 @@
                 @php
                     $firstItem = $order->orderItems->first();
                 @endphp
-                <div class="d-flex">
-                    
-                    <a href="{{ route('client.product.detail', $firstItem->product_id) }}">
-                        <img src="{{ asset('storage/' . $firstItem->product_image) }}" alt="" width="80" height="80" class="me-3 rounded border">
-                    </a>
-                    <div class="flex-grow-1">
-                        <h6><a href="{{ route('client.product.detail', $firstItem->product_id) }}" class="text-dark text-decoration-none">
-                            {{ $firstItem->product_name }}
-                        </a></h6>
-                        <small>Phân loại: {{ $firstItem->variant_name ?? '-' }}</small><br>
-                        <small>x{{ $firstItem->quantity }}</small>
+                @if($firstItem)
+                    <div class="d-flex">
+                        <a href="{{ route('client.product.detail', $firstItem->product_id) }}">
+                            <img src="{{ asset('storage/' . $firstItem->product_image) }}" alt="" width="80" height="80" class="me-3 rounded border">
+                        </a>
+                        <div class="flex-grow-1">
+                            <h6><a href="{{ route('client.product.detail', $firstItem->product_id) }}" class="text-dark text-decoration-none">
+                                {{ $firstItem->product_name }}
+                            </a></h6>
+                            <small>Phân loại: {{ $firstItem->variant_name ?? '-' }}</small><br>
+                            <small>x{{ $firstItem->quantity }}</small>
+                        </div>
+                        <div class="text-end">
+                            <del>{{ number_format($firstItem->price, 0, ',', '.') }}₫</del><br>
+                            <strong>{{ number_format($firstItem->total_price, 0, ',', '.') }}₫</strong>
+                        </div>
                     </div>
-                    <div class="text-end">
-                        <del>{{ number_format($firstItem->price, 0, ',', '.') }}₫</del><br>
-                        <strong>{{ number_format($firstItem->total_price, 0, ',', '.') }}₫</strong>
+                @else
+                    <div class="alert alert-warning mb-0">
+                        Đơn hàng này không có sản phẩm nào.
                     </div>
-                </div>
+                @endif
             </div>
             <div class="card-footer d-flex justify-content-between align-items-center">
                 <strong>Thành tiền: {{ number_format($order->final_amount, 0, ',', '.') }}₫</strong>
@@ -68,7 +73,7 @@
                         <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Hủy đơn hàng này?')">Hủy</button>
                     </form>
                     @endif
-                    @if($order->status === 'Hoàn thành')
+                    @if($order->status === 'Hoàn thành' && $firstItem)
     <a href="{{ route('client.product.detail', [$firstItem->product_id, 'review' => 1]) }}" class="btn btn-sm btn-primary">
         Đánh giá
     </a>

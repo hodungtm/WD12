@@ -50,7 +50,9 @@ class CheckoutController extends Controller
     {
         $user = Auth::user();
         $selectedIds = $request->input('selected_items', []);
-
+        if (empty($selectedIds)) {
+            $selectedIds = Cart::where('user_id', $user->id)->pluck('id')->toArray();
+        }
 
         if (empty($selectedIds)) {
             return back()->with('error', 'Vui lòng chọn sản phẩm để thanh toán.');

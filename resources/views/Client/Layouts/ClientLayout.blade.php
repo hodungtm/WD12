@@ -346,13 +346,10 @@ use Illuminate\Support\Facades\Auth;
                                     <a href="{{ route('client.index') }}">Trang chủ</a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('client.listproduct') }}">Cửa hàng</a>
+                                    <a href="{{ route('client.listproduct') }}">Sản phẩm</a>
 
                                 </li>
-                                <li>
-                                    <a href="demo27-product.html">Sản phẩm</a>
-
-                                </li>
+                            
                                 <li class="d-none d-xxl-block"><a href="{{ route('client.listblog') }}">Tin tức</a></li>
                                 <li>
                                     <a href="{{ route('client.contact.show') }}">Liên hệ</a>
