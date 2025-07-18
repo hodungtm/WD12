@@ -373,27 +373,17 @@
             <div class="tab-pane fade" id="addresses" role="tabpanel">
                 <div class="porto-dashboard-content">
                     <h4 class="mb-3"><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ giao hàng</h4>
-                    <form method="POST" action="{{ route('user.saveAddressSession') }}">
+                    <form method="POST" action="{{ route('user.saveAddress') }}">
                         @csrf
                         <div class="mb-3">
-                            <label class="form-label">Địa chỉ chi tiết</label>
-                            <input type="text" name="detail" class="form-control" value="{{ session('address.detail', '') }}">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Thành phố</label>
-                            <input type="text" name="city" class="form-control" value="{{ session('address.city', '') }}">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Quốc gia</label>
-                            <input type="text" name="country" class="form-control" value="{{ session('address.country', 'Việt Nam') }}">
+                            <label class="form-label">Địa chỉ giao hàng</label>
+                            <input type="text" name="address" class="form-control" value="{{ old('address', $user->address) }}">
                         </div>
                         <button class="btn btn-primary">Lưu địa chỉ</button>
                     </form>
                     <div class="mt-4">
                         <h6><strong>Địa chỉ đang hiển thị:</strong></h6>
-                        <p><strong>Chi tiết:</strong> {{ session('address.detail', 'Chưa nhập') }}</p>
-                        <p><strong>Thành phố:</strong> {{ session('address.city', 'Chưa nhập') }}</p>
-                        <p><strong>Quốc gia:</strong> {{ session('address.country', 'Việt Nam') }}</p>
+                        <p><strong>Địa chỉ:</strong> {{ $user->address ?? 'Chưa nhập' }}</p>
                     </div>
                 </div>
             </div>
@@ -471,9 +461,7 @@
             <div class="tab-pane fade" id="shipping" role="tabpanel">
                 <div class="porto-dashboard-content">
                     <h4 class="mb-3"><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ giao hàng</h4>
-                    <p><strong>Địa chỉ:</strong> {{ session('address.detail', 'Chưa có') }}</p>
-                    <p><strong>Thành phố:</strong> {{ session('address.city', '') }}</p>
-                    <p><strong>Quốc gia:</strong> {{ session('address.country', 'Việt Nam') }}</p>
+                    <p><strong>Địa chỉ:</strong> {{ $user->address ?? 'Chưa có' }}</p>
                 </div>
             </div>
             <!-- Wishlist tab -->

@@ -39,7 +39,7 @@
 
                         <div class="form-group mb-3">
                             <label>Địa chỉ</label>
-                            <textarea name="receiver_address" id="receiver_address" class="form-control" required></textarea>
+                            <textarea name="receiver_address" id="receiver_address" class="form-control" required>{{ old('receiver_address') }}</textarea>
                         </div>
 
                         <div class="form-group mb-3">
@@ -168,45 +168,45 @@
     }
 </style>
 <script>
-    const sessionAddress = "{{ session('address.detail') }}, {{ session('address.city') }}, {{ session('address.country') }}".replace(/^, |, ,/g, '');
-function updateShipping() {
-    const shippingFee = parseInt(document.querySelector('#shippingSelect option:checked')?.dataset?.fee || 0);
-    const subtotal = {{ $subtotal }};
-    const discountOption = document.querySelector('#discountSelect option:checked');
-    const percent = parseFloat(discountOption?.dataset?.percent || 0);
-    const maxDiscount = parseInt(discountOption?.dataset?.max || 0);
-    const minOrder = parseInt(discountOption?.dataset?.min || 0);
+    @php $user = auth()->user(); @endphp
+    // Lấy địa chỉ từ user thay vì session
+    const userAddress = "{{ $user->address ?? '' }}";
+    function updateShipping() {
+        const shippingFee = parseInt(document.querySelector('#shippingSelect option:checked')?.dataset?.fee || 0);
+        const subtotal = {{ $subtotal }};
+        const discountOption = document.querySelector('#discountSelect option:checked');
+        const percent = parseFloat(discountOption?.dataset?.percent || 0);
+        const maxDiscount = parseInt(discountOption?.dataset?.max || 0);
+        const minOrder = parseInt(discountOption?.dataset?.min || 0);
 
-    let discountAmount = 0;
-    if (subtotal >= minOrder && percent > 0) {
-        discountAmount = Math.min(Math.round(subtotal * percent / 100), maxDiscount);
+        let discountAmount = 0;
+        if (subtotal >= minOrder && percent > 0) {
+            discountAmount = Math.min(Math.round(subtotal * percent / 100), maxDiscount);
+        }
+
+        const total = subtotal + shippingFee - discountAmount;
+
+        document.getElementById('shipping-fee-text').innerText = shippingFee.toLocaleString('vi-VN') + '₫';
+        document.getElementById('discount-amount-text').innerText = '-' + discountAmount.toLocaleString('vi-VN') + '₫';
+        document.getElementById('total-amount').innerText = total.toLocaleString('vi-VN') + '₫';
     }
 
-    const total = subtotal + shippingFee - discountAmount;
+    function updateDiscount() {
+        updateShipping();
+    }
 
-    document.getElementById('shipping-fee-text').innerText = shippingFee.toLocaleString('vi-VN') + '₫';
-    document.getElementById('discount-amount-text').innerText = '-' + discountAmount.toLocaleString('vi-VN') + '₫';
-    document.getElementById('total-amount').innerText = total.toLocaleString('vi-VN') + '₫';
-}
+    window.onload = () => {
+        updateShipping();
+    };
 
-function updateDiscount() {
-    updateShipping();
-}
+    function copyBuyerInfo() {
+        const checked = document.getElementById('sameAsBuyer').checked;
+        document.querySelector('input[name="receiver_name"]').value = checked ? "{{ $user->name }}" : "";
+        document.querySelector('input[name="receiver_phone"]').value = checked ? "{{ $user->phone }}" : "";
+        document.querySelector('textarea[name="receiver_address"]').value = checked ? userAddress : "";
 
-window.onload = () => {
-    updateShipping();
-};
-
-function copyBuyerInfo() {
-    const checked = document.getElementById('sameAsBuyer').checked;
-    document.querySelector('input[name="receiver_name"]').value = checked ? "{{ auth()->user()->name }}" : "";
-    document.querySelector('input[name="receiver_phone"]').value = checked ? "{{ auth()->user()->phone }}" : "";
-    document.querySelector('textarea[name="receiver_address"]').value = checked ? sessionAddress : "";
-
-    document.querySelector('input[name="receiver_name"]').readOnly = checked;
-    document.querySelector('input[name="receiver_phone"]').readOnly = checked;
-    document.querySelector('textarea[name="receiver_address"]').readOnly = checked;
-}
+        
+    }
 </script>
 
 @endsection

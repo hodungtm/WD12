@@ -165,7 +165,7 @@ Route::middleware(['auth'])->prefix('user')->group(function () {
     Route::get('/dashboard', [ClientUserController::class, 'dashboard'])->name('user.dashboard');
     Route::post('/update-info', [ClientUserController::class, 'updateInfo'])->name('user.updateInfo');
     Route::post('/change-password', [ClientUserController::class, 'changePassword'])->name('user.changePassword');
-    Route::post('/save-address-session', [ClientUserController::class, 'saveAddressSession'])->name('user.saveAddressSession');
+    Route::post('/user/save-address', [ClientUserController::class, 'saveAddress'])->name('user.saveAddress');
 });
 
 

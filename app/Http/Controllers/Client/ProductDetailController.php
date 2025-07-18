@@ -34,18 +34,23 @@ class ProductDetailController extends Controller
             $hasPurchased = false;
             $hasReviewed = false;
     
-            if ($user) {
-                $hasPurchased = Order::where('user_id', $user->id)
-                    ->where('status', 'Hoàn thành')
-                    ->whereHas('orderItems', fn($q) => $q->where('product_id', $id))
-                    ->exists();
-    
-                if ($hasPurchased) {
-                    $hasReviewed = Review::where('product_id', $id)
-                        ->where('ma_nguoi_dung', $user->id)
-                        ->exists();
-                }
-            }
+            $canReview = false;
+
+    if ($user) {
+        // Kiểm tra đã từng mua sản phẩm chưa
+        $hasPurchased = Order::where('user_id', $user->id)
+            ->where('status', 'Hoàn thành')
+            ->whereHas('orderItems', fn($q) => $q->where('product_id', $id))
+            ->exists();
+
+        // Kiểm tra còn lượt đánh giá không (order_item chưa reviewed)
+        $canReview = Order_items::where('product_id', $id)
+            ->whereHas('order', function($q) use ($user) {
+                $q->where('user_id', $user->id)->where('status', 'Hoàn thành');
+            })
+            ->where('reviewed', false)
+            ->exists();
+    }
 
         // Lấy 5 sản phẩm liên quan cùng danh mục, mới nhất trước, loại trừ sản phẩm đang xem
         $relatedProducts = Products::where('category_id', $product->category_id)
@@ -55,41 +60,49 @@ class ProductDetailController extends Controller
             ->with(['images', 'variants', 'category', 'reviews'])
             ->get();
        
-        return view('Client.Product.productDetail', compact('product', 'reviews', 'comments', 'productVariants', 'hasPurchased','hasReviewed', 'relatedProducts'));
+            return view('Client.Product.productDetail', compact(
+                'product', 'reviews', 'comments', 'productVariants',
+                'hasPurchased', 'canReview', 'relatedProducts'
+            ));
     }
 
     public function submitReview(Request $request, $id)
-    {
-        $request->validate([
-            'so_sao' => 'required|integer|min:1|max:5',
-            'noi_dung' => 'required|string',
-        ]);
-        $userId = Auth::id();
-        // Kiểm tra đã mua sản phẩm chưa
-        $hasPurchased = Order::where('user_id', $userId)
-            ->where('status', 'Hoàn thành')
-            ->whereHas('orderItems', function($q) use ($id) {
-                $q->where('product_id', $id);
-            })->exists();
-        if (!$hasPurchased) {
-            return back()->with('error', 'Bạn chỉ có thể đánh giá khi đã mua sản phẩm này.');
-        }
-        // Kiểm tra đã đánh giá chưa
-        $review = Review::where('product_id', $id)
-            ->where('ma_nguoi_dung', $userId)
-            ->first();
-        if ($review) {
-            return back()->with('error', 'Bạn chỉ được đánh giá 1 lần cho mỗi sản phẩm.');
-        }
-        Review::create([
-            'product_id' => $id,
-            'ma_nguoi_dung' => $userId,
-            'so_sao' => $request->so_sao,
-            'noi_dung' => $request->noi_dung,
-            'trang_thai' => 1,
-        ]);
-        return back()->with('success', 'Đã gửi đánh giá');
+{
+    $request->validate([
+        'so_sao' => 'required|integer|min:1|max:5',
+        'noi_dung' => 'required|string',
+        'order_item_id' => 'required|exists:order_items,id',
+    ]);
+    $userId = Auth::id();
+
+    // Lấy đúng order_item cần đánh giá
+    $orderItem = Order_items::where('id', $request->order_item_id)
+        ->where('product_id', $id)
+        ->where('reviewed', false)
+        ->whereHas('order', function($q) use ($userId) {
+            $q->where('user_id', $userId)->where('status', 'Hoàn thành');
+        })
+        ->first();
+
+    if (!$orderItem) {
+        return back()->with('error', 'Bạn không có quyền đánh giá cho sản phẩm này hoặc đã đánh giá rồi.');
     }
+
+    // Tạo review mới
+    Review::create([
+        'product_id' => $id,
+        'ma_nguoi_dung' => $userId,
+        'so_sao' => $request->so_sao,
+        'noi_dung' => $request->noi_dung,
+        'trang_thai' => 1,
+    ]);
+
+    // Đánh dấu order_item đã đánh giá
+    $orderItem->reviewed = true;
+    $orderItem->save();
+
+    return back()->with('success', 'Đã gửi đánh giá');
+}
 
     public function submitComment(Request $request, $id)
     {

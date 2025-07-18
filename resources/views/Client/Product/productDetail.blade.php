@@ -354,15 +354,15 @@
                                 <h3 class="review-title">Thêm đánh giá</h3>
 
                                 @auth
-                                    @if (!$hasPurchased)
-                                        <div class="alert alert-info">
-                                            <p>Bạn cần mua sản phẩm này trước khi có thể đánh giá.</p>
-                                        </div>
-                                    @elseif ($hasReviewed)
-                                        <div class="alert alert-info">
-                                            <p>Bạn đã đánh giá sản phẩm này.</p>
-                                        </div>
-                                    @else
+                                @if (!$hasPurchased)
+                                <div class="alert alert-info">
+                                    <p>Bạn cần mua sản phẩm này trước khi có thể đánh giá.</p>
+                                </div>
+                            @elseif (!$canReview)
+                                <div class="alert alert-info">
+                                    <p>Bạn đã đánh giá hết lượt cho sản phẩm này.</p>
+                                </div>
+                            @else
                                         <form action="{{ route('client.product.review', $product->id) }}" method="POST"
                                             class="comment-form m-0">
                                             @csrf
@@ -787,6 +787,7 @@
         .product-default .btn-add-cart i {
             display: inline-block !important;
         }
+        
     </style>
 
     <script>

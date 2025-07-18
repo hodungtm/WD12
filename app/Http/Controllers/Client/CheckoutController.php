@@ -57,12 +57,12 @@ class CheckoutController extends Controller
         if (empty($selectedIds)) {
             return back()->with('error', 'Vui lòng chọn sản phẩm để thanh toán.');
         }
-$cartItems = Cart::with(['product', 'variant'])
-    ->where('user_id', $user->id)
-    ->when(!empty($selectedIds), function ($query) use ($selectedIds) {
-        return $query->whereIn('id', $selectedIds);
-    })
-    ->get();
+        $cartItems = Cart::with(['product', 'variant'])
+            ->where('user_id', $user->id)
+            ->when(!empty($selectedIds), function ($query) use ($selectedIds) {
+                return $query->whereIn('id', $selectedIds);
+            })
+            ->get();
 
         if ($cartItems->isEmpty()) {
             return back()->with('error', 'Không tìm thấy sản phẩm được chọn.');
@@ -100,7 +100,7 @@ $cartItems = Cart::with(['product', 'variant'])
                     'receiver_name'      => $request->receiver_name,
                     'receiver_phone'     => $request->receiver_phone,
                     'receiver_email'     => $user->email,
-                    'receiver_address'   => $request->receiver_address,
+                    'receiver_address'   => $request->address,
                     'payment_method'     => 'Momo',
                     'shipping_method_id' => $request->shipping_method_id,
                     'discount_code'      => $discountCode,
@@ -116,7 +116,6 @@ $cartItems = Cart::with(['product', 'variant'])
         }
 
         return $this->storeOrder($request, $cartItems, $discountCode, $discountAmount, $shippingFee, $subtotal, $finalAmount);
-
     }
 
     public function momoReturn(Request $request)
@@ -131,12 +130,12 @@ $cartItems = Cart::with(['product', 'variant'])
 
             $selectedIds = $data['selected_items'] ?? [];
 
-$cartItems = Cart::with(['product', 'variant'])
-    ->where('user_id', $userId)
-    ->when(!empty($selectedIds), function ($query) use ($selectedIds) {
-        return $query->whereIn('id', $selectedIds);
-    })
-    ->get();
+            $cartItems = Cart::with(['product', 'variant'])
+                ->where('user_id', $userId)
+                ->when(!empty($selectedIds), function ($query) use ($selectedIds) {
+                    return $query->whereIn('id', $selectedIds);
+                })
+                ->get();
 
 
             if ($cartItems->isEmpty()) {
@@ -176,8 +175,8 @@ $cartItems = Cart::with(['product', 'variant'])
                 'product_id'         => $item->product->id,
                 'product_variant_id' => $item->variant->id,
                 'quantity'           => $item->quantity,
-                'price'              => $item->variant->price,
-                'total_price'        => $item->variant->price * $item->quantity,
+                'price'              => $item->variant->sale_price,
+                'total_price'        => $item->variant->sale_price * $item->quantity,
                 'product_name'       => $item->product->name,
                 'variant_name'       => ($item->variant->color->name ?? '') . ' / ' . ($item->variant->size->name ?? ''),
                 'product_image'      => optional($item->product->images->first())->image,
