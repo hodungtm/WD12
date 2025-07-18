@@ -39,10 +39,10 @@ class OrderController extends Controller
         if ($order->status !== 'Đang chờ') {
             return back()->with('error', 'Không thể hủy đơn hàng này.');
         }
-foreach ($order->orderItems as $item) {
-        $variant = $item->productVariant;
-        $variant->increment('quantity', $item->quantity);
-    }
+        foreach ($order->orderItems as $item) {
+            $variant = $item->productVariant;
+            $variant->increment('quantity', $item->quantity);
+        }
         $order->update(['status' => 'Đã hủy']);
 
         return back()->with('success', 'Đơn hàng đã được hủy.');
