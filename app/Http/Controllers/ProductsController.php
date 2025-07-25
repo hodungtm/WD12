@@ -42,6 +42,8 @@ class ProductsController extends Controller
             $query->orderBy('created_at', 'asc');
         } elseif ($sort_created === 'desc') {
             $query->orderBy('created_at', 'desc');
+        }else {
+            $query->orderBy('created_at', 'desc'); // Mặc định: mới trước, cũ sau
         }
 
         // Sắp xếp theo giá (min price của variants)

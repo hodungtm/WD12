@@ -49,7 +49,10 @@ class OrderController extends Controller
             $query->orderBy('created_at', 'asc');
         } elseif ($request->sort_created === 'desc') {
             $query->orderBy('created_at', 'desc');
+        }else {
+            $query->orderBy('created_at', 'desc'); // Mặc định: mới trước, cũ sau
         }
+        
         // Sắp xếp tổng tiền
         if ($request->sort_total) {
             $query->orderBy('final_amount', $request->sort_total);

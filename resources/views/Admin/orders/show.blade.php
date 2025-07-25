@@ -83,6 +83,10 @@
                         <label class="body-title">Tình trạng thanh toán:</label>
                         <p>{{ $order->payment_status }}</p>
                     </div>
+                    <div class="w-full md:w-1/2">
+                        <label class="body-title">Lý do hủy:</label>
+                        <p>{{ $order->cancel_reason ?? 'Không có' }}</p>
+                    </div>
                     <div class="w-full">
                         <label class="body-title">Ghi chú:</label>
                         <p>{{ $order->note ?? 'Không có' }}</p>

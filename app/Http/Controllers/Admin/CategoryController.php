@@ -13,29 +13,31 @@ class CategoryController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-    {
-        $search = $request->input('keyword');
-        $status = $request->input('tinh_trang');
-        $sort = $request->input('sort');
-        $perPage = $request->input('per_page', 10);
+{
+    $search = $request->input('keyword');
+    $status = $request->input('status'); // Đổi từ 'tinh_trang' thành 'status'
+    $sort = $request->input('sort_created'); // Đổi từ 'sort' thành 'sort_created'
+    $perPage = $request->input('per_page', 10);
 
-        $categories = Category::query()
-            ->when($search, function ($query, $search) {
-                return $query->where('ten_danh_muc', 'like', "%$search%")
-                             ->orWhere('mo_ta', 'like', "%$search%");
-            })
-            ->when($status !== null, function ($query) use ($status) {
-                return $query->where('tinh_trang', $status);
-            })
-            ->when($sort, function ($query, $sort) {
-                return $query->orderBy('created_at', $sort);
-            }, function ($query) {
-                return $query->latest(); // mặc định: mới nhất
-            })
-            ->paginate($perPage)->appends($request->all());
+    
 
-        return view('Admin.categories.index', compact('categories'));
-    }
+    $query = Category::query()
+        ->when($search, function ($query, $search) {
+            return $query->where('ten_danh_muc', 'like', "%$search%")
+                         ->orWhere('mo_ta', 'like', "%$search%");
+        })
+        ->when($status !== null && $status !== '', function ($query) use ($status) {
+            return $query->where('tinh_trang', $status);
+        })
+        ->when($sort, function ($query, $sort) {
+            return $query->orderBy('created_at', $sort);
+        }, function ($query) {
+            return $query->orderBy('created_at', 'desc'); // Mặc định: mới nhất
+        });
+
+    $categories = $query->paginate($perPage)->appends($request->all());
+    return view('Admin.categories.index', compact('categories'));
+}
 
     /**
      * Show the form for creating a new resource.
