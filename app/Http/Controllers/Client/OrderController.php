@@ -32,21 +32,41 @@ class OrderController extends Controller
         return view('client.order.show', compact('order', 'items'));
     }
 
-    public function cancel(Order $order)
-    {
-        $this->authorizeOrder($order);
+    public function cancel(Request $request)
+{
+    
+    $request->validate([
+        'order_id' => 'required|exists:orders,id',
+        'cancel_reason' => 'required|string|max:255',
+    ]);
 
-        if ($order->status !== 'Đang chờ') {
-            return back()->with('error', 'Không thể hủy đơn hàng này.');
-        }
-        foreach ($order->orderItems as $item) {
-            $variant = $item->productVariant;
+    $order = Order::findOrFail($request->order_id);
+
+    // Nếu cần kiểm tra quyền sở hữu đơn
+    $this->authorizeOrder($order); 
+
+    if ($order->status !== 'Đang chờ') {
+        return back()->with('error', 'Không thể hủy đơn hàng này.');
+    }
+
+    // Trả lại số lượng
+    foreach ($order->orderItems as $item) {
+        $variant = $item->productVariant;
+        if ($variant) {
             $variant->increment('quantity', $item->quantity);
         }
-        $order->update(['status' => 'Đã hủy']);
-
-        return back()->with('success', 'Đơn hàng đã được hủy.');
     }
+
+    // Cập nhật trạng thái và lý do hủy
+    $order->update([
+        'status' => 'Đã hủy',
+        'cancel_reason' => $request->cancel_reason,
+    ]);
+
+    return back()->with('success', 'Đơn hàng đã được hủy.');
+}
+
+
 
     protected function authorizeOrder(Order $order)
     {

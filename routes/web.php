@@ -80,7 +80,7 @@ Route::prefix('client')->name('client.')->group(function () {
         //Theo dõi đơn hàng
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
-        Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+        Route::post('/orders/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
     });
 });
 
