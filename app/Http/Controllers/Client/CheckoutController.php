@@ -36,8 +36,11 @@ class CheckoutController extends Controller
         }
 
         $shippingMethods = ShippingMethod::all();
+        $subtotal = $cartItems->sum(fn($item) => $item->variant->sale_price * $item->quantity);
+
         $discounts = Discount::whereDate('start_date', '<=', now())
             ->whereDate('end_date', '>=', now())
+            ->where('min_order_amount', '<=', $subtotal)
             ->get();
 
         return view('client.cart.checkout', compact('cartItems', 'shippingMethods', 'discounts'));
@@ -47,23 +50,25 @@ class CheckoutController extends Controller
     {
         $user = Auth::user();
         $selectedIds = $request->input('selected_items', []);
-
+        if (empty($selectedIds)) {
+            $selectedIds = Cart::where('user_id', $user->id)->pluck('id')->toArray();
+        }
 
         if (empty($selectedIds)) {
             return back()->with('error', 'Vui lòng chọn sản phẩm để thanh toán.');
         }
-$cartItems = Cart::with(['product', 'variant'])
-    ->where('user_id', $user->id)
-    ->when(!empty($selectedIds), function ($query) use ($selectedIds) {
-        return $query->whereIn('id', $selectedIds);
-    })
-    ->get();
+        $cartItems = Cart::with(['product', 'variant'])
+            ->where('user_id', $user->id)
+            ->when(!empty($selectedIds), function ($query) use ($selectedIds) {
+                return $query->whereIn('id', $selectedIds);
+            })
+            ->get();
 
         if ($cartItems->isEmpty()) {
             return back()->with('error', 'Không tìm thấy sản phẩm được chọn.');
         }
 
-        $subtotal = $cartItems->sum(fn($item) => $item->variant->price * $item->quantity);
+        $subtotal = $cartItems->sum(fn($item) => $item->variant->sale_price * $item->quantity);
 
         $discountCode = $request->discount_code;
         $discountAmount = 0;
@@ -95,7 +100,7 @@ $cartItems = Cart::with(['product', 'variant'])
                     'receiver_name'      => $request->receiver_name,
                     'receiver_phone'     => $request->receiver_phone,
                     'receiver_email'     => $user->email,
-                    'receiver_address'   => $request->receiver_address,
+                    'receiver_address'   => $request->address,
                     'payment_method'     => 'Momo',
                     'shipping_method_id' => $request->shipping_method_id,
                     'discount_code'      => $discountCode,
@@ -111,7 +116,6 @@ $cartItems = Cart::with(['product', 'variant'])
         }
 
         return $this->storeOrder($request, $cartItems, $discountCode, $discountAmount, $shippingFee, $subtotal, $finalAmount);
-
     }
 
     public function momoReturn(Request $request)
@@ -126,12 +130,12 @@ $cartItems = Cart::with(['product', 'variant'])
 
             $selectedIds = $data['selected_items'] ?? [];
 
-$cartItems = Cart::with(['product', 'variant'])
-    ->where('user_id', $userId)
-    ->when(!empty($selectedIds), function ($query) use ($selectedIds) {
-        return $query->whereIn('id', $selectedIds);
-    })
-    ->get();
+            $cartItems = Cart::with(['product', 'variant'])
+                ->where('user_id', $userId)
+                ->when(!empty($selectedIds), function ($query) use ($selectedIds) {
+                    return $query->whereIn('id', $selectedIds);
+                })
+                ->get();
 
 
             if ($cartItems->isEmpty()) {
@@ -171,8 +175,8 @@ $cartItems = Cart::with(['product', 'variant'])
                 'product_id'         => $item->product->id,
                 'product_variant_id' => $item->variant->id,
                 'quantity'           => $item->quantity,
-                'price'              => $item->variant->price,
-                'total_price'        => $item->variant->price * $item->quantity,
+                'price'              => $item->variant->sale_price,
+                'total_price'        => $item->variant->sale_price * $item->quantity,
                 'product_name'       => $item->product->name,
                 'variant_name'       => ($item->variant->color->name ?? '') . ' / ' . ($item->variant->size->name ?? ''),
                 'product_image'      => optional($item->product->images->first())->image,
@@ -201,7 +205,7 @@ $cartItems = Cart::with(['product', 'variant'])
         return redirect()->route('client.order.success', $order->id)->with('success', 'Đặt hàng thành công!');
     }
 
-    public function momoPayment(Request $request)
+    public function momoPayment()
     {
         $data = session('checkout_data');
 
@@ -213,17 +217,31 @@ $cartItems = Cart::with(['product', 'variant'])
         $partnerCode = 'MOMOBKUN20180529';
         $accessKey = 'klm05TvNBzhg7h7j';
         $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
-        $orderInfo = "Thanh toán đơn hàng qua MoMo";
+        $orderInfo = "Thanh toan don hang qua MoMo";
 
         $amount = $data['final_amount'];
         $orderId = time();
+        $requestId = time();
         $redirectUrl = route('momo.return');
         $ipnUrl = route('momo.return');
-        $requestId = time();
         $requestType = "payWithATM";
         $extraData = "";
 
-        $rawHash = "accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$requestId&requestType=$requestType";
+        $rawData = [
+            'accessKey'    => $accessKey,
+            'amount'       => $amount,
+            'extraData'    => $extraData,
+            'ipnUrl'       => $ipnUrl,
+            'orderId'      => $orderId,
+            'orderInfo'    => $orderInfo,
+            'partnerCode'  => $partnerCode,
+            'redirectUrl'  => $redirectUrl,
+            'requestId'    => $requestId,
+            'requestType'  => $requestType,
+        ];
+
+        ksort($rawData);
+        $rawHash = urldecode(http_build_query($rawData));
         $signature = hash_hmac("sha256", $rawHash, $secretKey);
 
         $body = [
@@ -243,13 +261,15 @@ $cartItems = Cart::with(['product', 'variant'])
         ];
 
         $result = $this->execPostRequest($endpoint, json_encode($body));
+        Log::info('🔁 MoMo Raw Response: ' . $result);
+
         $jsonResult = json_decode($result, true);
 
         if (isset($jsonResult['payUrl'])) {
             return redirect($jsonResult['payUrl']);
         }
 
-        return back()->with('error', 'Không thể kết nối MoMo.');
+        return back()->with('error', 'Không thể kết nối với cổng thanh toán MoMo.');
     }
 
     public function execPostRequest($url, $data)
@@ -262,20 +282,20 @@ $cartItems = Cart::with(['product', 'variant'])
             'Content-Type: application/json',
             'Content-Length: ' . strlen($data)
         ]);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
         $result = curl_exec($ch);
 
         if (curl_errno($ch)) {
-            $error_msg = curl_error($ch);
+            $error = curl_error($ch);
+            Log::error("❌ cURL MoMo Error: $error");
             curl_close($ch);
-            Log::error("cURL Error for MoMo API: " . $error_msg);
-            return false;
+            return json_encode(['curl_error' => $error]);
         }
 
         curl_close($ch);
-
         return $result;
     }
 

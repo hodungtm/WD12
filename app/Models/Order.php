@@ -34,7 +34,8 @@ class Order extends Model
         'total_price',
         'discount_amount',
         'final_amount',
-        'discount_code'
+        'discount_code',
+        'cancel_reason'
     ];
 
     protected $casts = [

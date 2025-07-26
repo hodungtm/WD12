@@ -12780,6 +12780,13 @@ main .sticky-header .product-ratings:before {
     margin-right: 1rem;
   }
 }
+
+.invalid-feedback, .text-danger, .error, .form-error, .alert-danger ul li {
+  font-size: 1.15rem !important;
+  color: #dc3545 !important;
+  font-weight: 500;
+  line-height: 1.6;
+}
 @media (min-width: 992px) and (max-width: 1199px) {
   .product-all-icons.product-action .product-single-qty {
     margin-right: 50%;

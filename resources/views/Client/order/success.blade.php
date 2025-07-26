@@ -13,7 +13,7 @@
             <p>Địa chỉ: {{ $order->receiver_address }}</p>
             <p>Số điện thoại: {{ $order->receiver_phone }}</p>
             <p>Phương thức giao hàng: {{ $order->shippingMethod->name ?? 'Không rõ' }}</p>
-            <p class="text-danger fw-bold">Tổng thanh toán: {{ number_format($order->total_price, 0, ',', '.') }}₫</p>
+            <p class="text-danger fw-bold">Tổng thanh toán: {{ number_format($order->final_amount, 0, ',', '.') }}₫</p>
         </div>
 
         <a href="{{ route('home') }}" class="btn btn-primary mt-4">Về trang chủ</a>

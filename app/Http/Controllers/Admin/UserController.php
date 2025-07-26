@@ -15,12 +15,18 @@ class UserController extends Controller
     {
         $query = User::query();
 
-        // Mặc định chỉ lấy role = 'user' nếu không có filter
-        if (!$request->filled('role')) {
+        // Apply role filter first if it's explicitly provided
+        // This ensures 'all' or specific roles override the default 'user'
+        if ($request->filled('role')) {
+            if ($request->role !== 'all') { // Assuming 'all' means no role filter
+                $query->where('role', strtolower($request->role));
+            }
+        } else {
+            // Default: if no role filter is specified, only show 'user' role
             $query->where('role', 'user');
         }
 
-        // Tìm kiếm theo tên hoặc email
+        // Search by name or email
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
@@ -28,15 +34,36 @@ class UserController extends Controller
             });
         }
 
-        // Nếu có filter role (vd: admin), áp dụng tiếp
-        if ($request->filled('role')) {
-            $query->where('role', strtolower($request->role));
+        // Filter by active status
+        if ($request->filled('is_active')) {
+            $query->where('is_active', (bool) $request->is_active);
         }
 
-        $users = $query->orderByDesc('id')->paginate(10)->appends($request->query());
+        // Filter by gender
+        if ($request->filled('gender')) {
+            $query->where('gender', $request->gender);
+        }
+
+        // Sort by creation date
+        if ($request->filled('sort_created')) {
+            if ($request->sort_created === 'asc') {
+                $query->orderBy('created_at', 'asc');
+            } else {
+                $query->orderBy('created_at', 'desc');
+            }
+        } else {
+            // Default sorting if no 'sort_created' is provided
+            $query->orderByDesc('id'); // Keep original ID order as default
+        }
+
+        // Determine items per page
+        $perPage = $request->input('per_page', 10); // Default to 10 if not specified
+
+        $users = $query->paginate($perPage)->appends($request->query());
 
         return view('Admin.Users.index', compact('users'));
     }
+
 
 
     public function show(User $user)
@@ -58,39 +85,40 @@ class UserController extends Controller
     }
 
     public function update(Request $request, User $user)
-    {
-        $auth = Auth::user();
+{
+    $auth = Auth::user();
 
-        // Admin chỉ được cập nhật chính mình
-        if (!($auth->id === $user->id && $auth->role === 'admin')) {
-            return redirect()->route('admin.users.index')->with('error', 'Bạn chỉ có thể cập nhật thông tin của chính mình.');
-        }
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'gender' => 'nullable|in:male,female,other',
-            'avatar' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
-            'password' => 'nullable|min:6',
-        ]);
-
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->gender = $request->gender;
-
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
-        }
-
-        if ($request->hasFile('avatar')) {
-            $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            $user->avatar = $avatarPath;
-        }
-
-        $user->save();
-
-        return redirect()->route('admin.users.index')->with('success', 'Cập nhật tài khoản thành công!');
+    // Admin chỉ được cập nhật chính mình
+    if (!($auth->id === $user->id && $auth->role === 'admin')) {
+return redirect()->route('admin.users.index')->with('error', 'Bạn chỉ có thể cập nhật thông tin của chính mình.');
     }
+
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+        'gender' => 'nullable|in:male,female,other',
+        'avatar' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+        'password' => 'nullable|min:6',
+    ]);
+
+    $user->name = $request->name;
+    $user->email = $request->email;
+    $user->gender = $request->gender;
+
+    if ($request->filled('password')) {
+        $user->password = Hash::make($request->password);
+    }
+
+    if ($request->hasFile('avatar')) {
+        $avatarPath = $request->file('avatar')->store('avatars', 'public');
+        $user->avatar = $avatarPath;
+    }
+
+    $user->save();
+
+    return redirect()->route('admin.users.edit', $user)->with('success', 'Cập nhật tài khoản thành công!');
+}
+
 
     public function editPassword(User $user)
     {
@@ -152,7 +180,7 @@ class UserController extends Controller
         }
 
         // Admin thường không được khóa admin khác hoặc chính mình
-        if ($auth->role === 'admin') {
+if ($auth->role === 'admin') {
             if ($user->role === 'admin' || $auth->id === $user->id) {
                 return redirect()->back()->with('error', 'Bạn không thể khóa tài khoản admin.');
             }
@@ -161,49 +189,8 @@ class UserController extends Controller
         $user->is_active = !$user->is_active;
         $user->save();
 
-        // AuditLog::create([
-        //     'user_id' => $auth->id,
-        //     'action' => 'update',
-        //     'target_type' => 'User',
-        //     'target_id' => $user->id,
-        //     'description' => ($user->is_active ? 'Mở khóa' : 'Khóa') . ' tài khoản: ' . $user->email,
-        //     'ip_address' => request()->ip(),
-        // ]);
+       
 
         return redirect()->back()->with('success', 'Trạng thái tài khoản đã được cập nhật!');
     }
-    public function destroy(User $user)
-    {
-        $auth = Auth::user();
-
-        // Chỉ cho super-admin thực hiện
-        if ($auth->role !== 'super-admin') {
-            return redirect()->route('admin.users.index')->with('error', 'Chỉ super-admin mới có quyền xóa tài khoản.');
-        }
-
-        // Không được xóa chính mình
-        if ($auth->id === $user->id) {
-            return redirect()->route('admin.users.index')->with('error', 'Bạn không thể xóa chính tài khoản của mình.');
-        }
-
-        // Chỉ được xóa admin thường, không được xóa super-admin
-        if ($user->role !== 'admin') {
-            return redirect()->route('admin.users.index')->with('error', 'Chỉ được xóa các tài khoản admin thông thường.');
-        }
-
-        // Thực hiện xóa
-        $user->delete();
-
-        // AuditLog::create([
-        //     'user_id' => $auth->id,
-        //     'action' => 'delete',
-        //     'target_type' => 'User',
-        //     'target_id' => $user->id,
-        //     'description' => 'Xóa tài khoản admin: ' . $user->email,
-        //     'ip_address' => request()->ip(),
-        // ]);
-
-        return redirect()->route('admin.users.index')->with('success', 'Đã xóa tài khoản admin thành công!');
-    }
-
 }

@@ -3,6 +3,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="tile card shadow-sm rounded-3 border-0">
+                <h3>Danh sách sản phẩm đã xóa</h3>
                 <div class="tile-body p-4">
                     {{-- XÓA ĐOẠN HIỂN THỊ LỖI/THÔNG BÁO Ở ĐÂY --}}
 
@@ -96,19 +97,18 @@
                                                 </div>
                                             </div>
                                             <div class="body-text mt-4">
-                                                {{ $product->created_at->format('d/m/Y H:i') }}
+                                                {{ $product->created_at ? $product->created_at->format('d/m/Y H:i') : 'N/A' }}
                                             </div>
                                             <div class="list-icon-function">
-                                                <a href="{{ route('restore', $product->id) }}" class="item restore" title="Khôi phục sản phẩm">
-                                                    <i class="bi bi-arrow-clockwise"></i>
+                                                <a href="{{ route('restore', $product->id) }}" class="item restore" title="Khôi phục sản phẩm"
+                                                   style="margin-right: 5px; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px;   ">
+                                                    <i class="fas fa-undo" style="color: #28a745; font-size: 20px;"></i>
                                                 </a>
-                                                <form action="{{ route('products.softDelete', $product->id) }}" method="POST"
-                                                    onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi hệ thống vĩnh viễn?');"
-                                                    style="display:inline;">
+                                                <form action="{{ route('products.forceDelete', $product->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi hệ thống vĩnh viễn?');">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" style="color: red" title="Xóa vĩnh viễn">
-                                                        <i class="icon-trash"></i>
+                                                    <button type="submit" style="color: red"  title="Xóa vĩnh viễn">
+                                                        <i class="icon-trash"style="color: red; font-size: 20px;"></i>
                                                     </button>
                                                 </form>
                                             </div>
