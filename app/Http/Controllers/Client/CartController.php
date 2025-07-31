@@ -57,18 +57,28 @@ public function addToCart(Request $request, $productId)
         ]);
     }
 
-    return redirect()->route('client.cart.index')->with('success', 'Đã thêm vào giỏ hàng.');
-}
+        return $this->success($request, 'Đã thêm vào giỏ hàng!');
+    }
 
+    public function updateAll(Request $request)
+    {
+        $data = $request->input('quantities', []); // dạng [cart_id => qty, …]
 
-   public function updateQuantity(Request $request, $id)
-{
-    $cartItem = Cart::where('id', $id)->firstOrFail();
-    $cartItem->update([
-        'quantity' => $request->input('quantity')
-    ]);
-    return back()->with('success', 'Cập nhật số lượng thành công.');
-}
+        foreach ($data as $id => $qty) {
+            $cartItem = Cart::where('id', $id)
+                ->where('user_id', Auth::id())
+                ->first();
+
+            if ($cartItem) {
+                $maxQty = $cartItem->variant->quantity ?? 1;
+                $cartItem->update([
+                    'quantity' => min($maxQty, max(1, (int) $qty)),
+                ]);
+            }
+        }
+
+        return back()->with('success', 'Cập nhật giỏ hàng thành công.');
+    }
 
     public function remove($id)
     {

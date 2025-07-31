@@ -258,24 +258,12 @@ use Illuminate\Support\Facades\Auth;
                 <div class="container">
                     <div class="header-left">
                         <div class="header-dropdown">
-                            <a href="#">USD</a>
-                            <div class="header-menu">
-                                <ul>
-                                    <li><a href="#">EUR</a></li>
-                                    <li><a href="#">USD</a></li>
-                                </ul>
-                            </div>
+                            <a href="#">VNĐ</a>
                         </div>
 
                         <div class="header-dropdown">
-                            <a href="#"><i class="flag-us flag"></i>ENG</a>
-                            <div class="header-menu">
-                                <ul>
-                                    <li><a href="#"><i class="flag-us flag mr-2"></i>ENG</a>
-                                    </li>
-                                    <li><a href="#"><i class="flag-fr flag mr-2"></i>FRA</a></li>
-                                </ul>
-                            </div><!-- End .header-menu -->
+                            <a href="#"><i class="flag flag-vietnam"></i>VIE</a>
+    
                         </div>
                     </div>
 
@@ -337,7 +325,7 @@ use Illuminate\Support\Facades\Auth;
                             <i class="fas fa-bars"></i>
                         </button>
                         <a href="{{ route('client.index') }}" class="logo">
-                            <img src="{{ asset('assets/images/logo-black.png') }}" alt="Porto Logo" width="111"
+                            <img src="{{ asset('assets/images/logo1.png') }}" alt="Porto Logo" width="111"
                                 height="44">
                         </a>
                         <nav class="main-nav">
@@ -454,7 +442,7 @@ use Illuminate\Support\Facades\Auth;
                                 <i class="fab fa-instagram text-white mr-4"></i>
                                 <div class="info-box-content">
                                     <h4 class="text-white line-height-1">Theo dõi chúng tôi trên Instagram</h4>
-                                    <p class="line-height-1">@portoecommerce</p>
+                                    <p class="line-height-1">@sudesecommerce</p>
                                 </div>
                             </div>
                         </div>
@@ -494,42 +482,13 @@ use Illuminate\Support\Facades\Auth;
                         </div>
                     </div>
                 </div>
-                <div class="container">
-                    <div class="widget-newsletter d-lg-flex align-items-center flex-wrap">
-                        <div class="footer-left d-md-flex flex-wrap align-items-center mr-5">
-                            <div class="info-box w-auto mr-5 my-3">
-                                <i class="far fa-envelope text-white mr-4"></i>
-                                <div class="widget-newsletter-info">
-                                    <h4 class="line-height-1 text-white">
-                                        Nhận ưu đãi và tiết kiệm đặc biệt
-                                    </h4>
-                                    <p class="line-height-1">Nhận thông tin mới nhất về sự kiện, khuyến mãi và ưu đãi.
-                                    </p>
-                                </div>
-                            </div>
-                            <form action="#" class="my-3">
-                                <div class="footer-submit-wrapper d-flex">
-                                    <input type="email" class="form-control font-italic"
-                                        placeholder="Nhập email của bạn..." size="40" required>
-                                    <button type="submit" class="btn btn-sm">Đăng ký</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="footer-right text-lg-right">
-                            <div class="social-icons my-3">
-                                <a href="#" class="social-icon social-facebook icon-facebook" target="_blank"></a>
-                                <a href="#" class="social-icon social-twitter icon-twitter" target="_blank"></a>
-                                <a href="#" class="social-icon social-linkedin fab fa-linkedin-in" target="_blank"></a>
-                            </div><!-- End .social-icons -->
-                        </div>
-                    </div>
-                </div>
+                
             </div>
             <div class="container">
                 <div class="footer-middle">
                     <div class="row">
                         <div class="col-lg-3">
-                            <a href="{{ route('client.index') }}"><img src="{{ asset('assets/images/logo-white.png') }}"
+                            <a href="{{ route('client.index') }}"><img src="{{ asset('assets/images/logo2.png') }}"
                                     alt="Logo" class="logo"></a>
 
                             <p class="footer-desc">Cửa hàng chuyên cung cấp sản phẩm chất lượng cao.</p>
