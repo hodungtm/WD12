@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-    use Illuminate\Support\Facades\Session;
+    
 
 class UserController extends Controller
 {
@@ -17,13 +17,21 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
+            'gender' => 'nullable|in:male,female,other',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         /** @var User $user */
         $user = Auth::user();
         $user->name = $request->name;
         $user->phone = $request->phone;
-        $user->address = $request->address;
+        $user->gender = $request->gender;
+        // Xử lý upload avatar
+        if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
+            $path = $file->store('avatars', 'public');
+            $user->avatar = '/storage/' . $path;
+        }
         $user->save();
 
         return back()->with('success_info', 'Cập nhật thông tin thành công!');
@@ -52,19 +60,16 @@ class UserController extends Controller
 
 
 
-public function saveAddressSession(Request $request)
+public function saveAddress(Request $request)
 {
     $validated = $request->validate([
-        'detail' => 'required|string|max:255',
-        'city' => 'required|string|max:100',
-        'country' => 'required|string|max:100',
+        'address' => 'required|string|max:255',
     ]);
 
-    session([
-        'address.detail' => $validated['detail'],
-        'address.city' => $validated['city'],
-        'address.country' => $validated['country'],
-    ]);
+    /** @var User $user */
+    $user = Auth::user();
+    $user->address = $validated['address'];
+    $user->save();
 
     return back()->with('success_address', 'Cập nhật địa chỉ giao hàng thành công!');
 }

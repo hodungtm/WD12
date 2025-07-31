@@ -1,82 +1,86 @@
 @extends('Admin.Layouts.AdminLayout')
 
 @section('main')
-<div class="app-title">
-  <ul class="app-breadcrumb breadcrumb">
-    <li class="breadcrumb-item">Tài khoản</li>
-    <li class="breadcrumb-item active"><a href="#">Chi tiết tài khoản</a></li>
-  </ul>
-</div>
-
-<div class="row">
-  <div class="col-md-12">
-    <div class="tile">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="tile-title mb-0">Chi tiết người dùng</h3>
-        <a href="{{ route('admin.users.index') }}" class="btn btn-secondary btn-sm">
-          <i class="fa fa-arrow-left"></i> Quay lại
-        </a>
-      </div>
-
-      <div class="text-center mb-4">
-        <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : asset('default-avatar.png') }}"
-             width="120" height="120" class="rounded-circle border" alt="Avatar">
-      </div>
-
-      <table class="table table-bordered">
-        <tr>
-          <th style="width: 200px;">ID</th>
-          <td>{{ $user->id }}</td>
-        </tr>
-        <tr>
-          <th>Họ tên</th>
-          <td>{{ $user->name }}</td>
-        </tr>
-        <tr>
-          <th>Email</th>
-          <td>{{ $user->email }}</td>
-        </tr>
-        <tr>
-          <th>Số điện thoại</th>
-          <td>{{ $user->phone ?? '—' }}</td>
-        </tr>
-        <tr>
-          <th>Giới tính</th>
-          <td>
-            @php
-              $genderLabels = ['male' => 'Nam ♂', 'female' => 'Nữ ♀', 'other' => 'Khác ⚧'];
-            @endphp
-            {{ $genderLabels[$user->gender] ?? '—' }}
-          </td>
-        </tr>
-        <tr>
-          <th>Vai trò</th>
-          <td>
-            @if($user->role === 'admin')
-              <span class="badge bg-info">Admin</span>
-            @elseif($user->role === 'super-admin')
-              <span class="badge bg-danger">Super Admin</span>
-            @else
-              <span class="badge bg-secondary">User</span>
-            @endif
-          </td>
-        </tr>
-        <tr>
-          <th>Trạng thái</th>
-          <td>
-            @if($user->is_active)
-              <span class="badge bg-success">Hoạt động</span>
-            @else
-              <span class="badge bg-danger">Bị khóa</span>
-            @endif
-          </td>
-        </tr>
-        <tr>
-          <th>Ngày tạo</th>
-          <td>{{ $user->created_at->format('d/m/Y H:i') }}</td>
-        </tr>
-      </table>
+    <div class="main-content-inner">
+        <div class="main-content-wrap">
+            <div class="flex items-center flex-wrap justify-between gap20 mb-30">
+                <h3>Chi tiết tài khoản</h3>
+                <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+                    <li><a href="{{ route('admin.users.index') }}">
+                            <div class="text-tiny">Dashboard</div>
+                        </a></li>
+                    <li><i class="icon-chevron-right"></i></li>
+                    <li><a href="{{ route('admin.users.index') }}">
+                            <div class="text-tiny">Tài khoản</div>
+                        </a></li>
+                    <li><i class="icon-chevron-right"></i></li>
+                    <li>
+                        <div class="text-tiny">Chi tiết tài khoản</div>
+                    </li>
+                </ul>
+            </div>
+            {{-- Box: Ảnh & thông tin cơ bản --}}
+            <div class="wg-box mb-30">
+                <div class="title-box mb-20">
+                    <i class="icon-user"></i>
+                    <div class="body-text">Ảnh & thông tin cơ bản</div>
+                </div>
+                <div class="flex flex-column items-center mb-4">
+                    <div style="flex-basis: 80px;">
+                        <img src="{{ $user->avatar ?? 'https://via.placeholder.com/120' }}"
+                        class=" border border-3 border-white shadow profile-avatar"
+                        alt="Avatar">
+                    </div>
+                    <div class="body-title mb-2" style="font-size: 1.3em;">{{ $user->name }}</div>
+                    <span class="badge fw-bold {{ $user->role === 'super-admin' ? 'bg-danger' : ($user->role === 'admin' ? 'bg-warning text-dark' : 'bg-success') }} mb-2">
+                        {{ ucfirst($user->role) }}
+                    </span>
+                    <span class="{{ $user->is_active ? 'text-success' : 'text-danger' }} fw-bold mb-2">
+                        {{ $user->is_active ? 'Hoạt động' : 'Bị khoá' }}
+                    </span>
+                </div>
+            </div>
+            {{-- Box: Thông tin liên hệ & hệ thống --}}
+            <div class="wg-box mb-30">
+                <div class="title-box mb-20">
+                    <i class="icon-info"></i>
+                    <div class="body-text">Thông tin liên hệ & hệ thống</div>
+                </div>
+                <div class="info-section mb-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="body-title mb-1">Email</div>
+                            <div class="body-text">{{ $user->email }}</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="body-title mb-1">Số điện thoại</div>
+                            <div class="body-text">{{ $user->phone ?? '—' }}</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="body-title mb-1">Giới tính</div>
+                            <div class="body-text">
+                                @php
+                                    $genderLabels = ['male' => 'Nam ♂', 'female' => 'Nữ ♀', 'other' => 'Khác ⚧'];
+                                @endphp
+                                {{ $genderLabels[$user->gender] ?? '—' }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="body-title mb-1">Ngày tạo</div>
+                            <div class="body-text">{{ $user->created_at ? $user->created_at->format('d/m/Y H:i') : 'N/A' }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <div class="flex justify-start gap-3 mt-4">
+                    <a href="{{ route('admin.users.index') }}" class="tf-button style-3 btn-sm w-auto px-2 py-1">
+                        <i class="icon-arrow-left"></i>
+                    </a>
+                    <a href="{{ route('admin.users.edit', $user->id) }}" class="tf-button style-2 btn-sm w-auto px-2 py-1">
+                        <i class="icon-edit-3"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 @endsection

@@ -42,28 +42,25 @@
 @section('main')
 
 <main class="main">
-    <div class="page-header mb-4"
-        style="background-image: url('http://127.0.0.1:8000/storage/posts/auirElmcdHdViRMdXtQi6FtLGwY1ezwxqv99ju5K.png'); height: 280px; display: flex; align-items:center;background-size: 100%">
-        <div class="container d-flex flex-column align-items-left">
-            <h1
-                style="font-size: 45px; font-weight: 700; color: rgb(255, 255, 255);text-shadow: 2px 2px 5px rgba(12, 12, 12, 0.8); text-align: left">
-                {{ $post->title }}
-            </h1>
-            <nav aria-label="breadcrumb" class="breadcrumb-nav" style="background-color: #ffffff00; border-top: 0px">
-                <div class="container">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ route('home') }}"
-                                style="font-size: 16px; font-weight: 700;color: #000000;text-shadow: 2px 2px 5px rgba(141, 141, 141, 0.9);">Trang
-                                chủ</a>
-                        </li>
-                        <li class="breadcrumb-item"><a href="{{ route('client.listblog') }}"    
-                                style="font-size: 16px; font-weight: 700;color: #ffffff;text-shadow: 2px 2px 5px rgba(141, 141, 141, 0.9);">Tin tức</a>
-                        </li>
-                        <li style="font-size: 16px; font-weight: 700;color: #ffffff;text-shadow: 2px 2px 5px rgba(141, 141, 141, 0.6);"
-                            class="breadcrumb-item active" aria-current="page">{{ $post->title }}</li>
-                    </ol>
+    <div class="category-banner banner p-0">
+        <div class="row align-items-center no-gutters m-0 text-center text-lg-left">
+            <div
+                class="col-md-4 col-xl-2 offset-xl-2 d-flex justify-content-center justify-content-lg-start my-5 my-lg-0">
+                <div class="d-flex flex-column justify-content-center">
+                    <h3 class="text-left text-light text-uppercase m-0">Ưu đãi</h3>
+                    <h2 class="text-uppercase m-b-1">Giảm 20%</h2>
+                    <h3 class="font-weight-bold text-uppercase heading-border ml-0 m-b-3">Thể thao</h3>
                 </div>
-            </nav>
+            </div>
+            <div class="col-md-5 col-lg-4 text-md-center my-5 my-lg-0"
+                style="background-image: url('{{ asset('assets/images/demoes/demo27/banners/shop-banner-bg.png') }}');">
+                <img class="d-inline-block" src="{{ asset('assets/images/demoes/demo27/banners/shop-banner.png') }}" alt="banner"
+                    width="400" height="242">
+            </div>
+            <div class="col-md-3 my-5 my-lg-0">
+                <h4 class="font5 line-height-1 m-b-4">Khuyến mãi mùa hè</h4>
+                <a href="#" class="btn btn-teritary btn-lg ml-0">Xem tất cả khuyến mãi</a>
+            </div>
         </div>
     </div>
     <div class="container">

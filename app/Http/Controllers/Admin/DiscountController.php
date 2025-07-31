@@ -165,26 +165,6 @@ class DiscountController extends Controller
         return redirect()->route('admin.discounts.index')->with('success', 'Đã xóa tất cả mã giảm giá');
     }
 
-    public function trashed()
-    {
-        $discounts = Discount::onlyTrashed()->get();
-        return view('admin.discounts.trashed', compact('discounts'));
-    }
-
-    public function restore($id)
-    {
-        $discount = Discount::onlyTrashed()->findOrFail($id);
-        $discount->restore();
-        return redirect()->route('admin.discounts.trashed')->with('success', 'Khôi phục mã giảm giá thành công');
-    }
-
-    public function forceDelete($id)
-    {
-        $discount = Discount::onlyTrashed()->findOrFail($id);
-        $discount->forceDelete();
-        return redirect()->route('admin.discounts.trashed')->with('success', 'Đã xóa mã giảm giá vĩnh viễn');
-    }
-
 public function bulkDelete(Request $request)
 {
     if ($request->filled('selected_discounts')) {

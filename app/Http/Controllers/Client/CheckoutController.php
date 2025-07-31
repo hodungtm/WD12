@@ -36,8 +36,11 @@ class CheckoutController extends Controller
         }
 
         $shippingMethods = ShippingMethod::all();
+        $subtotal = $cartItems->sum(fn($item) => $item->variant->sale_price * $item->quantity);
+
         $discounts = Discount::whereDate('start_date', '<=', now())
             ->whereDate('end_date', '>=', now())
+            ->where('min_order_amount', '<=', $subtotal)
             ->get();
 
         return view('client.cart.checkout', compact('cartItems', 'shippingMethods', 'discounts'));
@@ -47,23 +50,25 @@ class CheckoutController extends Controller
     {
         $user = Auth::user();
         $selectedIds = $request->input('selected_items', []);
-
+        if (empty($selectedIds)) {
+            $selectedIds = Cart::where('user_id', $user->id)->pluck('id')->toArray();
+        }
 
         if (empty($selectedIds)) {
             return back()->with('error', 'Vui lòng chọn sản phẩm để thanh toán.');
         }
-$cartItems = Cart::with(['product', 'variant'])
-    ->where('user_id', $user->id)
-    ->when(!empty($selectedIds), function ($query) use ($selectedIds) {
-        return $query->whereIn('id', $selectedIds);
-    })
-    ->get();
+        $cartItems = Cart::with(['product', 'variant'])
+            ->where('user_id', $user->id)
+            ->when(!empty($selectedIds), function ($query) use ($selectedIds) {
+                return $query->whereIn('id', $selectedIds);
+            })
+            ->get();
 
         if ($cartItems->isEmpty()) {
             return back()->with('error', 'Không tìm thấy sản phẩm được chọn.');
         }
 
-        $subtotal = $cartItems->sum(fn($item) => $item->variant->price * $item->quantity);
+        $subtotal = $cartItems->sum(fn($item) => $item->variant->sale_price * $item->quantity);
 
         $discountCode = $request->discount_code;
         $discountAmount = 0;
@@ -95,7 +100,7 @@ $cartItems = Cart::with(['product', 'variant'])
                     'receiver_name'      => $request->receiver_name,
                     'receiver_phone'     => $request->receiver_phone,
                     'receiver_email'     => $user->email,
-                    'receiver_address'   => $request->receiver_address,
+                    'receiver_address'   => $request->address,
                     'payment_method'     => 'Momo',
                     'shipping_method_id' => $request->shipping_method_id,
                     'discount_code'      => $discountCode,
@@ -111,7 +116,6 @@ $cartItems = Cart::with(['product', 'variant'])
         }
 
         return $this->storeOrder($request, $cartItems, $discountCode, $discountAmount, $shippingFee, $subtotal, $finalAmount);
-
     }
 
     public function momoReturn(Request $request)
@@ -126,12 +130,12 @@ $cartItems = Cart::with(['product', 'variant'])
 
             $selectedIds = $data['selected_items'] ?? [];
 
-$cartItems = Cart::with(['product', 'variant'])
-    ->where('user_id', $userId)
-    ->when(!empty($selectedIds), function ($query) use ($selectedIds) {
-        return $query->whereIn('id', $selectedIds);
-    })
-    ->get();
+            $cartItems = Cart::with(['product', 'variant'])
+                ->where('user_id', $userId)
+                ->when(!empty($selectedIds), function ($query) use ($selectedIds) {
+                    return $query->whereIn('id', $selectedIds);
+                })
+                ->get();
 
 
             if ($cartItems->isEmpty()) {
@@ -146,102 +150,103 @@ $cartItems = Cart::with(['product', 'variant'])
 
 
     public function storeOrder($request, $cartItems, $discountCode, $discountAmount, $shippingFee, $subtotal, $finalAmount)
-    {
-        $order = Order::create([
-            'user_id'            => Auth::id(),
-            'order_code'         => 'DH' . now()->format('Ymd') . '-' . strtoupper(Str::random(5)),
-            'order_date'         => now(),
-            'shipping_method_id' => $request->shipping_method_id,
-            'receiver_name'      => $request->receiver_name,
-            'receiver_phone'     => $request->receiver_phone,
-            'receiver_email'     => $request->receiver_email,
-            'receiver_address'   => $request->receiver_address,
-            'payment_method'     => $request->payment_method,
-            'total_price'        => $subtotal,
-            'shipping_fee'       => $shippingFee,
-            'discount_code'      => $discountCode,
-            'discount_amount'    => $discountAmount,
-            'final_amount'       => $finalAmount,
+{
+    // ✅ Kiểm tra và trừ mã giảm giá (nếu có)
+    if ($discountCode) {
+        $discount = Discount::where('code', $discountCode)
+            ->whereDate('start_date', '<=', now())
+            ->whereDate('end_date', '>=', now())
+            ->first();
 
-        ]);
-
-        foreach ($cartItems as $item) {
-            Order_items::create([
-                'order_id'           => $order->id,
-                'product_id'         => $item->product->id,
-                'product_variant_id' => $item->variant->id,
-                'quantity'           => $item->quantity,
-                'price'              => $item->variant->price,
-                'total_price'        => $item->variant->price * $item->quantity,
-                'product_name'       => $item->product->name,
-                'variant_name'       => ($item->variant->color->name ?? '') . ' / ' . ($item->variant->size->name ?? ''),
-                'product_image'      => optional($item->product->images->first())->image,
-            ]);
-
-            if ($item->variant) {
-                $variant = ProductVariant::find($item->variant->id);
-                if ($variant) {
-                    $variant->quantity -= $item->quantity;
-                    $variant->quantity = max(0, $variant->quantity);
-                    $variant->save();
-                }
-            } else {
-                $product = Products::find($item->product->id);
-                if ($product) {
-                    $product->quantity -= $item->quantity;
-                    $product->quantity = max(0, $product->quantity);
-                    $product->save();
-                }
-            }
+        if (!$discount) {
+            return back()->with('error', 'Mã giảm giá không hợp lệ hoặc đã hết hạn.');
         }
 
-        Cart::whereIn('id', $cartItems->pluck('id'))->delete();
-        session()->forget('checkout_data');
+        if ($discount->max_usage <= 0) {
+            return back()->with('error', 'Mã giảm giá đã được sử dụng hết.');
+        }
 
-        return redirect()->route('client.order.success', $order->id)->with('success', 'Đặt hàng thành công!');
+        // ✅ Trừ số lượt còn lại
+        $discount->decrement('max_usage');
     }
 
-   public function momoPayment(Request $request)
-{
-    $data = session('checkout_data');
+    // ✅ Tạo đơn hàng
+    $order = Order::create([
+        'user_id'            => Auth::id(),
+        'order_code'         => 'DH' . now()->format('Ymd') . '-' . strtoupper(Str::random(5)),
+        'order_date'         => now(),
+        'shipping_method_id' => $request->shipping_method_id,
+        'receiver_name'      => $request->receiver_name,
+        'receiver_phone'     => $request->receiver_phone,
+        'receiver_email'     => $request->receiver_email,
+        'receiver_address'   => $request->receiver_address,
+        'payment_method'     => $request->payment_method,
+        'total_price'        => $subtotal,
+        'shipping_fee'       => $shippingFee,
+        'discount_code'      => $discountCode,
+        'discount_amount'    => $discountAmount,
+        'final_amount'       => $finalAmount,
+    ]);
+
+    foreach ($cartItems as $item) {
+        Order_items::create([
+            'order_id'           => $order->id,
+            'product_id'         => $item->product->id,
+            'product_variant_id' => $item->variant->id,
+            'quantity'           => $item->quantity,
+            'price'              => $item->variant->sale_price,
+            'total_price'        => $item->variant->sale_price * $item->quantity,
+            'product_name'       => $item->product->name,
+            'variant_name'       => ($item->variant->color->name ?? '') . ' / ' . ($item->variant->size->name ?? ''),
+            'product_image'      => optional($item->product->images->first())->image,
+        ]);
+
+        // Trừ kho
+        if ($item->variant) {
+            $variant = ProductVariant::find($item->variant->id);
+            if ($variant) {
+                $variant->quantity = max(0, $variant->quantity - $item->quantity);
+                $variant->save();
+            }
+        } else {
+            $product = Products::find($item->product->id);
+            if ($product) {
+                $product->quantity = max(0, $product->quantity - $item->quantity);
+                $product->save();
+            }
+        }
+    }
+
+    // Xoá giỏ hàng và session
+    Cart::whereIn('id', $cartItems->pluck('id'))->delete();
+    session()->forget('checkout_data');
+return redirect()->route('client.order.success', $order->id)->with('success', 'Đặt hàng thành công!');
+}
+
+    public function momoPayment(Request $request)
+    {
+        $data = session('checkout_data');
 
     if (!$data) {
         return redirect()->route('client.checkout')->with('error', 'Không có dữ liệu đơn hàng');
     }
 
-    // Cấu hình MoMo test
-    $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
-    $partnerCode = 'MOMOBKUN20180529';
-    $accessKey = 'klm05TvNBzhg7h7j';
-    $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
-    $orderInfo = "Thanh toan don hang qua MoMo"; // Không dấu để tránh lỗi encode
+        $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
+        $partnerCode = 'MOMOBKUN20180529';
+        $accessKey = 'klm05TvNBzhg7h7j';
+        $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
+        $orderInfo = "Thanh toán đơn hàng qua MoMo";
 
-    // Thông tin đơn hàng
-    $amount = $data['final_amount'];
-    $orderId = time(); // Hoặc mã đơn hàng từ DB
-    $requestId = time();
-    $redirectUrl = route('momo.return');
-    $ipnUrl = route('momo.return');
-    $requestType = "payWithATM";
-    $extraData = ""; // Có thể mã hóa base64 thông tin phụ nếu muốn
+        $amount = $data['final_amount'];
+        $orderId = time();
+        $redirectUrl = route('momo.return');
+        $ipnUrl = route('momo.return');
+        $requestId = time();
+        $requestType = "payWithATM";
+        $extraData = "";
 
-    // Tạo chuỗi rawHash theo chuẩn MoMo
-    $rawData = [
-        'accessKey'    => $accessKey,
-        'amount'       => $amount,
-        'extraData'    => $extraData,
-        'ipnUrl'       => $ipnUrl,
-        'orderId'      => $orderId,
-        'orderInfo'    => $orderInfo,
-        'partnerCode'  => $partnerCode,
-        'redirectUrl'  => $redirectUrl,
-        'requestId'    => $requestId,
-        'requestType'  => $requestType,
-    ];
-
-    ksort($rawData); // Sắp xếp theo thứ tự alphabet
-    $rawHash = urldecode(http_build_query($rawData));
-    $signature = hash_hmac("sha256", $rawHash, $secretKey);
+        $rawHash = "accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$requestId&requestType=$requestType";
+        $signature = hash_hmac("sha256", $rawHash, $secretKey);
 
     // Dữ liệu gửi đi
     $body = [
@@ -260,52 +265,42 @@ $cartItems = Cart::with(['product', 'variant'])
         'signature' => $signature
     ];
 
-    // Gửi request tới MoMo
-    $result = $this->execPostRequest($endpoint, json_encode($body));
-    Log::info('🔁 MoMo Raw Response: ' . $result);
-
-    $jsonResult = json_decode($result, true);
-
-    // Kiểm tra kết quả
-    if (is_null($jsonResult)) {
-        Log::error('❌ Không decode được JSON từ MoMo. Raw: ' . $result);
-        return back()->with('error', 'MoMo trả về dữ liệu không hợp lệ.');
-    }
+        $result = $this->execPostRequest($endpoint, json_encode($body));
+        $jsonResult = json_decode($result, true);
 
     if (isset($jsonResult['payUrl'])) {
         return redirect($jsonResult['payUrl']);
     }
 
-    return back()->with('error', 'Không thể kết nối với cổng thanh toán MoMo.');
-}
-public function execPostRequest($url, $data)
-{
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Content-Type: application/json',
-        'Content-Length: ' . strlen($data)
-    ]);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        return back()->with('error', 'Không thể kết nối MoMo.');
+    }
 
-    // Tạm thời tắt verify SSL khi test (có thể bật lại khi dùng production)
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    public function execPostRequest($url, $data)
+    {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($data)
+        ]);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
 
     $result = curl_exec($ch);
 
-    if (curl_errno($ch)) {
-        $error = curl_error($ch);
-        Log::error("❌ cURL MoMo Error: $error");
-        curl_close($ch);
-        return json_encode(['curl_error' => $error]);
-    }
+        if (curl_errno($ch)) {
+            $error_msg = curl_error($ch);
+            curl_close($ch);
+            Log::error("cURL Error for MoMo API: " . $error_msg);
+            return false;
+        }
 
-    curl_close($ch);
-    return $result;
-}
+        curl_close($ch);
+
+        return $result;
+    }
 
     public function success($orderId)
     {

@@ -14,26 +14,27 @@ use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\ProductsController;
 
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Client\BlogController;
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\ReviewController;
+use App\Http\Controllers\Client\OrderController;
+
+
 use App\Http\Controllers\Admin\CommentController;
-
-
 use App\Http\Controllers\Admin\CategoryController;
+
+
 use App\Http\Controllers\Admin\DiscountController;
-
-
+use App\Http\Controllers\Client\ContactController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\ProductDetailController;
 use App\Http\Controllers\Client\ListProductClientController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Client\UserController as ClientUserController;
+use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\WishlistController as ClientWishlistController;
-use App\Http\Controllers\Client\BlogController;
-use App\Http\Controllers\Client\ContactController;
-
 
 
 Route::prefix('admin')->group(function () {
@@ -44,6 +45,8 @@ Route::prefix('client')->name('client.')->group(function () {
     Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('index');
     Route::get('/san-pham', [ListProductClientController::class, 'index'])->name('listproduct');
     Route::get('/san-pham/{id}', [ProductDetailController::class, 'show'])->name('product.detail');
+    Route::get('/san-pham-ban-chay', [HomeController::class, 'bestSellers'])->name('products.best_sellers');
+    Route::get('/san-pham-noi-bat', [HomeController::class, 'featured'])->name('products.featured');
     Route::post('/san-pham/{id}/danh-gia', [ProductDetailController::class, 'submitReview'])->name('product.review');
     Route::put('/san-pham/{product}/danh-gia/{review}', [ProductDetailController::class, 'updateReview'])->name('product.review.update');
     Route::post('/san-pham/{id}/binh-luan', [ProductDetailController::class, 'submitComment'])->name('product.comment');
@@ -60,10 +63,10 @@ Route::prefix('client')->name('client.')->group(function () {
     Route::middleware(['auth'])->group(function () {
         // Giỏ hàng
         Route::prefix('cart')->name('cart.')->group(function () {
-            Route::get('/', [CartController::class, 'index'])->name('index'); // client.cart.index
-            Route::post('/add/{productId}', [CartController::class, 'addToCart'])->name('add'); // client.cart.add
-            Route::post('/update-quantity/{id}', [CartController::class, 'updateQuantityAjax']);
-            Route::delete('/remove/{id}', [CartController::class, 'remove'])->name('remove'); // client.cart.remove
+            Route::get('/', [CartController::class, 'index'])->name('index');
+            Route::post('/add/{productId}', [CartController::class, 'addToCart'])->name('add');
+            Route::put('/update-all', [CartController::class, 'updateAll'])->name('updateAll');
+            Route::delete('/remove/{id}', [CartController::class, 'remove'])->name('remove');
         });
         Route::prefix('wishlist')->name('wishlist.')->group(function () {
             Route::get('/', [ClientWishlistController::class, 'index'])->name('index'); // client.wishlist.index
@@ -74,6 +77,10 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
         Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
         Route::get('/don-hang-thanh-cong/{order}', [CheckoutController::class, 'success'])->name('order.success');
+        //Theo dõi đơn hàng
+        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+        Route::post('/orders/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
     });
 });
 
@@ -81,7 +88,7 @@ Route::get('/momo_payment', [CheckoutController::class, 'momoPayment'])->name('m
 Route::get('/momo_return', [CheckoutController::class, 'momoReturn'])->name('momo.return');
 
 Route::prefix('admin')->group(function () {
-    Route::resource('orders', OrderController::class)->names('admin.orders');
+    Route::resource('orders', AdminOrderController::class)->except(['create', 'store'])->names('admin.orders');
 });
 Route::post('/admin/orders/{order}/complete', [App\Http\Controllers\Admin\OrderController::class, 'completeOrder'])->name('admin.orders.complete');
 
@@ -129,10 +136,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('discounts/export-excel', [DiscountController::class, 'exportExcel'])->name('discounts.exportExcel');
     Route::get('discounts-report', [DiscountController::class, 'report'])->name('discounts.report');
 
-    Route::get('discounts/trashed', [DiscountController::class, 'trashed'])->name('discounts.trashed');
-    Route::post('discounts/{id}/restore', [DiscountController::class, 'restore'])->name('discounts.restore');
-    Route::delete('discounts/delete-all', [DiscountController::class, 'deleteAll'])->name('discounts.deleteAll');
-    Route::delete('discounts/{id}/force-delete', [DiscountController::class, 'forceDelete'])->name('discounts.forceDelete');
     Route::get('/admin/discounts/{id}', [DiscountController::class, 'show'])->name('discounts.show');
 });
 Route::post('admin/discounts/import-excel', [DiscountController::class, 'importExcel'])->name('discounts.importExcel');
@@ -162,7 +165,7 @@ Route::middleware(['auth'])->prefix('user')->group(function () {
     Route::get('/dashboard', [ClientUserController::class, 'dashboard'])->name('user.dashboard');
     Route::post('/update-info', [ClientUserController::class, 'updateInfo'])->name('user.updateInfo');
     Route::post('/change-password', [ClientUserController::class, 'changePassword'])->name('user.changePassword');
-    Route::post('/save-address-session', [ClientUserController::class, 'saveAddressSession'])->name('user.saveAddressSession');
+    Route::post('/user/save-address', [ClientUserController::class, 'saveAddress'])->name('user.saveAddress');
 });
 
 
@@ -181,7 +184,7 @@ Route::get('user/dashboard', [AccountController::class, 'dashboard'])->name('use
 //------------------------------------------------------ producst ------------------------------------------------------>
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
-    Route::get('/trash', [ProductsController::class, 'trash'])->name('trash');
+    Route::get('/products/trash', [ProductsController::class, 'trash'])->name('trash');
     Route::get('/products/{id}/restore/', [ProductsController::class, 'restore'])->name('restore');
 
     // Xóa ảnh phụ
@@ -189,7 +192,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
     // Xóa mềm sản phẩm (dành cho trang danh sách)
     Route::delete('/products/{id}/soft-delete', [ProductsController::class, 'softDelete'])->name('products.softDelete');
-
+    Route::delete('/products/{id}/force-delete', [ProductsController::class, 'forceDelete'])->name('products.forceDelete');
     // Danh mục
     Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
 
@@ -212,8 +215,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
 // ---------------------------------------ADMIM POST---------------------------------------------------------->
 Route::prefix('admin')->group(function () {
-    Route::post('admin/discounts/import-excel', [DiscountController::class, 'importExcel'])->name('discounts.importExcel');
-    Route::delete('/posts/delete-selected', [PostController::class, 'deleteSelected'])->name('posts.delete.selected');
     Route::resource('posts', PostController::class);
 });
 //----------------------------------------------------------------------------------------------------------------------------->
@@ -222,7 +223,7 @@ Route::get('/search', [App\Http\Controllers\Client\ListProductClientController::
 
 Route::delete('/discounts/bulk-delete', [DiscountController::class, 'bulkDelete'])->name('admin.discounts.bulkDelete');
 
+
+Route::get('/cart/mini', [\App\Http\Controllers\Client\CartController::class, 'miniCart'])->name('cart.mini');
+
 Route::post('/chatbot', [HomeController::class, 'respond']);
-
-
-

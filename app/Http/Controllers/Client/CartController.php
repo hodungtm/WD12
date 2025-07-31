@@ -4,64 +4,47 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Hash;
 use App\Models\Products;
 use App\Models\ProductVariant;
-use App\Models\Review;
-use App\Models\Comment;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-public function index()
-{
-    $cartItems = Cart::with([
-        'variant.color',
-        'variant.size',
-        'product.images'
-    ])
-    ->where('user_id', Auth::id()) // Chỉ lấy giỏ hàng của user hiện tại
-    ->get();
+    public function index()
+    {
+        $cartItems = Cart::with(['variant.color', 'variant.size', 'product.images'])
+            ->where('user_id', Auth::id())
+            ->get();
 
-    return view('Client.cart.ListCart', compact('cartItems'));
-}
-
+        return view('Client.cart.ListCart', compact('cartItems'));
+    }
 
 public function addToCart(Request $request, $productId)
 {
     $product = Products::findOrFail($productId);
-    $productId = $request->input('product_id');
     $variantId = $request->input('variant_id');
     $quantity = (int) $request->input('quantity', 1);
     $userId = Auth::id();
 
-    if (!$variantId) {
-        return back()->with('error', 'Vui lòng chọn đầy đủ màu và kích thước.');
-    }
+        if (!$variantId || !ProductVariant::find($variantId)) {
+            return $this->fail($request, 'Vui lòng chọn đầy đủ màu, kích thước hoặc biến thể không tồn tại.');
+        }
 
-    $variant = ProductVariant::find($variantId);
-    if (!$variant) {
-        return back()->with('error', 'Biến thể không tồn tại.');
-    }
+        $variant = ProductVariant::find($variantId);
+        $stock = $variant->quantity;
 
-    $stock = $variant->quantity;
+        $existing = Cart::where('user_id', $userId)
+            ->where('product_id', $productId)
+            ->where('variant_id', $variantId)
+            ->first();
 
-    // Kiểm tra tồn tại
-    $existing = Cart::where('user_id', $userId)
-        ->where('product_id', $productId)
-        ->where('variant_id', $variantId)
-        ->first();
+        $currentQty = $existing?->quantity ?? 0;
+        $newQty = $currentQty + $quantity;
 
-    $currentQty = $existing ? $existing->quantity : 0;
-    $newQty = $currentQty + $quantity;
-
-    if ($newQty > $stock) {
-        return back()->with('error', 'Không thể thêm ' . $quantity . ' sản phẩm. Hiện bạn đã có ' . $currentQty . ' sản phẩm trong giỏ. Tồn kho chỉ còn ' . $stock . '.');
-    }
+        if ($newQty > $stock) {
+            return $this->fail($request, 'Không thể thêm. Hiện đã có ' . $currentQty . ', tồn kho chỉ còn ' . $stock);
+        }
 
     if ($existing) {
         $existing->increment('quantity', $quantity);
@@ -73,37 +56,81 @@ public function addToCart(Request $request, $productId)
             'quantity'   => $quantity,
         ]);
     }
-    return redirect()->route('client.cart.index')
-        ->with('success', 'Đã thêm vào giỏ hàng.');
 
+    return redirect()->route('client.cart.index')->with('success', 'Đã thêm vào giỏ hàng.');
 }
 
 
-public function updateQuantityAjax(Request $request, $id)
+   public function updateQuantity(Request $request, $id)
 {
-    $cartItem = Cart::where('id', $id)->where('user_id', Auth::id())->first();
-    if (!$cartItem) {
-        return response()->json(['status' => 'error', 'message' => 'Không tìm thấy sản phẩm'], 404);
+    $cartItem = Cart::where('id', $id)->firstOrFail();
+    $cartItem->update([
+        'quantity' => $request->input('quantity')
+    ]);
+    return back()->with('success', 'Cập nhật số lượng thành công.');
+}
+
+    public function remove($id)
+    {
+        Cart::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->delete();
+
+        return back()->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng.');
     }
 
-    $qty = max(1, (int) $request->input('quantity'));
-    $cartItem->quantity = $qty;
-    $cartItem->save();
+    public function miniCart()
+    {
+        $cartItems = Cart::with(['variant.color', 'variant.size', 'product.images'])
+            ->where('user_id', Auth::id())
+            ->get();
 
-    $itemTotal = $cartItem->variant->price * $qty;
+        $items = [];
+        $subtotal = 0;
 
-    return response()->json([
-        'status' => 'success',
-        'item_total' => $itemTotal
-    ]);
-}
+        foreach ($cartItems as $item) {
+            $price = $item->variant->sale_price && $item->variant->sale_price < $item->variant->price
+                ? $item->variant->sale_price
+                : $item->variant->price;
 
+            $items[] = [
+                'id'      => $item->id,
+                'name'    => $item->product->name,
+                'qty'     => $item->quantity,
+                'price'   => $price,
+                'image'   => $item->product->images->first()
+                    ? asset('storage/' . $item->product->images->first()->image)
+                    : asset('assets/images/no-image.png'),
+                'link'    => route('client.product.detail', $item->product_id),
+                'variant' => [
+                    'color' => $item->variant->color->name ?? null,
+                    'size'  => $item->variant->size->name ?? null,
+                ],
+            ];
 
+            $subtotal += $price * $item->quantity;
+        }
 
-public function remove($id)
-{
-    Cart::where('id', $id)->where('user_id', Auth::id())->delete();
-    return back()->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng.');
-}
+        return response()->json([
+            'items'   => $items,
+            'subtotal' => $subtotal,
+            'count'   => $cartItems->count(),
+        ]);
+    }
 
+    protected function success(Request $request, $message)
+    {
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'message' => $message]);
+        }
+        return redirect()->back()->with('success', $message);
+    }
+
+    protected function fail(Request $request, $message)
+    {
+        if ($request->ajax()) {
+            return response()->json(['success' => false, 'message' => $message]);
+        }
+        return redirect()->back()->with('error', $message);
+    }
 }

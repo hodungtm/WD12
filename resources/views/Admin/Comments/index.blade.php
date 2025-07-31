@@ -1,172 +1,124 @@
-@extends('admin.layouts.AdminLayout')
-@section('main')
+@extends('Admin.Layouts.AdminLayout')
 
-<div class="main-content-inner" style="padding-top: 10px; margin-top: 0;">
-  <div class="main-content-wrap" style="padding-top: 0; margin-top: 0;">
-    <!-- Tiêu đề + breadcrumb -->
-    <div class="flex items-center flex-wrap justify-between gap20 mb-30">
-      <h3>Quản lý bình luận</h3>
-      <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-        <li><a href="{{ route('admin.dashboard') }}"><div class="text-tiny">Bảng điều khiển</div></a></li>
-        <li><i class="icon-chevron-right"></i></li>
-        <li><div class="text-tiny">Bình luận</div></li>
-      </ul>
-    </div>
+@section('main')
+    <div class="main-content-inner">
+        <div class="main-content-wrap">
+            
+            <div class="flex items-center flex-wrap justify-between gap20 mb-30">
+                <h3>Quản lý bình luận</h3>
+                <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
+                    <li><a href="{{ route('Admin.comments.index') }}">
+                            <div class="text-tiny">Dashboard</div>
+                        </a></li>
+                    <li><i class="icon-chevron-right"></i></li>
+                    <li>
+                        <div class="text-tiny">Bình luận</div>
+                    </li>
+                </ul>
+            </div>
 
     
 
     <!-- Thông báo -->
-    
+    @if (session('success'))
+                <div class="alert"
+                    style="background: #d4edda; color: #155724; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 600;">
+                    <i class="icon-check-circle" style="margin-right: 6px;"></i> {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="alert"
+                    style="background: #f8d7da; color: #721c24; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 600;">
+                    <i class="icon-alert-triangle" style="margin-right: 6px;"></i> {{ session('error') }}
+                </div>
+            @endif
 
     <!-- Bộ lọc + chọn số dòng -->
    
 
-    <!-- Danh sách bình luận -->
-    <div class="wg-box">
-      <!-- Dòng hướng dẫn tìm kiếm -->
-    <div class="flex items-center gap10 mb-3" style="color:#1abc9c; font-size:16px;">
-      <i class="icon-coffee" style="font-size:20px;"></i>
-      <span>Tip: Bạn có thể tìm kiếm theo <b>ID</b> hoặc <b>tên sản phẩm</b> để lọc nhanh bình luận.</span>
-    </div>
-    <form method="GET" action="{{ route('Admin.comments.index') }}" class="flex flex-wrap gap-3 mb-4 align-items-center">
-      <div class="flex items-center gap10">
-        <label for="per_page" class="text-tiny" style="color:#222;">Hiển thị</label>
-        <select name="per_page" id="per_page" class="form-select" style="width: 70px;" onchange="this.form.submit()">
-          @foreach([10, 20, 50, 100] as $num)
-            <option value="{{ $num }}" {{ request('per_page', 10) == $num ? 'selected' : '' }}>{{ $num }}</option>
-          @endforeach
-        </select>
-        <span class="text-tiny" style="color:#222;">dòng</span>
-      </div>
-      <input type="text" name="keyword" class="form-control" placeholder="Tìm sản phẩm, tác giả..."
-        value="{{ request('keyword') }}" style="min-width: 200px; max-width: 300px;">
-      <select name="trang_thai" class="form-select" style="width: 150px;">
-        <option value="">Trạng thái </option>
-        <option value="1" {{ request('trang_thai') === '1' ? 'selected' : '' }}>Đã duyệt</option>
-        <option value="0" {{ request('trang_thai') === '0' ? 'selected' : '' }}>Chưa duyệt</option>
-      </select>
-      <select name="sort" class="form-select " style="width: 150px;">
-        <option value="desc" {{ request('sort') === 'desc' ? 'selected' : '' }}>Mới nhất</option>
-        <option value="asc" {{ request('sort') === 'asc' ? 'selected' : '' }}>Cũ nhất</option>
-      </select>
-      <button class="tf-button style-1" type="submit">
-        <i class="icon-search me-1"></i> Tìm kiếm
-      </button>
-    </form>
-      <div class="wg-table table-all-user">
-        <!-- Tiêu đề bảng -->
-        <ul class="table-title flex gap0 mb-14 table-row-align">
-          <li class="col-id"><div class="body-title">ID</div></li>
-          <li class="col-product"><div class="body-title">Sản phẩm</div></li>
-          <li class="col-author"><div class="body-title">Tác giả</div></li>
-          <li class="col-content"><div class="body-title">Nội dung</div></li>
-          <li class="col-status"><div class="body-title">Trạng thái</div></li>
-          <li class="col-date"><div class="body-title">Ngày tạo</div></li>
-          <li class="col-action"><div class="body-title">Hành động</div></li>
-        </ul>
-        @forelse ($comments as $comment)
-        <ul class="user-item flex gap0 mb-0 table-row-align" style="border-bottom:1px solid #f2f2f2;">
-          <li class="col-id">{{ $comment->id }}</li>
-          <li class="col-product" title="{{ $comment->product?->name ?? '[Sản phẩm đã xóa]' }}"><span class="ellipsis">{{ $comment->product?->name ?? '[Sản phẩm đã xóa]' }}</span></li>
-          <li class="col-author">{{ $comment->user->name ?? 'N/A' }}</li>
-          <li class="col-content" title="{{ $comment->noi_dung }}"><span class="ellipsis">{{ \Illuminate\Support\Str::limit($comment->noi_dung, 60) }}</span></li>
-          <li class="col-status">
-            @if($comment->trang_thai)
-              <span class="badge-status badge-instock">Hiện</span>
-            @else
-              <span class="badge-status badge-outstock">Ẩn</span>
-            @endif
-          </li>
-          <li class="col-date">{{ $comment->created_at->format('d/m/Y') }}</li>
-          <li class="col-action">
-            <a href="{{ route('Admin.comments.show', $comment->id) }}" title="Xem" class="action-icon"><i class="icon-eye"></i></a>
-            <a href="{{ route('Admin.comments.edit', $comment->id) }}" title="Sửa" class="action-icon edit"><i class="icon-edit-3"></i></a>
-          </li>
-        </ul>
-        @empty
-          <div class="text-muted px-3">Không có bình luận nào.</div>
-        @endforelse
-      </div>
-      <!-- Phân trang -->
-      <div class="divider"></div>
-      <div class="flex justify-between align-items-center mt-3">
-        <div class="text-tiny">Tổng: {{ $comments->total() }} bình luận</div>
-        <div>
-          {{ $comments->links('pagination::bootstrap-4') }}
+            <div class="wg-box">
+                <div class="title-box">
+                    <i class="icon-message-circle"></i>
+                    <div class="body-text">Tìm kiếm và quản lý bình luận của khách hàng.</div>
+                </div>
+                <div class="flex flex-column gap10 mb-3">
+                    <form method="GET" action="{{ route('Admin.comments.index') }}" class="form-search w-100" style="margin-bottom: 10px;">
+                        <div class="search-input" style="width: 100%; position: relative;">
+                            <input type="text" placeholder="Tìm kiếm bình luận..." name="keyword" value="{{ request('keyword') }}" style="width: 100%; min-width: 200px;">
+                            <button type="submit" class="btn d-flex align-items-center justify-content-center" style="height: 38px; width: 38px; padding: 0; border: 1.5px solid #1abc9c; background: #fff; position: absolute; right: 5px; top: 50%; transform: translateY(-50%);">
+                                <i class="icon-search" style="font-size: 18px; margin: 0; color: #1abc9c;"></i>
+                            </button>
+                        </div>
+                    </form>
+                    <div class="flex items-center justify-between gap10 flex-wrap">
+                        <div class="flex gap10 flex-wrap align-items-center">
+                            <form method="GET" action="{{ route('Admin.comments.index') }}" class="flex gap10 flex-wrap align-items-center" style="margin-bottom: 0;">
+                                <input type="hidden" name="keyword" value="{{ request('keyword') }}">
+                                <select name="trang_thai" class="form-select" style="width: 140px;">
+                                    <option value="">-- Trạng thái --</option>
+                                    <option value="1" {{ request('trang_thai') === '1' ? 'selected' : '' }}>Đã duyệt</option>
+                                    <option value="0" {{ request('trang_thai') === '0' ? 'selected' : '' }}>Chưa duyệt</option>
+                                </select>
+                                <select name="sort" class="form-select" style="width: 120px;">
+                                    <option value="">-- Sắp xếp --</option>
+                                    <option value="desc" {{ request('sort') === 'desc' ? 'selected' : '' }}>Mới nhất</option>
+                                    <option value="asc" {{ request('sort') === 'asc' ? 'selected' : '' }}>Cũ nhất</option>
+                                </select>
+                                <button type="submit" class="btn d-flex align-items-center justify-content-center" style="height: 38px; width: 38px; padding: 0; border: 1.5px solid #1abc9c; background: #fff;">
+                                    <i class="icon-filter" style="font-size: 18px; margin: 0; color: #1abc9c;"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                      <div class="wg-table table-product-list mt-3">
+                    <ul class="table-title flex mb-14" style="gap: 2px;">
+                        <li style="flex-basis: 60px;"><div class="body-title">ID</div></li>
+                        <li style="flex-basis: 200px;"><div class="body-title">Sản phẩm</div></li>
+                        <li style="flex-basis: 150px;"><div class="body-title">Tác giả</div></li>
+                        <li style="flex-basis: 300px;"><div class="body-title">Nội dung</div></li>
+                        <li style="flex-basis: 120px;"><div class="body-title">Trạng thái</div></li>
+                        <li style="flex-basis: 120px;"><div class="body-title">Ngày tạo</div></li>
+                        <li style="flex-basis: 120px;"><div class="body-title">Hành động</div></li>
+                    </ul>
+                    <ul class="flex flex-column">
+                        @forelse ($comments as $comment)
+                            <li class="wg-product item-row" style="gap: 2px;">
+                                <div class="body-text mt-4" style="flex-basis: 60px;">#{{ $comment->id }}</div>
+                                <div class="body-text mt-4" style="flex-basis: 200px;">
+                                    <span title="{{ $comment->product?->name ?? '[Sản phẩm đã xóa]' }}">
+                                        {{ \Illuminate\Support\Str::limit($comment->product?->name ?? '[Sản phẩm đã xóa]', 30) }}
+                                    </span>
+                                </div>
+                                <div class="body-text mt-4" style="flex-basis: 150px;">{{ $comment->user->name ?? 'N/A' }}</div>
+                                <div class="body-text mt-4" style="flex-basis: 300px;">
+                                    <span title="{{ $comment->noi_dung }}">
+                                        {{ \Illuminate\Support\Str::limit($comment->noi_dung, 80) }}
+                                    </span>
+                                </div>
+                                <div style="flex-basis: 120px;">
+                                    <div class="{{ $comment->trang_thai ? 'block-available' : 'block-stock' }} bg-1 fw-7" style="display: inline-block; min-width: 80px; text-align: center; border-radius: 8px; padding: 6px 18px; font-size: 15px; font-weight: 600; background: #f3f7f6; color: {{ $comment->trang_thai ? '#1abc9c' : '#e67e22' }}; letter-spacing: 0.5px; vertical-align: middle; margin-top: 2px;">
+                                        {{ $comment->trang_thai ? 'Hiển thị' : 'Ẩn' }}
+                                    </div>
+                                </div>
+                                <div class="body-text mt-4" style="flex-basis: 120px;">{{ $comment->created_at ? $comment->created_at->format('d/m/Y H:i') : 'N/A' }}</div>
+                                <div class="list-icon-function" style="flex-basis: 120px;">
+                                    <a href="{{ route('Admin.comments.show', $comment->id) }}" class="item eye"><i class="icon-eye"></i></a>
+                                    <a href="{{ route('Admin.comments.edit', $comment->id) }}" class="item edit"><i class="icon-edit-3"></i></a>
+                                </div>
+                            </li>
+                        @empty
+                            <li class="text-center text-muted py-3">Không tìm thấy bình luận nào.</li>
+                        @endforelse
+                    </ul>
+                </div>
+                <div class="divider"></div>
+                <div class="flex items-center justify-between flex-wrap gap10">
+                    <div class="text-tiny">Hiển thị từ {{ $comments->firstItem() }} đến {{ $comments->lastItem() }} trong tổng số {{ $comments->total() }} bình luận</div>
+                    {{ $comments->links('pagination::bootstrap-5') }}
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-</div>
-
-<!-- ✅ CSS căn đều cột, badge trạng thái stock, ellipsis cho text dài -->
-<style>
-  .table-title, .user-item { width: 100%; }
-  .table-title li, .user-item li {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 14px 10px;
-    font-size: 16px;
-    box-sizing: border-box;
-    word-break: break-word;
-    background: none;
-    border: none;
-    min-height: 48px;
-  }
-  .table-row-align { align-items: stretch !important; }
-  .col-id      { flex: 0.5 0 40px; min-width: 40px; justify-content: flex-start; }
-  .col-product { flex: 1.8 0 140px; min-width: 140px; justify-content: flex-start; }
-  .col-author  { flex: 1.5 0 120px; min-width: 120px; justify-content: flex-start; }
-  .col-content { flex: 2.5 0 200px; min-width: 200px; justify-content: flex-start; }
-  .col-status  { flex: 1.2 0 140px; min-width: 140px; justify-content: flex-start; }
-  .col-date    { flex: 1.2 0 100px; min-width: 100px; justify-content: flex-start; }
-  .col-action  { flex: 1.2 0 120px; min-width: 120px; display: flex; gap: 10px; align-items: center; justify-content: flex-start; }
-  .badge-status {
-    display: inline-block;
-    padding: 6px 18px;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 600;
-    background: #f3f7f6;
-    color: #1abc9c;
-    letter-spacing: 0.5px;
-    vertical-align: middle;
-    margin-top: 2px;
-  }
-  .badge-instock {
-    background: #f3f7f6;
-    color: #1abc9c;
-  }
-  .badge-outstock {
-    background: #fbeee7;
-    color: #e67e22;
-  }
-  .action-icon {
-    color: #2d9cdb;
-    font-size: 20px;
-    margin-right: 8px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.2s;
-  }
-  .action-icon.edit { color: #f7b731; margin-right: 0; }
-  .ellipsis {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 320px;
-  }
-  @media (max-width: 1200px) {
-    .ellipsis { max-width: 180px; }
-  }
-  @media (max-width: 900px) {
-    .table-title li, .user-item li { font-size:15px; }
-    .col-content { min-width:120px; }
-    .ellipsis { max-width: 100px; }
-  }
-</style>
-
 @endsection

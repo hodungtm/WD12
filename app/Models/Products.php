@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Products extends Model
 {
+    use SoftDeletes;
    
     protected $table = 'products'; 
     protected $fillable = [
@@ -34,5 +36,9 @@ class Products extends Model
 public function comments()
 {
     return $this->hasMany(Comment::class, 'product_id');
+}
+public function orderItems()
+{
+    return $this->hasMany(Order_items::class, 'product_id');
 }
 }

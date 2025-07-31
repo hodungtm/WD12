@@ -10,9 +10,15 @@ class BlogController extends Controller
 {
     public function index()
     {   
-        $posts = Post::latest()->paginate(6); // 6 bài / trang, sắp xếp mới nhất
-        $recentPosts = Post::latest()->take(5)->get();
-        // dd($posts);
+        $posts = Post::where('status', 'published')
+                 ->latest()
+                 ->paginate(6);
+
+    $recentPosts = Post::where('status', 'published')
+                       ->latest()
+                       ->take(5)
+                       ->get();
+        
         return view('client.blog.blog', compact('posts', 'recentPosts'));
     }
 
