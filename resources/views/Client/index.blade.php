@@ -201,7 +201,7 @@
                 </div>
             </div>
             <!-- Banner nhỏ động (footer/khuyến mãi) -->
-            <div class="row">
+            {{-- <div class="row">
                 @foreach($footerBanners as $banner)
                     @foreach($banner->hinhAnhBanner as $hinh)
                     <div class="col-xl-6 mb-2">
@@ -221,7 +221,7 @@
                     </div>
                     @endforeach
                 @endforeach
-            </div>
+            </div> --}}
         </div>
     </section>
     

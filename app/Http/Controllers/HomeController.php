@@ -2,78 +2,84 @@
 
 namespace App\Http\Controllers;
 
-
+// note: Import các model cần thiết cho trang chủ
 use App\Models\Post;
 use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Products;
 use Illuminate\Http\Request;
 
+// note: Controller xử lý trang chủ và các trang liên quan đến hiển thị sản phẩm
 class HomeController extends Controller
 {
+    // note: Hiển thị trang chủ với banner, danh mục, sản phẩm nổi bật và tin tức
     public function index()
     {
-        // Banner slider
+        // note: Lấy banner slider (loại slider, trạng thái hiển thị, sắp xếp theo thời gian mới nhất)
         $banners = Banner::with('hinhAnhBanner')
             ->where('loai_banner', 'slider')
             ->where('trang_thai', 'hien')
             ->latest()
             ->get();
 
-        // Danh mục
+        // note: Lấy danh mục sản phẩm (chỉ những danh mục đang hoạt động)
         $categories = Category::where('tinh_trang', 1)
             ->orderBy('ten_danh_muc')
             ->get();
 
-        // Sản phẩm nổi bật (lấy 10 sản phẩm có đánh giá trung bình cao nhất)
+        // note: Lấy sản phẩm nổi bật (5 sản phẩm có đánh giá trung bình cao nhất)
         $products = Products::with(['images', 'variants', 'reviews'])
             ->where('status', 1)
             ->withAvg('reviews', 'so_sao')
             ->orderByDesc('reviews_avg_so_sao')
-            ->take(10)
+            ->take(5)
             ->get();
 
-        // Sản phẩm trending (lấy 10 sản phẩm có nhiều lượt mua nhất)
+        // note: Lấy sản phẩm trending (5 sản phẩm có nhiều lượt mua nhất)
         $trendingProducts = Products::with(['images', 'variants', 'reviews'])
             ->where('status', 1)
             ->orderByDesc('sold')
-            ->take(10)
+            ->take(5)
             ->get();
 
        
         
 
-        // Blog/tin tức
+        // note: Lấy tin tức/blog (6 bài viết mới nhất, trạng thái đã xuất bản)
         $posts = Post::where('status', 'published')->latest()->take(6)->get();
 
-        // Banner nhỏ (footer, khuyến mãi...)
-        $footerBanners = Banner::with('hinhAnhBanner')
-            ->where('loai_banner', 'footer')
-            ->where('trang_thai', 'hien')
-            ->latest()
-            ->get();
+        // note: Lấy banner footer (loại footer, trạng thái hiển thị)
+        // $footerBanners = Banner::with('hinhAnhBanner')
+        //     ->where('loai_banner', 'footer')
+        //     ->where('trang_thai', 'hien')
+        //     ->latest()
+        //     ->get();
 
-        // Discount (nếu muốn dùng cho banner khuyến mãi)
+        // note: Discount (nếu muốn dùng cho banner khuyến mãi)
  
 
+        // note: Trả về view trang chủ với tất cả dữ liệu đã chuẩn bị
         return view('Client.index', compact(
             'banners',
             'categories',
             'products',
             'trendingProducts',
-           
             'posts',
-            'footerBanners'
+            // 'footerBanners'
             
         ));
 
     }
+    
+    // note: Hiển thị trang sản phẩm bán chạy (sắp xếp theo số lượng đơn hàng)
     public function bestSellers()
 {
+    // note: Lấy sản phẩm với số lượng đơn hàng, sắp xếp theo số lượng bán chạy
     $products = Products::withCount('orderItems')
         ->with(['category', 'images', 'variants'])
         ->orderByDesc('order_items_count')
         ->paginate(20);
+    // note: Lấy dữ liệu cho bộ lọc (danh mục, màu sắc, kích thước, khoảng giá)
     $categories = \App\Models\Category::all();
     $colors = \App\Models\Color::all();
     $sizes = \App\Models\Size::all();
@@ -83,12 +89,15 @@ class HomeController extends Controller
     return view('Client.Product.ListProductClient', compact('products', 'categories', 'colors', 'sizes', 'minPrice', 'maxPrice', 'pageTitle'));
 }
 
+// note: Hiển thị trang sản phẩm nổi bật (sắp xếp theo đánh giá trung bình)
 public function featured()
 {
+    // note: Lấy sản phẩm với đánh giá trung bình, sắp xếp theo điểm đánh giá cao nhất
     $products = Products::withAvg('reviews', 'so_sao')
         ->with(['category', 'images', 'variants'])
         ->orderByDesc('reviews_avg_so_sao')
         ->paginate(20);
+    // note: Lấy dữ liệu cho bộ lọc
     $categories = \App\Models\Category::all();
     $colors = \App\Models\Color::all();
     $sizes = \App\Models\Size::all();
@@ -97,15 +106,20 @@ public function featured()
     $pageTitle = 'Sản phẩm nổi bật';
     return view('Client.Product.ListProductClient', compact('products', 'categories', 'colors', 'sizes', 'minPrice', 'maxPrice', 'pageTitle'));
 }
+    
+    // note: Xử lý chatbot trả lời tự động dựa trên từ khóa
     public function respond(Request $request)
     {
+        // note: Chuyển tin nhắn về chữ thường để dễ so sánh
         $message = strtolower($request->input('message'));
         $response = $this->getResponse($message);
         return response()->json(['reply' => $response]);
     }
 
+    // note: Hàm xử lý logic trả lời tự động dựa trên từ khóa
     private function getResponse($msg)
     {
+       // note: Mảng chứa các câu hỏi thường gặp và câu trả lời tương ứng
        $faq = [
             'chào' => '🤖 Chào bạn! Mình là trợ lý của **shop phụ kiện thể thao**. Shop có giày đá bóng, vợt cầu lông, quần áo thể thao, bóng đá - bóng chuyền và nhiều phụ kiện khác. Bạn cần tìm gì để mình hỗ trợ nha?',
 
@@ -178,12 +192,14 @@ public function featured()
 
         ];
 
+        // note: Duyệt qua mảng FAQ để tìm từ khóa phù hợp
         foreach ($faq as $key => $reply) {
             if (str_contains($msg, $key)) {
                 return $reply;
             }
         }
 
+        // note: Trả về câu trả lời mặc định nếu không tìm thấy từ khóa phù hợp
         return 'Xin lỗi, tôi chưa hiểu. Bạn vui lòng hỏi lại hoặc gọi 0969152065 hoặc zalo:0969152065 để được hỗ trợ.';
     }
 }

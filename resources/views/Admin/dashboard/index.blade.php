@@ -4,6 +4,7 @@
 <div class="main-content-inner">
 <div class="main-content-wrap">
     
+    <!-- note: Header với breadcrumb -->
     <div class="flex items-center flex-wrap justify-between gap20 mb-30">
         <h3>Dashboard</h3>
 
@@ -13,6 +14,8 @@
             <li><div class="text-tiny">Tổng quan</div></li>
         </ul>
     </div>
+    
+    <!-- note: Hiển thị thông báo thành công -->
     @if (session('success'))
     <div class="alert"
         style="background: #d4edda; color: #155724; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 600;">
@@ -20,31 +23,39 @@
     </div>
 @endif
 
+<!-- note: Hiển thị thông báo lỗi -->
 @if (session('error'))
     <div class="alert"
         style="background: #f8d7da; color: #721c24; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 600;">
         <i class="icon-alert-triangle" style="margin-right: 6px;"></i> {{ session('error') }}
     </div>
 @endif
+
+    <!-- note: Form tìm kiếm và lọc dữ liệu -->
     <form method="GET" action="" class="mb-3 d-flex align-items-center gap-2 position-relative">
         <input type="text" name="q" class="form-control w-auto dashboard-search" style="min-width:220px;" placeholder="Tìm kiếm sản phẩm, đơn hàng, khách hàng, mã giảm giá..." value="{{ request('q') }}">
         <button type="submit" class="btn btn-primary dashboard-search-btn"><i class="fas fa-search"></i> Tìm kiếm</button>
+        <!-- note: Dropdown chọn khoảng thời gian -->
         <select name="type" onchange="this.form.submit()" class="form-select w-auto d-inline-block">
             <option value="today" {{ $type === 'today' ? 'selected' : '' }}>Hôm nay</option>
             <option value="week" {{ $type === 'week' ? 'selected' : '' }}>Tuần</option>
             <option value="month" {{ $type === 'month' ? 'selected' : '' }}>Tháng</option>
             <option value="year" {{ $type === 'year' ? 'selected' : '' }}>Năm</option>
         </select>
+        <!-- note: Dropdown chọn danh mục -->
         <select name="category_id" class="form-select w-auto d-inline-block" onchange="this.form.submit()">
             <option value="">Tất cả danh mục</option>
             @foreach($categories as $cat)
                 <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->ten_danh_muc }}</option>
             @endforeach
         </select>
+        <!-- note: Date picker cho ngày cụ thể -->
         @if(request('type') === 'today')
             <input type="date" name="date" value="{{ request('date', now()->toDateString()) }}" class="form-control w-auto d-inline-block ms-auto dashboard-date-picker" onchange="this.form.submit()" style="min-width: 150px; max-width: 180px;">
         @endif
     </form>
+    
+    <!-- note: CSS tùy chỉnh cho form tìm kiếm -->
     <style>
 .dashboard-search { border-radius: 20px; padding-left: 16px; }
 .dashboard-search-btn { border-radius: 20px; padding: 6px 18px; font-weight: 500; }
@@ -52,6 +63,7 @@
 .dashboard-date-picker { border-radius: 20px; height: 40px; }
 </style>
 
+    <!-- note: Thống kê tổng quan - 4 card chính -->
     <div class="row g-4">
         @foreach([
             ['Doanh thu', $totalRevenue, $percentRevenue, '#28a745', 'revenueChart'],
@@ -79,6 +91,7 @@
         @endforeach
     </div>
 
+    <!-- note: CSS tùy chỉnh cho bảng -->
     <style>
 .dashboard-table,
 .dashboard-table thead,
@@ -106,7 +119,7 @@
 }
 </style>
 
-    {{-- Hàng 2: 2 box dài --}}
+    <!-- note: Hàng 2: 2 box dài - Top sản phẩm bán chạy và sản phẩm sắp hết hàng -->
     <div class="row g-4 mt-4" style="display: flex; align-items: stretch;">
         <div class="col-md-6" style="display: flex; flex-direction: column;">
             <div class="wg-box" style="flex: 1 1 auto;">
@@ -166,11 +179,11 @@
         </div>
     </div>
 
-    {{-- Hàng 3: 3 box nhỏ --}}
+    <!-- note: Hàng 3: 3 box nhỏ - Thống kê đơn hàng, doanh thu, khách hàng -->
     <div class="row g-4 mt-4" style="display: flex; align-items: stretch;">
         <div class="col-md-4" style="display: flex; flex-direction: column;">
             <div class="wg-box" style="flex: 1 1 auto;">
-                <!-- Nội dung box 1 -->
+                <!-- note: Nội dung box 1 - Thống kê đơn hàng theo trạng thái -->
                 <div class="title-box">
                     <i class="icon-check"></i>
                     <div class="body-title">Đơn hàng theo trạng thái</div>
@@ -187,6 +200,7 @@
                             <tr><td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Đang chờ</td><td style="text-align: right;">{{ $totalPendingOrders }}</td></tr>
                             <tr><td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Đang giao hàng</td><td style="text-align: right;">{{ $totalShippingOrders }}</td></tr>
                             <tr><td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Hoàn thành</td><td style="text-align: right;">{{ $totalCompletedOrders }}</td></tr>
+                            <tr><td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Đã hủy</td><td style="text-align: right;">{{ $totalCancelledOrders }}</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -194,7 +208,7 @@
         </div>
         <div class="col-md-4" style="display: flex; flex-direction: column;">
             <div class="wg-box" style="flex: 1 1 auto;">
-                <!-- Nội dung box 2 -->
+                <!-- note: Nội dung box 2 - Thống kê doanh thu -->
                 <div class="title-box">
                     <i class="icon-cash"></i>
                     <div class="body-title">Doanh thu hôm nay / tuần này / tháng này</div>
@@ -218,7 +232,7 @@
         </div>
         <div class="col-md-4" style="display: flex; flex-direction: column;">
             <div class="wg-box" style="flex: 1 1 auto;">
-                <!-- Nội dung box 3 -->
+                <!-- note: Nội dung box 3 - Thống kê top danh mục bán chạy -->
                 <div class="title-box">
                     <i class="icon-star"></i>
                     <div class="body-title">Top danh mục bán chạy</div>
@@ -249,11 +263,11 @@
         </div>
     </div>
 
-    {{-- Hàng 4: 3 box nhỏ --}}
+    <!-- note: Hàng 4: 3 box nhỏ - Tổng tồn kho, khách hàng mới, khách hàng chi tiêu nhiều -->
     <div class="row g-4 mt-4" style="display: flex; align-items: stretch;">
         <div class="col-md-4" style="display: flex; flex-direction: column;">
             <div class="wg-box" style="flex: 1 1 auto;">
-                <!-- Nội dung box 1 -->
+                <!-- note: Nội dung box 1 - Tổng tồn kho theo sản phẩm -->
                 <div class="title-box">
                     <i class="icon-box"></i>
                     <div class="body-title d-flex align-items-center justify-content-between">
@@ -288,7 +302,7 @@
         </div>
         <div class="col-md-4" style="display: flex; flex-direction: column;">
             <div class="wg-box" style="flex: 1 1 auto;">
-                <!-- Nội dung box 2 -->
+                <!-- note: Nội dung box 2 - Khách hàng mới hôm nay -->
                 <div class="title-box">
                     <i class="icon-user"></i>
                     <div class="body-title">Khách hàng mới hôm nay</div>
@@ -319,7 +333,7 @@
         </div>
         <div class="col-md-4" style="display: flex; flex-direction: column;">
             <div class="wg-box" style="flex: 1 1 auto;">
-                <!-- Nội dung box 3 -->
+                <!-- note: Nội dung box 3 - Khách hàng chi tiêu nhiều nhất -->
                 <div class="title-box">
                     <i class="icon-crown"></i>
                     <div class="body-title">Khách hàng chi tiêu nhiều nhất</div>
@@ -350,10 +364,11 @@
         </div>
     </div>
 
-    {{-- Hàng 5: 2 box nhỏ --}}
+    <!-- note: Hàng 5: 2 box nhỏ - Mã giảm giá đang hoạt động và Đánh giá -->
     <div class="row g-4 mt-4" style="display: flex; align-items: stretch;">
         <div class="col-md-6" style="display: flex; flex-direction: column;">
             <div class="wg-box" style="flex: 1 1 auto;">
+                <!-- note: Nội dung box 1 - Mã giảm giá đang hoạt động -->
                 <div class="title-box">
                     <i class="icon-tag"></i>
                     <div class="body-title d-flex align-items-center justify-content-between">
@@ -389,6 +404,7 @@
         </div>
         <div class="col-md-6" style="display: flex; flex-direction: column;">
             <div class="wg-box" style="flex: 1 1 auto;">
+                <!-- note: Nội dung box 2 - Đánh giá -->
                 <div class="title-box">
                     <i class="icon-message-square"></i>
                     <div class="body-title">Đánh giá</div>

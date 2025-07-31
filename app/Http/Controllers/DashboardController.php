@@ -55,12 +55,12 @@ class DashboardController extends Controller
         }
 
         $totalRevenue = Order::where('status', 'Hoàn thành')->whereBetween('created_at', [$currentStart, $currentEnd])->sum('final_amount');
-        $ordersCount = Order::whereBetween('created_at', [$currentStart, $currentEnd])->count();
+        $ordersCount = Order::where('status', 'Hoàn thành')->whereBetween('created_at', [$currentStart, $currentEnd])->count();
         $productsCount = Products::whereBetween('created_at', [$currentStart, $currentEnd])->count();
         $usersCount = User::whereBetween('created_at', [$currentStart, $currentEnd])->count();
 
         $previousRevenue = Order::where('status', 'Hoàn thành')->whereBetween('created_at', [$previousStart, $previousEnd])->sum('final_amount');
-        $previousOrders = Order::whereBetween('created_at', [$previousStart, $previousEnd])->count();
+        $previousOrders = Order::where('status', 'Hoàn thành')->whereBetween('created_at', [$previousStart, $previousEnd])->count();
         $previousUsers = User::whereBetween('created_at', [$previousStart, $previousEnd])->count();
         $previousProducts = Products::whereBetween('created_at', [$previousStart, $previousEnd])->count();
 
@@ -71,17 +71,17 @@ class DashboardController extends Controller
 
         if ($type === 'month') {
             $revenueData = $labels->map(fn($m) => Order::whereMonth('created_at', $m)->whereYear('created_at', $now->year)->where('status', 'Hoàn thành')->sum('final_amount'));
-            $orderData = $labels->map(fn($m) => Order::whereMonth('created_at', $m)->whereYear('created_at', $now->year)->count());
+            $orderData = $labels->map(fn($m) => Order::whereMonth('created_at', $m)->whereYear('created_at', $now->year)->where('status', 'Hoàn thành')->count());
             $userData = $labels->map(fn($m) => User::whereMonth('created_at', $m)->whereYear('created_at', $now->year)->count());
             $productData = $labels->map(fn($m) => Products::whereMonth('created_at', $m)->whereYear('created_at', $now->year)->count());
         } elseif ($type === 'year') {
             $revenueData = $labels->map(fn($y) => Order::whereYear('created_at', $y)->where('status', 'Hoàn thành')->sum('final_amount'));
-            $orderData = $labels->map(fn($y) => Order::whereYear('created_at', $y)->count());
+            $orderData = $labels->map(fn($y) => Order::whereYear('created_at', $y)->where('status', 'Hoàn thành')->count());
             $userData = $labels->map(fn($y) => User::whereYear('created_at', $y)->count());
             $productData = $labels->map(fn($y) => Products::whereYear('created_at', $y)->count());
         } else {
             $revenueData = $dates->map(fn($date) => Order::whereDate('created_at', $date)->where('status', 'Hoàn thành')->sum('final_amount'));
-            $orderData = $dates->map(fn($date) => Order::whereDate('created_at', $date)->count());
+            $orderData = $dates->map(fn($date) => Order::whereDate('created_at', $date)->where('status', 'Hoàn thành')->count());
             $userData = $dates->map(fn($date) => User::whereDate('created_at', $date)->count());
             $productData = $dates->map(fn($date) => Products::whereDate('created_at', $date)->count());
         }
@@ -91,6 +91,8 @@ class DashboardController extends Controller
         // Top sản phẩm bán chạy theo danh mục và theo thời gian
         $topProductsQuery = DB::table('order_items')
             ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id') // Join thêm bảng orders
+            ->where('orders.status', 'Hoàn thành') // Chỉ lấy đơn hàng hoàn thành
             ->select('products.id as product_id', DB::raw('SUM(order_items.quantity) as sold'))
             ->groupBy('products.id')
             ->orderByDesc('sold');
@@ -147,6 +149,7 @@ class DashboardController extends Controller
         $totalPendingOrders = Order::where('status', 'Đang chờ')->count();
         $totalShippingOrders = Order::where('status', 'Đang giao hàng')->count();
         $totalCompletedOrders = Order::where('status', 'Hoàn thành')->count();
+        $totalCancelledOrders = Order::where('status', 'Đã hủy')->count();
 
         $todayRevenue = Order::whereDate('created_at', now())
             ->where('status', 'Hoàn thành')
@@ -163,6 +166,8 @@ class DashboardController extends Controller
         $topCategories = DB::table('categories')
             ->join('products', 'categories.id', '=', 'products.category_id')
             ->join('order_items', 'products.id', '=', 'order_items.product_id')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('orders.status', 'Hoàn thành')
             ->select('categories.ten_danh_muc', DB::raw('SUM(order_items.quantity) as total_sold'))
             ->groupBy('categories.id')
             ->orderByDesc('total_sold')
@@ -173,6 +178,7 @@ class DashboardController extends Controller
 
         $topCustomers = DB::table('orders')
             ->join('users', 'orders.user_id', '=', 'users.id')
+            ->where('orders.status', 'Hoàn thành')
             ->select('users.name', 'users.email', DB::raw('SUM(orders.final_amount) as total_spent'))
             ->groupBy('users.id')
             ->orderByDesc('total_spent')
@@ -225,7 +231,7 @@ class DashboardController extends Controller
                 ->orWhere('user_id', $quickSearch)
                 ->orWhere('status', 'like', "%$quickSearch%") ;
         }
-        $ordersCount = $ordersQuery->whereBetween('created_at', [$currentStart, $currentEnd])->count();
+        $ordersCount = $ordersQuery->where('status', 'Hoàn thành')->whereBetween('created_at', [$currentStart, $currentEnd])->count();
 
         // Quick search cho khách hàng
         $usersQuery = User::query();
@@ -272,6 +278,7 @@ class DashboardController extends Controller
             'totalPendingOrders',
             'totalShippingOrders',
             'totalCompletedOrders',
+            'totalCancelledOrders',
             'todayRevenue',
             'thisWeekRevenue',
             'thisMonthRevenue',
