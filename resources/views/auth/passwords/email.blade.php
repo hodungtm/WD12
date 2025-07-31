@@ -74,17 +74,38 @@ main .reset-email-simple-box button[type="submit"]:hover {
     <div class="reset-email-simple-box">
         <h2>Quên mật khẩu 🔐</h2>
         <p>Vui lòng nhập địa chỉ email của bạn để nhận liên kết đặt lại mật khẩu.</p>
+
+        {{-- Hiển thị thông báo thành công --}}
+        @if (session('status'))
+            <div class="alert alert-success">
+                {{ session('status') }}
+            </div>
+        @endif
+
+        {{-- Hiển thị lỗi chung --}}
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul style="margin:0; padding-left:15px;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <form method="POST" action="{{ route('password.email') }}">
             @csrf
             <div class="form-group" style="text-align:left;">
                 <label for="email">Địa chỉ Email</label>
-                <input id="email" type="email" name="email" value="{{ old('email') }}" required class="form-control @error('email') is-invalid @enderror" placeholder="Nhập email của bạn">
+                <input id="email" type="email" name="email" value="{{ old('email') }}" required
+                       class="form-control @error('email') is-invalid @enderror" placeholder="Nhập email của bạn">
                 @error('email')
-                <span class="invalid-feedback">{{ $message }}</span>
+                    <span class="invalid-feedback">{{ $message }}</span>
                 @enderror
             </div>
             <button type="submit">Gửi liên kết đặt lại mật khẩu</button>
         </form>
     </div>
 </div>
+
 @endsection
