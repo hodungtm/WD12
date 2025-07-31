@@ -20,13 +20,12 @@ class CartController extends Controller
         return view('Client.cart.ListCart', compact('cartItems'));
     }
 
-    public function addToCart(Request $request, $productId)
-    {
-        $product = Products::findOrFail($productId);
-        $variantId = $request->input('variant_id');
-        $quantity = max(1, (int) $request->input('quantity', 1));
-
-        $userId = Auth::id();
+public function addToCart(Request $request, $productId)
+{
+    $product = Products::findOrFail($productId);
+    $variantId = $request->input('variant_id');
+    $quantity = (int) $request->input('quantity', 1);
+    $userId = Auth::id();
 
         if (!$variantId || !ProductVariant::find($variantId)) {
             return $this->fail($request, 'Vui lòng chọn đầy đủ màu, kích thước hoặc biến thể không tồn tại.');
@@ -47,58 +46,39 @@ class CartController extends Controller
             return $this->fail($request, 'Không thể thêm. Hiện đã có ' . $currentQty . ', tồn kho chỉ còn ' . $stock);
         }
 
-        if ($existing) {
-            $existing->increment('quantity', $quantity);
-        } else {
-            Cart::create([
-                'user_id'    => $userId,
-                'product_id' => $productId,
-                'variant_id' => $variantId,
-                'quantity'   => $quantity,
-            ]);
-        }
+    if ($existing) {
+        $existing->increment('quantity', $quantity);
+    } else {
+        Cart::create([
+            'user_id'    => $userId,
+            'product_id' => $productId,
+            'variant_id' => $variantId,
+            'quantity'   => $quantity,
+        ]);
+    }
 
         return $this->success($request, 'Đã thêm vào giỏ hàng!');
     }
 
-public function updateAll(Request $request)
-{
-    $data = $request->input('quantities', []); // dạng [cart_id => qty, …]
+    public function updateAll(Request $request)
+    {
+        $data = $request->input('quantities', []); // dạng [cart_id => qty, …]
 
-    foreach ($data as $id => $qty) {
-        $cartItem = Cart::where('id', $id)
-            ->where('user_id', Auth::id())
-            ->first();
+        foreach ($data as $id => $qty) {
+            $cartItem = Cart::where('id', $id)
+                ->where('user_id', Auth::id())
+                ->first();
 
-        if ($cartItem) {
-            $maxQty = $cartItem->variant->quantity ?? 1;
-            $qty = max(1, (int) $qty); // Đảm bảo số lượng không âm
-
-            if ($qty > $maxQty) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Số lượng yêu cầu vượt quá tồn kho (' . $maxQty . ') cho sản phẩm ' . $cartItem->product->name,
-                ], 422);
-            }
-
-            if ($qty == 0) {
-                $cartItem->delete();
-            } else {
-                $cartItem->update(['quantity' => $qty]);
+            if ($cartItem) {
+                $maxQty = $cartItem->variant->quantity ?? 1;
+                $cartItem->update([
+                    'quantity' => min($maxQty, max(1, (int) $qty)),
+                ]);
             }
         }
+
+        return back()->with('success', 'Cập nhật giỏ hàng thành công.');
     }
-
-    // Lấy lại giỏ hàng để tính toán subtotal
-    $cartItems = Cart::with(['variant', 'product'])->where('user_id', Auth::id())->get();
-    $subtotal = $cartItems->sum(fn($item) => $item->variant->sale_price * $item->quantity);
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Cập nhật giỏ hàng thành công.',
-        'subtotal' => $subtotal,
-    ]);
-}
 
     public function remove($id)
     {

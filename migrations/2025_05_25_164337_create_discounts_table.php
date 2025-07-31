@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('discount_percent')->nullable(); // Hoặc phần trăm giảm
             $table->date('start_date');
             $table->date('end_date');
+            $table->unsignedInteger('used')->default(0); // Số lần đã sử dụng
             $table->integer('max_usage')->nullable(); // Số lượt sử dụng tối đa
             $table->decimal('min_order_amount', 10, 2)->nullable(); // Điều kiện đơn hàng tối thiểu
             $table->timestamps();
