@@ -19,7 +19,7 @@
                     </li>
                 </ul>
             </div>
-            <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
                 @csrf
 
                 <div class="wg-box mb-30">
@@ -57,6 +57,14 @@
                             <div class="text-danger small mt-1">{{ $message }}</div>
                         @enderror
                     </fieldset>
+
+                    <!-- Thêm phần chọn màu cho ảnh -->
+                    <fieldset class="image-colors" id="image-colors-section" style="display: none;">
+                        <div class="body-title mb-10">Chọn màu cho từng ảnh</div>
+                        <div id="image-color-inputs" class="flex flex-wrap gap-2">
+                            <!-- Các input chọn màu sẽ được tạo động bằng JavaScript -->
+                        </div>
+                    </fieldset>
                 </div>
 
                 <div class="wg-box mb-30">
@@ -93,7 +101,7 @@
 
                     <div id="variant-selects" class="d-none">
                         <fieldset>
-                            <div class="body-title mb-10">Chọn Size</div>
+                            <div class="body-title mb-10">Chọn Size <span class="tf-color-1">*</span></div>
                             <div class="flex flex-wrap gap10">
                                 <label><input type="checkbox" id="select_all_sizes" onchange="toggleAll('sizes[]', this)">
                                     Chọn tất cả</label>
@@ -101,14 +109,14 @@
                                     <label><input type="checkbox" name="sizes[]" value="{{ $size->id }}">
                                         {{ $size->name }}</label>
                                 @endforeach
-@error('sizes')
+                        @error('variant_sizes')
                                     <div class="text-danger small mt-1">{{ $message }}</div>
                                 @enderror
                             </div>
                         </fieldset><br>
 
                         <fieldset>
-                            <div class="body-title mb-10">Chọn Màu</div>
+                            <div class="body-title mb-10">Chọn Màu <span class="tf-color-1">*</span></div>
                             <div class="flex flex-wrap gap10">
                                 <label><input type="checkbox" id="select_all_colors" onchange="toggleAll('colors[]', this)">
                                     Chọn tất cả</label>
@@ -116,7 +124,7 @@
                                     <label><input type="checkbox" name="colors[]" value="{{ $color->id }}">
                                         {{ $color->name }}</label>
                                 @endforeach
-                                @error('colors')
+                                @error('variant_colors')
                                     <div class="text-danger small mt-1">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -185,7 +193,7 @@
     </div>
 
 <script>
-        function showAllVariantUI() {
+        window.showAllVariantUI = function() {
             document.getElementById('variant-selects').classList.remove('d-none');
             document.getElementById('bulk-inputs').classList.remove('d-none');
             window.scrollTo({
@@ -194,7 +202,7 @@
             });
         }
 
-        function applyDefaultToVariants() {
+        window.applyDefaultToVariants = function() {
             const price = +document.getElementById('default_price').value;
             const sale = +document.getElementById('default_saleprice').value;
             const qty = +document.getElementById('default_quantity').value;
@@ -203,16 +211,27 @@
 
             const sizes = document.querySelectorAll('input[name="sizes[]"]:checked');
             const colors = document.querySelectorAll('input[name="colors[]"]:checked');
+            
+            if (sizes.length === 0) {
+                alert("Vui lòng chọn ít nhất một size.");
+                return;
+            }
+            
+            if (colors.length === 0) {
+                alert("Vui lòng chọn ít nhất một màu.");
+                return;
+            }
+            
             const tbody = document.querySelector('#variant_table tbody');
 
             sizes.forEach(size => {
                 colors.forEach(color => {
-                    if (!variantExists(size.value, color.value)) {
+                    if (!window.variantExists(size.value, color.value)) {
                         tbody.insertAdjacentHTML('beforeend', `
                         <tr>
                             <td><input type="checkbox" class="variant_checkbox"></td>
                             <td><input type="hidden" name="variant_sizes[]" value="${size.value}">${size.parentElement.textContent.trim()}</td>
-<td><input type="hidden" name="variant_colors[]" value="${color.value}">${color.parentElement.textContent.trim()}</td>
+                            <td><input type="hidden" name="variant_colors[]" value="${color.value}">${color.parentElement.textContent.trim()}</td>
                             <td><input type="number" name="variant_prices[]" class="form-control" value="${price}" required></td>
                             <td><input type="number" name="variant_sale_prices[]" class="form-control" value="${sale}" required></td>
                             <td><input type="number" name="variant_quantities[]" class="form-control" value="${qty}" required></td>
@@ -226,33 +245,41 @@
             document.getElementById('variant-list-box').classList.remove('d-none');
         }
 
-        function variantExists(sizeId, colorId) {
+        window.variantExists = function(sizeId, colorId) {
             return [...document.querySelectorAll('#variant_table tbody tr')].some(row => {
                 return row.querySelector('input[name="variant_sizes[]"]').value == sizeId &&
                     row.querySelector('input[name="variant_colors[]"]').value == colorId;
             });
         }
 
-        function toggleAll(name, source) {
+        window.toggleAll = function(name, source) {
             document.querySelectorAll(`input[name="${name}"]`).forEach(cb => cb.checked = source.checked);
         }
 
-        function toggleAllVariants(source) {
+        window.toggleAllVariants = function(source) {
             document.querySelectorAll('.variant_checkbox').forEach(cb => cb.checked = source.checked);
         }
 
-        function deleteSelectedVariants() {
+        window.deleteSelectedVariants = function() {
             document.querySelectorAll('.variant_checkbox:checked').forEach(cb => cb.closest('tr').remove());
         }
 
-        function previewImages(event) {
+        window.previewImages = function(event) {
             const input = event.target;
             const preview = document.getElementById('preview-images');
+            const imageColorsSection = document.getElementById('image-colors-section');
+            const imageColorInputs = document.getElementById('image-color-inputs');
+            
             preview.innerHTML = '';
+            imageColorInputs.innerHTML = '';
+            
             if (input.files) {
-                Array.from(input.files).forEach(file => {
+                imageColorsSection.style.display = 'block';
+                
+                Array.from(input.files).forEach((file, index) => {
                     const reader = new FileReader();
                     reader.onload = function(e) {
+                        // Tạo preview ảnh
                         const img = document.createElement('img');
                         img.src = e.target.result;
                         img.style.maxWidth = '100px';
@@ -261,10 +288,67 @@
                         img.style.border = '1px solid #eee';
                         img.style.marginRight = '8px';
                         preview.appendChild(img);
+                        
+                        // Tạo input chọn màu cho ảnh này
+                        const colorDiv = document.createElement('div');
+                        colorDiv.className = 'image-color-item';
+                        colorDiv.style.marginBottom = '10px';
+                        colorDiv.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <img src="${e.target.result}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                                <div>
+                                    <label style="font-size: 12px; color: #666;">Ảnh ${index + 1}:</label>
+                                    <select name="image_colors[]" class="form-control" style="width: 150px; font-size: 12px;">
+                                        <option value="">-- Chọn màu --</option>
+                                        @foreach ($colors as $color)
+                                            <option value="{{ $color->id }}">{{ $color->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        `;
+                        imageColorInputs.appendChild(colorDiv);
                     }
                     reader.readAsDataURL(file);
                 });
             }
         }
-    </script>
+
+        window.validateForm = function() {
+            // Kiểm tra ảnh
+            const imageInput = document.getElementById('images');
+            if (!imageInput.files || imageInput.files.length === 0) {
+                alert('Vui lòng chọn ít nhất một ảnh sản phẩm.');
+                return false;
+            }
+
+            // Kiểm tra variants
+            const variantRows = document.querySelectorAll('#variant_table tbody tr');
+            if (variantRows.length === 0) {
+                alert('Vui lòng tạo ít nhất một biến thể sản phẩm.');
+                return false;
+            }
+
+            // Kiểm tra dữ liệu trong từng variant
+            for (let row of variantRows) {
+                const sizeInput = row.querySelector('input[name="variant_sizes[]"]');
+                const colorInput = row.querySelector('input[name="variant_colors[]"]');
+                const priceInput = row.querySelector('input[name="variant_prices[]"]');
+                const salePriceInput = row.querySelector('input[name="variant_sale_prices[]"]');
+                const quantityInput = row.querySelector('input[name="variant_quantities[]"]');
+
+                if (!sizeInput.value || !colorInput.value || !priceInput.value || !salePriceInput.value || !quantityInput.value) {
+                    alert('Vui lòng điền đầy đủ thông tin cho tất cả biến thể.');
+                    return false;
+                }
+
+                if (parseFloat(salePriceInput.value) >= parseFloat(priceInput.value)) {
+                    alert('Giá sale phải nhỏ hơn giá gốc.');
+                    return false;
+                }
+            }
+
+            return true;
+        }
+</script>
 @endsection

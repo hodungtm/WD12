@@ -84,7 +84,7 @@ class CheckoutController extends Controller
                 $discountAmount = min(
                     round($subtotal * $discount->discount_percent / 100),
                     $discount->max_discount_amount
-                );
+);
             }
         }
 
@@ -100,7 +100,7 @@ class CheckoutController extends Controller
                     'receiver_name'      => $request->receiver_name,
                     'receiver_phone'     => $request->receiver_phone,
                     'receiver_email'     => $user->email,
-                    'receiver_address'   => $request->address,
+                    'receiver_address'   => $request->receiver_address,
                     'payment_method'     => 'Momo',
                     'shipping_method_id' => $request->shipping_method_id,
                     'discount_code'      => $discountCode,
@@ -156,7 +156,7 @@ class CheckoutController extends Controller
         $discount = Discount::where('code', $discountCode)
             ->whereDate('start_date', '<=', now())
             ->whereDate('end_date', '>=', now())
-            ->first();
+->first();
 
         if (!$discount) {
             return back()->with('error', 'Mã giảm giá không hợp lệ hoặc đã hết hạn.');
@@ -179,7 +179,7 @@ class CheckoutController extends Controller
         'receiver_name'      => $request->receiver_name,
         'receiver_phone'     => $request->receiver_phone,
         'receiver_email'     => $request->receiver_email,
-        'receiver_address'   => $request->receiver_address,
+        'receiver_address' => $request->receiver_address ?? $request->address,
         'payment_method'     => $request->payment_method,
         'total_price'        => $subtotal,
         'shipping_fee'       => $shippingFee,
@@ -223,56 +223,71 @@ class CheckoutController extends Controller
 return redirect()->route('client.order.success', $order->id)->with('success', 'Đặt hàng thành công!');
 }
 
-    public function momoPayment(Request $request)
+    public function momoPayment()
     {
         $data = session('checkout_data');
 
-    if (!$data) {
-        return redirect()->route('client.checkout')->with('error', 'Không có dữ liệu đơn hàng');
-    }
+        if (!$data) {
+            return redirect()->route('client.checkout')->with('error', 'Không có dữ liệu đơn hàng');
+        }
 
         $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
-        $partnerCode = 'MOMOBKUN20180529';
+$partnerCode = 'MOMOBKUN20180529';
         $accessKey = 'klm05TvNBzhg7h7j';
         $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
-        $orderInfo = "Thanh toán đơn hàng qua MoMo";
+        $orderInfo = "Thanh toan don hang qua MoMo";
 
         $amount = $data['final_amount'];
         $orderId = time();
+        $requestId = time();
         $redirectUrl = route('momo.return');
         $ipnUrl = route('momo.return');
-        $requestId = time();
         $requestType = "payWithATM";
         $extraData = "";
 
-        $rawHash = "accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$requestId&requestType=$requestType";
+        $rawData = [
+            'accessKey'    => $accessKey,
+            'amount'       => $amount,
+            'extraData'    => $extraData,
+            'ipnUrl'       => $ipnUrl,
+            'orderId'      => $orderId,
+            'orderInfo'    => $orderInfo,
+            'partnerCode'  => $partnerCode,
+            'redirectUrl'  => $redirectUrl,
+            'requestId'    => $requestId,
+            'requestType'  => $requestType,
+        ];
+
+        ksort($rawData);
+        $rawHash = urldecode(http_build_query($rawData));
         $signature = hash_hmac("sha256", $rawHash, $secretKey);
 
-    // Dữ liệu gửi đi
-    $body = [
-        'partnerCode' => $partnerCode,
-        'partnerName' => "MoMoTest",
-        'storeId' => "MomoTestStore",
-        'requestId' => $requestId,
-        'amount' => $amount,
-        'orderId' => $orderId,
-        'orderInfo' => $orderInfo,
-        'redirectUrl' => $redirectUrl,
-        'ipnUrl' => $ipnUrl,
-        'lang' => 'vi',
-        'extraData' => $extraData,
-        'requestType' => $requestType,
-        'signature' => $signature
-    ];
+        $body = [
+            'partnerCode' => $partnerCode,
+            'partnerName' => "MoMoTest",
+            'storeId' => "MomoTestStore",
+            'requestId' => $requestId,
+            'amount' => $amount,
+            'orderId' => $orderId,
+            'orderInfo' => $orderInfo,
+            'redirectUrl' => $redirectUrl,
+            'ipnUrl' => $ipnUrl,
+            'lang' => 'vi',
+            'extraData' => $extraData,
+            'requestType' => $requestType,
+            'signature' => $signature
+        ];
 
         $result = $this->execPostRequest($endpoint, json_encode($body));
+        Log::info('🔁 MoMo Raw Response: ' . $result);
+
         $jsonResult = json_decode($result, true);
 
-    if (isset($jsonResult['payUrl'])) {
-        return redirect($jsonResult['payUrl']);
-    }
+        if (isset($jsonResult['payUrl'])) {
+            return redirect($jsonResult['payUrl']);
+        }
 
-        return back()->with('error', 'Không thể kết nối MoMo.');
+        return back()->with('error', 'Không thể kết nối với cổng thanh toán MoMo.');
     }
 
     public function execPostRequest($url, $data)
@@ -285,28 +300,27 @@ return redirect()->route('client.order.success', $order->id)->with('success', '�
             'Content-Type: application/json',
             'Content-Length: ' . strlen($data)
         ]);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
-    $result = curl_exec($ch);
+        $result = curl_exec($ch);
 
         if (curl_errno($ch)) {
-            $error_msg = curl_error($ch);
+            $error = curl_error($ch);
+            Log::error("❌ cURL MoMo Error: $error");
             curl_close($ch);
-            Log::error("cURL Error for MoMo API: " . $error_msg);
-            return false;
+            return json_encode(['curl_error' => $error]);
         }
 
         curl_close($ch);
-
         return $result;
     }
 
     public function success($orderId)
     {
         $order = Order::with(['orderItems.product', 'orderItems.productVariant'])->findOrFail($orderId);
-
-        if ($order->user_id !== Auth::id()) {
+if ($order->user_id !== Auth::id()) {
             abort(403, 'Không có quyền xem đơn hàng này');
         }
 
