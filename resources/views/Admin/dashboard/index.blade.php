@@ -1,3 +1,4 @@
+
 @extends('admin.layouts.AdminLayout')
 
 @section('main')
@@ -7,7 +8,6 @@
     <!-- note: Header với breadcrumb -->
     <div class="flex items-center flex-wrap justify-between gap20 mb-30">
         <h3>Dashboard</h3>
-
         <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
             <li><a href="#"><div class="text-tiny">Dashboard</div></a></li>
             <li><i class="icon-chevron-right"></i></li>
@@ -21,18 +21,18 @@
         style="background: #d4edda; color: #155724; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 600;">
         <i class="icon-check-circle" style="margin-right: 6px;"></i> {{ session('success') }}
     </div>
-@endif
+    @endif
 
-<!-- note: Hiển thị thông báo lỗi -->
-@if (session('error'))
+    <!-- note: Hiển thị thông báo lỗi -->
+    @if (session('error'))
     <div class="alert"
         style="background: #f8d7da; color: #721c24; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 600;">
         <i class="icon-alert-triangle" style="margin-right: 6px;"></i> {{ session('error') }}
     </div>
-@endif
+    @endif
 
     <!-- note: Form tìm kiếm và lọc dữ liệu -->
-    <form method="GET" action="" class="mb-3 d-flex align-items-center gap-2 position-relative">
+    <form method="GET" action="" class="mb-3 d-flex align-items-center gap-2 position-relative flex-wrap">
         <input type="text" name="q" class="form-control w-auto dashboard-search" style="min-width:220px;" placeholder="Tìm kiếm sản phẩm, đơn hàng, khách hàng, mã giảm giá..." value="{{ request('q') }}">
         <button type="submit" class="btn btn-primary dashboard-search-btn"><i class="fas fa-search"></i> Tìm kiếm</button>
         <!-- note: Dropdown chọn khoảng thời gian -->
@@ -41,6 +41,7 @@
             <option value="week" {{ $type === 'week' ? 'selected' : '' }}>Tuần</option>
             <option value="month" {{ $type === 'month' ? 'selected' : '' }}>Tháng</option>
             <option value="year" {{ $type === 'year' ? 'selected' : '' }}>Năm</option>
+            <option value="custom" {{ $type === 'custom' ? 'selected' : '' }}>Tùy chỉnh</option>
         </select>
         <!-- note: Dropdown chọn danh mục -->
         <select name="category_id" class="form-select w-auto d-inline-block" onchange="this.form.submit()">
@@ -49,19 +50,36 @@
                 <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->ten_danh_muc }}</option>
             @endforeach
         </select>
-        <!-- note: Date picker cho ngày cụ thể -->
-        @if(request('type') === 'today')
+        <!-- note: Date picker cho khoảng thời gian tùy chỉnh -->
+        @if($type === 'today')
             <input type="date" name="date" value="{{ request('date', now()->toDateString()) }}" class="form-control w-auto d-inline-block ms-auto dashboard-date-picker" onchange="this.form.submit()" style="min-width: 150px; max-width: 180px;">
+        @elseif($type === 'custom')
+            <div class="d-flex align-items-center gap-2">
+                <input type="date" name="start_date" value="{{ request('start_date', now()->subDays(7)->toDateString()) }}" class="form-control w-auto d-inline-block dashboard-date-picker" onchange="this.form.submit()" style="min-width: 150px; max-width: 180px;">
+                <span>-</span>
+                <input type="date" name="end_date" value="{{ request('end_date', now()->toDateString()) }}" class="form-control w-auto d-inline-block dashboard-date-picker" onchange="this.form.submit()" style="min-width: 150px; max-width: 180px;">
+            </div>
         @endif
     </form>
     
     <!-- note: CSS tùy chỉnh cho form tìm kiếm -->
     <style>
-.dashboard-search { border-radius: 20px; padding-left: 16px; }
-.dashboard-search-btn { border-radius: 20px; padding: 6px 18px; font-weight: 500; }
-.dashboard-search-btn i { margin-right: 4px; }
-.dashboard-date-picker { border-radius: 20px; height: 40px; }
-</style>
+        .dashboard-search { border-radius: 20px; padding-left: 16px; }
+        .dashboard-search-btn { border-radius: 20px; padding: 6px 18px; font-weight: 500; }
+        .dashboard-search-btn i { margin-right: 4px; }
+        .dashboard-date-picker { border-radius: 20px; height: 40px; }
+        .form-select { border-radius: 20px; height: 40px; }
+        .form-select:focus, .dashboard-date-picker:focus { border-color: #1abc9c; box-shadow: 0 0 5px rgba(26, 188, 156, 0.5); }
+        @media (max-width: 576px) {
+            .form-control, .form-select, .dashboard-search-btn {
+                width: 100% !important;
+                margin-bottom: 0.5rem;
+            }
+            .dashboard-date-picker {
+                max-width: 100%;
+            }
+        }
+    </style>
 
     <!-- note: Thống kê tổng quan - 4 card chính -->
     <div class="row g-4">
@@ -93,31 +111,31 @@
 
     <!-- note: CSS tùy chỉnh cho bảng -->
     <style>
-.dashboard-table,
-.dashboard-table thead,
-.dashboard-table tbody {
-    border: none !important;
-    box-shadow: none !important;
-    outline: none !important;
-}
-.dashboard-table th, .dashboard-table td {
-    border: none !important;
-    font-size: 1.1rem;
-}
-.dashboard-link {
-    color: #1abc9c;
-    font-weight: 500;
-    text-decoration: none;
-    transition: color 0.2s;
-    margin-left: 12px;
-    font-size: 1rem;
-    position: relative;
-}
-.dashboard-link:hover {
-    color: #148f77;
-    text-decoration: underline;
-}
-</style>
+        .dashboard-table,
+        .dashboard-table thead,
+        .dashboard-table tbody {
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }
+        .dashboard-table th, .dashboard-table td {
+            border: none !important;
+            font-size: 1.1rem;
+        }
+        .dashboard-link {
+            color: #1abc9c;
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.2s;
+            margin-left: 12px;
+            font-size: 1rem;
+            position: relative;
+        }
+        .dashboard-link:hover {
+            color: #148f77;
+            text-decoration: underline;
+        }
+    </style>
 
     <!-- note: Hàng 2: 2 box dài - Top sản phẩm bán chạy và sản phẩm sắp hết hàng -->
     <div class="row g-4 mt-4" style="display: flex; align-items: stretch;">
@@ -137,7 +155,7 @@
                         <tbody>
                             @forelse($topProducts as $item)
                             <tr>
-                                <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $item->product->name ?? 'N/A' }}</td>
+                                <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $item->product_name ?? 'N/A' }}</td>
                                 <td style="text-align: right;">{{ $item->sold }}</td>
                             </tr>
                             @empty
@@ -286,7 +304,7 @@
                         <tbody>
                             @forelse($totalStockPerProduct->take(10) as $stock)
                             <tr>
-                                <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $stock->product->name }}</td>
+                                <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $stock->product->name ?? 'N/A' }}</td>
                                 <td style="text-align: right;">{{ $stock->total_stock }}</td>
                             </tr>
                             @empty
@@ -296,7 +314,6 @@
                             @endforelse
                         </tbody>
                     </table>
-                    
                 </div>
             </div>
         </div>
@@ -389,7 +406,7 @@
                             @forelse($activeDiscountList->take(5) as $discount)
                             <tr>
                                 <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $discount->code }}</td>
-                                <td>{{ $discount->discount_percent }}%</td>
+                                <td>{{ $discount->discount_percent ?? 'N/A' }}%</td>
                                 <td>{{ $discount->end_date ? \Carbon\Carbon::parse($discount->end_date)->format('d/m/Y') : 'Không xác định' }}</td>
                             </tr>
                             @empty
@@ -432,6 +449,7 @@
 
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script>
 const labels = {!! json_encode($labels) !!};
 
@@ -441,16 +459,14 @@ function formatCurrency(value) {
 
 function drawChart(id, data, color) {
     new Chart(document.getElementById(id).getContext('2d'), {
-        type: 'line',
+        type: 'bar',
         data: {
             labels: labels,
             datasets: [{
                 data: data,
+                backgroundColor: labels.map((_, index) => data[index] === 0 ? `${color}66` : color),
                 borderColor: color,
-                fill: false,
-                tension: 0.4,
-                pointRadius: 4,
-                pointBackgroundColor: color,
+                borderWidth: 1,
             }]
         },
         options: {
@@ -464,6 +480,14 @@ function drawChart(id, data, color) {
                         title: context => `Mốc: ${context[0].label}`,
                         label: context => `Giá trị: ${formatCurrency(context.parsed.y)}`
                     }
+                },
+                datalabels: {
+                    anchor: 'end',
+                    align: 'top',
+                    formatter: (value) => value === 0 ? '0' : formatCurrency(value),
+                    color: '#333',
+                    font: { weight: 'bold', size: 12 },
+                    offset: 4
                 }
             },
             interaction: {
@@ -471,8 +495,15 @@ function drawChart(id, data, color) {
                 intersect: false,
             },
             scales: {
-                x: { display: false },
-                y: { display: false }
+                x: { 
+                    display: false,
+                    barPercentage: 0.8,
+                    categoryPercentage: 0.9
+                },
+                y: { 
+                    display: false,
+                    beginAtZero: true
+                }
             }
         }
     });
@@ -482,6 +513,29 @@ drawChart('revenueChart', {!! json_encode($revenueData) !!}, '#28a745');
 drawChart('ordersChart', {!! json_encode($orderData) !!}, '#dc3545');
 drawChart('customersChart', {!! json_encode($userData) !!}, '#007bff');
 drawChart('productsChart', {!! json_encode($productData) !!}, '#ffc107');
+
+// Kiểm tra client-side cho date picker
+document.addEventListener('DOMContentLoaded', function () {
+    const startDateInput = document.querySelector('input[name="start_date"]');
+    const endDateInput = document.querySelector('input[name="end_date"]');
+    
+    if (startDateInput && endDateInput) {
+        endDateInput.addEventListener('change', function () {
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+            if (endDate < startDate) {
+                endDateInput.value = startDateInput.value;
+            }
+        });
+        startDateInput.addEventListener('change', function () {
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+            if (endDate < startDate) {
+                endDateInput.value = startDateInput.value;
+            }
+        });
+    }
+});
 </script>
 @endsection
 

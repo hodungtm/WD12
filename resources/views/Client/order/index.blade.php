@@ -2,7 +2,7 @@
 
 @section('main')
     <main class="main container my-5">
-        <h3>Theo dõi đơn hàng</h3>
+        <h3 class="mb-4">Theo dõi đơn hàng</h3>
 
         @php
             $statuses = [
@@ -11,6 +11,18 @@
                 'Đang giao hàng' => 'Đang giao hàng',
                 'Hoàn thành' => 'Hoàn thành',
                 'Đã hủy' => 'Đã hủy',
+            ];
+            $statusColors = [
+                'Đang chờ' => 'bg-warning text-dark',
+                'Đang giao hàng' => 'bg-info text-white',
+                'Hoàn thành' => 'bg-success text-white',
+                'Đã hủy' => 'bg-danger text-white',
+            ];
+            $statusIcons = [
+                'Đang chờ' => 'fas fa-clock',
+                'Đang giao hàng' => 'fas fa-truck',
+                'Hoàn thành' => 'fas fa-check-circle',
+                'Đã hủy' => 'fas fa-times-circle',
             ];
         @endphp
 
@@ -27,77 +39,50 @@
 
         @if($orders->count())
             @foreach($orders as $order)
-                <div class="card mb-3 shadow-sm">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card mb-3 shadow-sm border-0">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
                         <div>
-                            <strong>Mã đơn:</strong> {{ $order->order_code }}<br>
-                            <small>Ngày đặt: {{ $order->order_date }}</small>
+                            <strong class="fs-5">Mã đơn: {{ $order->order_code }}</strong>
                         </div>
                         <div>
-                            <span class="badge bg-primary">{{ $order->status }}</span>
+                            <span class="badge {{ $statusColors[$order->status] ?? 'bg-primary' }} fs-6 py-2 px-3">
+                                <i class="{{ $statusIcons[$order->status] ?? 'fas fa-info-circle' }} me-1"></i>
+                                {{ $order->status }}
+                            </span>
                         </div>
                     </div>
                     <div class="card-body">
-                        @php
-                            $firstItem = $order->orderItems->first();
-                            $productExists = $firstItem ? \App\Models\Products::find($firstItem->product_id) : null;
-                        @endphp
-
-                        @if($firstItem)
-                            <div class="d-flex">
-                                @if($productExists)
-                                    <a href="{{ route('client.product.detail', $firstItem->product_id) }}">
-                                        <img src="{{ asset('storage/' . $firstItem->product_image) }}" alt="" width="80" height="80"
-                                            class="me-3 rounded border">
-                                    </a>
-                                @else
-                                    <img src="{{ asset('storage/' . $firstItem->product_image) }}" alt="" width="80" height="80"
-                                        class="me-3 rounded border">
-                                @endif
-
-                                <div class="flex-grow-1">
-                                    @if($productExists)
-                                        <h6>
-                                            <a href="{{ route('client.product.detail', $firstItem->product_id) }}"
-                                                class="text-dark text-decoration-none">
-                                                {{ $firstItem->product_name }}
-                                            </a>
-                                        </h6>
-                                    @else
-                                        <h6 class="text-muted">{{ $firstItem->product_name }}</h6>
-                                    @endif
-
-                                    <small>Phân loại: {{ $firstItem->variant_name ?? '-' }}</small><br>
-                                    <small>x{{ $firstItem->quantity }}</small>
-                                </div>
-
-                                <div class="text-end">
-                                    <strong>{{ number_format($firstItem->price, 0, ',', '.') }}₫</strong>
-                                </div>
-                            </div>
-                        @else
+                        @if($order->orderItems->isEmpty())
                             <div class="alert alert-warning mb-0">
                                 Đơn hàng này không có sản phẩm nào.
                             </div>
+                        @else
+                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center">
+                                <div class="mb-2 mb-sm-0">
+                                    <strong>Ngày đặt:</strong> {{ $order->order_date }}<br>
+                                    <strong>Thành tiền:</strong> {{ number_format($order->final_amount, 0, ',', '.') }}₫
+                                </div>
+                            </div>
                         @endif
                     </div>
-
-                    <div class="card-footer d-flex justify-content-between align-items-center">
-                        <strong>Thành tiền: {{ number_format($order->final_amount, 0, ',', '.') }}₫</strong>
-                        <div>
+                    <div class="card-footer bg-light d-flex justify-content-end align-items-center">
+                        <div class="action-buttons">
                             @if ($order->status === 'Đang chờ')
-                                <button type="button" class="btn btn-danger btn-sm btn-cancel-order" data-bs-toggle="modal"
+                                <button type="button" class="btn btn-danger btn-sm btn-cancel-order me-2" data-bs-toggle="modal"
                                     data-bs-target="#cancelModal" data-order-id="{{ $order->id }}">
-                                    Hủy đơn
+                                    <i class="fas fa-ban me-1"></i> Hủy đơn
                                 </button>
                             @endif
-                            @if($order->status === 'Hoàn thành' && $firstItem)
-                                <button type="button" class="btn btn-sm btn-primary btn-open-review-modal"
-                                    data-product-id="{{ $firstItem->product_id }}" data-order-item-id="{{ $firstItem->id }}">
-                                    Đánh giá
+                            @if($order->status === 'Hoàn thành' && $order->orderItems->first())
+                                <button type="button" class="btn btn-primary btn-sm btn-open-review-modal me-2"
+                                    data-product-id="{{ $order->orderItems->first()->product_id }}"
+                                    data-order-item-id="{{ $order->orderItems->first()->id }}">
+                                    <i class="fas fa-star me-1"></i> Đánh giá
                                 </button>
                             @endif
-                            <a href="{{ route('client.orders.show', $order) }}" class="btn btn-sm btn-outline-secondary">Xem chi tiết</a>
+                            <a href="{{ route('client.orders.show', $order) }}" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-eye me-1"></i> Xem chi tiết
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -105,7 +90,9 @@
 
             {{ $orders->links() }}
         @else
-            <p>Không có đơn hàng nào.</p>
+            <div class="alert alert-info text-center">
+                Không có đơn hàng nào.
+            </div>
         @endif
     </main>
 
@@ -157,7 +144,6 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="cancelModalLabel">Lý do hủy đơn</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         @if ($errors->any())
@@ -173,6 +159,7 @@
                             placeholder="Vui lòng nhập lý do hủy đơn (tối đa 255 ký tự)"></textarea>
                     </div>
                     <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                         <button type="submit" class="btn btn-danger">Xác nhận hủy</button>
                     </div>
                 </div>
@@ -225,6 +212,50 @@
     </script>
 
     <style>
+        /* General styles */
+        .card {
+            border-radius: 16px !important;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1) !important;
+        }
+        .card-header, .card-footer {
+            background-color: #f8f9fa;
+            border: none;
+        }
+        .card-header {
+            padding: 1.25rem 1.5rem;
+        }
+        .card-body {
+            padding: 1.5rem;
+        }
+        .card-footer {
+            padding: 1rem 1.5rem;
+        }
+        .badge {
+            font-size: 0.95rem;
+            padding: 0.5rem 1.25rem;
+            border-radius: 20px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+        }
+        .action-buttons .btn {
+            border-radius: 8px;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.9rem;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .action-buttons .btn:hover {
+            transform: translateY(-2px);
+        }
+        .action-buttons .btn-sm {
+            min-width: 100px;
+        }
+
+        /* Modal styles */
         .modal-content {
             border-radius: 18px !important;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
@@ -236,7 +267,8 @@
             border-radius: 8px !important;
         }
         .modal-content .btn-primary,
-        .modal-content .btn-danger {
+        .modal-content .btn-danger,
+        .modal-content .btn-secondary {
             border-radius: 8px !important;
             font-weight: bold;
             padding: 10px 32px;
@@ -269,6 +301,7 @@
             vertical-align: middle;
             padding: 0;
             height: auto;
+            font-size: 1.2rem;
         }
         .rating-stars a.active,
         .rating-stars a:hover,
@@ -282,6 +315,31 @@
             opacity: 0 !important;
             position: absolute !important;
             left: -9999px !important;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .card-header .badge {
+                margin-top: 0.5rem;
+            }
+            .card-body .d-flex {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .card-body .d-flex div {
+                margin-bottom: 0.75rem;
+            }
+            .action-buttons .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+            .action-buttons .btn:last-child {
+                margin-bottom: 0;
+            }
         }
     </style>
 @endsection

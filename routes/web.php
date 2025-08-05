@@ -35,6 +35,7 @@ use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Client\UserController as ClientUserController;
 use App\Http\Controllers\Client\OrderController as ClientOrderController;
 use App\Http\Controllers\Client\WishlistController as ClientWishlistController;
+use App\Models\Products;
 
 
 Route::prefix('admin')->group(function () {
@@ -86,6 +87,17 @@ Route::prefix('client')->name('client.')->group(function () {
 
 Route::get('/momo_payment', [CheckoutController::class, 'momoPayment'])->name('momo.payment');
 Route::get('/momo_return', [CheckoutController::class, 'momoReturn'])->name('momo.return');
+
+// API route để lấy hình ảnh sản phẩm cho modal
+Route::get('/api/product/{id}/image', function($id) {
+    $product = Products::find($id);
+    if ($product && $product->images->first()) {
+        return response()->json([
+            'image' => asset('storage/' . $product->images->first()->image)
+        ]);
+    }
+    return response()->json(['image' => asset('assets/images/no-image.png')]);
+});
 
 Route::prefix('admin')->group(function () {
     Route::resource('orders', AdminOrderController::class)->except(['create', 'store'])->names('admin.orders');

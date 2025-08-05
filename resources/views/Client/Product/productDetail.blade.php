@@ -18,11 +18,10 @@
                     <span>đã được thêm vào giỏ hàng.</span>
                 </div>
                 <div class="row">
-                    <!-- Product Gallery (Left) -->
                     <div class="col-lg-5 col-md-6 product-single-gallery">
                         <div class="product-slider-container">
                             <div class="label-group">
-                                @if($product->variants->first() && $product->variants->first()->sale_price && $product->variants->first()->sale_price < $product->variants->first()->price)
+                                @if($product->variants->where('sale_price', '>', 0)->min('sale_price') && $product->variants->where('sale_price', '>', 0)->min('sale_price') < $product->variants->min('price'))
                                     <div class="product-label label-sale">
                                         SALE
                                     </div>
@@ -33,7 +32,7 @@
                             </div>
                             <div class="product-single-carousel owl-carousel owl-theme show-nav-hover">
                                 @foreach($product->images as $img)
-                                    <div class="product-item">
+                                    <div class="product-item" data-color="{{ $img->color_id }}">
                                         <img class="product-single-image" id="mainImage"
                                             src="{{ asset('storage/' . $img->image) }}" alt="Product Image"
                                             style="width:100%;max-width:468px;" />
@@ -46,7 +45,7 @@
                         </div>
                         <div class="prod-thumbnail owl-dots mt-3 d-flex flex-wrap gap-2">
                             @foreach($product->images as $img)
-                                <div class="owl-dot">
+                                <div class="owl-dot" data-color="{{ $img->color_id }}">
                                     <img src="{{ asset('storage/' . $img->image) }}" class="img-thumbnail thumbnail-img"
                                         width="80" onclick="changeImage(this)">
                                 </div>
@@ -54,7 +53,6 @@
                         </div>
                     </div>
 
-                    <!-- Product Details (Right) -->
                     <div class="col-lg-7 col-md-6 product-single-details">
                         <h1 class="product-title">{{ $product->name }}</h1>
                         <div class="product-nav">
@@ -98,14 +96,17 @@
                         <hr class="short-divider">
                         <div class="price-box">
                             @php
-                                $variant = $product->variants->first();
+                                $min_sale_price = $product->variants->where('sale_price', '>', 0)->min('sale_price');
+                                $max_sale_price = $product->variants->where('sale_price', '>', 0)->max('sale_price');
+                                $min_price = $product->variants->min('price');
+                                $max_price = $product->variants->max('price');
                             @endphp
-                            @if($variant)
-                                @if($variant->sale_price && $variant->sale_price < $variant->price)
-                                    <div class="product-price">₫{{ number_format($variant->sale_price) }} –
-                                        ₫{{ number_format($variant->price) }}</div>
+                            @if($product->variants->isNotEmpty())
+                                @if($min_sale_price && $min_sale_price < $min_price)
+                                   
+                                    <div class="product-price">₫{{ number_format($min_sale_price) }} – ₫{{ number_format($max_sale_price ?: $max_price) }}</div>
                                 @else
-                                    <div class="product-price">₫{{ number_format($variant->price) }}</div>
+                                    <div class="product-price">₫{{ number_format($min_price) }} – ₫{{ number_format($max_price) }}</div>
                                 @endif
                             @else
                                 <div class="product-price">Liên hệ</div>
@@ -122,8 +123,7 @@
                         <form action="{{ route('client.cart.add', $product->id) }}" method="POST" id="add-to-cart-form">
                             @csrf
                             <input type="hidden" name="product_id" value="{{ $product->id }}">
-                            <input type="hidden" name="variant_id" id="selected_variant_id"
-                                value="{{ $product->variants->first()->id ?? '' }}">
+                            <input type="hidden" name="variant_id" id="selected_variant_id" value="">
                             <div class="product-filters-container mb-3">
                                 <div class="product-single-filter-row">
                                     <label class="form-label mb-0">Màu sắc:</label>
@@ -149,30 +149,25 @@
                                 </div>
                                 <div class="product-single-filter-row">
                                     <label class="form-label mb-0">Tồn kho:</label>
-                                    <span id="inventory-info"
-                                        class="text-muted">{{ $product->variants->first()->quantity ?? '0' }}</span>
+                                    <span id="inventory-info" class="text-muted">Chưa chọn thuộc tính</span>
                                 </div>
                             </div>
-
                             <div class="mb-3">
                                 <span id="dynamic-price" class="fw-bold fs-5 text-primary"></span>
                             </div>
                             <div class="d-flex align-items-center mb-3" style="gap: 16px;">
-
                                 <div class="input-group" style="width: 140px;">
                                     <button type="button" class="btn btn-outline-secondary" id="qty-minus">-</button>
                                     <input id="quantity-input" type="number" name="quantity" value="1" min="1"
-                                        class="form-control text-center" style="max-width: 60px;">
+                                        class="form-control text-center" style="max-width: 60px;" readonly>
                                     <button type="button" class="btn btn-outline-secondary" id="qty-plus">+</button>
                                 </div>
-                                <button type="submit" class="btn btn-dark fw-bold px-4" id="add-to-cart-btn">
+                                <button type="submit" class="btn btn-dark fw-bold px-4" id="add-to-cart-btn" disabled>
                                     <i class="icon-shopping-cart"></i> THÊM VÀO GIỎ HÀNG
                                 </button>
                                 <a href="{{ route('client.cart.index') }}" class="btn btn-outline-dark fw-bold px-4 d-none"
                                     id="view-cart-btn" style="background:#f7f7f7;">XEM GIỎ HÀNG</a>
                             </div>
-
-
                         </form>
                         <div class="product-single-share mb-3 mt-4">
                             <div class="d-flex align-items-center" style="gap: 12px;">
@@ -181,7 +176,6 @@
                                 <a href="#" class="social-icon social-linkedin fab fa-linkedin-in" title="Linkedin"></a>
                                 <a href="#" class="social-icon social-gplus fab fa-google-plus-g" title="Google +"></a>
                                 <a href="#" class="social-icon social-mail icon-mail-alt" title="Mail"></a>
-
                                 <div class="product-action">
                                     <a href="#" class="btn-icon-wish add-wishlist" title="Yêu thích"
                                         onclick="event.preventDefault(); document.getElementById('add-wishlist-{{ $product->id }}').submit();">
@@ -192,7 +186,6 @@
                                         style="display:none;">
                                         @csrf
                                     </form>
-
                                 </div>
                             </div>
                         </div>
@@ -205,30 +198,25 @@
                         <a class="nav-link active" id="product-tab-desc" data-toggle="tab" href="#product-desc-content"
                             role="tab" aria-controls="product-desc-content" aria-selected="true">Mô tả</a>
                     </li>
-
                     <li class="nav-item">
                         <a class="nav-link" id="product-tab-size" data-toggle="tab" href="#product-size-content" role="tab"
                             aria-controls="product-size-content" aria-selected="true">Thông tin kỹ thuật</a>
                     </li>
-
                     <li class="nav-item">
                         <a class="nav-link" id="product-tab-tags" data-toggle="tab" href="#product-tags-content" role="tab"
                             aria-controls="product-tags-content" aria-selected="false">Thông tin bổ sung</a>
                     </li>
-
                     <li class="nav-item">
                         <a class="nav-link" id="product-tab-reviews" data-toggle="tab" href="#product-reviews-content"
                             role="tab" aria-controls="product-reviews-content" aria-selected="false">Đánh giá
                             ({{ $reviews->count() }})</a>
                     </li>
-
                     <li class="nav-item">
                         <a class="nav-link" id="product-tab-comments" data-toggle="tab" href="#product-comments-content"
                             role="tab" aria-controls="product-comments-content" aria-selected="false">Bình luận
                             ({{ $comments->count() }})</a>
                     </li>
                 </ul>
-
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="product-desc-content" role="tabpanel"
                         aria-labelledby="product-tab-desc">
@@ -243,7 +231,6 @@
                             </ul>
                         </div>
                     </div>
-
                     <div class="tab-pane fade" id="product-size-content" role="tabpanel" aria-labelledby="product-tab-size">
                         <div class="product-size-content">
                             <div class="row">
@@ -278,7 +265,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="tab-pane fade" id="product-tags-content" role="tabpanel" aria-labelledby="product-tab-tags">
                         <table class="table table-striped mt-2">
                             <tbody>
@@ -307,15 +293,12 @@
                             </tbody>
                         </table>
                     </div>
-
                     <div class="tab-pane fade" id="product-reviews-content" role="tabpanel"
                         aria-labelledby="product-tab-reviews">
                         <div class="product-reviews-content">
                             <h3 class="reviews-title">{{ $reviews->count() }} đánh giá cho {{ $product->name }}</h3>
-
                             <div class="comment-list">
                                 @forelse($reviews as $review)
-
                                     <div class="comments">
                                         <figure class="img-thumbnail text-center">
                                             <img src="{{ asset('assets/images/blog/author.jpg') }}" alt="author" width="80"
@@ -347,26 +330,24 @@
                                     <p>Chưa có đánh giá nào cho sản phẩm này.</p>
                                 @endforelse
                             </div>
-
                             <div class="divider"></div>
-
                             <div class="add-product-review">
                                 <h3 class="review-title">Thêm đánh giá</h3>
-
                                 @auth
-                                @if (!$hasPurchased)
-                                <div class="alert alert-info">
-                                    <p>Bạn cần mua sản phẩm này trước khi có thể đánh giá.</p>
-                                </div>
-                            @elseif (!$canReview)
-                                <div class="alert alert-info">
-                                    <p>Bạn đã đánh giá hết lượt cho sản phẩm này.</p>
-                                </div>
-                            @else
+                                    @if (!$hasPurchased)
+                                        <div class="alert alert-info">
+                                            <p>Bạn cần mua sản phẩm này trước khi có thể đánh giá.</p>
+                                        </div>
+                                    @elseif (!$canReview)
+                                        <div class="alert alert-info">
+                                            <p>Bạn đã đánh giá hết lượt cho sản phẩm này.</p>
+                                        </div>
+                                    @else
                                         <form action="{{ route('client.product.review', $product->id) }}" method="POST"
                                             class="comment-form m-0">
                                             @csrf
-
+                                            <input type="hidden" name="order_item_id"
+                                                value="{{ \App\Models\Order_items::where('product_id', $product->id)->whereHas('order', fn($q) => $q->where('user_id', Auth::id())->where('status', 'Hoàn thành'))->where('reviewed', false)->first()->id ?? '' }}">
                                             <div class="rating-form">
                                                 <label for="rating">Đánh giá của bạn <span class="required">*</span></label>
                                                 <span class="rating-stars">
@@ -385,13 +366,11 @@
                                                     <option value="1">Rất tệ</option>
                                                 </select>
                                             </div>
-
                                             <div class="form-group">
                                                 <label>Nội dung đánh giá <span class="required">*</span></label>
                                                 <textarea name="noi_dung" cols="5" rows="6" class="form-control form-control-sm"
                                                     required placeholder="Viết đánh giá của bạn về sản phẩm này..."></textarea>
                                             </div>
-
                                             <input type="submit" class="btn btn-primary" value="Gửi đánh giá">
                                         </form>
                                     @endif
@@ -404,22 +383,18 @@
                                     </div>
                                 @endauth
                             </div>
-
                         </div>
                     </div>
-
                     <div class="tab-pane fade" id="product-comments-content" role="tabpanel"
                         aria-labelledby="product-tab-comments">
                         <div class="product-comments-content">
                             <h3 class="comments-title">{{ $comments->count() }} bình luận cho {{ $product->name }}</h3>
-
                             <div class="comment-list">
                                 @forelse($comments as $comment)
                                     <div class="comments">
                                         <figure class="img-thumbnail text-center">
                                             <img src="{{ asset('assets/images/blog/author.jpg') }}" alt="author" width="80"
                                                 height="80">
-
                                         </figure>
                                         <div class="comment-block">
                                             <div class="comment-header">
@@ -438,12 +413,9 @@
                                     <p>Chưa có bình luận nào cho sản phẩm này.</p>
                                 @endforelse
                             </div>
-
                             <div class="divider"></div>
-
                             <div class="add-product-comment">
                                 <h3 class="comment-title">Thêm bình luận</h3>
-
                                 @auth
                                     <form action="{{ route('client.product.comment', $product->id) }}" method="POST"
                                         class="comment-form m-0">
@@ -453,7 +425,6 @@
                                             <textarea name="noi_dung" cols="5" rows="6" class="form-control form-control-sm"
                                                 required placeholder="Viết bình luận của bạn về sản phẩm này..."></textarea>
                                         </div>
-
                                         <input type="submit" class="btn btn-primary" value="Gửi bình luận">
                                     </form>
                                 @else
@@ -469,10 +440,8 @@
                     </div>
                 </div>
             </div>
-
             <div class="products-section pt-0">
                 <h2 class="section-title m-b-4 border-0">Sản phẩm liên quan</h2>
-
                 <div class="row">
                     <div class="products-slider 5col owl-carousel owl-theme dots-top dots-small mb-0" data-owl-options="{
                                                 'margin': 0
@@ -511,12 +480,12 @@
                                         </div>
                                     </div>
                                     <div class="price-box">
-                                        @php
-                                            $variant = $relatedProduct->variants->first();
-                                        @endphp
-                                        @if($variant)
+                                        @if($relatedProduct->variants->isNotEmpty())
+                                            @php
+                                                $variant = $relatedProduct->variants->first();
+                                            @endphp
                                             @if($variant->sale_price && $variant->sale_price < $variant->price)
-                                                <span class="old-price">₫{{ number_format($variant->price) }}</span>
+                                                <del class="old-price">₫{{ number_format($variant->price) }}</del>
                                                 <span class="product-price">₫{{ number_format($variant->sale_price) }}</span>
                                             @else
                                                 <span class="product-price">₫{{ number_format($variant->price) }}</span>
@@ -527,22 +496,21 @@
                                     </div>
                                     <div class="product-action">
                                         <a href="#" class="btn-icon-wish" title="Yêu thích"
-                                            onclick="event.preventDefault(); document.getElementById('add-wishlist-{{ $product->id }}').submit();">
+                                            onclick="event.preventDefault(); document.getElementById('add-wishlist-{{ $relatedProduct->id }}').submit();">
                                             <i class="icon-heart"></i>
                                         </a>
-                                        <form id="add-wishlist-{{ $product->id }}"
-                                            action="{{ route('client.wishlist.add', $product->id) }}" method="POST"
+                                        <form id="add-wishlist-{{ $relatedProduct->id }}"
+                                            action="{{ route('client.wishlist.add', $relatedProduct->id) }}" method="POST"
                                             style="display:none;">
                                             @csrf
                                         </form>
-                                        <form action="{{ route('client.cart.add', $product->id) }}" method="POST"
+                                        <form action="{{ route('client.cart.add', $relatedProduct->id) }}" method="POST"
                                             style="display:inline;">
                                             @csrf
                                             <input type="hidden" name="variant_id"
-                                                value="{{ $product->variants->first()->id ?? '' }}">
+                                                value="{{ $relatedProduct->variants->first()->id ?? '' }}">
                                             <input type="hidden" name="quantity" value="1">
                                             <button type="submit" class="btn-icon btn-add-cart">
-
                                                 <i class="icon-shopping-cart"></i><span>THÊM VÀO GIỎ</span>
                                             </button>
                                         </form>
@@ -787,57 +755,96 @@
         .product-default .btn-add-cart i {
             display: inline-block !important;
         }
-        
+
+        /* Thumbnail active */
+        .owl-dot.active img {
+            border: 2px solid var(--main-color) !important;
+            transform: scale(1.05);
+        }
+
+        .owl-dot img {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .owl-dot img:hover {
+            border: 2px solid var(--main-color) !important;
+            transform: scale(1.05);
+        }
     </style>
 
     <script>
-
         const variants = @json($product->variants);
         let selectedColor = null;
         let selectedSize = null;
 
-        // ĐÃ XÓA ĐOẠN submit trùng lặp trong DOMContentLoaded
-        // Giữ lại đoạn này để xử lý AJAX duy nhất cho form thêm vào giỏ hàng
+        // Cập nhật variant khi chọn màu hoặc kích thước
         function updateVariant() {
-            const variant = variants.find(v =>
-                v.color_id == selectedColor && v.size_id == selectedSize
-            );
-
             const qtyInput = document.getElementById('quantity-input');
             const inventoryInfo = document.getElementById('inventory-info');
             const dynamicPrice = document.getElementById('dynamic-price');
+            const addToCartBtn = document.getElementById('add-to-cart-btn');
 
-            if (variant) {
-                document.getElementById('selected_variant_id').value = variant.id;
+            if (selectedColor && selectedSize) {
+                const variant = variants.find(v =>
+                    v.color_id == selectedColor && v.size_id == selectedSize
+                );
 
-                qtyInput.max = variant.quantity;
-                qtyInput.value = 1;
-                inventoryInfo.innerText = `${variant.quantity}`;
+                if (variant) {
+                    document.getElementById('selected_variant_id').value = variant.id;
+                    qtyInput.max = variant.quantity;
+                    qtyInput.value = Math.min(parseInt(qtyInput.value) || 1, variant.quantity);
+                    qtyInput.removeAttribute('readonly');
+                    inventoryInfo.innerText = `${variant.quantity}`;
+                    addToCartBtn.disabled = variant.quantity <= 0;
 
-                if (variant.sale_price && variant.sale_price < variant.price) {
-                    dynamicPrice.innerHTML = `<del style="font-size:18px;color:#bbb;font-weight:600;margin-right:10px;">₫${parseInt(variant.price).toLocaleString('vi-VN')}</del><span style="font-size:22px;font-weight:700;color:#222;">₫${parseInt(variant.sale_price).toLocaleString('vi-VN')}</span>`;
+                    if (variant.sale_price && variant.sale_price < variant.price) {
+                        dynamicPrice.innerHTML = `<del style="font-size:18px;color:#bbb;font-weight:600;margin-right:10px;">₫${parseInt(variant.price).toLocaleString('vi-VN')}</del><span style="font-size:22px;font-weight:700;color:#222;">₫${parseInt(variant.sale_price).toLocaleString('vi-VN')}</span>`;
+                    } else {
+                        dynamicPrice.innerHTML = `<span style="font-size:22px;font-weight:700;color:#222;">₫${parseInt(variant.price).toLocaleString('vi-VN')}</span>`;
+                    }
                 } else {
-                    dynamicPrice.innerHTML = `<span style="font-size:22px;font-weight:700;color:#222;">₫${parseInt(variant.price).toLocaleString('vi-VN')}</span>`;
+                    document.getElementById('selected_variant_id').value = '';
+                    qtyInput.value = 1;
+                    qtyInput.setAttribute('readonly', true);
+                    inventoryInfo.innerText = 'Không có sẵn';
+                    dynamicPrice.innerText = '';
+                    addToCartBtn.disabled = true;
                 }
-
             } else {
                 document.getElementById('selected_variant_id').value = '';
-                qtyInput.max = 1;
                 qtyInput.value = 1;
-                inventoryInfo.innerText = ``;
+                qtyInput.setAttribute('readonly', true);
+                inventoryInfo.innerText = 'Chưa chọn thuộc tính';
                 dynamicPrice.innerText = '';
+                addToCartBtn.disabled = true;
             }
         }
 
+        // Sự kiện khi click nút màu
         document.querySelectorAll('.color-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 selectedColor = btn.dataset.color;
+                
+                // Reset và set active cho nút màu
                 document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
+                
+                // Tìm thumbnail tương ứng và đổi ảnh chính
+                const firstImageForColor = document.querySelector(`.owl-dot[data-color="${selectedColor}"]`);
+                if (firstImageForColor) {
+                    firstImageForColor.click();
+                } else {
+                    // Nếu không có ảnh cho màu đó, giữ nguyên ảnh hiện tại và không thay đổi thumbnail active
+                    console.warn(`No thumbnail found for color_id ${selectedColor}`);
+                }
+                
+                // Cập nhật variant
                 updateVariant();
             });
         });
 
+        // Sự kiện khi click nút kích thước
         document.querySelectorAll('.size-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 selectedSize = btn.dataset.size;
@@ -847,9 +854,27 @@
             });
         });
 
+        // Sự kiện khi click thumbnail
         function changeImage(img) {
             document.getElementById('mainImage').src = img.src;
+            // Cập nhật thumbnail active
+            document.querySelectorAll('.owl-dot').forEach(dot => dot.classList.remove('active'));
+            img.parentElement.classList.add('active');
         }
+
+        // Gọi các hàm khi trang load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Khi load trang, không chọn màu hay size nào, chỉ hiển thị ảnh đầu tiên
+            const firstImage = document.querySelector('.product-item img');
+            if (firstImage) {
+                document.getElementById('mainImage').src = firstImage.src;
+                const firstThumb = document.querySelector('.owl-dot');
+                if (firstThumb) {
+                    firstThumb.classList.add('active');
+                }
+            }
+            updateVariant();
+        });
 
         function showAlert(message, type = 'success') {
             const icon = type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-triangle"></i>';
@@ -892,19 +917,23 @@
         qtyInput.addEventListener('input', () => {
             const max = parseInt(qtyInput.max) || 1;
             let val = parseInt(qtyInput.value) || 1;
-
             if (val > max) {
                 qtyInput.value = max;
             } else if (val < 1) {
                 qtyInput.value = 1;
             }
         });
+
         // Thêm JS cho Add to Cart AJAX và hiện View Cart
         const addToCartForm = document.getElementById('add-to-cart-form');
         const addToCartBtn = document.getElementById('add-to-cart-btn');
         const viewCartBtn = document.getElementById('view-cart-btn');
         addToCartForm.onsubmit = function (e) {
             e.preventDefault();
+            if (!selectedColor || !selectedSize) {
+                showAlert('Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng!', 'error');
+                return false;
+            }
             const formData = new FormData(addToCartForm);
             fetch(addToCartForm.action, {
                 method: 'POST',
@@ -914,12 +943,8 @@
                 },
                 body: formData
             })
-                .then(res => {
-                    console.log('Fetch response:', res);
-                    return res.json();
-                })
+                .then(res => res.json())
                 .then(data => {
-                    console.log('Data nhận được:', data);
                     if (data.success) {
                         addToCartBtn.innerHTML = '<i class="icon-shopping-cart"></i> ĐÃ THÊM ✓';
                         addToCartBtn.classList.add('added');

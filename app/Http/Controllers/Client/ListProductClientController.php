@@ -18,7 +18,7 @@ class ListProductClientController extends Controller
     {
         // Query sản phẩm kèm quan hệ
         $query = Products::query()
-            ->with(['category', 'images', 'variants'])
+            ->with(['category', 'images', 'variants.color', 'variants.size']) // Dòng này đã được sửa
             ->where('status', 1);
 
         // Tìm kiếm tên sản phẩm
@@ -44,8 +44,10 @@ class ListProductClientController extends Controller
                 $q->where('size_id', (int)$request->size);
             });
         }
+
         $minPrice = ProductVariant::min('price');
         $maxPrice = ProductVariant::max('price');
+
         // Lọc theo khoảng giá
         if ($request->filled('price_min') || $request->filled('price_max')) {
             $query->whereHas('variants', function ($q) use ($request) {
@@ -59,7 +61,7 @@ class ListProductClientController extends Controller
         }
 
         // Xử lý sắp xếp theo giá từ bảng variants
-        $perPage = $request->input('count', 12); // Lấy từ request, mặc định 12
+        $perPage = $request->input('count', 12);
 
         if (in_array($request->sort, ['price_asc', 'price_desc'])) {
             $products = $query->get();

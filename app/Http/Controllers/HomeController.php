@@ -14,72 +14,48 @@ class HomeController extends Controller
 {
     // note: Hiển thị trang chủ với banner, danh mục, sản phẩm nổi bật và tin tức
     public function index()
-    {
-        // note: Lấy banner slider (loại slider, trạng thái hiển thị, sắp xếp theo thời gian mới nhất)
-        $banners = Banner::with('hinhAnhBanner')
-            ->where('loai_banner', 'slider')
-            ->where('trang_thai', 'hien')
-            ->latest()
-            ->get();
+{
+    $banners = Banner::with('hinhAnhBanner')
+        ->where('loai_banner', 'slider')
+        ->where('trang_thai', 'hien')
+        ->latest()
+        ->get();
 
-        // note: Lấy danh mục sản phẩm (chỉ những danh mục đang hoạt động)
-        $categories = Category::where('tinh_trang', 1)
-            ->orderBy('ten_danh_muc')
-            ->get();
+    $categories = Category::where('tinh_trang', 1)
+        ->orderBy('ten_danh_muc')
+        ->get();
 
-        // note: Lấy sản phẩm nổi bật (5 sản phẩm có đánh giá trung bình cao nhất)
-        $products = Products::with(['images', 'variants', 'reviews'])
-            ->where('status', 1)
-            ->withAvg('reviews', 'so_sao')
-            ->orderByDesc('reviews_avg_so_sao')
-            ->take(5)
-            ->get();
+    $products = Products::with(['images', 'variants.color', 'variants.size', 'reviews'])
+        ->where('status', 1)
+        ->withAvg('reviews', 'so_sao')
+        ->orderByDesc('reviews_avg_so_sao')
+        ->take(5)
+        ->get();
 
-        // note: Lấy sản phẩm trending (5 sản phẩm có nhiều lượt mua nhất)
-        $trendingProducts = Products::with(['images', 'variants', 'reviews'])
-            ->where('status', 1)
-            ->orderByDesc('sold')
-            ->take(5)
-            ->get();
+    $trendingProducts = Products::with(['images', 'variants.color', 'variants.size', 'reviews'])
+        ->where('status', 1)
+        ->orderByDesc('sold')
+        ->take(5)
+        ->get();
 
-       
-        
+    $posts = Post::where('status', 'published')->latest()->take(6)->get();
 
-        // note: Lấy tin tức/blog (6 bài viết mới nhất, trạng thái đã xuất bản)
-        $posts = Post::where('status', 'published')->latest()->take(6)->get();
-
-        // note: Lấy banner footer (loại footer, trạng thái hiển thị)
-        // $footerBanners = Banner::with('hinhAnhBanner')
-        //     ->where('loai_banner', 'footer')
-        //     ->where('trang_thai', 'hien')
-        //     ->latest()
-        //     ->get();
-
-        // note: Discount (nếu muốn dùng cho banner khuyến mãi)
- 
-
-        // note: Trả về view trang chủ với tất cả dữ liệu đã chuẩn bị
-        return view('Client.index', compact(
-            'banners',
-            'categories',
-            'products',
-            'trendingProducts',
-            'posts',
-            // 'footerBanners'
-            
-        ));
-
-    }
+    return view('Client.index', compact(
+        'banners',
+        'categories',
+        'products',
+        'trendingProducts',
+        'posts'
+    ));
+}
     
     // note: Hiển thị trang sản phẩm bán chạy (sắp xếp theo số lượng đơn hàng)
     public function bestSellers()
 {
-    // note: Lấy sản phẩm với số lượng đơn hàng, sắp xếp theo số lượng bán chạy
     $products = Products::withCount('orderItems')
-        ->with(['category', 'images', 'variants'])
+        ->with(['category', 'images', 'variants.color', 'variants.size'])
         ->orderByDesc('order_items_count')
         ->paginate(20);
-    // note: Lấy dữ liệu cho bộ lọc (danh mục, màu sắc, kích thước, khoảng giá)
     $categories = \App\Models\Category::all();
     $colors = \App\Models\Color::all();
     $sizes = \App\Models\Size::all();
@@ -89,15 +65,12 @@ class HomeController extends Controller
     return view('Client.Product.ListProductClient', compact('products', 'categories', 'colors', 'sizes', 'minPrice', 'maxPrice', 'pageTitle'));
 }
 
-// note: Hiển thị trang sản phẩm nổi bật (sắp xếp theo đánh giá trung bình)
 public function featured()
 {
-    // note: Lấy sản phẩm với đánh giá trung bình, sắp xếp theo điểm đánh giá cao nhất
     $products = Products::withAvg('reviews', 'so_sao')
-        ->with(['category', 'images', 'variants'])
+        ->with(['category', 'images', 'variants.color', 'variants.size'])
         ->orderByDesc('reviews_avg_so_sao')
         ->paginate(20);
-    // note: Lấy dữ liệu cho bộ lọc
     $categories = \App\Models\Category::all();
     $colors = \App\Models\Color::all();
     $sizes = \App\Models\Size::all();

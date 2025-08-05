@@ -18,7 +18,7 @@ class ProductDetailController extends Controller
 {
     public function show($id)
     {
-        $product = Products::with('images', 'variants.size', 'variants.color')->findOrFail($id);
+        $product = Products::with(['images.color', 'variants.size', 'variants.color'])->findOrFail($id);
         $reviews = Review::with('user')->where('product_id', $id)->where('trang_thai', 1)->latest()->get();
         $comments = Comment::where('product_id', $product->id)
             ->whereNull('deleted_at')
@@ -117,6 +117,6 @@ class ProductDetailController extends Controller
             'trang_thai' => 1, // chưa duyệt
         ]);
 
-        return redirect()->back()->with('success', 'Bình luận của bạn đã được gửi và đang chờ duyệt.');
+        return redirect()->back()->with('success', 'Bình luận của bạn đã được gửi.');
     }
 }
