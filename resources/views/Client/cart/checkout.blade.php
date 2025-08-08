@@ -42,17 +42,23 @@
                             <textarea name="receiver_address" id="receiver_address" class="form-control" required>{{ old('receiver_address') }}</textarea>
                         </div>
 
-                        <div class="form-group mb-3">
-                            <label for="discount_code">Chọn mã giảm giá</label>
-                            <select name="discount_code" id="discountSelect" class="form-control" onchange="updateDiscount()">
-                                <option value="" data-percent="0" data-max="0" data-min="0">-- Không dùng --</option>
-                                @foreach($discounts as $discount)
-                                    <option value="{{ $discount->code }}" data-percent="{{ $discount->discount_percent }}" data-max="{{ $discount->max_discount_amount }}" data-min="{{ $discount->min_order_amount }}">
-                                        {{ $discount->code }} - Giảm {{ $discount->discount_percent }}% (tối đa {{ number_format($discount->max_discount_amount) }}₫)
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                       <div class="form-group mb-3">
+    <label for="discount_code">Chọn mã giảm giá</label>
+    <select name="discount_code" id="discountSelect" class="form-control" onchange="updateDiscount()">
+        <option value="" data-percent="0" data-max="0" data-min="0">-- Không dùng --</option>
+        @foreach($discounts->filter(function($discount) {
+            return $discount->max_usage === null || $discount->max_usage > 0; // còn lượt
+        }) as $discount)
+            <option value="{{ $discount->code }}"
+                data-percent="{{ $discount->discount_percent }}"
+                data-max="{{ $discount->max_discount_amount }}"
+                data-min="{{ $discount->min_order_amount }}">
+                {{ $discount->code }} - Giảm {{ $discount->discount_percent }}%
+                (tối đa {{ number_format($discount->max_discount_amount) }}₫)
+            </option>
+        @endforeach
+    </select>
+</div>
 
                         <div class="form-group mb-3">
                             <label>Phương thức giao hàng</label>
