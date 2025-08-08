@@ -75,18 +75,28 @@ class CheckoutController extends Controller
         $discount = null;
 
         if ($discountCode) {
-            $discount = Discount::where('code', $discountCode)
-                ->whereDate('start_date', '<=', now())
-                ->whereDate('end_date', '>=', now())
-                ->first();
+    $discount = Discount::where('code', $discountCode)
+        ->whereDate('start_date', '<=', now())
+        ->whereDate('end_date', '>=', now())
+        ->where(function ($q) {
+            $q->whereNull('max_usage')
+              ->orWhere('max_usage', '>', 0); // max_usage > 0 nghĩa là vẫn còn lượt
+        })
+        ->first();
 
-            if ($discount && $subtotal >= $discount->min_order_amount) {
-                $discountAmount = min(
-                    round($subtotal * $discount->discount_percent / 100),
-                    $discount->max_discount_amount
-);
-            }
-        }
+    if (!$discount) {
+        return back()->with('error', 'Mã giảm giá không hợp lệ hoặc đã hết lượt sử dụng.');
+    }
+
+    if ($subtotal >= $discount->min_order_amount) {
+        $discountAmount = min(
+            round($subtotal * $discount->discount_percent / 100),
+            $discount->max_discount_amount
+        );
+    } else {
+        return back()->with('error', 'Đơn hàng chưa đạt giá trị tối thiểu để áp dụng mã giảm giá.');
+    }
+}
 
         $shippingMethod = ShippingMethod::find($request->shipping_method_id);
         $shippingFee = $shippingMethod ? $shippingMethod->fee : 0;
@@ -118,45 +128,60 @@ class CheckoutController extends Controller
         return $this->storeOrder($request, $cartItems, $discountCode, $discountAmount, $shippingFee, $subtotal, $finalAmount);
     }
 
-    public function momoReturn(Request $request)
-    {
-        if ($request->resultCode == 0) {
-            $data = session('checkout_data');
-            $userId = $data['user_id'] ?? null;
+public function momoReturn(Request $request)
+{
+    // Kiểm tra resultCode từ MoMo
+    if ($request->resultCode == 0) {
+        $data = session('checkout_data');
+        $userId = $data['user_id'] ?? null;
 
-            if (!$data || !$userId) {
-                return redirect()->route('client.checkout.show')->with('error', 'Dữ liệu không hợp lệ hoặc đã hết hạn.');
-            }
-
-            $selectedIds = $data['selected_items'] ?? [];
-
-            $cartItems = Cart::with(['product', 'variant'])
-                ->where('user_id', $userId)
-                ->when(!empty($selectedIds), function ($query) use ($selectedIds) {
-                    return $query->whereIn('id', $selectedIds);
-                })
-                ->get();
-
-
-            if ($cartItems->isEmpty()) {
-                return redirect()->route('client.cart.index')->with('error', 'Giỏ hàng trống hoặc đã được xử lý.');
-            }
-
-            return $this->storeOrder((object)$data, $cartItems, $data['discount_code'], $data['discount_amount'], $data['shipping_fee'], $data['subtotal'], $data['final_amount']);
+        if (!$data || !$userId) {
+            return redirect()->route('client.checkout.show')
+                ->with('error', 'Dữ liệu không hợp lệ hoặc đã hết hạn.');
         }
 
-        return redirect()->route('client.checkout.show')->with('error', 'Thanh toán thất bại hoặc bị hủy.');
+        $selectedIds = $data['selected_items'] ?? [];
+
+        $cartItems = Cart::with(['product', 'variant'])
+            ->where('user_id', $userId)
+            ->when(!empty($selectedIds), function ($query) use ($selectedIds) {
+                return $query->whereIn('id', $selectedIds);
+            })
+            ->get();
+
+        if ($cartItems->isEmpty()) {
+            return redirect()->route('client.cart.index')
+                ->with('error', 'Giỏ hàng trống hoặc đã được xử lý.');
+        }
+
+        // Thêm trạng thái thanh toán đã trả tiền
+        $data['payment_status'] = 'Đã thanh toán';
+
+        return $this->storeOrder(
+            (object)$data,
+            $cartItems,
+            $data['discount_code'],
+            $data['discount_amount'],
+            $data['shipping_fee'],
+            $data['subtotal'],
+            $data['final_amount']
+        );
     }
 
+    return redirect()->route('client.checkout.show')
+        ->with('error', 'Thanh toán thất bại hoặc bị hủy.');
+}
 
-    public function storeOrder($request, $cartItems, $discountCode, $discountAmount, $shippingFee, $subtotal, $finalAmount)
+
+
+public function storeOrder($request, $cartItems, $discountCode, $discountAmount, $shippingFee, $subtotal, $finalAmount)
 {
-    // ✅ Kiểm tra và trừ mã giảm giá (nếu có)
+    // Kiểm tra và trừ lượt mã giảm giá
     if ($discountCode) {
         $discount = Discount::where('code', $discountCode)
             ->whereDate('start_date', '<=', now())
             ->whereDate('end_date', '>=', now())
-->first();
+            ->first();
 
         if (!$discount) {
             return back()->with('error', 'Mã giảm giá không hợp lệ hoặc đã hết hạn.');
@@ -166,11 +191,10 @@ class CheckoutController extends Controller
             return back()->with('error', 'Mã giảm giá đã được sử dụng hết.');
         }
 
-        // ✅ Trừ số lượt còn lại
         $discount->decrement('max_usage');
     }
 
-    // ✅ Tạo đơn hàng
+    // Tạo đơn hàng
     $order = Order::create([
         'user_id'            => Auth::id(),
         'order_code'         => 'DH' . now()->format('Ymd') . '-' . strtoupper(Str::random(5)),
@@ -179,15 +203,17 @@ class CheckoutController extends Controller
         'receiver_name'      => $request->receiver_name,
         'receiver_phone'     => $request->receiver_phone,
         'receiver_email'     => $request->receiver_email,
-        'receiver_address' => $request->receiver_address ?? $request->address,
+        'receiver_address'   => $request->receiver_address ?? $request->address,
         'payment_method'     => $request->payment_method,
+        'payment_status'     => $request->payment_status ?? 'Chờ thanh toán', 
         'total_price'        => $subtotal,
         'shipping_fee'       => $shippingFee,
         'discount_code'      => $discountCode,
-        'discount_amount'    => $discountAmount,
+'discount_amount'    => $discountAmount,
         'final_amount'       => $finalAmount,
     ]);
 
+    // Lưu sản phẩm vào bảng order_items
     foreach ($cartItems as $item) {
         Order_items::create([
             'order_id'           => $order->id,
@@ -203,24 +229,18 @@ class CheckoutController extends Controller
 
         // Trừ kho
         if ($item->variant) {
-            $variant = ProductVariant::find($item->variant->id);
-            if ($variant) {
-                $variant->quantity = max(0, $variant->quantity - $item->quantity);
-                $variant->save();
-            }
+            $item->variant->decrement('quantity', $item->quantity);
         } else {
-            $product = Products::find($item->product->id);
-            if ($product) {
-                $product->quantity = max(0, $product->quantity - $item->quantity);
-                $product->save();
-            }
+            $item->product->decrement('quantity', $item->quantity);
         }
     }
 
-    // Xoá giỏ hàng và session
+    // Xóa giỏ hàng và session
     Cart::whereIn('id', $cartItems->pluck('id'))->delete();
     session()->forget('checkout_data');
-return redirect()->route('client.order.success', $order->id)->with('success', 'Đặt hàng thành công!');
+
+    return redirect()->route('client.order.success', $order->id)
+        ->with('success', 'Đặt hàng thành công!');
 }
 
     public function momoPayment()
