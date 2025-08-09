@@ -55,6 +55,7 @@ use Illuminate\Support\Facades\Auth;
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendor/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" type="text/css"
         href="{{ asset('assets/vendor/simple-line-icons/css/simple-line-icons.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/custom-improvements.css') }}">
     <style>
         /* Menu ngang chỉ 1 dòng, tràn thì cuộn ngang, chuẩn e-commerce */
         .header .main-nav .menu {
@@ -808,7 +809,8 @@ function showAlert(message, type = 'success') {
     const icon = type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-triangle"></i>';
     const alertDiv = document.createElement('div');
     alertDiv.className = 'custom-alert';
-    alertDiv.innerHTML = `<span class="icon-warning">${icon}</span> ${message} <button type="button" class="close" onclick="this.parentElement.remove()"><span aria-hidden="true">&times;</span></button>`;
+    alertDiv.setAttribute('data-type', type);
+                alertDiv.innerHTML = `<span class="alert-text">${message}</span><span class="icon-warning">${icon}</span><button type="button" class="close" onclick="this.parentElement.remove()"><span aria-hidden="true">&times;</span></button>`;
     document.getElementById('alert-stack').appendChild(alertDiv);
     setTimeout(() => { alertDiv.remove(); }, 3500);
 }

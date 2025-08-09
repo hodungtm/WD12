@@ -137,9 +137,9 @@
         }
     </style>
 
-    <!-- note: Hàng 2: 2 box dài - Top sản phẩm bán chạy và sản phẩm sắp hết hàng -->
+    <!-- note: Hàng 2: 3 box - Top sản phẩm bán chạy, sản phẩm bán kém nhất và sản phẩm sắp hết hàng -->
     <div class="row g-4 mt-4" style="display: flex; align-items: stretch;">
-        <div class="col-md-6" style="display: flex; flex-direction: column;">
+        <div class="col-md-4" style="display: flex; flex-direction: column;">
             <div class="wg-box" style="flex: 1 1 auto;">
                 <div class="title-box d-flex align-items-center justify-content-between">
                     <span><i class="icon-star"></i> <span class="body-title">Top 5 sản phẩm bán chạy</span></span>
@@ -168,7 +168,36 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6" style="display: flex; flex-direction: column;">
+        <div class="col-md-4" style="display: flex; flex-direction: column;">
+            <div class="wg-box" style="flex: 1 1 auto;">
+                <div class="title-box d-flex align-items-center justify-content-between">
+                    <span><i class="icon-trending-down"></i> <span class="body-title">Top 5 sản phẩm bán kém nhất</span></span>
+                </div>
+                <div class="wg-table table-product-list mt-3" style="overflow-x:auto;">
+                    <table class="table table-borderless dashboard-table" style="table-layout: fixed; width: 100%; max-width: 100%; min-width: 0;">
+                        <thead>
+                            <tr>
+                                <th style="width: 70%;">Tên sản phẩm</th>
+                                <th style="width: 30%; text-align: right;">Đã bán</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($worstProducts as $item)
+                            <tr>
+                                <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $item->product_name ?? 'N/A' }}</td>
+                                <td style="text-align: right;">{{ $item->sold }}</td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="2" class="text-center text-muted">Không có dữ liệu</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4" style="display: flex; flex-direction: column;">
             <div class="wg-box" style="flex: 1 1 auto;">
                 <div class="title-box"><i class="icon-alert-circle"></i><div class="body-title">Sản phẩm sắp hết hàng</div></div>
                 <div class="wg-table table-product-list mt-3" style="overflow-x:auto;">
