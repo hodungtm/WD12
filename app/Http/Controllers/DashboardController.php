@@ -277,6 +277,21 @@ class DashboardController extends Controller
         }
         $topProducts = $topProductsQuery->take(5)->get();
 
+        // Top sản phẩm bán kém nhất
+        $worstProductsQuery = DB::table('order_items')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('orders.status', 'Hoàn thành')
+            ->select('order_items.product_id', 'order_items.product_name', DB::raw('SUM(order_items.quantity) as sold'))
+            ->groupBy('order_items.product_id', 'order_items.product_name')
+            ->orderBy('sold', 'asc')
+            ->whereBetween('order_items.created_at', [$currentStart, $currentEnd]);
+        if ($categoryId) {
+            $worstProductsQuery->whereHas('product', function ($q) use ($categoryId) {
+                $q->where('category_id', $categoryId)->withTrashed();
+            });
+        }
+        $worstProducts = $worstProductsQuery->take(5)->get();
+
         // Sản phẩm sắp hết hàng
         $lowStockQuery = ProductVariant::where('quantity', '<=', 5)->with(['product' => function ($query) {
             $query->withTrashed();
@@ -390,6 +405,7 @@ class DashboardController extends Controller
             'percentProducts',
             'type',
             'topProducts',
+            'worstProducts',
             'lowStock',
             'totalPendingOrders',
             'totalShippingOrders',

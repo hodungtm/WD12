@@ -24,6 +24,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap-select.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/custom-improvements.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 
@@ -885,6 +886,8 @@
     <script src="{{ asset('js/switcher.js') }}"></script>
     <script defer src="{{ asset('js/theme-settings.js') }}"></script>
     <script src="{{ asset('js/main.js') }}"></script>
+    <script src="{{ asset('js/admin-sidebar-improvements.js') }}"></script>
+    <script src="{{ asset('js/sidebar-debug.js') }}"></script>
     @yield('scripts')
 
     @stack('scripts')

@@ -958,20 +958,21 @@
         }
 
         function showAlert(message, type = 'success') {
-            const icon = type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-triangle"></i>';
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'custom-alert';
-            alertDiv.innerHTML = `<span class="icon-warning">${icon}</span> ${message} <button type="button" class="close" onclick="this.parentElement.remove()"><span aria-hidden="true">&times;</span></button>`;
-            let alertStack = document.getElementById('alert-stack');
-            if (!alertStack) {
-                alertStack = document.createElement('div');
-                alertStack.id = 'alert-stack';
-                alertStack.style.cssText = 'position: fixed; top: 80px; right: 24px; z-index: 9999;';
-                document.body.appendChild(alertStack);
-            }
-            alertStack.appendChild(alertDiv);
-            setTimeout(() => { alertDiv.remove(); }, 3500);
-        }
+    const icon = type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-triangle"></i>';
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'custom-alert';
+    alertDiv.setAttribute('data-type', type);
+                alertDiv.innerHTML = `<span class="alert-text">${message}</span><span class="icon-warning">${icon}</span><button type="button" class="close" onclick="this.parentElement.remove()"><span aria-hidden="true">&times;</span></button>`;
+    let alertStack = document.getElementById('alert-stack');
+    if (!alertStack) {
+        alertStack = document.createElement('div');
+        alertStack.id = 'alert-stack';
+        alertStack.style.cssText = 'position: fixed; top: 80px; right: 24px; z-index: 9999;';
+        document.body.appendChild(alertStack);
+    }
+    alertStack.appendChild(alertDiv);
+    setTimeout(() => { alertDiv.remove(); }, 3500);
+}
     
 </script>
 
