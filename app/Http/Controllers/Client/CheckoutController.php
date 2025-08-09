@@ -262,7 +262,7 @@ $partnerCode = 'MOMOBKUN20180529';
         $requestId = time();
         $redirectUrl = route('momo.return');
         $ipnUrl = route('momo.return');
-        $requestType = "payWithATM";
+        $requestType = "payWithMethod";
         $extraData = "";
 
         $rawData = [
