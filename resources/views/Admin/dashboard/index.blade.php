@@ -1,4 +1,3 @@
-
 @extends('admin.layouts.AdminLayout')
 
 @section('main')
@@ -50,6 +49,16 @@
                 <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->ten_danh_muc }}</option>
             @endforeach
         </select>
+        <!-- note: Dropdown chọn trạng thái đơn hàng -->
+        <select name="status" class="form-select w-auto d-inline-block" onchange="this.form.submit()">
+            <option value="">Tất cả trạng thái</option>
+            @php
+                $statuses = ['Đang chờ', 'Xác nhận đơn', 'Đang giao hàng', 'Hoàn thành', 'Đã hủy'];
+            @endphp
+            @foreach($statuses as $stt)
+                <option value="{{ $stt }}" {{ request('status') == $stt ? 'selected' : '' }}>{{ $stt }}</option>
+            @endforeach
+        </select>
         <!-- note: Date picker cho khoảng thời gian tùy chỉnh -->
         @if($type === 'today')
             <input type="date" name="date" value="{{ request('date', now()->toDateString()) }}" class="form-control w-auto d-inline-block ms-auto dashboard-date-picker" onchange="this.form.submit()" style="min-width: 150px; max-width: 180px;">
@@ -78,6 +87,18 @@
             .dashboard-date-picker {
                 max-width: 100%;
             }
+        }
+
+        #orderStatusFilter {
+            border-radius: 20px;
+            height: 40px;
+            min-width: 200px;
+            border: 1px solid #ddd;
+        }
+        
+        #orderStatusFilter:focus {
+            border-color: #1abc9c;
+            box-shadow: 0 0 5px rgba(26, 188, 156, 0.5);
         }
     </style>
 
@@ -245,6 +266,7 @@
                         </thead>
                         <tbody>
                             <tr><td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Đang chờ</td><td style="text-align: right;">{{ $totalPendingOrders }}</td></tr>
+                            <tr><td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Xác nhận đơn</td><td style="text-align: right;">{{ $totalConfirmedOrders }}</td></tr>
                             <tr><td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Đang giao hàng</td><td style="text-align: right;">{{ $totalShippingOrders }}</td></tr>
                             <tr><td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Hoàn thành</td><td style="text-align: right;">{{ $totalCompletedOrders }}</td></tr>
                             <tr><td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Đã hủy</td><td style="text-align: right;">{{ $totalCancelledOrders }}</td></tr>
@@ -476,26 +498,83 @@
 </div>
 </div>
 
+<!-- Thêm ngay sau form tìm kiếm và trước div class="row g-4" chứa các biểu đồ thống kê -->
+<div class="row mb-4 align-items-center">
+    <div class="col-md-12">
+        <div class="d-flex align-items-center gap-2">
+            <label class="mb-0 fw-bold">Lọc theo trạng thái:</label>
+            <select id="orderStatusFilter" class="form-select w-auto">
+                <option value="all">Tất cả trạng thái</option>
+                <option value="pending">Đang chờ</option>
+                <option value="confirmed">Xác nhận đơn</option>  
+                <option value="shipping">Đang giao hàng</option>
+                <option value="completed">Hoàn thành</option>
+                <option value="cancelled">Đã hủy</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Cập nhật CSS để làm nổi bật dropdown -->
+<style>
+    #orderStatusFilter {
+        border-radius: 20px;
+        height: 40px;
+        min-width: 200px;
+        border: 1px solid #ddd;
+        padding: 0 15px;
+        background-color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    #orderStatusFilter:hover {
+        border-color: #1abc9c;
+    }
+    
+    #orderStatusFilter:focus {
+        border-color: #1abc9c;
+        box-shadow: 0 0 5px rgba(26, 188, 156, 0.5);
+        outline: none;
+    }
+
+    .dashboard-filter-label {
+        font-size: 14px;
+        color: #555;
+    }
+</style>
+
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <script>
 const labels = {!! json_encode($labels) !!};
+const revenueData = {!! json_encode($revenueData) !!};
+const orderData = {!! json_encode($orderData) !!};
+
+// Biến lưu trữ instance của biểu đồ
+let revenueChart = null;
+let ordersChart = null;
 
 function formatCurrency(value) {
     return value.toLocaleString() + " đ";
 }
 
-function drawChart(id, data, color) {
-    new Chart(document.getElementById(id).getContext('2d'), {
+function drawChart() {
+    // Khởi tạo biểu đồ doanh thu
+    if (revenueChart) {
+        revenueChart.destroy();
+    }
+    
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    revenueChart = new Chart(revenueCtx, {
         type: 'bar',
         data: {
             labels: labels,
             datasets: [{
-                data: data,
-                backgroundColor: labels.map((_, index) => data[index] === 0 ? `${color}66` : color),
-                borderColor: color,
-                borderWidth: 1,
+                data: revenueData,
+                backgroundColor: revenueData.map(value => value === 0 ? '#28a74566' : '#28a745'),
+                borderColor: '#28a745',
+                borderWidth: 1
             }]
         },
         options: {
@@ -504,32 +583,62 @@ function drawChart(id, data, color) {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    enabled: true,
                     callbacks: {
                         title: context => `Mốc: ${context[0].label}`,
-                        label: context => `Giá trị: ${formatCurrency(context.parsed.y)}`
+                        label: context => `Doanh thu: ${formatCurrency(context.parsed.y)}`
                     }
-                },
-                datalabels: {
-                    anchor: 'end',
-                    align: 'top',
-                    formatter: (value) => value === 0 ? '0' : formatCurrency(value),
-                    color: '#333',
-                    font: { weight: 'bold', size: 12 },
-                    offset: 4
                 }
             },
-            interaction: {
-                mode: 'index',
-                intersect: false,
-            },
             scales: {
-                x: { 
+                x: {
                     display: false,
                     barPercentage: 0.8,
                     categoryPercentage: 0.9
                 },
-                y: { 
+                y: {
+                    display: false,
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Khởi tạo biểu đồ đơn hàng
+    if (ordersChart) {
+        ordersChart.destroy();
+    }
+    
+    const ordersCtx = document.getElementById('ordersChart').getContext('2d');
+    ordersChart = new Chart(ordersCtx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: orderData,
+                backgroundColor: orderData.map(value => value === 0 ? '#dc354566' : '#dc3545'),
+                borderColor: '#dc3545',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        title: context => `Mốc: ${context[0].label}`,
+                        label: context => `Số đơn: ${context.parsed.y}`
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    display: false,
+                    barPercentage: 0.8,
+                    categoryPercentage: 0.9
+                },
+                y: {
                     display: false,
                     beginAtZero: true
                 }
@@ -538,32 +647,9 @@ function drawChart(id, data, color) {
     });
 }
 
-drawChart('revenueChart', {!! json_encode($revenueData) !!}, '#28a745');
-drawChart('ordersChart', {!! json_encode($orderData) !!}, '#dc3545');
-drawChart('customersChart', {!! json_encode($userData) !!}, '#007bff');
-drawChart('productsChart', {!! json_encode($productData) !!}, '#ffc107');
-
-// Kiểm tra client-side cho date picker
-document.addEventListener('DOMContentLoaded', function () {
-    const startDateInput = document.querySelector('input[name="start_date"]');
-    const endDateInput = document.querySelector('input[name="end_date"]');
-    
-    if (startDateInput && endDateInput) {
-        endDateInput.addEventListener('change', function () {
-            const startDate = new Date(startDateInput.value);
-            const endDate = new Date(endDateInput.value);
-            if (endDate < startDate) {
-                endDateInput.value = startDateInput.value;
-            }
-        });
-        startDateInput.addEventListener('change', function () {
-            const startDate = new Date(startDateInput.value);
-            const endDate = new Date(endDateInput.value);
-            if (endDate < startDate) {
-                endDateInput.value = startDateInput.value;
-            }
-        });
-    }
+// Khởi tạo biểu đồ khi trang load
+document.addEventListener('DOMContentLoaded', function() {
+    drawChart();
 });
 </script>
 @endsection

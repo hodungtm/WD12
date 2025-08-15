@@ -85,18 +85,31 @@ class DiscountController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate(
-            $this->getValidationRules(),
-            $this->getValidationMessages()
-        );
+{
+    $validated = $request->validate(
+        $this->getValidationRules(),
+        $this->getValidationMessages()
+    );
 
-        if (Discount::create($validated)) {
-            return redirect()->route('admin.discounts.index')->with('success', 'Tạo mã giảm giá thành công!');
-        }
-
-        return redirect()->back()->with('error', 'Có lỗi xảy ra khi tạo mã giảm giá!');
+    // Chỉ kiểm tra nếu cả hai giá trị đều được nhập
+    if (
+        !is_null($request->min_order_amount) &&
+        !is_null($request->max_discount_amount) &&
+        $request->min_order_amount > 0 &&
+        $request->max_discount_amount > $request->min_order_amount
+    ) {
+        return back()
+            ->withErrors(['max_discount_amount' => 'Giá trị giảm tối đa không được lớn hơn giá trị đơn hàng tối thiểu.'])
+            ->withInput();
     }
+
+    if (Discount::create($validated)) {
+        return redirect()->route('admin.discounts.index')->with('success', 'Tạo mã giảm giá thành công!');
+    }
+
+    return redirect()->back()->with('error', 'Có lỗi xảy ra khi tạo mã giảm giá!');
+}
+
 
     public function edit(Discount $discount)
     {
@@ -104,20 +117,32 @@ class DiscountController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        $discount = Discount::findOrFail($id);
+{
+    $discount = Discount::findOrFail($id);
 
-        $validated = $request->validate(
-            $this->getValidationRules(true, $discount->id),
-            $this->getValidationMessages()
-        );
+    $validated = $request->validate(
+        $this->getValidationRules(true, $discount->id),
+        $this->getValidationMessages()
+    );
 
-        if ($discount->update($validated)) {
-            return redirect()->route('admin.discounts.index')->with('success', 'Cập nhật mã giảm giá thành công!');
-        }
-
-        return redirect()->back()->with('error', 'Có lỗi xảy ra khi cập nhật mã giảm giá!');
+    // Chỉ kiểm tra nếu cả hai giá trị đều được nhập
+    if (
+        !is_null($request->min_order_amount) &&
+        !is_null($request->max_discount_amount) &&
+        $request->min_order_amount > 0 &&
+        $request->max_discount_amount > $request->min_order_amount
+    ) {
+        return back()
+            ->withErrors(['max_discount_amount' => 'Giá trị giảm tối đa không được lớn hơn giá trị đơn hàng tối thiểu.'])
+            ->withInput();
     }
+
+    if ($discount->update($validated)) {
+        return redirect()->route('admin.discounts.index')->with('success', 'Cập nhật mã giảm giá thành công!');
+    }
+
+    return redirect()->back()->with('error', 'Có lỗi xảy ra khi cập nhật mã giảm giá!');
+}
 
     public function destroy(Discount $discount)
     {

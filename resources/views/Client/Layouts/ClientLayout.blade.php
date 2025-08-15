@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>Porto - Bootstrap eCommerce Template</title>
+    <title>Sudes Sports</title>
 
     <meta name="keywords" content="HTML5 Template" />
     <meta name="description" content="Porto - Bootstrap eCommerce Template">
@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Auth;
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     {{-- endchatbot --}}
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('assets/images/icons/favicon.png') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('assets/images/logo2.png') }}">
 
 
     <script>
@@ -294,7 +294,6 @@ use Illuminate\Support\Facades\Auth;
                                                 <span class="dropdown-item-text font-weight-bold">{{ Auth::user()->name
                                                     }}</span>
                                                 <a class="dropdown-item" href="{{ route('user.dashboard') }}">Tài khoản của tôi</a>
-                                                <a class="dropdown-item" href="{{ route('client.orders.index') }}">Đơn hàng</a>
                                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                                     Đăng Xuất
