@@ -19,6 +19,7 @@ class DashboardController extends Controller
         $type = $request->get('type', 'week');
         $now = Carbon::now();
         $categoryId = $request->get('category_id');
+        $status = $request->get('status');
         $quickSearch = $request->get('q');
 
         // Xác định khoảng thời gian
@@ -74,8 +75,11 @@ class DashboardController extends Controller
         }
 
         // Tổng doanh thu
-        $totalRevenueQuery = Order::where('status', 'Hoàn thành')
-            ->whereBetween('created_at', [$currentStart, $currentEnd]);
+        $totalRevenueQuery = Order::query();
+        if ($status) {
+            $totalRevenueQuery->where('status', $status);
+        } 
+        $totalRevenueQuery->whereBetween('created_at', [$currentStart, $currentEnd]);
         if ($categoryId) {
             $totalRevenueQuery->whereHas('orderItems', function ($q) use ($categoryId) {
                 $q->whereHas('product', function ($q) use ($categoryId) {
@@ -93,8 +97,11 @@ class DashboardController extends Controller
         $totalRevenue = $totalRevenueQuery->sum('final_amount');
 
         // Tổng đơn hàng
-        $ordersCountQuery = Order::where('status', 'Hoàn thành')
-            ->whereBetween('created_at', [$currentStart, $currentEnd]);
+        $ordersCountQuery = Order::query();
+        if ($status) {
+            $ordersCountQuery->where('status', $status);
+        }
+        $ordersCountQuery->whereBetween('created_at', [$currentStart, $currentEnd]);
         if ($categoryId) {
             $ordersCountQuery->whereHas('orderItems', function ($q) use ($categoryId) {
                 $q->whereHas('product', function ($q) use ($categoryId) {
@@ -139,7 +146,7 @@ class DashboardController extends Controller
         $usersCount = $usersCountQuery->count();
 
         // Dữ liệu so sánh với kỳ trước
-        $previousRevenue = Order::where('status', 'Hoàn thành')
+        $previousRevenue = Order::query()
             ->whereBetween('created_at', [$previousStart, $previousEnd])
             ->when($categoryId, function ($q) use ($categoryId) {
                 $q->whereHas('orderItems', function ($q) use ($categoryId) {
@@ -150,7 +157,7 @@ class DashboardController extends Controller
             })
             ->sum('final_amount');
 
-        $previousOrders = Order::where('status', 'Hoàn thành')
+        $previousOrders = Order::query()
             ->whereBetween('created_at', [$previousStart, $previousEnd])
             ->when($categoryId, function ($q) use ($categoryId) {
                 $q->whereHas('orderItems', function ($q) use ($categoryId) {
@@ -175,105 +182,211 @@ class DashboardController extends Controller
 
         // Dữ liệu biểu đồ
         if ($type === 'month') {
-            $revenueData = $labels->map(fn($m) => Order::whereMonth('created_at', $m)
-                ->whereYear('created_at', $now->year)
-                ->where('status', 'Hoàn thành')
-                ->when($categoryId, function ($q) use ($categoryId) {
-                    $q->whereHas('orderItems', function ($q) use ($categoryId) {
+            $labels = collect(range(1, 12))->map(function($month) {
+                return "Tháng $month";
+            });
+
+            $revenueData = $labels->map(function($month, $index) use ($status, $categoryId) {
+                $query = Order::whereMonth('created_at', $index + 1)
+                    ->whereYear('created_at', now()->year);
+                
+                if ($status) {
+                    $query->where('status', $status);
+                }
+
+                if ($categoryId) {
+                    $query->whereHas('orderItems', function ($q) use ($categoryId) {
                         $q->whereHas('product', function ($q) use ($categoryId) {
                             $q->where('category_id', $categoryId)->withTrashed();
                         });
                     });
-                })
-                ->sum('final_amount'));
-            $orderData = $labels->map(fn($m) => Order::whereMonth('created_at', $m)
-                ->whereYear('created_at', $now->year)
-                ->where('status', 'Hoàn thành')
-                ->when($categoryId, function ($q) use ($categoryId) {
-                    $q->whereHas('orderItems', function ($q) use ($categoryId) {
+                }
+                
+                return $query->sum('final_amount');
+            });
+
+            $orderData = $labels->map(function($month, $index) use ($status, $categoryId) {
+                $query = Order::whereMonth('created_at', $index + 1)
+                    ->whereYear('created_at', now()->year);
+                
+                if ($status) {
+                    $query->where('status', $status);
+                }
+
+                if ($categoryId) {
+                    $query->whereHas('orderItems', function ($q) use ($categoryId) {
                         $q->whereHas('product', function ($q) use ($categoryId) {
                             $q->where('category_id', $categoryId)->withTrashed();
                         });
                     });
-                })
-                ->count());
-            $userData = $labels->map(fn($m) => User::whereMonth('created_at', $m)
-                ->whereYear('created_at', $now->year)
-                ->count());
-            $productData = $labels->map(fn($m) => Products::whereMonth('created_at', $m)
-                ->whereYear('created_at', $now->year)
-                ->when($categoryId, function ($q) use ($categoryId) {
-                    $q->where('category_id', $categoryId);
-                })
-                ->count());
-        } elseif ($type === 'year') {
-            $revenueData = $labels->map(fn($y) => Order::whereYear('created_at', $y)
-                ->where('status', 'Hoàn thành')
-                ->when($categoryId, function ($q) use ($categoryId) {
-                    $q->whereHas('orderItems', function ($q) use ($categoryId) {
+                }
+                
+                return $query->count();
+            });
+        } elseif ($type === 'week') {
+            $dates = collect();
+            for ($i = 6; $i >= 0; $i--) {
+                $dates->push(now()->subDays($i)->format('Y-m-d'));
+            }
+            $labels = $dates->map(function($date) {
+                return Carbon::parse($date)->format('d/m');
+            });
+
+            $revenueData = $dates->map(function($date) use ($status, $categoryId) {
+                $query = Order::whereDate('created_at', $date);
+                
+                if ($status) {
+                    $query->where('status', $status);
+                }
+
+                if ($categoryId) {
+                    $query->whereHas('orderItems', function ($q) use ($categoryId) {
                         $q->whereHas('product', function ($q) use ($categoryId) {
                             $q->where('category_id', $categoryId)->withTrashed();
                         });
                     });
-                })
-                ->sum('final_amount'));
-            $orderData = $labels->map(fn($y) => Order::whereYear('created_at', $y)
-                ->where('status', 'Hoàn thành')
-                ->when($categoryId, function ($q) use ($categoryId) {
-                    $q->whereHas('orderItems', function ($q) use ($categoryId) {
+                }
+                
+                return $query->sum('final_amount');
+            });
+
+            $orderData = $dates->map(function($date) use ($status, $categoryId) {
+                $query = Order::whereDate('created_at', $date);
+                
+                if ($status) {
+                    $query->where('status', $status);
+                }
+
+                if ($categoryId) {
+                    $query->whereHas('orderItems', function ($q) use ($categoryId) {
                         $q->whereHas('product', function ($q) use ($categoryId) {
                             $q->where('category_id', $categoryId)->withTrashed();
                         });
                     });
-                })
-                ->count());
-            $userData = $labels->map(fn($y) => User::whereYear('created_at', $y)->count());
-            $productData = $labels->map(fn($y) => Products::whereYear('created_at', $y)
-                ->when($categoryId, function ($q) use ($categoryId) {
-                    $q->where('category_id', $categoryId);
-                })
-                ->count());
-        } else { // today, week, custom
-            $revenueData = $dates->map(fn($date) => Order::whereDate('created_at', $date)
-                ->where('status', 'Hoàn thành')
-                ->when($categoryId, function ($q) use ($categoryId) {
-                    $q->whereHas('orderItems', function ($q) use ($categoryId) {
+                }
+                
+                return $query->count();
+            });
+        } elseif ($type === 'today') {
+            $selectedDate = $request->get('date', $now->toDateString());
+            $currentStart = Carbon::parse($selectedDate)->startOfDay();
+            $currentEnd = Carbon::parse($selectedDate)->endOfDay();
+            $previousStart = Carbon::parse($selectedDate)->copy()->subDay()->startOfDay();
+            $previousEnd = Carbon::parse($selectedDate)->copy()->subDay()->endOfDay();
+            $labels = collect([Carbon::parse($selectedDate)->format('d/m')]);
+            $dates = collect([Carbon::parse($selectedDate)->toDateString()]);
+
+            $revenueData = $labels->map(function($date) use ($status, $categoryId) {
+                $query = Order::whereDate('created_at', $date);
+        
+                // Thêm điều kiện lọc theo trạng thái
+                if ($status) {
+                    $query->where('status', $status);
+                } else {
+                    $query->where('status', 'Hoàn thành');
+                }
+
+                if ($categoryId) {
+                    $query->whereHas('orderItems', function ($q) use ($categoryId) {
                         $q->whereHas('product', function ($q) use ($categoryId) {
                             $q->where('category_id', $categoryId)->withTrashed();
                         });
                     });
-                })
-                ->sum('final_amount'));
-            $orderData = $dates->map(fn($date) => Order::whereDate('created_at', $date)
-                ->where('status', 'Hoàn thành')
-                ->when($categoryId, function ($q) use ($categoryId) {
-                    $q->whereHas('orderItems', function ($q) use ($categoryId) {
+                }
+        
+                return $query->sum('final_amount');
+            });
+            
+            $orderData = $labels->map(function($date) use ($status, $categoryId) {
+                $query = Order::whereDate('created_at', $date);
+        
+                // Thêm điều kiện lọc theo trạng thái
+                if ($status) {
+                    $query->where('status', $status);
+                } else {
+                    $query->where('status', 'Hoàn thành');
+                }
+
+                if ($categoryId) {
+                    $query->whereHas('orderItems', function ($q) use ($categoryId) {
                         $q->whereHas('product', function ($q) use ($categoryId) {
                             $q->where('category_id', $categoryId)->withTrashed();
                         });
                     });
-                })
-                ->count());
-            $userData = $dates->map(fn($date) => User::whereDate('created_at', $date)->count());
-            $productData = $dates->map(fn($date) => Products::whereDate('created_at', $date)
-                ->when($categoryId, function ($q) use ($categoryId) {
-                    $q->where('category_id', $categoryId);
-                })
-                ->count());
+                }
+        
+                return $query->count();
+            });
+        } else { // custom
+            $startDate = $request->get('start_date', $now->subDays(7)->toDateString());
+            $currentStart = Carbon::parse($startDate)->startOfDay();
+            $currentEnd = Carbon::parse($request->get('end_date', $now->toDateString()))->endOfDay();
+            $previousStart = $currentStart->copy()->subDays($currentEnd->diffInDays($currentStart));
+            $previousEnd = $currentStart->copy()->subDay()->endOfDay();
+            $dates = collect();
+            $labels = collect();
+            $current = $currentStart->copy();
+            while ($current <= $currentEnd) {
+                $dates->push($current->toDateString());
+                $labels->push($current->format('d/m'));
+                $current->addDay();
+            }
+
+            $revenueData = $dates->map(function($date) use ($status, $categoryId) {
+                $query = Order::whereDate('created_at', $date);
+        
+                // Thêm điều kiện lọc theo trạng thái
+                if ($status) {
+                    $query->where('status', $status);
+                } else {
+                    $query->where('status', 'Hoàn thành');
+                }
+
+                if ($categoryId) {
+                    $query->whereHas('orderItems', function ($q) use ($categoryId) {
+                        $q->whereHas('product', function ($q) use ($categoryId) {
+                            $q->where('category_id', $categoryId)->withTrashed();
+                        });
+                    });
+                }
+        
+                return $query->sum('final_amount');
+            });
+            
+            $orderData = $dates->map(function($date) use ($status, $categoryId) {
+                $query = Order::whereDate('created_at', $date);
+        
+                // Thêm điều kiện lọc theo trạng thái
+                if ($status) {
+                    $query->where('status', $status);
+                } else {
+                    $query->where('status', 'Hoàn thành');
+                }
+
+                if ($categoryId) {
+                    $query->whereHas('orderItems', function ($q) use ($categoryId) {
+                        $q->whereHas('product', function ($q) use ($categoryId) {
+                            $q->where('category_id', $categoryId)->withTrashed();
+                        });
+                    });
+                }
+        
+                return $query->count();
+            });
         }
 
         // Top sản phẩm bán chạy
         $topProductsQuery = DB::table('order_items')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->join('products', 'order_items.product_id', '=', 'products.id') // Thêm join với products
             ->where('orders.status', 'Hoàn thành')
             ->select('order_items.product_id', 'order_items.product_name', DB::raw('SUM(order_items.quantity) as sold'))
             ->groupBy('order_items.product_id', 'order_items.product_name')
             ->orderByDesc('sold')
             ->whereBetween('order_items.created_at', [$currentStart, $currentEnd]);
+
         if ($categoryId) {
-            $topProductsQuery->whereHas('product', function ($q) use ($categoryId) {
-                $q->where('category_id', $categoryId)->withTrashed();
-            });
+            $topProductsQuery->where('products.category_id', $categoryId);
         }
         $topProducts = $topProductsQuery->take(5)->get();
 
@@ -321,6 +434,9 @@ class DashboardController extends Controller
         $totalPendingOrders = Order::where('status', 'Đang chờ')
             ->whereBetween('created_at', [$currentStart, $currentEnd])
             ->count();
+        $totalConfirmedOrders = Order::where('status', 'Xác nhận đơn')  // Thêm dòng này
+            ->whereBetween('created_at', [$currentStart, $currentEnd])
+            ->count();
         $totalShippingOrders = Order::where('status', 'Đang giao hàng')
             ->whereBetween('created_at', [$currentStart, $currentEnd])
             ->count();
@@ -332,15 +448,36 @@ class DashboardController extends Controller
             ->count();
 
         // Doanh thu theo thời gian
-        $todayRevenue = Order::whereDate('created_at', now())
-            ->where('status', 'Hoàn thành')
-            ->sum('final_amount');
-        $thisWeekRevenue = Order::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])
-            ->where('status', 'Hoàn thành')
-            ->sum('final_amount');
-        $thisMonthRevenue = Order::whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
-            ->where('status', 'Hoàn thành')
-            ->sum('final_amount');
+        $todayRevenueQuery = Order::whereDate('created_at', now());
+        $thisWeekRevenueQuery = Order::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+        $thisMonthRevenueQuery = Order::whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()]);
+
+        // Áp dụng điều kiện lọc trạng thái
+        if ($status) {
+            $todayRevenueQuery->where('status', $status);
+            $thisWeekRevenueQuery->where('status', $status);
+            $thisMonthRevenueQuery->where('status', $status);
+        }
+
+        // Áp dụng điều kiện lọc danh mục nếu có
+        if ($categoryId) {
+            $categoryFilter = function($query) use ($categoryId) {
+                $query->whereHas('orderItems', function ($q) use ($categoryId) {
+                    $q->whereHas('product', function ($q) use ($categoryId) {
+                        $q->where('category_id', $categoryId)->withTrashed();
+                    });
+                });
+            };
+            
+            $todayRevenueQuery->where($categoryFilter);
+            $thisWeekRevenueQuery->where($categoryFilter);
+            $thisMonthRevenueQuery->where($categoryFilter);
+        }
+
+        // Tính tổng doanh thu
+        $todayRevenue = $todayRevenueQuery->sum('final_amount');
+        $thisWeekRevenue = $thisWeekRevenueQuery->sum('final_amount');
+        $thisMonthRevenue = $thisMonthRevenueQuery->sum('final_amount');
 
         // Top danh mục bán chạy
         $topCategories = DB::table('categories')
@@ -389,38 +526,72 @@ class DashboardController extends Controller
 
         $categories = Category::orderBy('ten_danh_muc')->get();
 
+        // Cập nhật các thống kê theo trạng thái
+        $statusCounts = Order::whereBetween('created_at', [$currentStart, $currentEnd])
+            ->selectRaw('status, count(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->toArray();
+
+        $totalPendingOrders = $statusCounts['Đang chờ'] ?? 0;
+        $totalConfirmedOrders = $statusCounts['Xác nhận đơn'] ?? 0;  // Thêm dòng này
+        $totalShippingOrders = $statusCounts['Đang giao hàng'] ?? 0;
+        $totalCompletedOrders = $statusCounts['Hoàn thành'] ?? 0;
+        $totalCancelledOrders = $statusCounts['Đã hủy'] ?? 0;
+
+        // Tính toán doanh thu và đơn hàng theo trạng thái
+        $revenueByStatus = Order::whereBetween('created_at', [$currentStart, $currentEnd])
+            ->select('status', DB::raw('SUM(final_amount) as total_amount'))
+            ->groupBy('status')
+            ->get()
+            ->pluck('total_amount', 'status')
+            ->toArray();
+
+        $ordersByStatus = Order::whereBetween('created_at', [$currentStart, $currentEnd])
+            ->select('status', DB::raw('COUNT(*) as total_count'))
+            ->groupBy('status')
+            ->get()
+            ->pluck('total_count', 'status')
+            ->toArray();
+
+        $userData = collect(); // Hoặc khởi tạo với dữ liệu thích hợp
+        $productData = collect(); // Hoặc khởi tạo với dữ liệu thích hợp
+
         return view('admin.dashboard.index', compact(
+            'type',
             'totalRevenue',
             'ordersCount',
             'productsCount',
             'usersCount',
-            'labels',
-            'revenueData',
-            'orderData',
-            'userData',
-            'productData',
             'percentRevenue',
             'percentOrders',
             'percentUsers',
             'percentProducts',
-            'type',
+            'labels',
+            'revenueData',
+            'orderData',
+            'categories',
             'topProducts',
             'worstProducts',
             'lowStock',
             'totalPendingOrders',
+            'totalConfirmedOrders',
             'totalShippingOrders',
             'totalCompletedOrders',
             'totalCancelledOrders',
-            'todayRevenue',
-            'thisWeekRevenue',
-            'thisMonthRevenue',
+            'todayRevenue',          // Add these
+            'thisWeekRevenue',       // three revenue
+            'thisMonthRevenue',      // variables
             'topCategories',
-            'totalStockPerProduct',
             'newCustomers',
             'topCustomers',
             'activeDiscountList',
             'reviewStats',
-            'categories'
+            'totalStockPerProduct',
+            'userData',
+            'productData',
+            'revenueByStatus',
+            'ordersByStatus'
         ));
     }
 }
