@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Mail\OrderCancelledMail;
 use App\Models\Discount;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -33,6 +35,7 @@ class OrderController extends Controller
         return view('client.order.show', compact('order', 'items'));
     }
 
+
 public function cancel(Request $request)
 {
     $request->validate([
@@ -40,13 +43,13 @@ public function cancel(Request $request)
         'cancel_reason' => 'required|string|max:255',
     ]);
 
-    $order = Order::with('orderItems.productVariant')->findOrFail($request->order_id);
+    $order = Order::with('orderItems.productVariant')
+        ->where('user_id', Auth::id()) // ✅ Chỉ hủy đơn của chính mình
+        ->findOrFail($request->order_id);
 
-    // Kiểm tra quyền (nếu có)
-    $this->authorizeOrder($order); 
-
-    if ($order->status !== 'Đang chờ') {
-        return back()->with('error', 'Không thể hủy đơn hàng này.');
+    // ✅ Chỉ cho hủy nếu đơn chưa chuyển qua giai đoạn giao hàng
+    if (!in_array($order->status, ['Đang chờ', 'Xác nhận đơn'])) {
+        return back()->with('error', 'Đơn hàng đã xử lý, không thể hủy.');
     }
 
     // ✅ Trả lại số lượng sản phẩm
@@ -71,7 +74,10 @@ public function cancel(Request $request)
         'cancel_reason' => $request->cancel_reason,
     ]);
 
-    return back()->with('success', 'Đơn hàng đã được hủy thành công.');
+    // ✅ (Tuỳ chọn) Gửi email thông báo cho khách
+    Mail::to($order->receiver_email)->send(new OrderCancelledMail($order));
+
+    return back()->with('success', 'Đơn hàng của bạn đã được hủy thành công.');
 }
 
 
