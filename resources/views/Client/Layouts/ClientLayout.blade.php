@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>Porto - Bootstrap eCommerce Template</title>
+    <title>Sudes Sports</title>
 
     <meta name="keywords" content="HTML5 Template" />
     <meta name="description" content="Porto - Bootstrap eCommerce Template">
@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Auth;
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     {{-- endchatbot --}}
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('assets/images/icons/favicon.png') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('assets/images/logo2.png') }}">
 
 
     <script>
@@ -55,6 +55,7 @@ use Illuminate\Support\Facades\Auth;
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendor/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" type="text/css"
         href="{{ asset('assets/vendor/simple-line-icons/css/simple-line-icons.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/custom-improvements.css') }}">
     <style>
         /* Menu ngang chỉ 1 dòng, tràn thì cuộn ngang, chuẩn e-commerce */
         .header .main-nav .menu {
@@ -293,7 +294,6 @@ use Illuminate\Support\Facades\Auth;
                                                 <span class="dropdown-item-text font-weight-bold">{{ Auth::user()->name
                                                     }}</span>
                                                 <a class="dropdown-item" href="{{ route('user.dashboard') }}">Tài khoản của tôi</a>
-                                                <a class="dropdown-item" href="{{ route('client.orders.index') }}">Đơn hàng</a>
                                                 <a class="dropdown-item" href="{{ route('logout') }}"
                                                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                                     Đăng Xuất
@@ -808,7 +808,8 @@ function showAlert(message, type = 'success') {
     const icon = type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-triangle"></i>';
     const alertDiv = document.createElement('div');
     alertDiv.className = 'custom-alert';
-    alertDiv.innerHTML = `<span class="icon-warning">${icon}</span> ${message} <button type="button" class="close" onclick="this.parentElement.remove()"><span aria-hidden="true">&times;</span></button>`;
+    alertDiv.setAttribute('data-type', type);
+                alertDiv.innerHTML = `<span class="alert-text">${message}</span><span class="icon-warning">${icon}</span><button type="button" class="close" onclick="this.parentElement.remove()"><span aria-hidden="true">&times;</span></button>`;
     document.getElementById('alert-stack').appendChild(alertDiv);
     setTimeout(() => { alertDiv.remove(); }, 3500);
 }

@@ -79,7 +79,7 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::post('/checkout', [CheckoutController::class, 'process'])->name('checkout.process');
         Route::get('/don-hang-thanh-cong/{order}', [CheckoutController::class, 'success'])->name('order.success');
         //Theo dõi đơn hàng
-        Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+            
         Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
         Route::post('/orders/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
     });

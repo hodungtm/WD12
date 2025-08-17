@@ -215,23 +215,24 @@
         border: 1px solid #ced4da;
         width: 60px;
         font-size: 18px;
-        height: 45px; /* Chiều cao phù hợp */
+        height: 45px;
     }
 
     .btn-quantity,
     .quantity-input {
-        height: 45px; /* Đảm bảo tất cả cùng chiều cao */
+        height: 45px;
         width: 23px;
     }
+    
     .quantity-input::-webkit-inner-spin-button,
-.quantity-input::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
+    .quantity-input::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
 
-.quantity-input {
-    -moz-appearance: textfield;
-}
+    .quantity-input {
+        -moz-appearance: textfield;
+    }
 </style>
 
 @section('js')
@@ -251,76 +252,84 @@
             document.getElementById('total').textContent = formatCurrency(subtotal);
         }
 
+        // Tính subtotal từ server-side data
+        let calculatedSubtotal = 0;
+        @if(!$cartItems->isEmpty())
+            @foreach($cartItems as $item)
+                calculatedSubtotal += {{ $item->variant->sale_price * $item->quantity }};
+            @endforeach
+        @endif
+
         // Xử lý cập nhật số lượng bằng AJAX
-        // Tránh gửi AJAX liên tục khi bấm nút quá nhanh
-let updateTimeouts = {};
+        let updateTimeouts = {};
 
-// Hàm gửi AJAX cập nhật số lượng
-function updateQuantityAjax(itemId, quantity, inputElement) {
-    if (quantity < 1) quantity = 1;
-    
-    clearTimeout(updateTimeouts[itemId]); // Xoá timeout cũ nếu có
+        // Hàm gửi AJAX cập nhật số lượng
+        function updateQuantityAjax(itemId, quantity, inputElement) {
+            if (quantity < 1) quantity = 1;
+            
+            clearTimeout(updateTimeouts[itemId]);
 
-    updateTimeouts[itemId] = setTimeout(() => {
-        fetch("{{ route('client.cart.updateAll') }}", {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                quantities: { [itemId]: quantity }
-            })
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Network response not ok');
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                updateTotals(data.subtotal);
-                inputElement.value = quantity;
-            } else {
-                alert(data.message || 'Không thể cập nhật số lượng');
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            alert('Đã xảy ra lỗi khi cập nhật.');
-        });
-    }, 300); // Đợi 300ms trước khi gửi để chống spam
-}
-
-// Xử lý nút tăng/giảm
-document.querySelectorAll('.btn-quantity').forEach(button => {
-    button.addEventListener('click', function() {
-        const itemId = this.dataset.id;
-        const input = document.querySelector(`.quantity-input[data-id='${itemId}']`);
-        let currentVal = parseInt(input.value);
-
-        if (this.classList.contains('btn-increase')) {
-            currentVal++;
-        } else if (this.classList.contains('btn-decrease') && currentVal > 1) {
-            currentVal--;
+            updateTimeouts[itemId] = setTimeout(() => {
+                fetch("{{ route('client.cart.updateAll') }}", {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        quantities: { [itemId]: quantity }
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        updateTotals(data.subtotal);
+                        inputElement.value = quantity;
+                        calculatedSubtotal = data.subtotal; // Cập nhật subtotal
+                    } else {
+                        alert(data.message || 'Không thể cập nhật số lượng');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Đã xảy ra lỗi khi cập nhật.');
+                });
+            }, 300);
         }
 
-        input.value = currentVal;
-        updateQuantityAjax(itemId, currentVal, input);
-    });
-});
+        // Xử lý nút tăng/giảm
+        document.querySelectorAll('.btn-quantity').forEach(button => {
+            button.addEventListener('click', function() {
+                const itemId = this.dataset.id;
+                const input = document.querySelector(`.quantity-input[data-id='${itemId}']`);
+                let currentVal = parseInt(input.value);
 
-// Xử lý khi nhập trực tiếp vào input
-document.querySelectorAll('.quantity-input').forEach(input => {
-    input.addEventListener('change', function () {
-        const itemId = this.dataset.id;
-        let quantity = parseInt(this.value);
-        if (isNaN(quantity) || quantity < 1) quantity = 1;
-        this.value = quantity;
+                if (this.classList.contains('btn-increase')) {
+                    currentVal++;
+                } else if (this.classList.contains('btn-decrease') && currentVal > 1) {
+                    currentVal--;
+                }
 
-        updateQuantityAjax(itemId, quantity, this);
-    });
-});
+                input.value = currentVal;
+                updateQuantityAjax(itemId, currentVal, input);
+            });
+        });
+
+        // Xử lý khi nhập trực tiếp vào input
+        document.querySelectorAll('.quantity-input').forEach(input => {
+            input.addEventListener('change', function () {
+                const itemId = this.dataset.id;
+                let quantity = parseInt(this.value);
+                if (isNaN(quantity) || quantity < 1) quantity = 1;
+                this.value = quantity;
+
+                updateQuantityAjax(itemId, quantity, this);
+            });
+        });
 
         // Xử lý form checkout
         document.getElementById('checkoutForm').addEventListener('submit', function (e) {
@@ -331,7 +340,7 @@ document.querySelectorAll('.quantity-input').forEach(input => {
             }
         });
 
-        // Gọi hàm updateTotals khi trang được tải
-        updateTotals({{ $subtotal }});
+        // Khởi tạo totals khi trang được tải
+        updateTotals(calculatedSubtotal);
     </script>
 @endsection
