@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Mail\OrderCreatedMail;
 use App\Models\Order_items;
-use App\Models\Products;
-use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use App\Models\Cart;
 use App\Models\Discount;

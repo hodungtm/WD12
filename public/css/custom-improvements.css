@@ -372,8 +372,8 @@ select:focus {
 /* 17. CẢI THIỆN DARK MODE SUPPORT */
 @media (prefers-color-scheme: dark) {
     .custom-alert[data-type="success"] {
-        background: linear-gradient(135deg, #059669, #047857);
-        border-color: #065f46;
+        background: linear-gradient(135deg, #ffffff, #fff);
+        border-color: #007151;
     }
     
     .custom-alert[data-type="error"] {

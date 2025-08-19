@@ -4,9 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BannerRequest;
-use App\Http\Requests\HinhAnhBanner\ThemHinhAnhBannerRequest;
 use App\Models\Banner;
-use App\Models\HinhAnhBanner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 

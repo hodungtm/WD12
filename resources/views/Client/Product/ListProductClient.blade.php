@@ -357,7 +357,8 @@
         data-bs-toggle="modal" 
         data-bs-target="#variantModal"
         data-product-id="{{ $product->id }}" 
-        data-product-name="{{ $product->name }}" 
+        data-product-name="{{ $product->name }}"
+        data-product-image="{{ asset('storage/' . $product->images->first()->image) }}"
         data-variants='@json($product->variants)'>
     <i class="icon-shopping-cart"></i><span>THÊM VÀO GIỎ</span>
 </button>
@@ -723,6 +724,11 @@
         };
 
         document.getElementById('modalAddToCartBtn').onclick = function() {
+            // Kiểm tra đăng nhập trước
+    @if (!auth()->check())
+        window.location.href = "{{ route('login') }}";
+        return;
+    @endif
             if (!selectedModalColor || !selectedModalSize) {
                 showAlert('Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng!', 'error');
                 return;
@@ -759,7 +765,10 @@
             const button = event.relatedTarget;
             const productId = button.getAttribute('data-product-id');
             const productName = button.getAttribute('data-product-name');
+            const productImage = button.getAttribute('data-product-image');
             const variantsString = button.getAttribute('data-variants');
+            
+            document.getElementById('modalProductImage').src = productImage || '/assets/images/no-image.png';
             
             try {
                 const variants = JSON.parse(variantsString);
@@ -767,7 +776,7 @@
                 populateVariantModal(productId, productName, variants);
             } catch (error) {
                 console.error("Lỗi khi phân tích cú pháp JSON variants:", error);
-            }
+            } 
         });
 
         // Hàm điền dữ liệu vào modal
@@ -775,18 +784,14 @@
             currentVariants = variants || [];
             selectedModalColor = null;
             selectedModalSize = null;
+            
+            // Cập nhật thông tin cơ bản
             document.getElementById('modalProductId').value = productId;
             document.getElementById('modalProductName').textContent = productName;
-            fetch(`/api/product/${productId}/image`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.image) {
-                        document.getElementById('modalProductImage').src = data.image;
-                    }
-                })
-                .catch(err => {
-                    document.getElementById('modalProductImage').src = '/assets/images/no-image.png';
-                });
+            
+            // Xóa bỏ phần fetch ảnh không cần thiết vì đã có ảnh từ data-product-image
+            
+            // Xử lý màu sắc
             const colorOptions = document.getElementById('colorOptions');
             colorOptions.innerHTML = '';
             const uniqueColorIds = [...new Set(variants.map(v => v.color_id))].filter(id => id);
@@ -801,6 +806,8 @@
                 btn.onclick = () => selectModalColor(color.id);
                 colorOptions.appendChild(btn);
             });
+
+            // Xử lý kích thước
             const sizeOptions = document.getElementById('sizeOptions');
             sizeOptions.innerHTML = '';
             const uniqueSizeIds = [...new Set(variants.map(v => v.size_id))].filter(id => id);
@@ -815,6 +822,8 @@
                 btn.onclick = () => selectModalSize(size.id);
                 sizeOptions.appendChild(btn);
             });
+
+            // Reset các giá trị khác
             document.getElementById('modalQuantityInput').value = 1;
             document.getElementById('modalInventoryInfo').textContent = '';
             document.getElementById('modalDynamicPrice').innerHTML = '';
@@ -866,18 +875,29 @@
         }
 
         function showAlert(message, type = 'success') {
-    const icon = type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-triangle"></i>';
     const alertDiv = document.createElement('div');
     alertDiv.className = 'custom-alert';
     alertDiv.setAttribute('data-type', type);
-                alertDiv.innerHTML = `<span class="alert-text">${message}</span><span class="icon-warning">${icon}</span><button type="button" class="close" onclick="this.parentElement.remove()"><span aria-hidden="true">&times;</span></button>`;
+    alertDiv.innerHTML = `
+        <div class="alert-content">
+            <div class="alert-header">
+                <span class="icon-warning"><i class="fas fa-check"></i></span>
+                <div class="alert-title">Success</div>
+            </div>
+            <div class="alert-message">${message}</div>
+        </div>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Đóng">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    `;
+
     let alertStack = document.getElementById('alert-stack');
     if (!alertStack) {
         alertStack = document.createElement('div');
         alertStack.id = 'alert-stack';
-        alertStack.style.cssText = 'position: fixed; top: 80px; right: 24px; z-index: 9999;';
         document.body.appendChild(alertStack);
     }
+
     alertStack.appendChild(alertDiv);
     setTimeout(() => { alertDiv.remove(); }, 3500);
 }

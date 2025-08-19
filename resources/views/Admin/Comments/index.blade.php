@@ -7,7 +7,7 @@
             <div class="flex items-center flex-wrap justify-between gap20 mb-30">
                 <h3>Quản lý bình luận</h3>
                 <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-                    <li><a href="{{ route('Admin.comments.index') }}">
+                    <li><a href="{{ route('admin.comments.index') }}">
                             <div class="text-tiny">Dashboard</div>
                         </a></li>
                     <li><i class="icon-chevron-right"></i></li>
@@ -43,7 +43,7 @@
                     <div class="body-text">Tìm kiếm và quản lý bình luận của khách hàng.</div>
                 </div>
                 <div class="flex flex-column gap10 mb-3">
-                    <form method="GET" action="{{ route('Admin.comments.index') }}" class="form-search w-100" style="margin-bottom: 10px;">
+                    <form method="GET" action="{{ route('admin.comments.index') }}" class="form-search w-100" style="margin-bottom: 10px;">
                         <div class="search-input" style="width: 100%; position: relative;">
                             <input type="text" placeholder="Tìm kiếm bình luận..." name="keyword" value="{{ request('keyword') }}" style="width: 100%; min-width: 200px;">
                             <button type="submit" class="btn d-flex align-items-center justify-content-center" style="height: 38px; width: 38px; padding: 0; border: 1.5px solid #1abc9c; background: #fff; position: absolute; right: 5px; top: 50%; transform: translateY(-50%);">
@@ -53,7 +53,7 @@
                     </form>
                     <div class="flex items-center justify-between gap10 flex-wrap">
                         <div class="flex gap10 flex-wrap align-items-center">
-                            <form method="GET" action="{{ route('Admin.comments.index') }}" class="flex gap10 flex-wrap align-items-center" style="margin-bottom: 0;">
+                            <form method="GET" action="{{ route('admin.comments.index') }}" class="flex gap10 flex-wrap align-items-center" style="margin-bottom: 0;">
                                 <input type="hidden" name="keyword" value="{{ request('keyword') }}">
                                 <select name="trang_thai" class="form-select" style="width: 140px;">
                                     <option value="">-- Trạng thái --</option>
@@ -104,8 +104,8 @@
                                 </div>
                                 <div class="body-text mt-4" style="flex-basis: 120px;">{{ $comment->created_at ? $comment->created_at->format('d/m/Y H:i') : 'N/A' }}</div>
                                 <div class="list-icon-function" style="flex-basis: 120px;">
-                                    <a href="{{ route('Admin.comments.show', $comment->id) }}" class="item eye"><i class="icon-eye"></i></a>
-                                    <a href="{{ route('Admin.comments.edit', $comment->id) }}" class="item edit"><i class="icon-edit-3"></i></a>
+                                    <a href="{{ route('admin.comments.show', $comment->id) }}" class="item eye"><i class="icon-eye"></i></a>
+                                    <a href="{{ route('admin.comments.edit', $comment->id) }}" class="item edit"><i class="icon-edit-3"></i></a>
                                 </div>
                             </li>
                         @empty

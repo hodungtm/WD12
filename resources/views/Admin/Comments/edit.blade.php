@@ -6,11 +6,11 @@
             <div class="flex items-center flex-wrap justify-between gap20 mb-30">
                 <h3>Chỉnh sửa bình luận</h3>
                 <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-                    <li><a href="{{ route('Admin.comments.index') }}">
+                    <li><a href="{{ route('admin.comments.index') }}">
                             <div class="text-tiny">Dashboard</div>
                         </a></li>
                     <li><i class="icon-chevron-right"></i></li>
-                    <li><a href="{{ route('Admin.comments.index') }}">
+                    <li><a href="{{ route('admin.comments.index') }}">
                             <div class="text-tiny">Bình luận</div>
                         </a></li>
                     <li><i class="icon-chevron-right"></i></li>
@@ -20,7 +20,7 @@
                 </ul>
             </div>
 
-            <form action="{{ route('Admin.comments.update', $comment->id) }}" method="POST">
+            <form action="{{ route('admin.comments.update', $comment->id) }}" method="POST">
                 @csrf
                 @method('PUT')
 
@@ -51,7 +51,7 @@
                     <button type="submit" class="tf-button btn-sm w-auto px-3 py-2">
                         <i class="icon-save"></i> Cập nhật
                     </button>
-                    <a href="{{ route('Admin.comments.index') }}" class="tf-button style-3 btn-sm w-auto px-3 py-2">
+                    <a href="{{ route('admin.comments.index') }}" class="tf-button style-3 btn-sm w-auto px-3 py-2">
                         <i class="icon-x"></i> Hủy bỏ
                     </a>
                 </div>

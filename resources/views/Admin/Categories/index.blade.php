@@ -31,7 +31,7 @@
           <div class="body-text">Tìm kiếm danh mục theo tên hoặc lọc theo trạng thái.</div>
         </div>
         <div class="flex flex-column gap10 mb-3">
-          <form method="GET" action="{{ route('Admin.categories.index') }}" class="form-search w-100" style="margin-bottom: 10px;">
+          <form method="GET" action="{{ route('admin.categories.index') }}" class="form-search w-100" style="margin-bottom: 10px;">
             <fieldset class="name" style="width: 100%;">
               <input type="text" placeholder="Tìm kiếm danh mục..." name="keyword" value="{{ request('keyword') }}" style="width: 100%; min-width: 200px;">
               <button type="submit" class="btn d-flex align-items-center justify-content-center" style="height: 38px; width: 38px; padding: 0; border: 1.5px solid #1abc9c; background: #fff; position: absolute; right: 5px; top: 50%; transform: translateY(-50%);">
@@ -41,7 +41,7 @@
           </form>
           <div class="flex items-center justify-between gap10 flex-wrap">
             <div class="flex gap10 flex-wrap align-items-center">
-              <form method="GET" action="{{ route('Admin.categories.index') }}" class="flex gap10 flex-wrap align-items-center" style="margin-bottom: 0;">
+              <form method="GET" action="{{ route('admin.categories.index') }}" class="flex gap10 flex-wrap align-items-center" style="margin-bottom: 0;">
                 <input type="hidden" name="keyword" value="{{ request('keyword') }}">
                 <select name="status" class="form-select" style="width: 120px;">
                   <option value="">-- Trạng thái --</option>
@@ -59,7 +59,7 @@
               </form>
             </div>
             <div class="flex gap10">
-              <a href="{{ route('Admin.categories.create') }}" class="tf-button style-1 w200">
+              <a href="{{ route('admin.categories.create') }}" class="tf-button style-1 w200">
                 <i class="icon-plus"></i> Thêm danh mục
               </a>
             </div>
@@ -93,9 +93,9 @@
                 </div>
                 <div class="body-text mt-4" style="flex-basis: 180px;">{{ $cat->mo_ta }}</div>
                 <div class="list-icon-function" style="flex-basis: 120px;">
-                  <a href="{{ route('Admin.categories.show', $cat->id) }}" class="item eye"><i class="icon-eye"></i></a>
-                  <a href="{{ route('Admin.categories.edit', $cat->id) }}" class="item edit"><i class="icon-edit-3"></i></a>
-                  <form action="{{ route('Admin.categories.destroy', $cat->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');" style="display:inline;">
+                  <a href="{{ route('admin.categories.show', $cat->id) }}" class="item eye"><i class="icon-eye"></i></a>
+                  <a href="{{ route('admin.categories.edit', $cat->id) }}" class="item edit"><i class="icon-edit-3"></i></a>
+                  <form action="{{ route('admin.categories.destroy', $cat->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');" style="display:inline;">
                     @csrf
                     @method('DELETE')
                     <button type="submit" style="color: red" title="Xóa danh mục">
