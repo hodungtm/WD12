@@ -36,7 +36,7 @@ class Order_items extends Model
     
      public function product()
     {
-        return $this->belongsTo(Products::class);
+        return $this->belongsTo(Product::class);
     }
 
     /**
@@ -45,7 +45,7 @@ class Order_items extends Model
 
     public function products()
     {
-        return $this->belongsTo(Products::class);
+        return $this->belongsTo(Product::class);
     }
 
     /**

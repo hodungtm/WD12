@@ -7,10 +7,8 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Review;
 use App\Models\Comment;
-use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 use App\Models\Order;
 use App\Models\Order_items;
 
@@ -18,7 +16,7 @@ class ProductDetailController extends Controller
 {
     public function show($id)
     {
-        $product = Products::with(['images.color', 'variants.size', 'variants.color'])->findOrFail($id);
+        $product = Product::with(['images.color', 'variants.size', 'variants.color'])->findOrFail($id);
         $reviews = Review::with('user')->where('product_id', $id)->where('trang_thai', 1)->latest()->get();
         $comments = Comment::where('product_id', $product->id)
             ->whereNull('deleted_at')
@@ -53,7 +51,7 @@ class ProductDetailController extends Controller
     }
 
         // Lấy 5 sản phẩm liên quan cùng danh mục, mới nhất trước, loại trừ sản phẩm đang xem
-        $relatedProducts = Products::where('category_id', $product->category_id)
+        $relatedProducts = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->orderByDesc('id')
             ->take(5)

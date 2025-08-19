@@ -31,7 +31,7 @@
                     <div class="body-text">Tìm kiếm sản phẩm theo tên hoặc lọc theo danh mục.</div>
                 </div>
                 <div class="flex flex-column gap10 mb-3">
-                    <form method="GET" action="{{ route('products.index') }}" class="form-search w-100" style="margin-bottom: 10px;">
+                    <form method="GET" action="{{ route('admin.products.index') }}" class="form-search w-100" style="margin-bottom: 10px;">
                         <div class="search-input" style="width: 100%; position: relative;">
                             <input type="text" placeholder="Tìm kiếm sản phẩm..." name="search" value="{{ request('search') }}" style="width: 100%; min-width: 200px;">
                             <button type="submit" class="btn d-flex align-items-center justify-content-center" style="height: 38px; width: 38px; padding: 0; border: 1.5px solid #1abc9c; background: #fff; position: absolute; right: 5px; top: 50%; transform: translateY(-50%);">
@@ -41,7 +41,7 @@
                     </form>
                     <div class="flex items-center justify-between gap10 flex-wrap">
                         <div class="flex gap10 flex-wrap align-items-center">
-                            <form method="GET" action="{{ route('products.index') }}" class="flex gap10 flex-wrap align-items-center" style="margin-bottom: 0;">
+                            <form method="GET" action="{{ route('admin.products.index') }}" class="flex gap10 flex-wrap align-items-center" style="margin-bottom: 0;">
                                 <input type="hidden" name="search" value="{{ request('search') }}">
                                 <select name="category_id" class="form-select" style="width: 150px;">
                                     <option value="">-- Danh mục --</option>
@@ -70,10 +70,10 @@
                             </form>
                         </div>
                         <div class="flex gap10">
-                            <a href="{{ route('products.create') }}" class="tf-button style-1 w200">
+                            <a href="{{ route('admin.products.create') }}" class="tf-button style-1 w200">
                                 <i class="icon-plus"></i> Thêm sản phẩm
                             </a>
-                            <a href="{{ route('trash') }}" class="tf-button style-1 w150 btn btn-outline-danger">
+                            <a href="{{ route('admin.products.trash') }}" class="tf-button style-1 w150 btn btn-outline-danger">
                                 <i class="icon-trash-2"></i> Thùng rác
                             </a>
                         </div>
@@ -97,7 +97,7 @@
                             <li class="wg-product item-row" style="gap: 2px;">
                                 <div class="body-text mt-4" style="flex-basis: 40px;">#{{ $product->id }}</div>
                                 <div class="title line-clamp-2 mb-0" style="flex-basis: 200px;">
-                                    <a href="{{ route('products.show', $product->id) }}" class="body-text">{{ $product->name }}</a>
+                                    <a href="{{ route('admin.products.show', $product->id) }}" class="body-text">{{ $product->name }}</a>
                                 </div>
                                 <div class="image" style="flex-basis: 80px;">
                                     @if ($product->images->isNotEmpty())
@@ -121,9 +121,9 @@
                                 </div>
                                 <div class="body-text mt-4" style="flex-basis: 120px;">{{ $product->created_at ? $product->created_at->format('d/m/Y H:i') : 'N/A' }}</div>
                                 <div class="list-icon-function" style="flex-basis: 120px;">
-                                    <a href="{{ route('products.show', $product->id) }}" class="item eye"><i class="icon-eye"></i></a>
-                                    <a href="{{ route('products.edit', $product->id) }}" class="item edit"><i class="icon-edit-3"></i></a>
-                                    <form action="{{ route('products.softDelete', $product->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');" style="display:inline;">
+                                    <a href="{{ route('admin.products.show', $product->id) }}" class="item eye"><i class="icon-eye"></i></a>
+                                    <a href="{{ route('admin.products.edit', $product->id) }}" class="item edit"><i class="icon-edit-3"></i></a>
+                                    <form action="{{ route('admin.products.softDelete', $product->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" style="color: red" title="Xóa sản phẩm">

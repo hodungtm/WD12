@@ -7,7 +7,7 @@
             <div class="flex items-center flex-wrap justify-between gap20 mb-30">
                 <h3>Quản lý đánh giá</h3>
                 <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-                    <li><a href="{{ route('Admin.reviews.index') }}">
+                    <li><a href="{{ route('admin.reviews.index') }}">
                             <div class="text-tiny">Dashboard</div>
                         </a></li>
                     <li><i class="icon-chevron-right"></i></li>
@@ -36,7 +36,7 @@
                     <div class="body-text">Tìm kiếm và quản lý đánh giá của khách hàng.</div>
                 </div>
                 <div class="flex flex-column gap10 mb-3">
-                    <form method="GET" action="{{ route('Admin.reviews.index') }}" class="form-search w-100" style="margin-bottom: 10px;">
+                    <form method="GET" action="{{ route('admin.reviews.index') }}" class="form-search w-100" style="margin-bottom: 10px;">
                         <div class="search-input" style="width: 100%; position: relative;">
                             <input type="text" placeholder="Tìm kiếm đánh giá..." name="product_name" value="{{ request('product_name') }}" style="width: 100%; min-width: 200px;">
                             <button type="submit" class="btn d-flex align-items-center justify-content-center" style="height: 38px; width: 38px; padding: 0; border: 1.5px solid #1abc9c; background: #fff; position: absolute; right: 5px; top: 50%; transform: translateY(-50%);">
@@ -46,7 +46,7 @@
                     </form>
                     <div class="flex items-center justify-between gap10 flex-wrap">
                         <div class="flex gap10 flex-wrap align-items-center">
-                            <form method="GET" action="{{ route('Admin.reviews.index') }}" class="flex gap10 flex-wrap align-items-center" style="margin-bottom: 0;">
+                            <form method="GET" action="{{ route('admin.reviews.index') }}" class="flex gap10 flex-wrap align-items-center" style="margin-bottom: 0;">
                                 <input type="hidden" name="product_name" value="{{ request('product_name') }}">
                                 <select name="so_sao" class="form-select" style="width: 120px;">
                                     <option value="">-- Số sao --</option>
@@ -107,9 +107,9 @@
                                 </div>
                                 <div class="body-text mt-4" style="flex-basis: 120px;">{{ $review->created_at ? $review->created_at->format('d/m/Y H:i') : 'N/A' }}</div>
                                 <div class="list-icon-function" style="flex-basis: 120px;">
-                                    <a href="{{ route('Admin.reviews.show', $review->id) }}" class="item eye"><i class="icon-eye"></i></a>
-                                    <a href="{{ route('Admin.reviews.edit', $review->id) }}" class="item edit"><i class="icon-edit-3"></i></a>
-                                    <form action="{{ route('Admin.reviews.destroy', $review->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa đánh giá này?');" style="display:inline;">
+                                    <a href="{{ route('admin.reviews.show', $review->id) }}" class="item eye"><i class="icon-eye"></i></a>
+                                    <a href="{{ route('admin.reviews.edit', $review->id) }}" class="item edit"><i class="icon-edit-3"></i></a>
+                                    <form action="{{ route('admin.reviews.destroy', $review->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa đánh giá này?');" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" style="color: red" title="Xóa đánh giá">

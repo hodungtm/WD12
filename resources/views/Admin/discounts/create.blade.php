@@ -21,7 +21,7 @@
             </div>
             <form action="{{ route('admin.discounts.store') }}" method="POST">
                 @csrf
-                @include('Admin.discounts.form')
+                @include('admin.discounts.form')
             </form>
         </div>
     </div>

@@ -140,89 +140,97 @@ use Illuminate\Support\Facades\Auth;
             /* Ẩn ban đầu */
             z-index: 1040;
         }
-        #alert-stack {
-            position: fixed;
-            top: 32px;
-            right: 32px;
-            left: auto;
-            transform: none;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 12px;
-            width: auto;
-            min-width: 320px;
-            max-width: 90vw;
-            pointer-events: none;
-        }
+      #alert-stack {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    pointer-events: none;
+}
 
-        .custom-alert {
-            position: relative;
-            background: #20b2aa;
-            color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.13);
-            font-size: 1.08rem;
-            padding: 18px 28px 18px 18px;
-            border: 1.5px solid #179b8a;
-            font-weight: 500;
-            line-height: 1.6;
-            min-width: 320px;
-            max-width: 420px;
-            margin: 0 0 0 auto;
-            animation: slideInDown 0.7s cubic-bezier(.68, -0.55, .27, 1.55);
-            will-change: opacity, transform;
-            backface-visibility: hidden;
-            display: flex;
-            align-items: center;
-            pointer-events: auto;
-        }
-        .custom-alert .icon-warning {
-            margin-right: 16px;
-            font-size: 1.7em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 32px;
-            min-height: 32px;
-            color: #fff;
-            opacity: 0.85;
-            margin-top: 6px;
-        }
+.custom-alert {
+    background: white !important;
+    color: #333;
+    padding: 16px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    margin-bottom: 10px;
+    min-width: 320px;
+    pointer-events: auto;
+    position: relative;
+    animation: slideInDown 0.3s ease-out;
+}
 
-        .custom-alert .close {
-            position: absolute;
-            top: 10px;
-            right: 18px;
-            color: #fff;
-            font-size: 1.2em;
-            opacity: 0.7;
-            background: none;
-            border: none;
-        }
+.alert-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
 
-        @keyframes slideInDown {
-            0% {
-                opacity: 0;
-                transform: translateY(-80px) scale(0.85);
-            }
+.alert-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 
-            60% {
-                opacity: 1;
-                transform: translateY(10px) scale(1.05);
-            }
+.icon-warning {
+    color: #4CAF50;
+    font-size: 20px;
+}
 
-            80% {
-                opacity: 1;
-                transform: translateY(-2px) scale(0.98);
-            }
+.alert-title {
+    font-weight: 500;
+    font-size: 15px;
+}
 
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
+.alert-message {
+    font-size: 14px;
+    color: #666;
+    margin-top: 2px;
+}
+
+.custom-alert .alert-text {
+    font-size: 14px;
+    flex: 1;
+}
+
+.custom-alert .icon-warning {
+    width: 24px;
+    height: 24px;
+    background: #4CAF50;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+}
+
+.custom-alert .close {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    color: #999;
+    opacity: 0.7;
+    font-size: 18px;
+    padding: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: none; /* Ẩn nút close */
+}
+
+@keyframes slideInDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
         #mini-cart-overlay {
             display: none;
             position: fixed; top: 0; right: 0; bottom: 0; left: 0;
@@ -305,7 +313,7 @@ use Illuminate\Support\Facades\Auth;
                                                 </form>
                                                 @endguest
                                                 @if (Auth::check() && Auth::user()->isRoleAdmin())
-                                                <a href="{{ route('products.index') }}" class="dropdown-item">Trang
+                                                <a href="{{ route('admin.products.index') }}" class="dropdown-item">Trang
                                                     Quản Trị</a>
                                                 @endif
                                             </div>

@@ -206,7 +206,7 @@
 
     .modern-table .table {
         margin-bottom: 0;
-        font-size: 0.9rem;
+        font-size: 14px; /* Tăng kích thước font chữ */
     }
 
     .modern-table thead {
@@ -220,21 +220,57 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
         border: none;
-        font-size: 0.85rem;
+        font-size: 13px;
+        white-space: nowrap; /* Tránh wrap text */
     }
 
     .modern-table td {
         padding: 1.2rem 1rem;
         vertical-align: middle;
         border-bottom: 1px solid #f1f3f4;
+        font-size: 14px; /* Tăng kích thước font chữ */
     }
 
-    .modern-table tbody tr:hover {
-        background-color: #f8f9fa;
+    /* Style cho mã đơn hàng */
+    .modern-table .font-monospace {
+        font-size: 14px;
+        font-weight: 600;
     }
 
-    .modern-table tbody tr:last-child td {
-        border-bottom: none;
+    /* Style cho số lượng */
+    .modern-table .badge.bg-light {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+
+    /* Style cho giá */
+    .modern-table .text-success {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    /* Style cho trạng thái */
+    .modern-table .badge {
+        font-size: 12px;
+        padding: 8px 12px;
+        font-weight: 600;
+    }
+
+    /* Style cho nút thao tác */
+    .modern-table .btn-sm {
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+
+    /* Đảm bảo bảng responsive */
+    @media (max-width: 768px) {
+        .modern-table {
+            overflow-x: auto;
+        }
+        
+        .table {
+            min-width: 800px; /* Đặt chiều rộng tối thiểu */
+        }
     }
 
     /* Status badges - Updated colors */
@@ -625,9 +661,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('logout') }}">
+                        <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" >
                             <i class="fas fa-sign-out-alt"></i>Đăng xuất
                         </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                                    class="d-none">
+                                                    @csrf
+                                                </form>
                     </li>
                 </ul>
             </div>
@@ -943,7 +983,7 @@
                                 <i class="fas fa-heart-broken fa-4x text-muted mb-3"></i>
                                 <h5 class="text-muted">Chưa có sản phẩm yêu thích nào</h5>
                                 <p class="text-muted">Hãy thêm những sản phẩm bạn yêu thích để dễ dàng tìm lại sau này!</p>
-                                <a href="{{ route('client.products.index') }}" class="btn btn-primary">
+                                <a href="{{ route('home') }}" class="btn btn-primary">
                                     <i class="fas fa-shopping-bag me-2"></i>Khám phá sản phẩm
                                 </a>
                             </div>
@@ -969,7 +1009,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <img id="modalProductImage" src="" alt="Product" class="img-fluid rounded"
-                            style="max-height: 200px; object-fit: cover; border: 2px solid #f0f2f5;">
+                            style="max-height: 200px; width: 100%; object-fit: cover;">
                     </div>
                     <div class="col-md-8">
                         <h6 id="modalProductName" class="mb-3 fw-bold"></h6>
@@ -1000,13 +1040,11 @@
 
                             <div class="form-group mb-3">
                                 <label class="form-label mb-2 fw-bold">Số lượng:</label>
-                                <div class="d-flex align-items-center" style="gap: 16px;">
-                                    <div class="input-group" style="width: 140px;">
-                                        <button type="button" class="btn btn-outline-secondary" id="modalQtyMinus">-</button>
-                                        <input id="modalQuantityInput" type="number" name="quantity" value="1" min="1"
-                                            class="form-control text-center" style="max-width: 60px;" readonly>
-                                        <button type="button" class="btn btn-outline-secondary" id="modalQtyPlus">+</button>
-                                    </div>
+                                <div class="input-group" style="width: 140px;">
+                                    <button type="button" class="btn btn-outline-secondary" id="modalQtyMinus">-</button>
+                                    <input id="modalQuantityInput" type="number" name="quantity" value="1" min="1"
+                                        class="form-control text-center" style="max-width: 60px;" readonly>
+                                    <button type="button" class="btn btn-outline-secondary" id="modalQtyPlus">+</button>
                                 </div>
                             </div>
                         </form>
@@ -1014,10 +1052,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times me-2"></i>Đóng
-                </button>
-                <button type="button" class="btn btn-primary" id="modalAddToCartBtn" disabled>
+                <button type="button" class="btn btn-primary w-100" id="modalAddToCartBtn" disabled>
                     <i class="fas fa-shopping-cart me-2"></i>THÊM VÀO GIỎ HÀNG
                 </button>
             </div>
@@ -1242,12 +1277,17 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// Variant modal functions
+// Sửa lại phần xử lý modal show
 document.getElementById('variantModal').addEventListener('show.bs.modal', function (event) {
     const button = event.relatedTarget;
     const productId = button.getAttribute('data-product-id');
     const productName = button.getAttribute('data-product-name');
     const variantsString = button.getAttribute('data-variants');
+    
+    // Thêm phần lấy ảnh từ card sản phẩm
+    const productCard = button.closest('.product-card');
+    const productImage = productCard.querySelector('.product-image').src;
+    document.getElementById('modalProductImage').src = productImage;
 
     try {
         const variants = JSON.parse(variantsString);
@@ -1257,6 +1297,7 @@ document.getElementById('variantModal').addEventListener('show.bs.modal', functi
     }
 });
 
+// Sửa lại hàm populateVariantModal để bỏ phần fetch ảnh
 function populateVariantModal(productId, productName, variants) {
     currentVariants = variants || [];
     selectedModalColor = null;
@@ -1265,19 +1306,8 @@ function populateVariantModal(productId, productName, variants) {
     document.getElementById('modalProductId').value = productId;
     document.getElementById('modalProductName').textContent = productName;
     
-    // Load product image
-    fetch(`/api/product/${productId}/image`)
-        .then(res => res.json())
-        .then(data => {
-            if (data.image) {
-                document.getElementById('modalProductImage').src = data.image;
-            }
-        })
-        .catch(err => {
-            document.getElementById('modalProductImage').src = '/assets/images/no-image.png';
-        });
-
-    // Populate colors
+    // Xóa bỏ phần fetch ảnh cũ vì đã xử lý ở trên
+    
     const colorOptions = document.getElementById('colorOptions');
     colorOptions.innerHTML = '';
     const uniqueColorIds = [...new Set(variants.map(v => v.color_id))].filter(id => id);
@@ -1286,14 +1316,12 @@ function populateVariantModal(productId, productName, variants) {
         const color = variant?.color || { id: colorId, name: `Màu ${colorId}` };
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'btn btn-outline-primary btn-sm';
+        btn.className = 'color-btn demo-style-btn';
         btn.dataset.color = color.id;
         btn.textContent = color.name || `Màu ${colorId}`;
         btn.onclick = () => selectModalColor(color.id);
         colorOptions.appendChild(btn);
     });
-
-    // Populate sizes
     const sizeOptions = document.getElementById('sizeOptions');
     sizeOptions.innerHTML = '';
     const uniqueSizeIds = [...new Set(variants.map(v => v.size_id))].filter(id => id);
@@ -1302,14 +1330,12 @@ function populateVariantModal(productId, productName, variants) {
         const size = variant?.size || { id: sizeId, name: `Size ${sizeId}` };
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'btn btn-outline-secondary btn-sm';
+        btn.className = 'size-btn demo-style-btn';
         btn.dataset.size = size.id;
         btn.textContent = size.name || `Size ${sizeId}`;
         btn.onclick = () => selectModalSize(size.id);
         sizeOptions.appendChild(btn);
     });
-
-    // Reset form
     document.getElementById('modalQuantityInput').value = 1;
     document.getElementById('modalInventoryInfo').textContent = '';
     document.getElementById('modalDynamicPrice').innerHTML = '';
@@ -1363,17 +1389,7 @@ function updateModalVariant() {
     }
 }
 
-function showAlert(message, type = 'success') {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
-    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 300px;';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
-    
-    document.body.appendChild(alertDiv);
-    setTimeout(() => { alertDiv.remove(); }, 3500);
-}
+
+
 </script>
 @endsection
