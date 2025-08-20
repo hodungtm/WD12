@@ -1,4 +1,3 @@
-
 @extends('Client.Layouts.ClientLayout')
 @section('main')
 
@@ -56,12 +55,20 @@
                                     onchange="updateDiscount()">
                                     <option value="" data-percent="0" data-max="0" data-min="0">-- Không dùng --</option>
                                     @foreach($discounts as $discount)
-                                        <option value="{{ $discount->code }}" data-percent="{{ $discount->discount_percent }}"
+                                        <option value="{{ $discount->code }}" data-type="{{ $discount->type }}"
+                                            data-percent="{{ $discount->discount_percent }}"
+                                            data-amount="{{ $discount->discount_amount }}"
                                             data-max="{{ $discount->max_discount_amount }}"
                                             data-min="{{ $discount->min_order_amount }}">
-                                            {{ $discount->code }} - Giảm {{ $discount->discount_percent }}% (tối đa
-                                            {{ number_format($discount->max_discount_amount) }}₫)
+
+                                            @if($discount->type === 'percent')
+                                                {{ $discount->code }} - Giảm {{ $discount->discount_percent }}% (tối đa
+                                                {{ number_format($discount->max_discount_amount) }}₫)
+                                            @elseif($discount->type === 'fixed')
+                                                {{ $discount->code }} - Giảm {{ number_format($discount->discount_amount) }}₫
+                                            @endif
                                         </option>
+
                                     @endforeach
                                 </select>
                             </div>
@@ -129,7 +136,7 @@
                                             $shippingFee = $defaultShipping?->fee ?? 0;
                                         @endphp
                                         <strong
-                                            id="shipping-fee-text">{{ number_format($shippingFee, 0, ',', '.') }}₫</strong>
+                                            id="shipping-fee-text">{{ $subtotal >= 300000 ? 'Miễn phí ship' : number_format($shippingFee, 0, ',', '.') . '₫' }}</strong>
                                     </li>
 
                                     <li class="list-group-item d-flex justify-content-between text-success">
@@ -192,24 +199,45 @@
         // Lấy địa chỉ từ user thay vì session
         const userAddress = "{{ $user->address ?? '' }}";
         function updateShipping() {
-            const shippingFee = parseInt(document.querySelector('#shippingSelect option:checked')?.dataset?.fee || 0);
+            const shippingOption = document.querySelector('#shippingSelect option:checked');
+            let shippingFee = parseInt(shippingOption?.dataset?.fee || 0);
+
             const subtotal = {{ $subtotal }};
             const discountOption = document.querySelector('#discountSelect option:checked');
+
+            const type = discountOption?.dataset?.type || "";
             const percent = parseFloat(discountOption?.dataset?.percent || 0);
+            const amount = parseInt(discountOption?.dataset?.amount || 0);
             const maxDiscount = parseInt(discountOption?.dataset?.max || 0);
             const minOrder = parseInt(discountOption?.dataset?.min || 0);
 
             let discountAmount = 0;
-            if (subtotal >= minOrder && percent > 0) {
-                discountAmount = Math.min(Math.round(subtotal * percent / 100), maxDiscount);
+
+            // 🚀 freeship nếu đơn trên 300k
+            if (subtotal >= 300000) {
+                shippingFee = 0;
+            }
+
+            if (subtotal >= minOrder) {
+                if (type === "percent" && percent > 0) {
+                    discountAmount = Math.min(Math.round(subtotal * percent / 100), maxDiscount);
+                } else if (type === "fixed" && amount > 0) {
+                    discountAmount = amount;
+                }
             }
 
             const total = subtotal + shippingFee - discountAmount;
 
-            document.getElementById('shipping-fee-text').innerText = shippingFee.toLocaleString('vi-VN') + '₫';
+            if (shippingFee === 0) {
+                document.getElementById('shipping-fee-text').innerText = "Miễn phí ship";
+            } else {
+                document.getElementById('shipping-fee-text').innerText = shippingFee.toLocaleString('vi-VN') + '₫';
+            }
+
             document.getElementById('discount-amount-text').innerText = '-' + discountAmount.toLocaleString('vi-VN') + '₫';
             document.getElementById('total-amount').innerText = total.toLocaleString('vi-VN') + '₫';
         }
+
 
         function updateDiscount() {
             updateShipping();
@@ -219,14 +247,14 @@
             updateShipping();
         };
 
-       function copyBuyerInfo() {
-    const checked = document.getElementById('sameAsBuyer').checked;
+        function copyBuyerInfo() {
+            const checked = document.getElementById('sameAsBuyer').checked;
 
-    document.querySelector('input[name="receiver_name"]').value   = checked ? "{{ $user->name }}" : "";
-    document.querySelector('input[name="receiver_phone"]').value  = checked ? "{{ $user->phone }}" : "";
-    document.querySelector('textarea[name="receiver_address"]').value = checked ? userAddress : "";
-    document.querySelector('input[name="receiver_email"]').value  = checked ? "{{ $user->email }}" : "";
-}
+            document.querySelector('input[name="receiver_name"]').value = checked ? "{{ $user->name }}" : "";
+            document.querySelector('input[name="receiver_phone"]').value = checked ? "{{ $user->phone }}" : "";
+            document.querySelector('textarea[name="receiver_address"]').value = checked ? userAddress : "";
+            document.querySelector('input[name="receiver_email"]').value = checked ? "{{ $user->email }}" : "";
+        }
 
     </script>
 

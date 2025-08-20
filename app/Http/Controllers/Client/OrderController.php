@@ -40,16 +40,20 @@ public function cancel(Request $request)
 {
     $request->validate([
         'order_id' => 'required|exists:orders,id',
-        'cancel_reason' => 'required|string|max:255',
+        'cancel_reason' => 'required|string|max:255'
+    ], [
+        'order_id.required' => 'Trường order id là bắt buộc.',
+        'cancel_reason.required' => 'Vui lòng nhập lý do hủy đơn.',
+        'cancel_reason.max' => 'Lý do hủy đơn không được vượt quá 255 ký tự.'
     ]);
 
     $order = Order::with('orderItems.productVariant')
-        ->where('user_id', Auth::id()) // ✅ Chỉ hủy đơn của chính mình
+        ->where('user_id', Auth::id())
         ->findOrFail($request->order_id);
 
-    // ✅ Chỉ cho hủy nếu đơn chưa chuyển qua giai đoạn giao hàng
+    // ✅ Cho phép hủy ở cả hai trạng thái
     if (!in_array($order->status, ['Đang chờ', 'Xác nhận đơn'])) {
-        return back()->with('error', 'Đơn hàng đã xử lý, không thể hủy.');
+        return back()->with('error', 'Chỉ có thể hủy đơn hàng ở trạng thái Đang chờ hoặc Đã xác nhận.');
     }
 
     // ✅ Trả lại số lượng sản phẩm

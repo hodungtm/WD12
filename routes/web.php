@@ -80,7 +80,9 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::get('/don-hang-thanh-cong/{order}', [CheckoutController::class, 'success'])->name('order.success');
 
         Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
-        Route::post('/orders/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+        Route::middleware(['auth'])->group(function () {
+            Route::post('/orders/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+        });
     });
 });
 

@@ -58,8 +58,14 @@
                         <p>{{ $discount->end_date ? \Carbon\Carbon::parse($discount->end_date)->format('d/m/Y') : '-' }}</p>
                     </div>
                     <div class="w-full md:w-1/2">
-                        <label class="body-title">Phần trăm giảm giá:</label>
-                        <p>{{ $discount->discount_percent ? $discount->discount_percent . '%' : '-' }}</p>
+                        <label class="body-title">Giảm giá:</label>
+                        <p>
+                            @if($discount->discount_amount)
+                                {{ number_format($discount->discount_amount) }} VNĐ
+                            @else
+                                {{ $discount->discount_percent }}%
+                            @endif
+                        </p>
                     </div>
                     <div class="w-full md:w-1/2">
                         <label class="body-title">Giảm tối đa:</label>

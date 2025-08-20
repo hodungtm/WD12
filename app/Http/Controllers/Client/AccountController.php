@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -13,13 +14,16 @@ class AccountController extends Controller
     public function dashboard()
     {
         $user = \Auth::user();
-        $orderItems = $user->orderItems()->with(['order', 'product'])->latest('created_at')->get();
+        $orders = Order::where('user_id', $user->id)
+                      ->with(['orderItems.product.images', 'orderItems.variant'])
+                      ->orderBy('created_at', 'desc')
+                      ->get();
         $wishlists = $user->wishlist()->with([
             'product.images',
             'product.variants.size',
             'product.variants.color',
         ])->get();
-        return view('Client.users.dashboard', compact('user', 'orderItems', 'wishlists'));
+        return view('Client.users.dashboard', compact('user', 'orders', 'wishlists'));
     }
  public function updateInfo(Request $request)
     {

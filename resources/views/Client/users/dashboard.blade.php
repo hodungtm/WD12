@@ -620,6 +620,22 @@
     .info-display strong {
         color: #2c3e50;
     }
+
+    .dropdown-menu {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.dropdown-item {
+    padding: 0.5rem;
+    margin-bottom: 0.25rem;
+    border-radius: 4px;
+}
+
+.dropdown-item:hover {
+    background-color: #f1f1f1;
+}
 </style>
 
 <div class="dashboard-container">
@@ -716,56 +732,94 @@
                                 <tr>
                                     <th><i class="fas fa-barcode me-2"></i>Mã đơn</th>
                                     <th><i class="fas fa-box me-2"></i>Sản phẩm</th>
-                                    <th><i class="fas fa-sort-numeric-up me-2"></i>Số lượng</th>
-                                    <th><i class="fas fa-money-bill me-2"></i>Giá</th>
+                                    <th><i class="fas fa-money-bill me-2"></i>Tổng tiền</th>
                                     <th><i class="fas fa-calendar me-2"></i>Ngày đặt</th>
                                     <th><i class="fas fa-info-circle me-2"></i>Trạng thái</th>
-                                    <th><i class="fas fa-cogs me-2"></i>Chi tiết</th>
+                                    <th><i class="fas fa-cogs me-2"></i>Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($orderItems as $item)
+                                @forelse($orders as $order)
                                     <tr>
-                                        <td><span class="font-monospace text-primary fw-bold">{{ $item->order->order_code ?? '' }}</span></td>
-                                        <td>{{ $item->product->name ?? 'Sản phẩm đã xóa' }}</td>
-                                        <td><span class="badge bg-light text-dark">{{ $item->quantity }}</span></td>
-                                        <td class="fw-bold text-success">{{ number_format($item->price) }}₫</td>
-                                        <td>{{ $item->order->created_at->format('d/m/Y') ?? '' }}</td>
+                                        <td>
+                                            <span class="font-monospace text-primary fw-bold">{{ $order->order_code }}</span>
+                                        </td>
                                         <td>
                                             @php
-                                                $status = $item->order->status ?? '';
-                                                $badgeClass = '';
-                                                switch($status) {
-                                                    case 'Đang chờ': $badgeClass = 'bg-warning text-dark'; break;
-                                                    case 'Xác nhận đơn': $badgeClass = 'bg-info text-white'; break;
-                                                    case 'Đang giao hàng': $badgeClass = 'bg-primary text-white'; break;
-                                                    case 'Hoàn thành': $badgeClass = 'bg-success text-white'; break;
-                                                    case 'Đã hủy': $badgeClass = 'bg-danger text-white'; break;
-                                                    default: $badgeClass = 'bg-secondary text-white';
-                                                }
+                                                $items = $order->orderItems;
+                                                $itemCount = $items->count();
+                                                $firstTwoItems = $items->take(2);
+                                                $remainingItems = $items->skip(2);
+                                                $remainingCount = $itemCount - 2;
                                             @endphp
-                                            <span class="badge {{ $badgeClass }}">{{ $status }}</span>
+
+                                            {{-- Hiển thị 2 sản phẩm đầu tiên --}}
+                                            @foreach($firstTwoItems as $item)
+                                                <div class="mb-1">
+                                                    {{ $item->product->name ?? 'Sản phẩm đã xóa' }}
+                                                    <span class="badge bg-light text-dark">x{{ $item->quantity }}</span>
+                                                </div>
+                                            @endforeach
+
+                                            {{-- Nếu có nhiều hơn 2 sản phẩm, hiển thị nút xem thêm --}}
+                                            @if($itemCount > 2)
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm dropdown-toggle" 
+                                                            type="button" 
+                                                            data-bs-toggle="dropdown"
+                                                            aria-expanded="false"
+                                                            style="background: linear-gradient(135deg, #4db7b3 0%, #b683ea 100%); 
+                                                                   color: white;
+                                                                   border: none;
+                                                                   transition: all 0.3s ease;">
+                                                        Xem thêm {{ $remainingCount }} sản phẩm
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        @foreach($remainingItems as $item)
+                                                            <li class="dropdown-item">
+                                                                {{ $item->product->name ?? 'Sản phẩm đã xóa' }}
+                                                                <span class="badge bg-light text-dark">x{{ $item->quantity }}</span>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @endif
+                                        </td>
+                                        <td class="fw-bold text-success">{{ number_format($order->final_amount) }}₫</td>
+                                        <td>{{ $order->created_at->format('d/m/Y') }}</td>
+                                        <td>
+                                            @php
+                                                $badgeClass = match($order->status) {
+                                                    'Đang chờ' => 'bg-warning text-dark',
+                                                    'Xác nhận đơn' => 'bg-info text-white',
+                                                    'Đang giao hàng' => 'bg-primary text-white',
+                                                    'Hoàn thành' => 'bg-success text-white',
+                                                    'Đã hủy' => 'bg-danger text-white',
+                                                    default => 'bg-secondary text-white'
+                                                };
+                                            @endphp
+                                            <span class="badge {{ $badgeClass }}">{{ $order->status }}</span>
                                         </td>
                                         <td>
                                             <div class="action-buttons">
-                                                @if ($item->order->status === 'Đang chờ')
+                                                @if (in_array($order->status, ['Đang chờ', 'Xác nhận đơn']))
                                                     <button type="button" class="btn btn-outline-danger btn-sm btn-cancel-order"
-                                                        data-bs-toggle="modal" data-bs-target="#cancelModal"
-                                                        data-order-id="{{ $item->order->id }}">
+                                                            data-bs-toggle="modal" data-bs-target="#cancelModal"
+                                                            data-order-id="{{ $order->id }}">
                                                         <i class="fas fa-times"></i> Hủy
                                                     </button>
                                                 @endif
                                                 
-                                                @if($item->order->status === 'Hoàn thành' && $item->order->orderItems->first())
+                                                @if($order->status === 'Hoàn thành')
                                                     <button type="button" class="btn btn-outline-warning btn-sm btn-open-review-modal"
-                                                        data-product-id="{{ $item->order->orderItems->first()->product_id }}"
-                                                        data-order-item-id="{{ $item->order->orderItems->first()->id }}">
+                                                            data-product-id="{{ $order->orderItems->first()->product_id }}"
+                                                            data-order-item-id="{{ $order->orderItems->first()->id }}">
                                                         <i class="fas fa-star"></i> Đánh giá
                                                     </button>
                                                 @endif
                                                 
-                                                <a href="{{ route('client.orders.show', $item->order_id) }}"
-                                                    class="btn btn-outline-primary btn-sm">
+                                                <a href="{{ route('client.orders.show', $order->id) }}"
+                                                   class="btn btn-outline-primary btn-sm">
                                                     <i class="fas fa-eye"></i> Xem
                                                 </a>
                                             </div>
@@ -773,8 +827,8 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center text-muted py-5">
-                                            <i class="fas fa-shopping-cart fa-3x mb-3 text-muted"></i>
+                                        <td colspan="6" class="text-center text-muted py-5">
+                                            <i class="fas fa-shopping-cart fa-3x mb-3"></i>
                                             <br>Chưa có đơn hàng nào
                                         </td>
                                     </tr>
@@ -1144,26 +1198,31 @@
 </div>
 
 <script>
-// Tab navigation functionality
-document.querySelectorAll('.link-to-tab').forEach(function (link) {
-    link.addEventListener('click', function (e) {
-        e.preventDefault();
-        var target = this.getAttribute('href');
-        var tabTrigger = document.querySelector(`a[href="${target}"]`);
-        if (tabTrigger) {
-            new bootstrap.Tab(tabTrigger).show();
-        }
-    });
-});
-
-// Save and restore active tab
-document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(function (tabLink) {
-    tabLink.addEventListener('shown.bs.tab', function (e) {
-        localStorage.setItem('activeTab', e.target.getAttribute('href'));
-    });
-});
+// Global variables
+let currentVariants = [];
+let selectedModalColor = null;
+let selectedModalSize = null;
 
 document.addEventListener("DOMContentLoaded", function () {
+    // Tab navigation functionality
+    document.querySelectorAll('.link-to-tab').forEach(function (link) {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            var target = this.getAttribute('href');
+            var tabTrigger = document.querySelector(`a[href="${target}"]`);
+            if (tabTrigger) {
+                new bootstrap.Tab(tabTrigger).show();
+            }
+        });
+    });
+
+    // Save and restore active tab
+    document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(function (tabLink) {
+        tabLink.addEventListener('shown.bs.tab', function (e) {
+            localStorage.setItem('activeTab', e.target.getAttribute('href'));
+        });
+    });
+
     const activeTab = localStorage.getItem('activeTab');
     if (activeTab) {
         const tabTrigger = document.querySelector(`a[href="${activeTab}"]`);
@@ -1171,72 +1230,65 @@ document.addEventListener("DOMContentLoaded", function () {
             new bootstrap.Tab(tabTrigger).show();
         }
     }
-});
 
-// Form submission helpers
-function submitForm(formId) {
-    const form = document.getElementById(formId);
-    if (form) form.submit();
-}
+    // Modal quantity controls
+    const modalQtyMinus = document.getElementById('modalQtyMinus');
+    const modalQtyPlus = document.getElementById('modalQtyPlus');
+    const modalQuantityInput = document.getElementById('modalQuantityInput');
 
-function submitDeleteForm(formId) {
-    if (confirm("Bạn có chắc chắn muốn bỏ sản phẩm ra khỏi danh sách yêu thích không?")) {
-        submitForm(formId);
+    if (modalQtyMinus) {
+        modalQtyMinus.onclick = function () {
+            const qtyInput = document.getElementById('modalQuantityInput');
+            let v = parseInt(qtyInput.value) || 1;
+            if (v > 1) qtyInput.value = v - 1;
+        };
     }
-}
 
-// Modal variables
-let variantModal, selectedModalColor, selectedModalSize, currentVariants;
+    if (modalQtyPlus) {
+        modalQtyPlus.onclick = function () {
+            const qtyInput = document.getElementById('modalQuantityInput');
+            let v = parseInt(qtyInput.value) || 1;
+            if (!qtyInput.max || v < parseInt(qtyInput.max)) qtyInput.value = v + 1;
+        };
+    }
 
-// Initialize modals when DOM is loaded
-document.addEventListener('DOMContentLoaded', function () {
-    variantModal = new bootstrap.Modal(document.getElementById('variantModal'));
-    
-    // Variant modal event listeners
-    document.getElementById('modalQtyMinus').onclick = function () {
-        const qtyInput = document.getElementById('modalQuantityInput');
-        let v = parseInt(qtyInput.value) || 1;
-        if (v > 1) qtyInput.value = v - 1;
-    };
-
-    document.getElementById('modalQtyPlus').onclick = function () {
-        const qtyInput = document.getElementById('modalQuantityInput');
-        let v = parseInt(qtyInput.value) || 1;
-        if (!qtyInput.max || v < parseInt(qtyInput.max)) qtyInput.value = v + 1;
-    };
-
-    document.getElementById('modalAddToCartBtn').onclick = function () {
-        if (!selectedModalColor || !selectedModalSize) {
-            showAlert('Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng!', 'error');
-            return;
-        }
-
-        const formData = new FormData(document.getElementById('variantForm'));
-        const productId = document.getElementById('modalProductId').value;
-        
-        fetch(`/client/cart/add/${productId}`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                variantModal.hide();
-                showAlert(data.message || 'Đã thêm vào giỏ hàng!', 'success');
-                if (typeof updateCartCount === 'function') updateCartCount();
-            } else {
-                showAlert(data.message || 'Có lỗi khi thêm vào giỏ hàng!', 'error');
+    // Modal add to cart functionality
+    const modalAddToCartBtn = document.getElementById('modalAddToCartBtn');
+    if (modalAddToCartBtn) {
+        modalAddToCartBtn.onclick = function () {
+            if (!selectedModalColor || !selectedModalSize) {
+                showAlert('Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng!', 'error');
+                return;
             }
-        })
-        .catch(err => {
-            console.error('Lỗi khi thêm vào giỏ hàng:', err);
-            showAlert('Lỗi hệ thống!', 'error');
-        });
-    };
+
+            const formData = new FormData(document.getElementById('variantForm'));
+            const productId = document.getElementById('modalProductId').value;
+            
+            fetch(`/client/cart/add/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const variantModal = bootstrap.Modal.getInstance(document.getElementById('variantModal'));
+                    if (variantModal) variantModal.hide();
+                    showAlert(data.message || 'Đã thêm vào giỏ hàng!', 'success');
+                    if (typeof updateCartCount === 'function') updateCartCount();
+                } else {
+                    showAlert(data.message || 'Có lỗi khi thêm vào giỏ hàng!', 'error');
+                }
+            })
+            .catch(err => {
+                console.error('Lỗi khi thêm vào giỏ hàng:', err);
+                showAlert('Lỗi hệ thống!', 'error');
+            });
+        };
+    }
 
     // Review modal event listeners
     document.querySelectorAll('.btn-open-review-modal').forEach(function (btn) {
@@ -1256,35 +1308,88 @@ document.addEventListener('DOMContentLoaded', function () {
     // Star rating functionality
     const stars = document.querySelectorAll('#modal-rating-stars a');
     const ratingInput = document.getElementById('modal-rating');
-    stars.forEach((star, idx) => {
-        star.addEventListener('click', function (e) {
-            e.preventDefault();
-            stars.forEach(s => s.style.color = '#ccc');
-            for (let i = 0; i <= idx; i++) {
-                stars[i].style.color = '#FFD700';
-            }
-            ratingInput.value = idx + 1;
+    if (stars.length && ratingInput) {
+        stars.forEach((star, idx) => {
+            star.addEventListener('click', function (e) {
+                e.preventDefault();
+                stars.forEach(s => s.style.color = '#ccc');
+                for (let i = 0; i <= idx; i++) {
+                    stars[i].style.color = '#FFD700';
+                }
+                ratingInput.value = idx + 1;
+            });
         });
-    });
+    }
 
-    // Cancel order modal
+    // FIXED: Cancel order modal functionality
     document.querySelectorAll('.btn-cancel-order').forEach(button => {
-        button.addEventListener('click', function () {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            
             const orderId = this.getAttribute('data-order-id');
+            console.log('Order ID:', orderId); // Debug log
+            
+            if (!orderId) {
+                alert('Lỗi: Không tìm thấy ID đơn hàng');
+                return;
+            }
+            
+            // Set the order ID in the hidden input
             document.getElementById('cancelOrderId').value = orderId;
+            
+            // Clear the textarea
             document.getElementById('cancel_reason').value = '';
         });
     });
+
+    // Form validation before submission
+    const cancelForm = document.getElementById('cancelForm');
+    if (cancelForm) {
+        cancelForm.addEventListener('submit', function(event) {
+            const orderId = document.getElementById('cancelOrderId').value;
+            const reason = document.getElementById('cancel_reason').value.trim();
+            
+            if (!orderId) {
+                event.preventDefault();
+                alert('Lỗi: Không tìm thấy ID đơn hàng. Vui lòng thử lại.');
+                return false;
+            }
+            
+            if (!reason) {
+                event.preventDefault();
+                alert('Vui lòng nhập lý do hủy đơn hàng.');
+                document.getElementById('cancel_reason').focus();
+                return false;
+            }
+        });
+    }
 });
 
-// Sửa lại phần xử lý modal show
+// Form submission helpers
+function submitForm(formId) {
+    const form = document.getElementById(formId);
+    if (form) form.submit();
+}
+
+function submitDeleteForm(formId) {
+    if (confirm("Bạn có chắc chắn muốn bỏ sản phẩm ra khỏi danh sách yêu thích không?")) {
+        document.getElementById(formId).submit();
+    }
+}
+
+// Alert function
+function showAlert(message, type = 'info') {
+    alert(message); // Simplified version
+}
+
+// Variant modal functionality
 document.getElementById('variantModal').addEventListener('show.bs.modal', function (event) {
     const button = event.relatedTarget;
     const productId = button.getAttribute('data-product-id');
     const productName = button.getAttribute('data-product-name');
     const variantsString = button.getAttribute('data-variants');
     
-    // Thêm phần lấy ảnh từ card sản phẩm
+    // Get product image from card
     const productCard = button.closest('.product-card');
     const productImage = productCard.querySelector('.product-image').src;
     document.getElementById('modalProductImage').src = productImage;
@@ -1297,7 +1402,6 @@ document.getElementById('variantModal').addEventListener('show.bs.modal', functi
     }
 });
 
-// Sửa lại hàm populateVariantModal để bỏ phần fetch ảnh
 function populateVariantModal(productId, productName, variants) {
     currentVariants = variants || [];
     selectedModalColor = null;
@@ -1305,8 +1409,6 @@ function populateVariantModal(productId, productName, variants) {
     
     document.getElementById('modalProductId').value = productId;
     document.getElementById('modalProductName').textContent = productName;
-    
-    // Xóa bỏ phần fetch ảnh cũ vì đã xử lý ở trên
     
     const colorOptions = document.getElementById('colorOptions');
     colorOptions.innerHTML = '';
@@ -1322,6 +1424,7 @@ function populateVariantModal(productId, productName, variants) {
         btn.onclick = () => selectModalColor(color.id);
         colorOptions.appendChild(btn);
     });
+    
     const sizeOptions = document.getElementById('sizeOptions');
     sizeOptions.innerHTML = '';
     const uniqueSizeIds = [...new Set(variants.map(v => v.size_id))].filter(id => id);
@@ -1336,6 +1439,7 @@ function populateVariantModal(productId, productName, variants) {
         btn.onclick = () => selectModalSize(size.id);
         sizeOptions.appendChild(btn);
     });
+    
     document.getElementById('modalQuantityInput').value = 1;
     document.getElementById('modalInventoryInfo').textContent = '';
     document.getElementById('modalDynamicPrice').innerHTML = '';
@@ -1388,8 +1492,5 @@ function updateModalVariant() {
         addToCartBtn.disabled = true;
     }
 }
-
-
-
 </script>
 @endsection

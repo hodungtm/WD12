@@ -5,15 +5,19 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Mail\OrderCreatedMail;
 use App\Models\Order_items;
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use App\Models\Cart;
 use App\Models\Discount;
 use App\Models\ShippingMethod;
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
+use Exception;
 
 class CheckoutController extends Controller
 {
@@ -81,169 +85,255 @@ class CheckoutController extends Controller
                 ->first();
 
             if ($discount && $subtotal >= $discount->min_order_amount) {
-                $discountAmount = min(
-                    round($subtotal * $discount->discount_percent / 100),
-                    $discount->max_discount_amount
-);
+                if ($discount->type === 'percent') {
+                    $discountAmount = round($subtotal * $discount->discount_percent / 100);
+                    if ($discount->max_discount_amount) {
+                        $discountAmount = min($discountAmount, $discount->max_discount_amount);
+                    }
+                } elseif ($discount->type === 'fixed') {
+                    $discountAmount = min($discount->discount_amount, $subtotal);
+                }
             }
         }
 
         $shippingMethod = ShippingMethod::find($request->shipping_method_id);
         $shippingFee = $shippingMethod ? $shippingMethod->fee : 0;
 
+        // Nếu đơn hàng trên 300k thì freeship
+        if ($subtotal >= 300000) {
+            $shippingFee = 0;
+        }
+
         $finalAmount = $subtotal + $shippingFee - $discountAmount;
 
+        // TẠO ĐƠN HÀNG NGAY LẬP TỨC KHI CHỌN MOMO
         if ($request->payment_method === 'Momo') {
-            session([
-                'checkout_data' => [
-                    'user_id'            => $user->id,
-                    'receiver_name'      => $request->receiver_name,
-                    'receiver_phone'     => $request->receiver_phone,
-                    'receiver_email'     => $request->receiver_email,
-                    'receiver_address'   => $request->receiver_address,
-                    'payment_method'     => 'Momo',
+            DB::beginTransaction();
+            try {
+                $order = Order::create([
+                    'user_id' => $user->id,
+                    'order_code' => 'DH' . now()->format('Ymd') . '-' . strtoupper(Str::random(5)),
+                    'order_date' => now(),
                     'shipping_method_id' => $request->shipping_method_id,
-                    'discount_code'      => $discountCode,
-                    'discount_amount'    => $discountAmount,
-                    'shipping_fee'       => $shippingFee,
-                    'subtotal'           => $subtotal,
-                    'final_amount'       => $finalAmount,
-                    'selected_items'     => $selectedIds,
-                ]
+                    'receiver_name' => $request->receiver_name,
+                    'receiver_phone' => $request->receiver_phone,
+                    'receiver_email' => $request->receiver_email,
+                    'receiver_address' => $request->receiver_address,
+                    'payment_method' => 'Momo',
+                    'payment_status' => 'Chờ thanh toán',
+                    'total_price' => $subtotal,
+                    'shipping_fee' => $shippingFee,
+                    'discount_code' => $discountCode,
+                    'discount_amount' => $discountAmount,
+                    'final_amount' => $finalAmount,
+                ]);
+
+                foreach ($cartItems as $item) {
+                    Order_items::create([
+                        'order_id' => $order->id,
+                        'product_id' => $item->product->id,
+                        'product_variant_id' => $item->variant->id,
+                        'quantity' => $item->quantity,
+                        'price' => $item->variant->sale_price,
+                        'total_price' => $item->variant->sale_price * $item->quantity,
+                        'product_name' => $item->product->name,
+                        'variant_name' => ($item->variant->color->name ?? '') . ' / ' . ($item->variant->size->name ?? ''),
+                        'product_image' => optional($item->product->images->first())->image,
+                    ]);
+                }
+
+                session([
+                    'checkout_data' => [
+                        'order_id' => $order->id,
+                        'final_amount' => $finalAmount,
+                    ]
+                ]);
+
+                DB::commit();
+
+                return redirect()->route('momo.payment');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error('❌ Lỗi khi tạo đơn hàng MoMo: ' . $e->getMessage());
+                return back()->with('error', 'Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại.');
+            }
+        }
+        
+        // LOGIC CHO CÁC PHƯƠNG THỨC THANH TOÁN KHÁC (NHƯ COD)
+        DB::beginTransaction();
+        try {
+            $order = Order::create([
+                'user_id' => Auth::id(),
+                'order_code' => 'DH' . now()->format('Ymd') . '-' . strtoupper(Str::random(5)),
+                'order_date' => now(),
+                'shipping_method_id' => $request->shipping_method_id,
+                'receiver_name' => $request->receiver_name,
+                'receiver_phone' => $request->receiver_phone,
+                'receiver_email' => $request->receiver_email,
+                'receiver_address' => $request->receiver_address ?? $request->address,
+                'payment_method' => $request->payment_method,
+                'payment_status' => 'Chờ thanh toán',
+                'total_price' => $subtotal,
+                'shipping_fee' => $shippingFee,
+                'discount_code' => $discountCode,
+                'discount_amount' => $discountAmount,
+                'final_amount' => $finalAmount,
             ]);
 
-            return redirect()->route('momo.payment');
+            foreach ($cartItems as $item) {
+                Order_items::create([
+                    'order_id' => $order->id,
+                    'product_id' => $item->product->id,
+                    'product_variant_id' => $item->variant->id,
+                    'quantity' => $item->quantity,
+                    'price' => $item->variant->sale_price,
+                    'total_price' => $item->variant->sale_price * $item->quantity,
+                    'product_name' => $item->product->name,
+                    'variant_name' => ($item->variant->color->name ?? '') . ' / ' . ($item->variant->size->name ?? ''),
+                    'product_image' => optional($item->product->images->first())->image,
+                ]);
+
+                // Trừ kho ngay lập tức
+                if ($item->variant) {
+                    $variant = ProductVariant::find($item->variant->id);
+                    if ($variant) {
+                        $variant->quantity = max(0, $variant->quantity - $item->quantity);
+                        $variant->save();
+                    }
+                } else {
+                    $product = Product::find($item->product->id);
+                    if ($product) {
+                        $product->quantity = max(0, $product->quantity - $item->quantity);
+                        $product->save();
+                    }
+                }
+            }
+
+            // Trừ lượt sử dụng của mã giảm giá
+            if ($discountCode) {
+                $discount = Discount::where('code', $discountCode)->first();
+                if ($discount && $discount->max_usage > 0) {
+                    $discount->decrement('max_usage');
+                }
+            }
+            
+            // ✅ Bắt lỗi cụ thể khi gửi email để dễ dàng debug
+            try {
+                // Xoá giỏ hàng và gửi email
+                Cart::whereIn('id', $cartItems->pluck('id'))->delete();
+                if ($order->receiver_email) {
+                    Mail::to($order->receiver_email)->send(new OrderCreatedMail($order));
+                }
+            } catch (Exception $e) {
+                // Chỉ ghi log lỗi email và tiếp tục
+                Log::error('❌ Lỗi khi gửi email xác nhận đơn hàng: ' . $e->getMessage());
+                // Không rollback transaction, vẫn cho phép đơn hàng được tạo
+            }
+            
+            DB::commit();
+            return redirect()->route('client.order.success', $order->id)->with('success', 'Đặt hàng thành công!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('❌ Lỗi khi tạo đơn hàng (COD): ' . $e->getMessage());
+            return back()->with('error', 'Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại.');
         }
-
-        return $this->storeOrder($request, $cartItems, $discountCode, $discountAmount, $shippingFee, $subtotal, $finalAmount);
     }
-
+    
     public function momoReturn(Request $request)
     {
+        $data = session('checkout_data');
+        if (!$data || !isset($data['order_id'])) {
+            return redirect()->route('client.checkout.show')->with('error', 'Dữ liệu đơn hàng không hợp lệ hoặc đã hết hạn.');
+        }
+
+        $order = Order::find($data['order_id']);
+        if (!$order) {
+            return redirect()->route('client.checkout.show')->with('error', 'Đơn hàng không tồn tại.');
+        }
+
         if ($request->resultCode == 0) {
-            $data = session('checkout_data');
-            $userId = $data['user_id'] ?? null;
+            DB::beginTransaction();
+            try {
+                // CẬP NHẬT TRẠNG THÁI THANH TOÁN THÀNH CÔNG
+                $order->payment_status = 'Đã thanh toán';
+                $order->save();
 
-            if (!$data || !$userId) {
-                return redirect()->route('client.checkout.show')->with('error', 'Dữ liệu không hợp lệ hoặc đã hết hạn.');
+                // Trừ kho
+                $selectedIds = Cart::where('user_id', $order->user_id)->pluck('id')->toArray();
+                $cartItems = Cart::with(['product', 'variant'])->whereIn('id', $selectedIds)->get();
+
+                foreach ($cartItems as $item) {
+                    if ($item->variant) {
+                        $variant = ProductVariant::find($item->variant->id);
+                        if ($variant) {
+                            $variant->quantity = max(0, $variant->quantity - $item->quantity);
+                            $variant->save();
+                        }
+                    } else {
+                        $product = Product::find($item->product->id);
+                        if ($product) {
+                            $product->quantity = max(0, $product->quantity - $item->quantity);
+                            $product->save();
+                        }
+                    }
+                }
+
+                // Kiểm tra và trừ mã giảm giá (nếu có)
+                if ($order->discount_code) {
+                    $discount = Discount::where('code', $order->discount_code)->first();
+                    if ($discount && $discount->max_usage > 0) {
+                        $discount->decrement('max_usage');
+                    }
+                }
+
+                // Xoá giỏ hàng và session
+                Cart::whereIn('id', $cartItems->pluck('id'))->delete();
+                session()->forget('checkout_data');
+                
+                // Gửi email xác nhận đơn hàng
+                if ($order->receiver_email) {
+                    Mail::to($order->receiver_email)->send(new OrderCreatedMail($order));
+                }
+
+                DB::commit();
+                return redirect()->route('client.order.success', $order->id)->with('success', 'Thanh toán MoMo thành công và đơn hàng đã được cập nhật!');
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error('❌ Lỗi khi cập nhật đơn hàng MoMo: ' . $e->getMessage());
+                return redirect()->route('client.checkout.show')->with('error', 'Có lỗi xảy ra khi cập nhật đơn hàng sau thanh toán. Vui lòng liên hệ hỗ trợ.');
             }
-
-            $selectedIds = $data['selected_items'] ?? [];
-
-            $cartItems = Cart::with(['product', 'variant'])
-                ->where('user_id', $userId)
-                ->when(!empty($selectedIds), function ($query) use ($selectedIds) {
-                    return $query->whereIn('id', $selectedIds);
-                })
-                ->get();
-
-
-            if ($cartItems->isEmpty()) {
-                return redirect()->route('client.cart.index')->with('error', 'Giỏ hàng trống hoặc đã được xử lý.');
-            }
-
-            return $this->storeOrder((object)$data, $cartItems, $data['discount_code'], $data['discount_amount'], $data['shipping_fee'], $data['subtotal'], $data['final_amount']);
         }
 
-        return redirect()->route('client.checkout.show')->with('error', 'Thanh toán thất bại hoặc bị hủy.');
+        // LOGIC NẾU THANH TOÁN BỊ HỦY HOẶC THẤT BẠI
+        session()->forget('checkout_data');
+        return redirect()->route('client.order.detail', $order->id)->with('error', 'Thanh toán thất bại hoặc bị hủy. Vui lòng thanh toán lại.');
     }
 
-
-    public function storeOrder($request, $cartItems, $discountCode, $discountAmount, $shippingFee, $subtotal, $finalAmount)
-{
-    // ✅ Kiểm tra và trừ mã giảm giá (nếu có)
-    if ($discountCode) {
-        $discount = Discount::where('code', $discountCode)
-            ->whereDate('start_date', '<=', now())
-            ->whereDate('end_date', '>=', now())
-->first();
-
-        if (!$discount) {
-            return back()->with('error', 'Mã giảm giá không hợp lệ hoặc đã hết hạn.');
-        }
-
-        if ($discount->max_usage <= 0) {
-            return back()->with('error', 'Mã giảm giá đã được sử dụng hết.');
-        }
-
-        // ✅ Trừ số lượt còn lại
-        $discount->decrement('max_usage');
-    }
-
-    // ✅ Tạo đơn hàng
-    $order = Order::create([
-        'user_id'            => Auth::id(),
-        'order_code'         => 'DH' . now()->format('Ymd') . '-' . strtoupper(Str::random(5)),
-        'order_date'         => now(),
-        'shipping_method_id' => $request->shipping_method_id,
-        'receiver_name'      => $request->receiver_name,
-        'receiver_phone'     => $request->receiver_phone,
-        'receiver_email'     => $request->receiver_email,
-        'receiver_address' => $request->receiver_address ?? $request->address,
-        'payment_method'     => $request->payment_method,
-        'total_price'        => $subtotal,
-        'shipping_fee'       => $shippingFee,
-        'discount_code'      => $discountCode,
-        'discount_amount'    => $discountAmount,
-        'final_amount'       => $finalAmount,
-    ]);
-
-    foreach ($cartItems as $item) {
-        Order_items::create([
-            'order_id'           => $order->id,
-            'product_id'         => $item->product->id,
-            'product_variant_id' => $item->variant->id,
-            'quantity'           => $item->quantity,
-            'price'              => $item->variant->sale_price,
-            'total_price'        => $item->variant->sale_price * $item->quantity,
-            'product_name'       => $item->product->name,
-            'variant_name'       => ($item->variant->color->name ?? '') . ' / ' . ($item->variant->size->name ?? ''),
-            'product_image'      => optional($item->product->images->first())->image,
-        ]);
-
-        // Trừ kho
-        if ($item->variant) {
-            $variant = ProductVariant::find($item->variant->id);
-            if ($variant) {
-                $variant->quantity = max(0, $variant->quantity - $item->quantity);
-                $variant->save();
-            }
-        } else {
-            $product = Products::find($item->product->id);
-            if ($product) {
-                $product->quantity = max(0, $product->quantity - $item->quantity);
-                $product->save();
-            }
-        }
-    }
-
-    // Xoá giỏ hàng và session
-    Cart::whereIn('id', $cartItems->pluck('id'))->delete();
-    session()->forget('checkout_data');
-    // ✅ Gửi email xác nhận đơn hàng
-    if ($order->receiver_email) {
-    Mail::to($order->receiver_email)->send(new OrderCreatedMail($order));
-}
-
-return redirect()->route('client.order.success', $order->id)->with('success', 'Đặt hàng thành công!');
-}
 
     public function momoPayment()
     {
         $data = session('checkout_data');
 
-        if (!$data) {
+        if (!$data || !isset($data['order_id'])) {
             return redirect()->route('client.checkout')->with('error', 'Không có dữ liệu đơn hàng');
         }
 
+        $order = Order::find($data['order_id']);
+        if (!$order) {
+            return redirect()->route('client.checkout')->with('error', 'Không tìm thấy đơn hàng đã tạo.');
+        }
+
         $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
-$partnerCode = 'MOMOBKUN20180529';
+        $partnerCode = 'MOMOBKUN20180529';
         $accessKey = 'klm05TvNBzhg7h7j';
         $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
-        $orderInfo = "Thanh toan don hang qua MoMo";
+        $orderInfo = "Thanh toan don hang " . $order->order_code;
 
-        $amount = $data['final_amount'];
-        $orderId = time();
+        $amount = (int) $order->final_amount;
+        
+        $orderId = $order->id . '_' . time(); 
+
         $requestId = time();
         $redirectUrl = route('momo.return');
         $ipnUrl = route('momo.return');
@@ -251,16 +341,16 @@ $partnerCode = 'MOMOBKUN20180529';
         $extraData = "";
 
         $rawData = [
-            'accessKey'    => $accessKey,
-            'amount'       => $amount,
-            'extraData'    => $extraData,
-            'ipnUrl'       => $ipnUrl,
-            'orderId'      => $orderId,
-            'orderInfo'    => $orderInfo,
-            'partnerCode'  => $partnerCode,
-            'redirectUrl'  => $redirectUrl,
-            'requestId'    => $requestId,
-            'requestType'  => $requestType,
+            'accessKey' => $accessKey,
+            'amount' => $amount,
+            'extraData' => $extraData,
+            'ipnUrl' => $ipnUrl,
+            'orderId' => $orderId,
+            'orderInfo' => $orderInfo,
+            'partnerCode' => $partnerCode,
+            'redirectUrl' => $redirectUrl,
+            'requestId' => $requestId,
+            'requestType' => $requestType,
         ];
 
         ksort($rawData);
@@ -284,7 +374,7 @@ $partnerCode = 'MOMOBKUN20180529';
         ];
 
         $result = $this->execPostRequest($endpoint, json_encode($body));
-        Log::info('🔁 MoMo Raw Response: ' . $result);
+        Log::info('🔁 Phản hồi thô từ MoMo: ' . $result);
 
         $jsonResult = json_decode($result, true);
 
@@ -292,6 +382,12 @@ $partnerCode = 'MOMOBKUN20180529';
             return redirect($jsonResult['payUrl']);
         }
 
+        // Ghi log chi tiết khi có lỗi từ MoMo
+        if (isset($jsonResult['message'])) {
+            Log::error('❌ Lỗi MoMo: ' . $jsonResult['message']);
+            return back()->with('error', 'Lỗi MoMo: ' . $jsonResult['message']);
+        }
+        
         return back()->with('error', 'Không thể kết nối với cổng thanh toán MoMo.');
     }
 
@@ -313,7 +409,7 @@ $partnerCode = 'MOMOBKUN20180529';
 
         if (curl_errno($ch)) {
             $error = curl_error($ch);
-            Log::error("❌ cURL MoMo Error: $error");
+            Log::error("❌ Lỗi cURL MoMo: $error");
             curl_close($ch);
             return json_encode(['curl_error' => $error]);
         }
@@ -325,10 +421,20 @@ $partnerCode = 'MOMOBKUN20180529';
     public function success($orderId)
     {
         $order = Order::with(['orderItems.product', 'orderItems.productVariant'])->findOrFail($orderId);
-if ($order->user_id !== Auth::id()) {
+        if ($order->user_id !== Auth::id()) {
             abort(403, 'Không có quyền xem đơn hàng này');
         }
 
         return view('client.order.success', compact('order'));
+    }
+
+    public function detail($orderId)
+    {
+        $order = Order::with(['orderItems.product', 'orderItems.productVariant'])->findOrFail($orderId);
+        if ($order->user_id !== Auth::id()) {
+            abort(403, 'Không có quyền xem đơn hàng này');
+        }
+
+        return view('client.order.detail', compact('order'));
     }
 }

@@ -39,7 +39,8 @@
             @endif
             @if ($order->status === 'Hoàn thành')
                 <div class="alert alert-info" role="alert">
-                    <i class="fa fa-info-circle"></i> Đơn hàng này đã được <strong>Hoàn thành</strong> và không thể chỉnh sửa chi tiết.
+                    <i class="fa fa-info-circle"></i> Đơn hàng này đã được <strong>Hoàn thành</strong> và không thể chỉnh sửa
+                    chi tiết.
                 </div>
             @endif
             <form action="{{ route('admin.orders.update', $order->id) }}" method="POST">
@@ -63,15 +64,18 @@
                             </div>
                             <div class="form-group" style="min-width: 220px;">
                                 <label>Người nhận</label>
-                                <input class="form-control" type="text" value="{{ $order->receiver_name ?? ($order->user->name ?? '---') }}" readonly>
+                                <input class="form-control" type="text"
+                                    value="{{ $order->receiver_name ?? ($order->user->name ?? '---') }}" readonly>
                             </div>
                             <div class="form-group" style="min-width: 220px;">
                                 <label>SĐT người nhận</label>
-                                <input class="form-control" type="text" value="{{ $order->receiver_phone ?? ($order->user->phone ?? '') }}" readonly>
+                                <input class="form-control" type="text"
+                                    value="{{ $order->receiver_phone ?? ($order->user->phone ?? '') }}" readonly>
                             </div>
                             <div class="form-group" style="min-width: 220px;">
                                 <label>Địa chỉ người nhận</label>
-                                <input class="form-control" type="text" value="{{ $order->receiver_address ?? ($order->user->address ?? '') }}" readonly>
+                                <input class="form-control" type="text"
+                                    value="{{ $order->receiver_address ?? ($order->user->address ?? '') }}" readonly>
                             </div>
                         </div>
                     </fieldset>
@@ -90,19 +94,23 @@
                             </div>
                             <div class="form-group" style="min-width: 220px;">
                                 <label>Phương thức thanh toán</label>
-                                <input class="form-control" type="text" name="payment_method" value="{{ old('payment_method', $order->payment_method) }}" readonly>
+                                <input class="form-control" type="text" name="payment_method"
+                                    value="{{ old('payment_method', $order->payment_method) }}" readonly>
                             </div>
                             <div class="form-group" style="min-width: 220px;">
                                 <label>Phương thức vận chuyển</label>
-                                <input class="form-control" type="text" value="{{ $order->shippingMethod->name ?? '---' }}" readonly>
+                                <input class="form-control" type="text" value="{{ $order->shippingMethod->name ?? '---' }}"
+                                    readonly>
                                 <input type="hidden" name="shipping_method_id" value="{{ $order->shipping_method_id }}">
                                 <small class="form-text text-muted mt-2">
-                                    <strong>Phí vận chuyển:</strong> {{ number_format(optional($order->shippingMethod)->fee ?? 0, 0, ',', '.') }}₫
+                                    <strong>Phí vận chuyển:</strong>
+                                    {{ number_format(optional($order->shippingMethod)->fee ?? 0, 0, ',', '.') }}₫
                                 </small>
                             </div>
                             <div class="form-group" style="min-width: 220px;">
                                 <label>Mã giảm giá</label>
-                                <input class="form-control" type="text" value="{{ $order->discount_code ?? 'Không có' }}" readonly>
+                                <input class="form-control" type="text" value="{{ $order->discount_code ?? 'Không có' }}"
+                                    readonly>
                             </div>
                             <div class="form-group" style="min-width: 220px;">
                                 <label>Tình trạng đơn hàng</label>
@@ -111,13 +119,15 @@
                                     <option value="Xác nhận đơn" {{ old('status', $order->status) === 'Xác nhận đơn' ? 'selected' : '' }}>Xác nhận đơn hàng</option>
                                     <option value="Đang giao hàng" {{ old('status', $order->status) === 'Đang giao hàng' ? 'selected' : '' }}>Đang giao hàng</option>
                                     <option value="Hoàn thành" {{ old('status', $order->status) === 'Hoàn thành' ? 'selected' : '' }}>Hoàn thành</option>
-                                    <option value="Đã hủy" {{ old('status', $order->status) === 'Đã hủy' ? 'selected' : '' }}>Đã hủy</option>
+                                    <option value="Đã hủy" {{ old('status', $order->status) === 'Đã hủy' ? 'selected' : '' }}>
+                                        Đã hủy</option>
                                 </select>
                                 @error('status') <span class="text-danger">{{ $message }}</span> @enderror
                             </div>
                             <div class="form-group" style="min-width: 220px;">
                                 <label>Tình trạng thanh toán</label>
-                                <select class="form-control @error('payment_status') is-invalid @enderror" name="payment_status">
+                                <select class="form-control @error('payment_status') is-invalid @enderror"
+                                    name="payment_status">
                                     <option value="Chờ thanh toán" {{ old('payment_status', $order->payment_status) === 'Chờ thanh toán' ? 'selected' : '' }}>Chờ thanh toán</option>
                                     <option value="Đã thanh toán" {{ old('payment_status', $order->payment_status) === 'Đã thanh toán' ? 'selected' : '' }}>Đã thanh toán</option>
                                 </select>
@@ -125,7 +135,8 @@
                             </div>
                             <div class="form-group w-full mt-3">
                                 <label>Ghi chú</label>
-                                <textarea class="form-control" rows="3" name="note" readonly>{{ old('note', $order->note) }}</textarea>
+                                <textarea class="form-control" rows="3" name="note"
+                                    readonly>{{ old('note', $order->note) }}</textarea>
                             </div>
                         </div>
                     </fieldset>
@@ -162,7 +173,8 @@
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 @if($item->product_image)
-                                                    <img src="{{ asset('storage/' . $item->product_image) }}" alt="Ảnh" width="60" height="60" class="me-2 rounded border">
+                                                    <img src="{{ asset('storage/' . $item->product_image) }}" alt="Ảnh" width="60"
+                                                        height="60" class="me-2 rounded border">
                                                 @endif
                                                 <div>
                                                     <strong>{{ $item->product_name ?? '---' }}</strong>
@@ -183,17 +195,40 @@
                                 </tr>
                                 <tr>
                                     <td colspan="6" class="text-end"><strong>Phí vận chuyển:</strong></td>
-                                    <td><strong>{{ number_format(optional($order->shippingMethod)->fee ?? 0, 0, ',', '.') }}₫</strong></td>
+                                    <td>
+                                        @php
+                                            $shippingFee = optional($order->shippingMethod)->fee ?? 0;
+                                            $isFreeShip = false;
+                                            if ($totalItemsPrice >= 300000) {
+                                                $shippingFee = 0;
+                                                $isFreeShip = true;
+                                            }
+                                        @endphp
+
+                                        @if ($isFreeShip)
+                                            <strong>Miễn phí vận chuyển</strong>
+                                        @else
+                                            <strong>{{ number_format($shippingFee, 0, ',', '.') }}₫</strong>
+                                        @endif
+                                    </td>
                                 </tr>
+
+
                                 @if (($order->discount_amount ?? 0) > 0)
                                     <tr>
                                         <td colspan="6" class="text-end"><strong>Giảm giá:</strong></td>
                                         <td><strong>-{{ number_format($order->discount_amount, 0, ',', '.') }}₫</strong></td>
                                     </tr>
                                 @endif
+
                                 <tr>
                                     <td colspan="6" class="text-end"><strong>Tổng thanh toán:</strong></td>
-                                    <td><strong>{{ number_format($order->final_amount, 0, ',', '.') }}₫</strong></td>
+                                    <td>
+                                        @php
+                                            $finalAmount = $totalItemsPrice + $shippingFee - ($order->discount_amount ?? 0);
+                                        @endphp
+                                        <strong>{{ number_format($finalAmount, 0, ',', '.') }}₫</strong>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -206,7 +241,8 @@
                     <a href="{{ route('admin.orders.index') }}" class="tf-button style-3 btn-sm w-auto px-3 py-2">
                         <i class="icon-x"></i> Trở lại
                     </a>
-                    <a href="{{ route('admin.orders.show', $order->id) }}" class="tf-button style-1 btn-sm w-auto px-3 py-2">
+                    <a href="{{ route('admin.orders.show', $order->id) }}"
+                        class="tf-button style-1 btn-sm w-auto px-3 py-2">
                         <i class="icon-eye"></i> Xem chi tiết
                     </a>
                 </div>

@@ -16,44 +16,28 @@ class Order_items extends Model
         'quantity',
         'price',
         'total_price',
-
-        // Snapshot thông tin sản phẩm & biến thể
         'product_name',
-        'variant_name',     // "Size M - Màu đỏ"
+        'variant_name',
         'product_image',
         'sku',
         'brand_name',
     ];
 
-    /**
-     * Mỗi OrderItem thuộc về một đơn hàng
-     */
     public function order()
     {
         return $this->belongsTo(Order::class);
     }
 
-    
-     public function product()
+    public function product()
     {
         return $this->belongsTo(Product::class);
     }
-
-    /**
-     * Biến thể sản phẩm liên kết
-     */
-
-    public function products()
-    {
-        return $this->belongsTo(Product::class);
-    }
-
-    /**
-     * Biến thể sản phẩm liên kết
-     */
-
-    public function productVariant()
+public function productVariant()
     {
         return $this->belongsTo(ProductVariant::class);
+    }
+    public function variant()  // Changed from productVariant to match the view
+    {
+        return $this->belongsTo(ProductVariant::class, 'product_variant_id');
     }
 }

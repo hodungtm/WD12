@@ -68,7 +68,7 @@
 
         </div>
         <div class="row">
-            <div class="col-lg-9">
+            <div class="col-lg-12">
                 <article class="post-single">
                     {{-- Ảnh đại diện bài viết --}}
                     
@@ -97,35 +97,7 @@
 
 
             <div class="sidebar-overlay"></div>
-            <aside class="sidebar mobile-sidebar col-lg-3">
-                <div class="sidebar-wrapper" data-sticky-sidebar-options='{"offsetTop": 72}'>
-                    <div class="widget widget-post"
-                        style="background-color: #f9e9cf; padding: 20px; border-radius: 10px;">
-                        <h4 class="widget-title" style="color: #b58d00; font-weight: 700;">TIN TỨC NỔI BẬT</h4>
-
-                        <ul class="simple-post-list p-0 m-0">
-                            @foreach ($recentPosts as $index => $post)
-                            <li class="d-flex align-items-center" style="margin-bottom: 0;">
-                                <div class="post-rank" style="position: relative; left: -10px; z-index: 1">{{ $index + 1
-                                    }}</div>
-
-                                <div class="post-media me-2" style="margin-right: 20px">
-                                    <a href="" style="position: relative; left: -33px">
-                                        <img src="{{ asset('storage/' . $post->image) }}" alt="Post" class="rounded"
-                                            style="width: 90px;" style="object-fit: cover;">
-                                    </a>
-                                </div>
-                                <div class="post-info">
-                                    <a href="" class="fw-bold d-block text-dark">{{ $post->title }}</a>
-                                    <div class="post-meta text-muted" style="font-size: 14px; font-weight: 700">{{
-                                        \Carbon\Carbon::parse($post->created_at)->format('d/m/Y') }}</div>
-                                </div>
-                            </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div><!-- End .sidebar-wrapper -->
-            </aside><!-- End .col-lg-3 -->
+           
         </div><!-- End .row -->
     </div><!-- End .container -->
 </main><!-- End .main -->
