@@ -328,7 +328,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <script>
+  <!-- <script>
     // Khai báo biến global
     let isFirstOpen = true; // đánh dấu lần mở đầu tiên
     let currentVariants = []; // lưu trữ variants hiện tại
@@ -397,6 +397,8 @@
             let v = parseInt(qtyInput.value) || 1;
             if (!qtyInput.max || v < parseInt(qtyInput.max)) qtyInput.value = v + 1;
         };
+
+
 
         document.getElementById('modalAddToCartBtn').onclick = function() {
             // Kiểm tra đăng nhập trước
@@ -572,6 +574,56 @@
     setTimeout(() => { alertDiv.remove(); }, 3500);
 }
     });
+</script> -->
+<script>
+     window.isFirstOpen = true;
+
+    document.addEventListener('DOMContentLoaded', () => {
+    const $ = id => document.getElementById(id);
+    const chatbox = $('chatbox');
+    let isFirstOpen = true;
+
+    window.toggleChat = () => {
+        const hidden = chatbox.style.display === 'none' || chatbox.style.display === '';
+        chatbox.style.display = hidden ? 'block' : 'none';
+        if (hidden && isFirstOpen) {
+            appendMessage('bot', '🤖 Xin chào! Mình có thể hỗ trợ gì cho bạn hôm nay?');
+            isFirstOpen = false;
+        }
+    };
+
+    const appendMessage = (sender, text) => {
+        const div = document.createElement('div');
+        div.className = `mb-2 text-${sender === 'user' ? 'end text-primary' : 'start text-dark'}`;
+        div.innerText = text;
+        $('chat-body').appendChild(div);
+        $('chat-body').scrollTop = $('chat-body').scrollHeight;
+    };
+
+    window.sendMessage = () => {
+        const input = $('message');
+        const msg = input.value.trim();
+        if (!msg) return;
+        appendMessage('user', msg);
+        input.value = '';
+        fetch('/chatbot', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ message: msg })
+        })
+        .then(res => res.json())
+        .then(data => appendMessage('bot', data.reply))
+        .catch(() => appendMessage('bot', 'Đã xảy ra lỗi, vui lòng thử lại.'));
+    };
+
+    // Optional: Gửi khi nhấn Enter
+    $('message')?.addEventListener('keydown', e => {
+        if (e.key === 'Enter') sendMessage();
+    });
+});
 </script>
   
   <div id="alert-stack" style="position: fixed; top: 80px; right: 24px; z-index: 9999;"></div>

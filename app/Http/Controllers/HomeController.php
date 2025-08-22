@@ -81,6 +81,7 @@ public function featured()
     $pageTitle = 'Sản phẩm nổi bật';
     return view('Client.Product.ListProductClient', compact('products', 'categories', 'colors', 'sizes', 'minPrice', 'maxPrice', 'pageTitle'));
 }
+
     
     // note: Xử lý chatbot trả lời tự động dựa trên từ khóa
     public function respond(Request $request)
@@ -125,7 +126,7 @@ public function featured()
             'hết hàng' => '🤖 Nếu sản phẩm bạn cần đang hết, bạn có thể để lại tên và số điện thoại, shop sẽ báo ngay khi hàng về.',
 
             'size' => '🤖 Sản phẩm có đủ size từ trẻ em đến người lớn. Nếu bạn cần tư vấn chọn size giày hoặc áo, hãy cho mình biết chiều cao và cân nặng nha.',
-'tư vấn' => '🤖 Bạn cần tư vấn sản phẩm nào cụ thể ạ? Giày, vợt, bóng, hay quần áo để mình hỗ trợ tốt hơn nhé.',
+             'tư vấn' => '🤖 Bạn cần tư vấn sản phẩm nào cụ thể ạ? Giày, vợt, bóng, hay quần áo để mình hỗ trợ tốt hơn nhé.',
 
             'hotline' => '🤖 Nếu cần hỗ trợ gấp, bạn có thể gọi hoặc nhắn Zalo qua số 0909.xxx.xxx. Shop luôn sẵn sàng giúp bạn!',
 
@@ -145,7 +146,7 @@ public function featured()
             'chọn size' => '🤖 Bạn cần chọn size giày hay áo ạ? Bạn cho mình chiều cao, cân nặng hoặc size đang dùng để mình tư vấn chuẩn nha.',
             'có sẵn không' => '🤖 Bạn cần hỏi sản phẩm nào ạ? Nếu hết hàng thì mình có thể báo khi hàng về lại nhé.',
             'có shop không' => '🤖 Shop có cửa hàng tại Hà Nội & TP.HCM. Bạn muốn đến xem trực tiếp hay mua online giao tận nhà ạ?',
-'mua sỉ' => '🤖 Shop có chính sách ưu đãi đặc biệt cho khách sỉ. Bạn có thể để lại thông tin số lượng và khu vực để mình gửi báo giá nha.',
+            'mua sỉ' => '🤖 Shop có chính sách ưu đãi đặc biệt cho khách sỉ. Bạn có thể để lại thông tin số lượng và khu vực để mình gửi báo giá nha.',
             'đại lý' => '🤖 Bạn muốn làm cộng tác viên hoặc đại lý? Shop có chương trình chiết khấu tốt. Nhắn giúp mình khu vực và số điện thoại nhé!',
             'shop bán gì' => '🤖 Shop chuyên bán các sản phẩm thể thao chính hãng như **giày đá bóng, vợt cầu lông, quần áo thể thao, bóng đá – bóng chuyền – bóng rổ**, và các phụ kiện khác. Mẫu mã đa dạng, hàng mới liên tục, giá hợp lý và có nhiều ưu đãi nhé!',
 
@@ -156,7 +157,7 @@ public function featured()
             - ⚽ Bóng đá, bóng chuyền, bóng rổ
             - 🎒 Phụ kiện: bao vợt, tất, băng tay, balo, bình nước...
 
-                Bạn cần tìm loại nào để mình hỗ trợ chi tiết hơn ạ?',
+            Bạn cần tìm loại nào để mình hỗ trợ chi tiết hơn ạ?',
 
             'danh mục' => '🤖 Bạn có thể xem nhanh các danh mục sản phẩm như:
             - Giày đá bóng: /san-pham?loai=giay
