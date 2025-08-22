@@ -1,143 +1,196 @@
 @extends('admin.layouts.AdminLayout')
 
 @section('main')
+<style>
+    .fs-xl {
+        font-size: 1.75rem;
+    }
 
-<div class="flex items-center flex-wrap justify-between gap20 mb-30">
-    <h3>Quản lý Size & Color</h3>
-    <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-        <li>
-            <a href="index-2.html"><div class="text-tiny">Dashboard</div></a>
-        </li>
-        <li>
-            <i class="icon-chevron-right"></i>
-        </li>
-        <li>
-            <div class="text-tiny">Size & Color</div>
-        </li>
-    </ul>
+    .btn-xl {
+        padding: 0.75rem 2rem;
+        font-size: 1.25rem;
+    }
+
+    .form-control-xl {
+        padding: 0.75rem 1rem;
+        font-size: 1.25rem;
+    }
+</style>
+
+<div class="mb-4 d-flex justify-content-between align-items-center flex-wrap">
+    <h3 class="mb-0 fs-xl fw-bold">Quản lý Size & Color</h3>
+    <nav>
+        <ol class="breadcrumb mb-0 fs-5">
+            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Size & Color</li>
+        </ol>
+    </nav>
 </div>
-
 
 <div class="row">
     <div class="col-md-12">
-        <div class="wg-box">
-            <div class="p-4">
+        <div class="card mb-4">
+            <div class="card-body">
 
-                <div class="row g-4">
-                    <div class="col-12">
+                {{-- Quản lý Size --}}
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="mb-0 fs-4 fw-bold">Danh sách Size</h5>
+                    <button class="btn btn-primary btn-xl" data-bs-toggle="modal" data-bs-target="#modalSize" onclick="openSizeModal('add')">
+                        <i class="fas fa-plus me-1"></i> Thêm Size
+                    </button>
+                </div>
 
-                        <h3 class="mb-3">Danh sách Size</h3>
-
-                        <form method="POST" action="{{ route('admin.catalog.size.store') }}" class="form-style-1 mb-4">
-                            @csrf
-                            <fieldset class="name">
-                                <div class="body-title visually-hidden">Thêm Size</div>
-                                <div class="input-group d-flex"> {{-- THAY ĐỔI: Thêm d-flex --}}
-                                    <input type="text" name="name" class="form-control me-2" placeholder="Tên Size..." aria-required="true" required> {{-- THAY ĐỔI: Bỏ flex-grow, thêm form-control me-2 --}}
-
-                                    <button type="submit" class="tf-button" style="min-width: 120px;">
-                                        <i class="fas fa-plus me-2"></i> Thêm Size
+                <table class="table table-bordered table-striped align-middle fs-5">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 60px;">ID</th>
+                            <th>Tên Size</th>
+                            <th style="width: 200px;">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($sizes as $item)
+                        <tr>
+                            <td>{{ $item->id }}</td>
+                            <td>{{ $item->name }}</td>
+                            <td>
+                                <button class="btn btn-warning btn-xl me-2" data-bs-toggle="modal" data-bs-target="#modalSize" onclick="openSizeModal('edit', {{ $item->id }}, '{{ $item->name }}')">
+                                    <i class="fas fa-edit me-1"></i> Sửa
+                                </button>
+                                <form method="POST" action="{{ route('admin.catalog.size.destroy', $item->id) }}" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-xl">
+                                        <i class="fas fa-trash-alt me-1"></i> Xóa
                                     </button>
-                                </div>
-                            </fieldset>
-                            @error('name')
-                                <div class="text-danger mt-1">{{ $message }}</div>
-                            @enderror
-                        </form>
+                                </form>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
 
+                <hr class="my-5">
 
-                        <div class="wg-table table-product-list mt-3">
-                            <ul class="table-title flex mb-14" style="gap: 10px;">
-                                <li style="flex-basis: 60px;"><div class="body-title">ID</div></li>
-                                <li style="flex-basis: calc(100% - 210px);"><div class="body-title">Tên Size</div></li>
-                                <li style="flex-basis: 150px;"><div class="body-title">Hành động</div></li>
-                            </ul>
+                {{-- Quản lý Color --}}
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="mb-0 fs-4 fw-bold">Danh sách Color</h5>
+                    <button class="btn btn-primary btn-xl" data-bs-toggle="modal" data-bs-target="#modalColor" onclick="openColorModal('add')">
+                        <i class="fas fa-plus me-1"></i> Thêm Color
+                    </button>
+                </div>
 
-                            <ul class="flex flex-column">
-                                @foreach ($sizes as $item)
-                                    <li class="wg-product item-row" style="gap: 10px;">
-                                        <div class="body-text mt-4" style="flex-basis: 60px;">{{ $item->id }}</div>
-                                        <div style="flex-basis: calc(100% - 210px);">
-                                            <form method="POST" action="{{ route('admin.catalog.size.update', $item->id) }}" class="d-flex">
-                                                @csrf
-                                                @method('PUT')
-                                                <input type="text" name="name" value="{{ $item->name }}" class="flex-grow me-2" required>
-                                                <button type="submit" class="tf-button sm">Lưu</button>
-                                            </form>
-                                        </div>
-                                        <div class="list-icon-function" style="flex-basis: 150px;">
-                                            <form method="POST" action="{{ route('admin.catalog.size.destroy', $item->id) }}" onsubmit="return confirm('Bạn có chắc muốn xóa?')" class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="tf-button danger sm">
-                                                    <i class="fas fa-trash-alt"></i> Xóa
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    </div>
-                    <hr class="my-4">
-                    <div class="col-12">
-
-                        <h3 class="mb-3">Danh sách Color</h3>
-
-                        <form method="POST" action="{{ route('admin.catalog.color.store') }}" class="form-style-1 mb-4">
-                            @csrf
-                            <fieldset class="name">
-                                <div class="body-title visually-hidden">Thêm Color</div>
-                                <div class="input-group d-flex"> {{-- THAY ĐỔI: Thêm d-flex --}}
-                                    <input type="text" name="name" class="form-control me-2" placeholder="Tên Color..." aria-required="true" required> {{-- THAY ĐỔI: Bỏ flex-grow, thêm form-control me-2 --}}
-
-                                    <button type="submit" class="tf-button" style="min-width: 120px;">
-                                        <i class="fas fa-plus me-2"></i> Thêm Color
+                <table class="table table-bordered table-striped align-middle fs-5">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 60px;">ID</th>
+                            <th>Tên Color</th>
+                            <th style="width: 200px;">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($colors as $item)
+                        <tr>
+                            <td>{{ $item->id }}</td>
+                            <td>{{ $item->name }}</td>
+                            <td>
+                                <button class="btn btn-warning btn-xl me-2" data-bs-toggle="modal" data-bs-target="#modalColor" onclick="openColorModal('edit', {{ $item->id }}, '{{ $item->name }}')">
+                                    <i class="fas fa-edit me-1"></i> Sửa
+                                </button>
+                                <form method="POST" action="{{ route('admin.catalog.color.destroy', $item->id) }}" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-xl">
+                                        <i class="fas fa-trash-alt me-1"></i> Xóa
                                     </button>
-                                </div>
-                            </fieldset>
-                            @error('name')
-                                <div class="text-danger mt-1">{{ $message }}</div>
-                            @enderror
-                        </form>
+                                </form>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
 
-                        <div class="wg-table table-product-list mt-3">
-                            <ul class="table-title flex mb-14" style="gap: 10px;">
-                                <li style="flex-basis: 60px;"><div class="body-title">ID</div></li>
-                                <li style="flex-basis: calc(100% - 210px);"><div class="body-title">Tên Color</div></li>
-                                <li style="flex-basis: 150px;"><div class="body-title">Hành động</div></li>
-                            </ul>
-
-                            <ul class="flex flex-column">
-                                @foreach ($colors as $item)
-                                    <li class="wg-product item-row" style="gap: 10px;">
-                                        <div class="body-text mt-4" style="flex-basis: 60px;">{{ $item->id }}</div>
-                                        <div style="flex-basis: calc(100% - 210px);">
-                                            <form method="POST" action="{{ route('admin.catalog.color.update', $item->id) }}" class="d-flex">
-                                                @csrf
-                                                @method('PUT')
-                                                <input type="text" name="name" value="{{ $item->name }}" class="flex-grow me-2" required>
-                                                <button type="submit" class="tf-button sm">Lưu</button>
-                                            </form>
-                                        </div>
-                                        <div class="list-icon-function" style="flex-basis: 150px;">
-                                            <form method="POST" action="{{ route('admin.catalog.color.destroy', $item->id) }}" onsubmit="return confirm('Bạn có chắc muốn xóa?')" class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="tf-button danger sm">
-                                                    <i class="fas fa-trash-alt"></i> Xóa
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    </div>
-
-                </div> </div>
+            </div>
         </div>
     </div>
 </div>
 
+{{-- Modal Size --}}
+<div class="modal fade" id="modalSize" tabindex="-1" aria-labelledby="modalSizeLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" id="formSize">
+            @csrf
+            <input type="hidden" name="_method" value="POST" id="sizeMethod">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-4 fw-bold" id="modalSizeLabel">Thêm / Sửa Size</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" name="name" class="form-control form-control-xl" id="sizeName" placeholder="Tên size..." required>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary btn-xl">Lưu</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- Modal Color --}}
+<div class="modal fade" id="modalColor" tabindex="-1" aria-labelledby="modalColorLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" id="formColor">
+            @csrf
+            <input type="hidden" name="_method" value="POST" id="colorMethod">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-4 fw-bold" id="modalColorLabel">Thêm / Sửa Color</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" name="name" class="form-control form-control-xl" id="colorName" placeholder="Tên color..." required>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary btn-xl">Lưu</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- JavaScript xử lý Modal --}}
+<script>
+    function openSizeModal(action, id = null, name = '') {
+        const form = document.getElementById('formSize');
+        const nameInput = document.getElementById('sizeName');
+        const methodInput = document.getElementById('sizeMethod');
+
+        if (action === 'add') {
+            form.action = "{{ route('admin.catalog.size.store') }}";
+            methodInput.value = "POST";
+            nameInput.value = '';
+        } else {
+            form.action = "/admin/catalog/size/" + id;
+            methodInput.value = "PUT";
+            nameInput.value = name;
+        }
+    }
+
+    function openColorModal(action, id = null, name = '') {
+        const form = document.getElementById('formColor');
+        const nameInput = document.getElementById('colorName');
+        const methodInput = document.getElementById('colorMethod');
+
+        if (action === 'add') {
+            form.action = "{{ route('admin.catalog.color.store') }}";
+            methodInput.value = "POST";
+            nameInput.value = '';
+        } else {
+            form.action = "/admin/catalog/color/" + id;
+            methodInput.value = "PUT";
+            nameInput.value = name;
+        }
+    }
+</script>
 @endsection
