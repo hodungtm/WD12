@@ -6,11 +6,11 @@
             <div class="flex items-center flex-wrap justify-between gap20 mb-30">
                 <h3>Chỉnh sửa sản phẩm</h3>
                 <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-                    <li><a href="{{ route('products.index') }}">
+                    <li><a href="{{ route('admin.products.index') }}">
                             <div class="text-tiny">Dashboard</div>
                         </a></li>
                     <li><i class="icon-chevron-right"></i></li>
-                    <li><a href="{{ route('products.index') }}">
+                    <li><a href="{{ route('admin.products.index') }}">
                             <div class="text-tiny">Ecommerce</div>
                         </a></li>
                     <li><i class="icon-chevron-right"></i></li>
@@ -20,7 +20,7 @@
                 </ul>
             </div>
 
-            <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -225,7 +225,7 @@
                     <button type="submit" class="tf-button btn-sm w-auto px-3 py-2">
                         <i class="icon-save"></i> Lưu sản phẩm
                     </button>
-                    <a href="{{ route('products.index') }}" class="tf-button style-3 btn-sm w-auto px-3 py-2">
+                    <a href="{{ route('admin.products.index') }}" class="tf-button style-3 btn-sm w-auto px-3 py-2">
                         <i class="icon-x"></i> Hủy bỏ
                     </a>
                 </div>
@@ -234,7 +234,7 @@
             {{-- Các form riêng biệt cho việc xóa ảnh, được đặt ngoài form chính --}}
             @if ($product->images->isNotEmpty())
                 @foreach ($product->images as $img)
-                    <form id="delete-image-{{ $img->id }}" action="{{ route('products.image.destroy', $img->id) }}" method="POST" style="display: none;">
+                    <form id="delete-image-{{ $img->id }}" action="{{ route('admin.products.image.destroy', $img->id) }}" method="POST" style="display: none;">
                         @csrf
                         @method('DELETE')
                     </form>

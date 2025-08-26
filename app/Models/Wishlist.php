@@ -21,6 +21,6 @@ class Wishlist extends Model
     // Liên kết với bảng `products`
     public function product()
     {
-        return $this->belongsTo(Products::class);
+        return $this->belongsTo(Product::class);
     }
 }

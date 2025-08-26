@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
-use App\Models\Products;
+use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,7 +26,7 @@ class CartController extends Controller
     // note: Thêm sản phẩm vào giỏ hàng
     public function addToCart(Request $request, $productId)
     {
-        $product = Products::findOrFail($productId);
+        $product = Product::findOrFail($productId);
         $variantId = $request->input('variant_id'); // note: ID biến thể (size, màu)
         $quantity = max(1, (int) $request->input('quantity', 1)); // note: Số lượng, tối thiểu là 1
 

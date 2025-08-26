@@ -376,8 +376,9 @@
                                     @endif
                                 @else
                                     <div class="alert alert-info">
-                                        <p class="mb-2">Bạn cần <a href="{{ route('login') }}" class="alert-link">đăng nhập</a>
+                                        <p class="mb-0">Bạn cần <a href="{{ route('login') }}" class="alert-link">đăng nhập</a>
                                             để đánh giá.</p>
+                                            
                                         <p class="mb-0">Chưa có tài khoản? <a href="{{ route('register') }}"
                                                 class="alert-link">Đăng ký ngay</a></p>
                                     </div>
@@ -429,7 +430,7 @@
                                     </form>
                                 @else
                                     <div class="alert alert-info">
-                                        <p class="mb-2">Bạn cần <a href="{{ route('login') }}" class="alert-link">đăng nhập</a>
+                                        <p class="mb-0">Bạn cần <a href="{{ route('login') }}" class="alert-link">đăng nhập</a>
                                             để bình luận.</p>
                                         <p class="mb-0">Chưa có tài khoản? <a href="{{ route('register') }}"
                                                 class="alert-link">Đăng ký ngay</a></p>
@@ -524,7 +525,7 @@
                 </div>
             </div>
         </div>
-        <div id="alert-stack" style="position: fixed; top: 80px; right: 24px; z-index: 9999;"></div>
+       
     </main>
 
     <style>
@@ -771,6 +772,8 @@
             border: 2px solid var(--main-color) !important;
             transform: scale(1.05);
         }
+
+       
     </style>
 
     <script>
@@ -825,7 +828,6 @@
         document.querySelectorAll('.color-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 selectedColor = btn.dataset.color;
-                
                 // Reset và set active cho nút màu
                 document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
@@ -875,17 +877,34 @@
             }
             updateVariant();
         });
+function showAlert(message, type = 'success') {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'custom-alert';
+    alertDiv.setAttribute('data-type', type);
+    alertDiv.innerHTML = `
+        <div class="alert-content">
+            <div class="alert-header">
+                <span class="icon-warning"><i class="fas fa-check"></i></span>
+                <div class="alert-title">Success</div>
+            </div>
+            <div class="alert-message">${message}</div>
+        </div>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Đóng">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    `;
 
-        function showAlert(message, type = 'success') {
-            const icon = type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-triangle"></i>';
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'custom-alert';
-            alertDiv.setAttribute('data-type', type);
-            alertDiv.innerHTML = `<span class="alert-text">${message}</span><span class="icon-warning">${icon}</span><button type="button" class="close" onclick="this.parentElement.remove()"><span aria-hidden="true">&times;</span></button>`;
-            document.getElementById('alert-stack').appendChild(alertDiv);
-            setTimeout(() => { alertDiv.remove(); }, 3500);
-        }
+    let alertStack = document.getElementById('alert-stack');
+    if (!alertStack) {
+        alertStack = document.createElement('div');
+        alertStack.id = 'alert-stack';
+        document.body.appendChild(alertStack);
+    }
 
+    alertStack.appendChild(alertDiv);
+    setTimeout(() => { alertDiv.remove(); }, 3500);
+}
+        
         function buyNow() {
             const form = document.querySelector('form');
             const formData = new FormData(form);
@@ -931,10 +950,18 @@
         const viewCartBtn = document.getElementById('view-cart-btn');
         addToCartForm.onsubmit = function (e) {
             e.preventDefault();
+            
+            // Kiểm tra đăng nhập trước
+            @if (!auth()->check())
+                window.location.href = "{{ route('login') }}?redirect=" + window.location.href;
+                return false;
+            @endif
+
             if (!selectedColor || !selectedSize) {
                 showAlert('Vui lòng chọn màu sắc và kích thước trước khi thêm vào giỏ hàng!', 'error');
                 return false;
             }
+
             const formData = new FormData(addToCartForm);
             fetch(addToCartForm.action, {
                 method: 'POST',
@@ -944,23 +971,28 @@
                 },
                 body: formData
             })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        addToCartBtn.innerHTML = '<i class="icon-shopping-cart"></i> ĐÃ THÊM ✓';
-                        addToCartBtn.classList.add('added');
-                        viewCartBtn.classList.remove('d-none');
-                        viewCartBtn.classList.add('added');
-                        showAlert(data.message || 'Đã thêm vào giỏ hàng!', 'success');
-                        if (typeof updateCartCount === 'function') updateCartCount();
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    addToCartBtn.innerHTML = '<i class="icon-shopping-cart"></i> ĐÃ THÊM ✓';
+                    addToCartBtn.classList.add('added');
+                    viewCartBtn.classList.remove('d-none');
+                    viewCartBtn.classList.add('added');
+                    showAlert('Đã thêm vào giỏ hàng thành công!', 'success');
+                    if (typeof updateCartCount === 'function') updateCartCount();
+                } else {
+                    // Nếu lỗi là chưa đăng nhập
+                    if (data.code === 'unauthenticated') {
+                        window.location.href = "{{ route('login') }}?redirect=" + window.location.href;
                     } else {
                         showAlert(data.message || 'Có lỗi khi thêm vào giỏ hàng!', 'error');
                     }
-                })
-                .catch(err => {
-                    console.error('Lỗi khi parse JSON hoặc fetch:', err);
-                    showAlert('Lỗi hệ thống hoặc dữ liệu trả về không hợp lệ!', 'error');
-                });
+                }
+            })
+            .catch(err => {
+                console.error('Lỗi:', err);
+                showAlert('Lỗi hệ thống!', 'error');
+            });
             return false;
         };
     </script>

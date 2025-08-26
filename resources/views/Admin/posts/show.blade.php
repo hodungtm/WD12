@@ -6,7 +6,7 @@
     <div class="flex items-center flex-wrap justify-between gap20 mb-27">
       <h3>Chi tiết bài viết: {{ $post->title }}</h3>
       <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-        <li><a href="{{ route('posts.index') }}"><div class="text-tiny">Bài viết</div></a></li>
+        <li><a href="{{ route('admin.posts.index') }}"><div class="text-tiny">Bài viết</div></a></li>
         <li><i class="icon-chevron-right"></i></li>
         <li><div class="text-tiny">Chi tiết</div></li>
       </ul>
@@ -75,8 +75,8 @@
       </div>
     </div>
       <div class="flex gap10 mt-4">
-        <a href="{{ route('posts.edit', $post) }}" class="tf-button"><i class="icon-edit-3 me-1"></i> Chỉnh sửa</a>
-        <a href="{{ route('posts.index') }}" class="tf-button style-1"><i class="icon-arrow-left me-1"></i> Quay lại</a>
+        <a href="{{ route('admin.posts.edit', $post) }}" class="tf-button"><i class="icon-edit-3 me-1"></i> Chỉnh sửa</a>
+        <a href="{{ route('admin.posts.index') }}" class="tf-button style-1"><i class="icon-arrow-left me-1"></i> Quay lại</a>
       </div>
     </div>
   </div>

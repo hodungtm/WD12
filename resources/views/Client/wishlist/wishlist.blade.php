@@ -539,11 +539,14 @@
             const button = event.relatedTarget;
             const productId = button.getAttribute('data-product-id');
             const productName = button.getAttribute('data-product-name');
+            const productImage = button.closest('.product-default').querySelector('figure img').src;
             const variantsString = button.getAttribute('data-variants');
+            
+            // Cập nhật ảnh ngay khi mở modal
+            document.getElementById('modalProductImage').src = productImage;
             
             try {
                 const variants = JSON.parse(variantsString);
-                // Gọi hàm điền dữ liệu vào modal
                 populateVariantModal(productId, productName, variants);
             } catch (error) {
                 console.error("Lỗi khi phân tích cú pháp JSON variants:", error);
@@ -555,18 +558,13 @@
             currentVariants = variants || [];
             selectedModalColor = null;
             selectedModalSize = null;
+            
             document.getElementById('modalProductId').value = productId;
             document.getElementById('modalProductName').textContent = productName;
-            fetch(`/api/product/${productId}/image`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.image) {
-                        document.getElementById('modalProductImage').src = data.image;
-                    }
-                })
-                .catch(err => {
-                    document.getElementById('modalProductImage').src = '/assets/images/no-image.png';
-                });
+            
+            // Xóa bỏ phần fetch ảnh cũ
+            // fetch(`/api/product/${productId}/image`)...;
+            
             const colorOptions = document.getElementById('colorOptions');
             colorOptions.innerHTML = '';
             const uniqueColorIds = [...new Set(variants.map(v => v.color_id))].filter(id => id);
@@ -645,23 +643,36 @@
             }
         }
 
+        // Sửa lại hàm showAlert
         function showAlert(message, type = 'success') {
-    const icon = type === 'success' ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-exclamation-triangle"></i>';
     const alertDiv = document.createElement('div');
     alertDiv.className = 'custom-alert';
     alertDiv.setAttribute('data-type', type);
-                alertDiv.innerHTML = `<span class="alert-text">${message}</span><span class="icon-warning">${icon}</span><button type="button" class="close" onclick="this.parentElement.remove()"><span aria-hidden="true">&times;</span></button>`;
+    alertDiv.innerHTML = `
+        <div class="alert-content">
+            <div class="alert-header">
+                <span class="icon-warning"><i class="fas fa-check"></i></span>
+                <div class="alert-title">Success</div>
+            </div>
+            <div class="alert-message">${message}</div>
+        </div>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Đóng">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    `;
+
     let alertStack = document.getElementById('alert-stack');
     if (!alertStack) {
         alertStack = document.createElement('div');
         alertStack.id = 'alert-stack';
-        alertStack.style.cssText = 'position: fixed; top: 80px; right: 24px; z-index: 9999;';
         document.body.appendChild(alertStack);
     }
+
     alertStack.appendChild(alertDiv);
     setTimeout(() => { alertDiv.remove(); }, 3500);
 }
-    
+
+
     </script>
 
 

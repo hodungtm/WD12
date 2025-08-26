@@ -31,7 +31,7 @@
                     <div class="body-text">Tìm kiếm bài viết theo tiêu đề hoặc lọc theo trạng thái.</div>
                 </div>
                 <div class="flex flex-column gap10 mb-3">
-                    <form method="GET" action="{{ route('posts.index') }}" class="form-search w-100" style="margin-bottom: 10px;">
+                    <form method="GET" action="{{ route('admin.posts.index') }}" class="form-search w-100" style="margin-bottom: 10px;">
                         <div class="search-input" style="width: 100%; position: relative;">
                             <input type="text" placeholder="Tìm kiếm bài viết..." name="keyword" value="{{ request('keyword') }}" style="width: 100%; min-width: 200px;">
                             <button type="submit" class="btn d-flex align-items-center justify-content-center" style="height: 38px; width: 38px; padding: 0; border: 1.5px solid #1abc9c; background: #fff; position: absolute; right: 5px; top: 50%; transform: translateY(-50%);">
@@ -40,7 +40,7 @@
                         </div>
                     </form>
                     <div class="flex items-center justify-between gap10 flex-wrap">
-                        <form method="GET" action="{{ route('posts.index') }}" class="flex gap10 flex-wrap align-items-center" style="margin-bottom: 0;">
+                        <form method="GET" action="{{ route('admin.posts.index') }}" class="flex gap10 flex-wrap align-items-center" style="margin-bottom: 0;">
                             <input type="hidden" name="keyword" value="{{ request('keyword') }}">
                             <select name="status" class="form-select" style="width: 120px;">
                                 <option value="">-- Trạng thái --</option>
@@ -60,7 +60,7 @@
                             </button>
                         </form>
                         <div class="flex gap10">
-                            <a href="{{ route('posts.create') }}" class="tf-button style-1 w200">
+                            <a href="{{ route('admin.posts.create') }}" class="tf-button style-1 w200">
                                 <i class="icon-plus"></i> Thêm bài viết
                             </a>
                         </div>
@@ -81,7 +81,7 @@
                                 <li class="wg-product item-row" style="gap: 2px; align-items:center; border-bottom:1px solid #f0f0f0;">
                                     <div class="body-text mt-4" style="flex-basis: 40px;">#{{ $post->id }}</div>
                                     <div class="title line-clamp-2 mb-0" style="flex-basis: 250px;">
-                                        <a href="{{ route('posts.show', $post) }}" class="body-text">{{ $post->title }}</a>
+                                        <a href="{{ route('admin.posts.show', $post) }}" class="body-text">{{ $post->title }}</a>
                                     </div>
                                     <div class="image" style="flex-basis: 80px;">
                                         @if ($post->image)
@@ -101,9 +101,9 @@
                                     </div>
                                     <div class="body-text mt-4" style="flex-basis: 100px;">{{ $post->created_at ? $post->created_at->format('d/m/Y') : 'N/A' }}</div>
                                     <div class="list-icon-function flex justify-center gap10" style="flex-basis: 120px;">
-                                        <a href="{{ route('posts.show', $post) }}" class="item eye" title="Xem"><i class="icon-eye"></i></a>
-                                        <a href="{{ route('posts.edit', $post) }}" class="item edit" title="Sửa"><i class="icon-edit-3"></i></a>
-                                        <form action="{{ route('posts.destroy', $post) }}" method="POST" style="display:inline-block;">
+                                        <a href="{{ route('admin.posts.show', $post) }}" class="item eye" title="Xem"><i class="icon-eye"></i></a>
+                                        <a href="{{ route('admin.posts.edit', $post) }}" class="item edit" title="Sửa"><i class="icon-edit-3"></i></a>
+                                        <form action="{{ route('admin.posts.destroy', $post) }}" method="POST" style="display:inline-block;">
                                             @csrf @method('DELETE')
                                             <button type="submit" style="color: red" onclick="return confirm('Bạn có chắc muốn xóa?')">
                                                 <i class="icon-trash" style="color: red; font-size: 20px;"></i>

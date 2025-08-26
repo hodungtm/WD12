@@ -123,112 +123,114 @@
                 transform: translateY(0) scale(1);
             }
         }
-/* CSS focus sidebar */
-.sidebar .nav-link {
-    color: #f1f1f1 !important;
-    transition: all 0.3s ease !important;
-    position: relative !important;
-}
 
-/* Style cho menu cha */
-.sidebar .has-children {
-    margin-bottom: 5px !important;
-}
+        /* CSS focus sidebar */
+        .sidebar .nav-link {
+            color: #f1f1f1 !important;
+            transition: all 0.3s ease !important;
+            position: relative !important;
+        }
 
-.sidebar .has-children.open > a {
-    background-color: rgba(32, 178, 170, 0.1) !important;
-    color: #20B2AA !important;
-    border-radius: 6px !important;
-}
+        /* Style cho menu cha */
+        .sidebar .has-children {
+            margin-bottom: 5px !important;
+        }
 
-.sidebar .has-children.open .sub-menu {
-    display: block !important;
-    animation: slideDown 0.3s ease-in-out !important;
-}
+        .sidebar .has-children.open>a {
+            background-color: rgba(32, 178, 170, 0.1) !important;
+            color: #20B2AA !important;
+            border-radius: 6px !important;
+        }
 
-/* Style cho submenu */
-.sidebar .sub-menu {
-    margin-left: 20px !important;
-    display: none !important;
-}
+        .sidebar .has-children.open .sub-menu {
+            display: block !important;
+            animation: slideDown 0.3s ease-in-out !important;
+        }
 
-.sidebar .sub-menu .nav-link {
-    padding: 8px 15px !important;
-    border-radius: 6px !important;
-}
+        /* Style cho submenu */
+        .sidebar .sub-menu {
+            margin-left: 20px !important;
+            display: none !important;
+        }
 
-.sidebar .sub-menu .nav-link.active {
-    background-color: #20B2AA !important;
-    color: #ffffff !important;
-    box-shadow: 0 2px 8px rgba(32, 178, 170, 0.2) !important;
-}
+        .sidebar .sub-menu .nav-link {
+            padding: 8px 15px !important;
+            border-radius: 6px !important;
+        }
 
-.sidebar .sub-menu .nav-link:hover {
-    background-color: rgba(32, 178, 170, 0.1) !important;
-    color: #20B2AA !important;
-    transform: translateX(4px) !important;
-}
+        .sidebar .sub-menu .nav-link.active {
+            background-color: #20B2AA !important;
+            color: #ffffff !important;
+            box-shadow: 0 2px 8px rgba(32, 178, 170, 0.2) !important;
+        }
 
-/* Hiệu ứng cho active và hover */
-.sidebar .nav-link.active {
-    background-color: #20B2AA !important;
-    color: #ffffff !important;
-    border-radius: 6px !important;
-    box-shadow: 0 2px 8px rgba(32, 178, 170, 0.2) !important;
-}
+        .sidebar .sub-menu .nav-link:hover {
+            background-color: rgba(32, 178, 170, 0.1) !important;
+            color: #20B2AA !important;
+            transform: translateX(4px) !important;
+        }
 
-.sidebar .nav-link.active .text {
-    color: #ffffff !important;
-    font-weight: 500 !important;
-}
+        /* Hiệu ứng cho active và hover */
+        .sidebar .nav-link.active {
+            background-color: #20B2AA !important;
+            color: #ffffff !important;
+            border-radius: 6px !important;
+            box-shadow: 0 2px 8px rgba(32, 178, 170, 0.2) !important;
+        }
 
-.sidebar .nav-link.active i {
-    color: #ffffff !important;
-}
+        .sidebar .nav-link.active .text {
+            color: #ffffff !important;
+            font-weight: 500 !important;
+        }
 
-.sidebar .nav-link:hover {
-    background-color: rgba(32, 178, 170, 0.1) !important;
-    color: #20B2AA !important;
-    border-radius: 6px !important;
-    transform: translateX(4px) !important;
-}
+        .sidebar .nav-link.active i {
+            color: #ffffff !important;
+        }
 
-.sidebar .nav-link:hover i {
-    color: #20B2AA !important;
-}
+        .sidebar .nav-link:hover {
+            background-color: rgba(32, 178, 170, 0.1) !important;
+            color: #20B2AA !important;
+            border-radius: 6px !important;
+            transform: translateX(4px) !important;
+        }
 
-.sidebar .nav-link:hover .text {
-    color: #20B2AA !important;
-}
+        .sidebar .nav-link:hover i {
+            color: #20B2AA !important;
+        }
 
-/* Animation cho submenu */
-@keyframes slideDown {
-    from {
-        opacity: 0 !important;
-        transform: translateY(-10px) !important;
-    }
-    to {
-        opacity: 1 !important;
-        transform: translateY(0) !important;
-    }
-}
+        .sidebar .nav-link:hover .text {
+            color: #20B2AA !important;
+        }
 
-/* Style cho icon mũi tên */
-.menu-item-button::after {
-    content: '\f107' !important; /* Unicode của icon mũi tên xuống */
-    font-family: 'BoxIcons' !important;
-    position: absolute !important;
-    right: 15px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    transition: transform 0.3s ease !important;
-}
+        /* Animation cho submenu */
+        @keyframes slideDown {
+            from {
+                opacity: 0 !important;
+                transform: translateY(-10px) !important;
+            }
 
-.has-children.open > .menu-item-button::after {
-    transform: translateY(-50%) rotate(180deg) !important; /* Xoay mũi tên khi menu mở */
-}
+            to {
+                opacity: 1 !important;
+                transform: translateY(0) !important;
+            }
+        }
 
+        /* Style cho icon mũi tên */
+        .menu-item-button::after {
+            content: '\f107' !important;
+            /* Unicode của icon mũi tên xuống */
+            font-family: 'BoxIcons' !important;
+            position: absolute !important;
+            right: 15px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            transition: transform 0.3s ease !important;
+        }
 
+        .has-children.open>.menu-item-button::after {
+            transform: translateY(-50%) rotate(180deg) !important;
+            /* Xoay mũi tên khi menu mở */
+        }
     </style>
 </head>
 
@@ -255,7 +257,7 @@
                                 src="{{ asset('https://themesflat.co/html/ecomus/images/logo/logo.svg') }}"
                                 data-light="{{ asset('https://themesflat.co/html/ecomus/images/logo/logo.svg') }}"
                                 data-dark="{{ asset('https://themesflat.co/html/ecomus/images/logo/logo-white.svg') }}">
-                        </span></a>
+                            </span></a>
                         <div class="button-show-hide">
                             <i class="icon-chevron-left"></i>
                         </div>
@@ -264,197 +266,246 @@
                         <div class="center">
                             <div class="center-item">
                                 <ul class="">
-    <li class="menu-item">
-        <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-            <div class="icon"><i class="icon-grid"></i></div>
-            <div class="text">Dashboard</div>
-        </a>
-    </li>
+                                    <li class="menu-item">
+                                        <a href="{{ route('admin.dashboard') }}"
+                                            class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                                            <div class="icon"><i class="icon-grid"></i></div>
+                                            <div class="text">Dashboard</div>
+                                        </a>
+                                    </li>
 
-    <li class="menu-item has-children {{ request()->routeIs('products.*') || request()->is('admin/products*') ? 'open' : '' }}">
-        <a href="javascript:void(0);" class="nav-link menu-item-button {{ request()->routeIs('products.*') || request()->is('admin/products*') ? 'active' : '' }}">
-            <div class="icon"><i class="icon-package"></i></div>
-            <div class="text">Sản phẩm</div>
-        </a>
-        <ul class="sub-menu" style="{{ request()->routeIs('products.*') || request()->is('admin/products*') ? 'display: block !important;' : '' }}">
-            <li class="sub-menu-item">
-                <a href="{{ route('products.index') }}" class="nav-link {{ request()->routeIs('products.index') ? 'active' : '' }}">
-                    <div class="text">Danh sách sản phẩm</div>
-                </a>
-            </li>
-            <li class="sub-menu-item">
-                <a href="{{ route('products.create') }}" class="nav-link {{ request()->routeIs('products.create') ? 'active' : '' }}">
-                    <div class="text">Thêm sản phẩm</div>
-                </a>
-            </li>
-        </ul>
-    </li>
+                                    <li
+                                        class="menu-item has-children {{ request()->routeIs('admin.products.*') || request()->is('admin/products*') ? 'open' : '' }}">
+                                        <a href="javascript:void(0);"
+                                            class="nav-link menu-item-button {{ request()->routeIs('admin.products.*') || request()->is('admin/products*') ? 'active' : '' }}">
+                                            <div class="icon"><i class="icon-package"></i></div>
+                                            <div class="text">Sản phẩm</div>
+                                        </a>
+                                        <ul class="sub-menu"
+                                            style="{{ request()->routeIs('admin.products.*') || request()->is('admin/products*') ? 'display: block !important;' : '' }}">
+                                            <li class="sub-menu-item">
+                                                <a href="{{ route('admin.products.index') }}"
+                                                    class="nav-link {{ request()->routeIs('admin.products.index') ? 'active' : '' }}">
+                                                    <div class="text">Danh sách sản phẩm</div>
+                                                </a>
+                                            </li>
+                                            <li class="sub-menu-item">
+                                                <a href="{{ route('admin.products.create') }}"
+                                                    class="nav-link {{ request()->routeIs('admin.products.create') ? 'active' : '' }}">
+                                                    <div class="text">Thêm sản phẩm</div>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
 
-    <li class="menu-item has-children {{ request()->routeIs('admin.orders.*') || request()->is('admin/orders*') ? 'open' : '' }}">
-        <a href="javascript:void(0);" class="nav-link menu-item-button {{ request()->routeIs('admin.orders.*') || request()->is('admin/orders*') ? 'active' : '' }}">
-            <div class="icon"><i class="icon-shopping-cart"></i></div>
-            <div class="text">Đơn hàng</div>
-        </a>
-        <ul class="sub-menu" style="{{ request()->routeIs('admin.orders.*') || request()->is('admin/orders*') ? 'display: block !important;' : '' }}">
-            <li class="sub-menu-item">
-                <a href="{{ route('admin.orders.index') }}" class="nav-link {{ request()->routeIs('admin.orders.index') ? 'active' : '' }}">
-                    <div class="text">Danh sách đơn hàng</div>
-                </a>
-            </li>
-        </ul>
-    </li>
+                                    <li
+                                        class="menu-item has-children {{ request()->routeIs('admin.orders.*') || request()->is('admin/orders*') ? 'open' : '' }}">
+                                        <a href="javascript:void(0);"
+                                            class="nav-link menu-item-button {{ request()->routeIs('admin.orders.*') || request()->is('admin/orders*') ? 'active' : '' }}">
+                                            <div class="icon"><i class="icon-shopping-cart"></i></div>
+                                            <div class="text">Đơn hàng</div>
+                                        </a>
+                                        <ul class="sub-menu"
+                                            style="{{ request()->routeIs('admin.orders.*') || request()->is('admin/orders*') ? 'display: block !important;' : '' }}">
+                                            <li class="sub-menu-item">
+                                                <a href="{{ route('admin.orders.index') }}"
+                                                    class="nav-link {{ request()->routeIs('admin.orders.index') ? 'active' : '' }}">
+                                                    <div class="text">Danh sách đơn hàng</div>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
 
-    <li class="menu-item has-children {{ request()->routeIs('Admin.categories.*') || request()->is('admin/categories*') ? 'open' : '' }}">
-        <a href="javascript:void(0);" class="nav-link menu-item-button {{ request()->routeIs('Admin.categories.*') || request()->is('admin/categories*') ? 'active' : '' }}">
-            <div class="icon"><i class="icon-folder"></i></div>
-            <div class="text">Danh mục</div>
-        </a>
-        <ul class="sub-menu" style="{{ request()->routeIs('Admin.categories.*') || request()->is('admin/categories*') ? 'display: block !important;' : '' }}">
-            <li class="sub-menu-item">
-                <a href="{{ route('Admin.categories.index') }}" class="nav-link {{ request()->routeIs('Admin.categories.index') ? 'active' : '' }}">
-                    <div class="text">Danh sách danh mục</div>
-                </a>
-            </li>
-            <li class="sub-menu-item">
-                <a href="{{ route('Admin.categories.create') }}" class="nav-link {{ request()->routeIs('Admin.categories.create') ? 'active' : '' }}">
-                    <div class="text">Thêm danh mục</div>
-                </a>
-            </li>
-        </ul>
-    </li>
+                                    <li
+                                        class="menu-item has-children {{ request()->routeIs('admin.categories.*') || request()->is('admin/categories*') ? 'open' : '' }}">
+                                        <a href="javascript:void(0);"
+                                            class="nav-link menu-item-button {{ request()->routeIs('admin.categories.*') || request()->is('admin/categories*') ? 'active' : '' }}">
+                                            <div class="icon"><i class="icon-folder"></i></div>
+                                            <div class="text">Danh mục</div>
+                                        </a>
+                                        <ul class="sub-menu"
+                                            style="{{ request()->routeIs('admin.categories.*') || request()->is('admin/categories*') ? 'display: block !important;' : '' }}">
+                                            <li class="sub-menu-item">
+                                                <a href="{{ route('admin.categories.index') }}"
+                                                    class="nav-link {{ request()->routeIs('admin.categories.index') ? 'active' : '' }}">
+                                                    <div class="text">Danh sách danh mục</div>
+                                                </a>
+                                            </li>
+                                            <li class="sub-menu-item">
+                                                <a href="{{ route('admin.categories.create') }}"
+                                                    class="nav-link {{ request()->routeIs('admin.categories.create') ? 'active' : '' }}">
+                                                    <div class="text">Thêm danh mục</div>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
 
-    <li class="menu-item has-children {{ request()->routeIs('Admin.comments.*') || request()->is('admin/comments*') ? 'open' : '' }}">
-        <a href="javascript:void(0);" class="nav-link menu-item-button {{ request()->routeIs('Admin.comments.*') || request()->is('admin/comments*') ? 'active' : '' }}">
-            <div class="icon"><i class="icon-message-square"></i></div>
-            <div class="text">Bình luận</div>
-        </a>
-        <ul class="sub-menu" style="{{ request()->routeIs('Admin.comments.*') || request()->is('admin/comments*') ? 'display: block !important;' : '' }}">
-            <li class="sub-menu-item">
-                <a href="{{ route('Admin.comments.index') }}" class="nav-link {{ request()->routeIs('Admin.comments.index') ? 'active' : '' }}">
-                    <div class="text">Danh sách bình luận</div>
-                </a>
-            </li>
-        </ul>
-    </li>
+                                    <li
+                                        class="menu-item has-children {{ request()->routeIs('admin.comments.*') || request()->is('admin/comments*') ? 'open' : '' }}">
+                                        <a href="javascript:void(0);"
+                                            class="nav-link menu-item-button {{ request()->routeIs('admin.comments.*') || request()->is('admin/comments*') ? 'active' : '' }}">
+                                            <div class="icon"><i class="icon-message-square"></i></div>
+                                            <div class="text">Bình luận</div>
+                                        </a>
+                                        <ul class="sub-menu"
+                                            style="{{ request()->routeIs('admin.comments.*') || request()->is('admin/comments*') ? 'display: block !important;' : '' }}">
+                                            <li class="sub-menu-item">
+                                                <a href="{{ route('admin.comments.index') }}"
+                                                    class="nav-link {{ request()->routeIs('admin.comments.index') ? 'active' : '' }}">
+                                                    <div class="text">Danh sách bình luận</div>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
 
-    <li class="menu-item has-children {{ request()->routeIs('Admin.reviews.*') || request()->is('admin/reviews*') ? 'open' : '' }}">
-        <a href="javascript:void(0);" class="nav-link menu-item-button {{ request()->routeIs('Admin.reviews.*') || request()->is('admin/reviews*') ? 'active' : '' }}">
-            <div class="icon"><i class="icon-star"></i></div>
-            <div class="text">Đánh giá</div>
-        </a>
-        <ul class="sub-menu" style="{{ request()->routeIs('Admin.reviews.*') || request()->is('admin/reviews*') ? 'display: block !important;' : '' }}">
-            <li class="sub-menu-item">
-                <a href="{{ route('Admin.reviews.index') }}" class="nav-link {{ request()->routeIs('Admin.reviews.index') ? 'active' : '' }}">
-                    <div class="text">Danh sách đánh giá</div>
-                </a>
-            </li>
-        </ul>
-    </li>
+                                    <li
+                                        class="menu-item has-children {{ request()->routeIs('admin.reviews.*') || request()->is('admin/reviews*') ? 'open' : '' }}">
+                                        <a href="javascript:void(0);"
+                                            class="nav-link menu-item-button {{ request()->routeIs('admin.reviews.*') || request()->is('admin/reviews*') ? 'active' : '' }}">
+                                            <div class="icon"><i class="icon-star"></i></div>
+                                            <div class="text">Đánh giá</div>
+                                        </a>
+                                        <ul class="sub-menu"
+                                            style="{{ request()->routeIs('admin.reviews.*') || request()->is('admin/reviews*') ? 'display: block !important;' : '' }}">
+                                            <li class="sub-menu-item">
+                                                <a href="{{ route('admin.reviews.index') }}"
+                                                    class="nav-link {{ request()->routeIs('admin.reviews.index') ? 'active' : '' }}">
+                                                    <div class="text">Danh sách đánh giá</div>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
 
-    <li class="menu-item has-children {{ request()->routeIs('admin.users.*') || request()->is('admin/users*') ? 'open' : '' }}">
-        <a href="javascript:void(0);" class="nav-link menu-item-button {{ request()->routeIs('admin.users.*') || request()->is('admin/users*') ? 'active' : '' }}">
-            <div class="icon"><i class="icon-users"></i></div>
-            <div class="text">Người dùng</div>
-        </a>
-        <ul class="sub-menu" style="{{ request()->routeIs('admin.users.*') || request()->is('admin/users*') ? 'display: block !important;' : '' }}">
-            <li class="sub-menu-item">
-                <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.index') ? 'active' : '' }}">
-                    <div class="text">Danh sách người dùng</div>
-                </a>
-            </li>
-            <li class="sub-menu-item">
-                <a href="{{ route('admin.users.create') }}" class="nav-link {{ request()->routeIs('admin.users.create') ? 'active' : '' }}">
-                    <div class="text">Thêm người dùng</div>
-                </a>
-            </li>
-        </ul>
-    </li>
+                                    <li
+                                        class="menu-item has-children {{ request()->routeIs('admin.users.*') || request()->is('admin/users*') ? 'open' : '' }}">
+                                        <a href="javascript:void(0);"
+                                            class="nav-link menu-item-button {{ request()->routeIs('admin.users.*') || request()->is('admin/users*') ? 'active' : '' }}">
+                                            <div class="icon"><i class="icon-users"></i></div>
+                                            <div class="text">Người dùng</div>
+                                        </a>
+                                        <ul class="sub-menu"
+                                            style="{{ request()->routeIs('admin.users.*') || request()->is('admin/users*') ? 'display: block !important;' : '' }}">
+                                            <li class="sub-menu-item">
+                                                <a href="{{ route('admin.users.index') }}"
+                                                    class="nav-link {{ request()->routeIs('admin.users.index') ? 'active' : '' }}">
+                                                    <div class="text">Danh sách người dùng</div>
+                                                </a>
+                                            </li>
 
-    <li class="menu-item has-children {{ request()->routeIs('posts.*') || request()->is('admin/posts*') ? 'open' : '' }}">
-        <a href="javascript:void(0);" class="nav-link menu-item-button {{ request()->routeIs('posts.*') || request()->is('admin/posts*') ? 'active' : '' }}">
-            <div class="icon"><i class="icon-file-text"></i></div>
-            <div class="text">Bài viết</div>
-        </a>
-        <ul class="sub-menu" style="{{ request()->routeIs('posts.*') || request()->is('admin/posts*') ? 'display: block !important;' : '' }}">
-            <li class="sub-menu-item">
-                <a href="{{ route('posts.index') }}" class="nav-link {{ request()->routeIs('posts.index') ? 'active' : '' }}">
-                    <div class="text">Danh sách bài viết</div>
-                </a>
-            </li>
-            <li class="sub-menu-item">
-                <a href="{{ route('posts.create') }}" class="nav-link {{ request()->routeIs('posts.create') ? 'active' : '' }}">
-                    <div class="text">Thêm bài viết</div>
-                </a>
-            </li>
-        </ul>
-    </li>
+                                        </ul>
+                                    </li>
 
-    <li class="menu-item has-children {{ request()->routeIs('admin.discounts.*') || request()->is('admin/discounts*') ? 'open' : '' }}">
-        <a href="javascript:void(0);" class="nav-link menu-item-button {{ request()->routeIs('admin.discounts.*') || request()->is('admin/discounts*') ? 'active' : '' }}">
-            <div class="icon"><i class="icon-tag"></i></div>
-            <div class="text">Mã Giảm Giá</div>
-        </a>
-        <ul class="sub-menu" style="{{ request()->routeIs('admin.discounts.*') || request()->is('admin/discounts*') ? 'display: block !important;' : '' }}">
-            <li class="sub-menu-item">
-                <a href="{{ route('admin.discounts.index') }}" class="nav-link {{ request()->routeIs('admin.discounts.index') ? 'active' : '' }}">
-                    <div class="text">Danh sách mã giảm giá</div>
-                </a>
-            </li>
-            <li class="sub-menu-item">
-                <a href="{{ route('admin.discounts.create') }}" class="nav-link {{ request()->routeIs('admin.discounts.create') ? 'active' : '' }}">
-                    <div class="text">Thêm mã giảm giá</div>
-                </a>
-            </li>
-        </ul>
-    </li>
+                                    <li
+                                        class="menu-item has-children {{ request()->routeIs('admin.posts.*') || request()->is('admin/posts*') ? 'open' : '' }}">
+                                        <a href="javascript:void(0);"
+                                            class="nav-link menu-item-button {{ request()->routeIs('admin.posts.*') || request()->is('admin/posts*') ? 'active' : '' }}">
+                                            <div class="icon"><i class="icon-file-text"></i></div>
+                                            <div class="text">Bài viết</div>
+                                        </a>
+                                        <ul class="sub-menu"
+                                            style="{{ request()->routeIs('admin.posts.*') || request()->is('admin/posts*') ? 'display: block !important;' : '' }}">
+                                            <li class="sub-menu-item">
+                                                <a href="{{ route('admin.posts.index') }}"
+                                                    class="nav-link {{ request()->routeIs('admin.posts.index') ? 'active' : '' }}">
+                                                    <div class="text">Danh sách bài viết</div>
+                                                </a>
+                                            </li>
+                                            <li class="sub-menu-item">
+                                                <a href="{{ route('admin.posts.create') }}"
+                                                    class="nav-link {{ request()->routeIs('admin.posts.create') ? 'active' : '' }}">
+                                                    <div class="text">Thêm bài viết</div>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
 
-    <li class="menu-item has-children {{ request()->routeIs('admin.banners.*') || request()->is('admin/banners*') ? 'open' : '' }}">
-        <a href="javascript:void(0);" class="nav-link menu-item-button {{ request()->routeIs('admin.banners.*') || request()->is('admin/banners*') ? 'active' : '' }}">
-            <div class="icon"><i class="icon-image"></i></div>
-            <div class="text">Banner</div>
-        </a>
-        <ul class="sub-menu" style="{{ request()->routeIs('admin.banners.*') || request()->is('admin/banners*') ? 'display: block !important;' : '' }}">
-            <li class="sub-menu-item">
-                <a href="{{ route('admin.banners.index') }}" class="nav-link {{ request()->routeIs('admin.banners.index') ? 'active' : '' }}">
-                    <div class="text">Danh sách banner</div>
-                </a>
-            </li>
-            <li class="sub-menu-item">
-                <a href="{{ route('admin.banners.create') }}" class="nav-link {{ request()->routeIs('admin.banners.create') ? 'active' : '' }}">
-                    <div class="text">Thêm banner</div>
-                </a>
-            </li>
-        </ul>
-    </li>
+                                    <li
+                                        class="menu-item has-children {{ request()->routeIs('admin.discounts.*') || request()->is('admin/discounts*') ? 'open' : '' }}">
+                                        <a href="javascript:void(0);"
+                                            class="nav-link menu-item-button {{ request()->routeIs('admin.discounts.*') || request()->is('admin/discounts*') ? 'active' : '' }}">
+                                            <div class="icon"><i class="icon-tag"></i></div>
+                                            <div class="text">Mã Giảm Giá</div>
+                                        </a>
+                                        <ul class="sub-menu"
+                                            style="{{ request()->routeIs('admin.discounts.*') || request()->is('admin/discounts*') ? 'display: block !important;' : '' }}">
+                                            <li class="sub-menu-item">
+                                                <a href="{{ route('admin.discounts.index') }}"
+                                                    class="nav-link {{ request()->routeIs('admin.discounts.index') ? 'active' : '' }}">
+                                                    <div class="text">Danh sách mã giảm giá</div>
+                                                </a>
+                                            </li>
+                                            <li class="sub-menu-item">
+                                                <a href="{{ route('admin.discounts.create') }}"
+                                                    class="nav-link {{ request()->routeIs('admin.discounts.create') ? 'active' : '' }}">
+                                                    <div class="text">Thêm mã giảm giá</div>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
 
-    <li class="menu-item has-children {{ request()->routeIs('catalog.*') || request()->is('admin/catalog*') ? 'open' : '' }}">
-        <a href="javascript:void(0);" class="nav-link menu-item-button {{ request()->routeIs('catalog.*') || request()->is('admin/catalog*') ? 'active' : '' }}">
-            <div class="icon"><i class="icon-list"></i></div>
-            <div class="text">Thuộc tính sản phẩm</div>
-        </a>
-        <ul class="sub-menu" style="{{ request()->routeIs('catalog.*') || request()->is('admin/catalog*') ? 'display: block !important;' : '' }}">
-            <li class="sub-menu-item">
-                <a href="{{ route('catalog.index') }}" class="nav-link {{ request()->routeIs('catalog.index') ? 'active' : '' }}">
-                    <div class="text">Danh sách thuộc tính</div>
-                </a>
-            </li>
-        </ul>
-    </li>
+                                    <li
+                                        class="menu-item has-children {{ request()->routeIs('admin.banners.*') || request()->is('admin/banners*') ? 'open' : '' }}">
+                                        <a href="javascript:void(0);"
+                                            class="nav-link menu-item-button {{ request()->routeIs('admin.banners.*') || request()->is('admin/banners*') ? 'active' : '' }}">
+                                            <div class="icon"><i class="icon-image"></i></div>
+                                            <div class="text">Banner</div>
+                                        </a>
+                                        <ul class="sub-menu"
+                                            style="{{ request()->routeIs('admin.banners.*') || request()->is('admin/banners*') ? 'display: block !important;' : '' }}">
+                                            <li class="sub-menu-item">
+                                                <a href="{{ route('admin.banners.index') }}"
+                                                    class="nav-link {{ request()->routeIs('admin.banners.index') ? 'active' : '' }}">
+                                                    <div class="text">Danh sách banner</div>
+                                                </a>
+                                            </li>
+                                            <li class="sub-menu-item">
+                                                <a href="{{ route('admin.banners.create') }}"
+                                                    class="nav-link {{ request()->routeIs('admin.banners.create') ? 'active' : '' }}">
+                                                    <div class="text">Thêm banner</div>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
 
-    <li class="menu-item">
-        <a href="{{ route('Admin.contacts.index') }}" class="nav-link {{ request()->routeIs('Admin.contacts.index') ? 'active' : '' }}">
-            <div class="icon"><i class="icon-mail"></i></div>
-            <div class="text">Quản lý liên hệ</div>
-        </a>
-    </li>
+                                    <li
+                                        class="menu-item has-children {{ request()->routeIs('admin.catalog.*') || request()->is('admin/catalog*') ? 'open' : '' }}">
+                                        <a href="javascript:void(0);"
+                                            class="nav-link menu-item-button {{ request()->routeIs('admin.catalog.*') || request()->is('admin/catalog*') ? 'active' : '' }}">
+                                            <div class="icon"><i class="icon-list"></i></div>
+                                            <div class="text">Thuộc tính sản phẩm</div>
+                                        </a>
+                                        <ul class="sub-menu"
+                                            style="{{ request()->routeIs('admin.catalog.*') || request()->is('admin/catalog*') ? 'display: block !important;' : '' }}">
+                                            <li class="sub-menu-item">
+                                                <a href="{{ route('admin.catalog.index') }}"
+                                                    class="nav-link {{ request()->routeIs('admin.catalog.index') ? 'active' : '' }}">
+                                                    <div class="text">Danh sách thuộc tính</div>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
 
-    <li class="menu-item">
-        <a href="logout" class="nav-link">
-            <div class="icon"><i class="icon-log-out"></i></div>
-            <div class="text">Đăng Xuất</div>
-        </a>
-    </li>
-</ul>
+                                    <li class="menu-item">
+                                        <a href="{{ route('admin.contacts.index') }}"
+                                            class="nav-link {{ request()->routeIs('admin.contacts.index') ? 'active' : '' }}">
+                                            <div class="icon"><i class="icon-mail"></i></div>
+                                            <div class="text">Quản lý liên hệ</div>
+                                        </a>
+                                    </li>
+
+                                    <li class="menu-item">
+                                        <a class="dropdown-item" href="{{ route('logout') }}"
+                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            Đăng Xuất
+                                        </a>
+
+                                        <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                            class="d-none">
+                                            @csrf
+                                        </form>
+                                    </li>
+
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -471,7 +522,7 @@
                                         src="{{ asset('https://themesflat.co/html/ecomus/images/logo/logo.svg') }}"
                                         data-light="{{ asset('https://themesflat.co/html/ecomus/images/logo/logo.svg') }}"
                                         data-dark="{{ asset('https://themesflat.co/html/ecomus/images/logo/logo-white.svg') }}">
-                                </span></a>
+                                    </span></a>
                                 <div class="button-show-hide">
                                     <i class="icon-chevron-left"></i>
                                 </div>
@@ -799,7 +850,8 @@
                                                         </div>
                                                         <a href="#">
                                                             <div class="text-tiny">Photoshop</div>
-                                                        </span></a>
+                                                            </span>
+                                                        </a>
                                                     </li>
                                                     <li class="item">
                                                         <div class="image">
@@ -807,7 +859,8 @@
                                                         </div>
                                                         <a href="#">
                                                             <div class="text-tiny">illustrator</div>
-                                                        </span></a>
+                                                            </span>
+                                                        </a>
                                                     </li>
                                                     <li class="item">
                                                         <div class="image">
@@ -815,7 +868,8 @@
                                                         </div>
                                                         <a href="#">
                                                             <div class="text-tiny">Sheets</div>
-                                                        </span></a>
+                                                            </span>
+                                                        </a>
                                                     </li>
                                                     <li class="item">
                                                         <div class="image">
@@ -823,7 +877,8 @@
                                                         </div>
                                                         <a href="#">
                                                             <div class="text-tiny">Gmail</div>
-                                                        </span></a>
+                                                            </span>
+                                                        </a>
                                                     </li>
                                                     <li class="item">
                                                         <div class="image">
@@ -831,7 +886,8 @@
                                                         </div>
                                                         <a href="#">
                                                             <div class="text-tiny">Messenger</div>
-                                                        </span></a>
+                                                            </span>
+                                                        </a>
                                                     </li>
                                                     <li class="item">
                                                         <div class="image">
@@ -839,7 +895,8 @@
                                                         </div>
                                                         <a href="#">
                                                             <div class="text-tiny">Youtube</div>
-                                                        </span></a>
+                                                            </span>
+                                                        </a>
                                                     </li>
                                                     <li class="item">
                                                         <div class="image">
@@ -847,7 +904,8 @@
                                                         </div>
                                                         <a href="#">
                                                             <div class="text-tiny">Flaticon</div>
-                                                        </span></a>
+                                                            </span>
+                                                        </a>
                                                     </li>
                                                     <li class="item">
                                                         <div class="image">
@@ -855,7 +913,8 @@
                                                         </div>
                                                         <a href="#">
                                                             <div class="text-tiny">Instagram</div>
-                                                        </span></a>
+                                                            </span>
+                                                        </a>
                                                     </li>
                                                     <li class="item">
                                                         <div class="image">
@@ -863,7 +922,8 @@
                                                         </div>
                                                         <a href="#">
                                                             <div class="text-tiny">PDF</div>
-                                                        </span></a>
+                                                            </span>
+                                                        </a>
                                                     </li>
                                                 </ul>
                                             </li>
@@ -877,10 +937,12 @@
                                             id="dropdownMenuButton3" data-bs-toggle="dropdown" aria-expanded="false">
                                             <span class="header-user wg-user">
                                                 <span class="image">
-                                                    <img src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : asset('images/avatar/avata.jpg') }}" alt="" style="width:40px;height:40px;object-fit:cover;">
+                                                    <img src="{{ Auth::user()->avatar ? asset('storage/' . Auth::user()->avatar) : asset('images/avatar/avata.jpg') }}"
+                                                        alt="" style="width:40px;height:40px;object-fit:cover;">
                                                 </span>
                                                 <span class="flex flex-column">
-                                                    <span class="body-text text-main-dark">{{ Auth::user()->name }}</span>
+                                                    <span
+                                                        class="body-text text-main-dark">{{ Auth::user()->name }}</span>
                                                     <span class="text-tiny">Quản trị viên bán hàng</span>
                                                 </span>
                                             </span>
@@ -893,7 +955,8 @@
                                                         <i class="icon-user"></i>
                                                     </div>
                                                     <div class="body-title-2">Tài khoản</div>
-                                                </span></a>
+                                                    </span>
+                                                </a>
                                             </li>
 
                                             <li>
@@ -902,7 +965,8 @@
                                                         <i class="icon-user"></i>
                                                     </div>
                                                     <div class="body-title-2">Trang Người Dùng</div>
-                                                </span></a>
+                                                    </span>
+                                                </a>
                                             </li>
                                             <li>
                                                 <a href="#" class="user-item">
@@ -911,7 +975,8 @@
                                                     </div>
                                                     <div class="body-title-2">Hộp Thư</div>
                                                     <div class="number">27</div>
-                                                </span></a>
+                                                    </span>
+                                                </a>
                                             </li>
                                             <li>
                                                 <a href="#" class="user-item">
@@ -919,7 +984,8 @@
                                                         <i class="icon-file-text"></i>
                                                     </div>
                                                     <div class="body-title-2">Công Việc</div>
-                                                </span></a>
+                                                    </span>
+                                                </a>
                                             </li>
                                             <li>
                                                 <a href="setting.html" class="user-item">
@@ -927,7 +993,8 @@
                                                         <i class="icon-settings"></i>
                                                     </div>
                                                     <div class="body-title-2">Cài Đặt</div>
-                                                </span></a>
+                                                    </span>
+                                                </a>
                                             </li>
                                             <li>
                                                 <a href="#" class="user-item">
@@ -935,7 +1002,8 @@
                                                         <i class="icon-headphones"></i>
                                                     </div>
                                                     <div class="body-title-2">Hỗ Trợ</div>
-                                                </span></a>
+                                                    </span>
+                                                </a>
                                             </li>
                                             <li>
                                                 <a href="logout" class="user-item">
@@ -943,7 +1011,8 @@
                                                         <i class="icon-log-out"></i>
                                                     </div>
                                                     <div class="body-title-2">Đăng Xuất</div>
-                                                </span></a>
+                                                    </span>
+                                                </a>
                                             </li>
                                         </ul>
 
@@ -985,7 +1054,8 @@
     <!-- Javascript -->
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    {{-- <script src="{{ asset('js/bootstrap.min.js') }}"></script> --}}
+    {{--
+    <script src="{{ asset('js/bootstrap.min.js') }}"></script> --}}
     <script src="{{ asset('js/bootstrap-select.min.js') }}"></script>
     <script src="{{ asset('js/zoom.js') }}"></script>
     <script src="{{ asset('js/morris.min.js') }}"></script>
@@ -1015,18 +1085,18 @@
 
 
     <script>
-        $(document).ready(function() {
-            setTimeout(function() {
+        $(document).ready(function () {
+            setTimeout(function () {
                 $('.custom-alert').alert('close');
             }, 3500);
         });
     </script>
 
     <script>
-        $(document).ready(function() {
-            $('#alert-stack .custom-alert').each(function(i, el) {
-                setTimeout(function() {
-                    $(el).fadeOut(400, function() { $(this).remove(); });
+        $(document).ready(function () {
+            $('#alert-stack .custom-alert').each(function (i, el) {
+                setTimeout(function () {
+                    $(el).fadeOut(400, function () { $(this).remove(); });
                 }, 3000 + i * 300); // Cái sau trễ hơn cái trước 0.3s
             });
         });

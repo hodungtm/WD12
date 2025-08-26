@@ -4,23 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\OrderCompletedMail;
-use App\Models\Discount;
 use App\Models\Order;
-use App\Models\Order_items; // Đổi tên thành OrderItem nếu đúng chuẩn PSR-4
-
-use App\Models\Products;
-use App\Models\ProductVariant;
-use App\Models\Receiver;
 use App\Models\ShippingMethod;
 use App\Models\User;
-use App\Models\Size; // Thêm Model Size
-use App\Models\Color; // Thêm Model Color
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use \Illuminate\Support\Str;
+
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -96,86 +87,84 @@ class OrderController extends Controller
         ));
     }
 
-public function update(Request $request, $id)
-{
-    $order = Order::findOrFail($id);
+    public function update(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
 
-    $originalStatus = $order->status;
-    $originalPaymentStatus = $order->payment_status;
+        $originalStatus = $order->status;
+        $originalPaymentStatus = $order->payment_status;
 
-    $rules = [
-        'status' => [
-            'required',
-            'string',
-            Rule::in(['Đang chờ', 'Xác nhận đơn', 'Đang giao hàng', 'Hoàn thành', 'Đã hủy']),
-        ],
-        'payment_status' => [
-            'required',
-            'string',
-            Rule::in(['Chờ thanh toán', 'Đã thanh toán']),
-        ],
-        'note' => 'nullable|string|max:1000',
-    ];
-
-    $validatedData = $request->validate($rules);
-
-    // Chỉ kiểm tra quy trình nếu status thay đổi
-    if ($validatedData['status'] !== $originalStatus) {
-        $statusFlow = [
-            'Đang chờ'       => ['Xác nhận đơn', 'Đã hủy'],
-            'Xác nhận đơn'   => ['Đang giao hàng', 'Đã hủy'],
-            'Đang giao hàng' => ['Hoàn thành', 'Đã hủy'],
-            'Hoàn thành'     => [],
-            'Đã hủy'         => [],
+        $rules = [
+            'status' => [
+                'required',
+                'string',
+                Rule::in(['Đang chờ', 'Xác nhận đơn', 'Đang giao hàng', 'Hoàn thành', 'Đã hủy']),
+            ],
+            'payment_status' => [
+                'required',
+                'string',
+                Rule::in(['Chờ thanh toán', 'Đã thanh toán']),
+            ],
+            'note' => 'nullable|string|max:1000',
         ];
 
-        if (!in_array($validatedData['status'], $statusFlow[$originalStatus] ?? [])) {
+        $validatedData = $request->validate($rules);
+
+        // Chỉ kiểm tra quy trình nếu status thay đổi
+        if ($validatedData['status'] !== $originalStatus) {
+            $statusFlow = [
+                'Đang chờ'       => ['Xác nhận đơn', 'Đã hủy'],
+                'Xác nhận đơn'   => ['Đang giao hàng', 'Đã hủy'],
+                'Đang giao hàng' => ['Hoàn thành', 'Đã hủy'],
+                'Hoàn thành'     => [],
+                'Đã hủy'         => [],
+            ];
+
+            if (!in_array($validatedData['status'], $statusFlow[$originalStatus] ?? [])) {
+                return redirect()->back()->withErrors([
+                    'status' => "Không thể chuyển từ \"$originalStatus\" sang \"$validatedData[status]\"."
+                ])->withInput();
+            }
+        }
+
+        // Kiểm tra thanh toán (tách biệt với trạng thái đơn hàng)
+        if (
+            $originalPaymentStatus === 'Đã thanh toán' &&
+            $validatedData['payment_status'] === 'Chờ thanh toán'
+        ) {
             return redirect()->back()->withErrors([
-                'status' => "Không thể chuyển từ \"$originalStatus\" sang \"$validatedData[status]\"."
+                'payment_status' => 'Không thể chuyển từ "Đã thanh toán" về "Chờ thanh toán".'
             ])->withInput();
         }
-    }
 
-    // Kiểm tra thanh toán (tách biệt với trạng thái đơn hàng)
-    if (
-        $originalPaymentStatus === 'Đã thanh toán' &&
-        $validatedData['payment_status'] === 'Chờ thanh toán'
-    ) {
-        return redirect()->back()->withErrors([
-            'payment_status' => 'Không thể chuyển từ "Đã thanh toán" về "Chờ thanh toán".'
-        ])->withInput();
-    }
+        DB::beginTransaction();
+        try {
+            $order->update([
+                'status'         => $validatedData['status'],
+                'payment_status' => $validatedData['payment_status'],
+                'note'           => $validatedData['note'] ?? null,
+            ]);
 
-    DB::beginTransaction();
-    try {
-        $order->update([
-            'status'         => $validatedData['status'],
-            'payment_status' => $validatedData['payment_status'],
-            'note'           => $validatedData['note'] ?? null,
-        ]);
+            // Gửi mail khi trạng thái thay đổi
+            if (
+                $validatedData['status'] !== $originalStatus &&
+                $order->user && $order->user->email
+            ) {
+                Mail::to($order->user->email)->send(new OrderCompletedMail($order));
+            }
 
-        // Gửi mail khi trạng thái thay đổi
-        if (
-            $validatedData['status'] !== $originalStatus &&
-            $order->user && $order->user->email
-        ) {
-            Mail::to($order->user->email)->send(new OrderCompletedMail($order));
+            DB::commit();
+            return redirect()->route('admin.orders.edit', $order->id)
+                ->with('success', 'Cập nhật đơn hàng thành công!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Lỗi khi cập nhật đơn hàng: " . $e->getMessage(), [
+                'order_id' => $order->id,
+                'request_data' => $request->all()
+            ]);
+
+            return redirect()->back()->with('error', 'Có lỗi xảy ra khi cập nhật đơn hàng: ' . $e->getMessage())
+                ->withInput();
         }
-
-        DB::commit();
-        return redirect()->route('admin.orders.edit', $order->id)
-            ->with('success', 'Cập nhật đơn hàng thành công!');
-    } catch (\Exception $e) {
-        DB::rollBack();
-        Log::error("Lỗi khi cập nhật đơn hàng: " . $e->getMessage(), [
-            'order_id' => $order->id,
-            'request_data' => $request->all()
-        ]);
-
-        return redirect()->back()->with('error', 'Có lỗi xảy ra khi cập nhật đơn hàng: ' . $e->getMessage())
-            ->withInput();
     }
-}
-
-
 }

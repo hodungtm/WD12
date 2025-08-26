@@ -10,7 +10,7 @@
                     <div class="wg-box">
                         <div class="flex items-center justify-between gap10 flex-wrap">
                             <div class="wg-filter flex-grow">
-                                <form action="{{ route('products.index') }}" method="GET" class="form-search">
+                                <form action="{{ route('admin.products.index') }}" method="GET" class="form-search">
                                     <fieldset class="name">
                                         <input type="text" placeholder="Tìm kiếm sản phẩm..." name="search"
                                             value="{{ request('search') }}">
@@ -22,11 +22,11 @@
                             </div>
 
                             <a class="tf-button style-1 w208 btn btn-outline-success btn-sm me-1 mb-1"
-                                href="{{ route('products.index') }}">
+                                href="{{ route('admin.products.index') }}">
                                 <i class="fas fa-arrow-left me-2"></i> Quay lại danh sách
                             </a>
 
-                            <a href="{{ route('trash') }}" class="item eye" title="Thùng rác">
+                            <a href="{{ route('admin.products.trash') }}" class="item eye" title="Thùng rác">
                                 <h3 style="color: red;">
                                     <i class="icon-trash-2"></i>
                                 </h3>
@@ -78,7 +78,7 @@
                                                     @endif
                                                 </div>
                                                 <div class="title line-clamp-2 mb-0">
-                                                    <a href="{{ route('products.show', $product->id) }}" class="body-text">{{ $product->name }}</a>
+                                                    <a href="{{ route('admin.products.show', $product->id) }}" class="body-text">{{ $product->name }}</a>
                                                 </div>
                                             </div>
                                             <div class="body-text mt-4">{{ $product->product_code }}</div>
@@ -104,7 +104,7 @@
                                                    style="margin-right: 5px; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px;   ">
                                                     <i class="fas fa-undo" style="color: #28a745; font-size: 20px;"></i>
                                                 </a>
-                                                <form action="{{ route('products.forceDelete', $product->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi hệ thống vĩnh viễn?');">
+                                                <form action="{{ route('admin.products.forceDelete', $product->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi hệ thống vĩnh viễn?');">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" style="color: red"  title="Xóa vĩnh viễn">

@@ -341,7 +341,7 @@
                     <i class="icon-box"></i>
                     <div class="body-title d-flex align-items-center justify-content-between">
                         Tổng tồn kho theo sản phẩm
-                        <a href="{{ route('products.index') }}" class="dashboard-link">Xem tất cả</a>
+                        <a href="{{ route('admin.products.index') }}" class="dashboard-link">Xem tất cả</a>
                     </div>
                 </div>
                 <div class="wg-table table-product-list mt-3" style="overflow-x:auto;">

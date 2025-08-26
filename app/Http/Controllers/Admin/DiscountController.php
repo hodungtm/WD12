@@ -170,50 +170,5 @@ class DiscountController extends Controller
         return view('admin.discounts.show', compact('discount'));
     }
 
-    public function importExcel(Request $request)
-    {
-        $request->validate([
-            'import_file' => 'required|mimes:xlsx,xls'
-        ]);
-
-        try {
-            Excel::import(new DiscountsImport, $request->file('import_file'));
-            return redirect()->route('admin.discounts.index')->with('success', 'Import dữ liệu thành công!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Lỗi khi import: ' . $e->getMessage());
-        }
-    }
-
-    public function deleteAll()
-    {
-        Discount::query()->delete();
-        return redirect()->route('admin.discounts.index')->with('success', 'Đã xóa tất cả mã giảm giá');
-    }
-
-public function bulkDelete(Request $request)
-{
-    if ($request->filled('selected_discounts')) {
-        Discount::whereIn('id', $request->selected_discounts)->delete();
-
-        return back()->with('success', 'Đã xóa các mã được chọn.');
-    }
-
-    // Nếu chọn xóa tất cả hiển thị
-    if ($request->filled('delete_all')) {
-        $query = Discount::query();
-
-        if ($request->filled('search')) {
-            $query->where('code', 'like', '%' . $request->search . '%');
-        }
-
-        $idsToDelete = $query->pluck('id');
-        Discount::whereIn('id', $idsToDelete)->delete();
-
-        return back()->with('success', 'Đã xóa tất cả mã đang hiển thị.');
-    }
-
-    return back()->with('success', 'Không có mã nào được chọn để xóa.');
-}
-
 
 }

@@ -6,11 +6,11 @@
             <div class="flex items-center flex-wrap justify-between gap20 mb-30">
                 <h3>Chi tiết đánh giá</h3>
                 <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-                    <li><a href="{{ route('Admin.reviews.index') }}">
+                    <li><a href="{{ route('admin.reviews.index') }}">
                             <div class="text-tiny">Dashboard</div>
                         </a></li>
                     <li><i class="icon-chevron-right"></i></li>
-                    <li><a href="{{ route('Admin.reviews.index') }}">
+                    <li><a href="{{ route('admin.reviews.index') }}">
                             <div class="text-tiny">Đánh giá</div>
                         </a></li>
                     <li><i class="icon-chevron-right"></i></li>
@@ -85,10 +85,10 @@
 
             <!-- Action buttons -->
             <div class="flex justify-start gap-3 mt-4">
-                <a href="{{ route('Admin.reviews.edit', $review->id) }}" class="tf-button btn-sm w-auto px-3 py-2">
+                <a href="{{ route('admin.reviews.edit', $review->id) }}" class="tf-button btn-sm w-auto px-3 py-2">
                     <i class="icon-edit-3"></i> Chỉnh sửa
                 </a>
-                <a href="{{ route('Admin.reviews.index') }}" class="tf-button style-3 btn-sm w-auto px-3 py-2">
+                <a href="{{ route('admin.reviews.index') }}" class="tf-button style-3 btn-sm w-auto px-3 py-2">
                     <i class="icon-arrow-left"></i> Quay lại danh sách
                 </a>
             </div>
