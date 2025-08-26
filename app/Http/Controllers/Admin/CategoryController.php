@@ -36,7 +36,7 @@ class CategoryController extends Controller
         });
 
     $categories = $query->paginate($perPage)->appends($request->all());
-    return view('Admin.categories.index', compact('categories'));
+    return view('admin.categories.index', compact('categories'));
 }
 
     /**
@@ -86,7 +86,7 @@ class CategoryController extends Controller
 
         $category->save();
 
-        return redirect()->route('Admin.categories.index')->with('success', 'Thêm danh mục thành công');
+        return redirect()->route('admin.categories.index')->with('success', 'Thêm danh mục thành công');
     }
 
     /**
@@ -140,7 +140,7 @@ class CategoryController extends Controller
 
         $category->save();
 
-        return redirect()->route('Admin.categories.index')->with('success', 'Cập nhật danh mục thành công');
+        return redirect()->route('admin.categories.index')->with('success', 'Cập nhật danh mục thành công');
     }
     public function show($id)
     {
@@ -155,28 +155,10 @@ class CategoryController extends Controller
         $category = Category::findOrFail($id);
         $category->delete();
 
-        return redirect()->route('Admin.categories.index')->with('success', 'Đã chuyển danh mục vào thùng rác.');
+        return redirect()->route('admin.categories.index')->with('success', 'Đã xóa danh mục thành công.');
     }
 
-    public function trash()
-    {
-        $categories = Category::onlyTrashed()->orderBy('deleted_at', 'desc')->paginate(10);
-        return view('Admin.categories.trash', compact('categories'));
-    }
+    
 
-    public function restore($id)
-    {
-        $category = Category::withTrashed()->findOrFail($id);
-        $category->restore();
-
-        return redirect()->route('Admin.categories.trash')->with('success', 'Khôi phục danh mục thành công.');
-    }
-
-    public function forceDelete($id)
-    {
-        $category = Category::withTrashed()->findOrFail($id);
-        $category->forceDelete();
-
-        return redirect()->route('Admin.categories.trash')->with('success', 'Đã xóa vĩnh viễn danh mục.');
-    }
+    
 }

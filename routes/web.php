@@ -83,6 +83,11 @@ Route::prefix('client')->name('client.')->group(function () {
         Route::middleware(['auth'])->group(function () {
             Route::post('/orders/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
         });
+
+        // Continue MoMo payment from dashboard (POST)
+        Route::post('/orders/{order}/momo', [AccountController::class, 'continueMomo'])
+            ->middleware('auth')
+            ->name('payment.momo');
     });
 });
 

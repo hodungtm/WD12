@@ -429,6 +429,7 @@
                             <th><i class="fas fa-sort-numeric-up me-2"></i>Số lượng</th>
                             <th><i class="fas fa-money-bill me-2"></i>Đơn giá</th>
                             <th><i class="fas fa-calculator me-2"></i>Thành tiền</th>
+                            <th><i class="fas fa-star me-2"></i>Đánh giá</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -453,6 +454,20 @@
                                 </td>
                                 <td>
                                     <span class="total-price">{{ number_format($item->total_price, 0, ',', '.') }}₫</span>
+                                </td>
+                                <td class="text-center">
+                                    @if($order->status === 'Hoàn thành')  
+                                        <button type="button"
+                                                class="btn btn-outline-warning btn-sm btn-open-review-modal"
+                                                data-product-id="{{ $item->product_id ?? '' }}"
+                                                data-order-item-id="{{ $item->id ?? '' }}"
+                                                data-product-name="{{ $item->product_name ?? '' }}"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#reviewModal"
+                                                title="Đánh giá sản phẩm">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
@@ -486,7 +501,7 @@
 
             </div>
             <div class="summary-row">
-                <span><i class="fas fa-money-check-alt me-2"></i>TỔNG THANH TOÁN:</span>
+                <span><i class="fas fa-money-check-alt me-2"></i>THANH TOÁN:</span>
                 <span>{{ number_format($order->final_amount, 0, ',', '.') }}₫</span>
             </div>
         </div>
@@ -499,4 +514,111 @@
             </a>
         </div>
     </main>
+
+    <!-- Add Review Modal -->
+    <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="reviewForm" method="POST" action="{{ route('client.product.review', 0) }}" class="comment-form m-0">
+                    @csrf
+                    <input type="hidden" name="product_id" id="reviewProductId">
+                    <input type="hidden" name="order_item_id" id="reviewOrderItemId">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="reviewModalLabel">
+                            <i class="fas fa-star me-2"></i>Đánh giá sản phẩm
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="rating-form mb-3">
+                            <label for="modal-rating">Đánh giá của bạn <span class="required text-danger">*</span></label>
+                            <span class="rating-stars d-block mt-2" id="modal-rating-stars" role="radiogroup" aria-label="Đánh giá">
+                                <style>
+                                    .rating-star { color: #ccc; font-size: 1.5rem; background: transparent; border: none; padding: 0; margin-right: 5px; cursor: pointer; line-height: 1; }
+                                    .rating-star:focus { outline: none; }
+                                </style>
+                                <button type="button" class="rating-star" data-value="1" aria-label="1 sao">★</button>
+                                <button type="button" class="rating-star" data-value="2" aria-label="2 sao">★</button>
+                                <button type="button" class="rating-star" data-value="3" aria-label="3 sao">★</button>
+                                <button type="button" class="rating-star" data-value="4" aria-label="4 sao">★</button>
+                                <button type="button" class="rating-star" data-value="5" aria-label="5 sao">★</button>
+                            </span>
+                            <input type="hidden" name="so_sao" id="modal-rating" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="modal-noi-dung">Nội dung đánh giá <span class="required text-danger">*</span></label>
+                            <textarea name="noi_dung" id="modal-noi-dung" cols="5" rows="6" class="form-control" required placeholder="Viết đánh giá của bạn về sản phẩm này..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" value="Gửi đánh giá">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Open review modal per product
+            document.querySelectorAll('.btn-open-review-modal').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var productId = btn.getAttribute('data-product-id');
+                    var orderItemId = btn.getAttribute('data-order-item-id');
+                    var form = document.getElementById('reviewForm');
+
+                    if (!productId) {
+                        alert('Không xác định được sản phẩm để đánh giá.');
+                        return;
+                    }
+
+                    form.reset();
+                    form.action = "{{ route('client.product.review', 'PRODUCT_ID') }}".replace('PRODUCT_ID', productId);
+                    document.getElementById('reviewProductId').value = productId;
+                    document.getElementById('reviewOrderItemId').value = orderItemId || '';
+
+                    // reset stars
+                    document.getElementById('modal-rating').value = '';
+                    document.querySelectorAll('.rating-star').forEach(s => s.style.color = '#ccc');
+                });
+            });
+
+            // Star rating interactions
+            const starContainer = document.getElementById('modal-rating-stars');
+            const ratingInput = document.getElementById('modal-rating');
+            if (starContainer && ratingInput) {
+                starContainer.addEventListener('click', function (e) {
+                    const btn = e.target.closest('.rating-star');
+                    if (!btn) return;
+                    const v = parseInt(btn.dataset.value, 10) || 0;
+                    ratingInput.value = v;
+                    document.querySelectorAll('.rating-star').forEach(s => s.style.color = '#ccc');
+                    for (let i = 1; i <= v; i++) {
+                        const s = starContainer.querySelector(`.rating-star[data-value="${i}"]`);
+                        if (s) s.style.color = '#FFD700';
+                    }
+                });
+
+                starContainer.addEventListener('mouseover', function (e) {
+                    const btn = e.target.closest('.rating-star');
+                    if (!btn) return;
+                    const v = parseInt(btn.dataset.value, 10) || 0;
+                    document.querySelectorAll('.rating-star').forEach(s => s.style.color = '#ccc');
+                    for (let i = 1; i <= v; i++) {
+                        const s = starContainer.querySelector(`.rating-star[data-value="${i}"]`);
+                        if (s) s.style.color = '#FFD700';
+                    }
+                });
+
+                starContainer.addEventListener('mouseout', function () {
+                    const current = parseInt(ratingInput.value, 10) || 0;
+                    document.querySelectorAll('.rating-star').forEach(s => s.style.color = '#ccc');
+                    for (let i = 1; i <= current; i++) {
+                        const s = starContainer.querySelector(`.rating-star[data-value="${i}"]`);
+                        if (s) s.style.color = '#FFD700';
+                    }
+                });
+            }
+        });
+    </script>
 @endsection

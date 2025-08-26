@@ -827,25 +827,44 @@ function renderMiniCart(data) {
     const overlay = document.getElementById('mini-cart-overlay');
     const content = document.getElementById('mini-cart-body');
     let html = `<h3 style='font-size:1.4rem;font-weight:700;margin-bottom:18px;'>Giỏ hàng</h3>`;
+    
     if(data.items.length === 0) {
         html += `<div style='padding:24px 0;text-align:center;'>Chưa có sản phẩm nào.</div>`;
     } else {
         data.items.forEach(item => {
-          html += `<div style='display:flex;align-items:center;margin-bottom:18px;gap:12px;position:relative;'>
-            <img src='${item.image}' width='56' height='56' style='object-fit:cover;border:1px solid #eee;border-radius:6px;'>
-            <div style='flex:1;'>
-              <a href='${item.link}' style='font-weight:600;color:#222;font-size:1.1rem;'>${item.name}</a><br>
-              <span style='font-size:0.97rem;color:#666;'>${item.variant.color ? 'Màu: '+item.variant.color : ''} ${item.variant.size ? 'Size: '+item.variant.size : ''}</span><br>
-              <span style='font-size:1rem;'>${item.qty} × <b>${item.price.toLocaleString('vi-VN')}</b></span>
-            </div>
-            <form method='POST' action='/client/cart/remove/${item.id}' style='display:inline;'>@csrf <input type='hidden' name='_method' value='DELETE'><button type='submit' style='background:none;border:none;color:#c00;font-size:1.3rem;position:absolute;top:0;right:0;cursor:pointer;' title='Xóa'>&times;</button></form>
-          </div>`;
+            html += `
+            <div style='display:flex;align-items:center;margin-bottom:18px;gap:12px;position:relative;'>
+                <img src='${item.image}' 
+                     width='56' height='56' 
+                     style='object-fit:cover;border:1px solid #eee;border-radius:6px;'
+                     onerror="this.src='{{ asset('assets/images/no-image.png') }}'">
+                <div style='flex:1;'>
+                    <a href='${item.link}' style='font-weight:600;color:#222;font-size:1.1rem;'>${item.name}</a><br>
+                    <span style='font-size:0.97rem;color:#666;'>
+                        ${item.variant.color ? 'Màu: '+item.variant.color : ''} 
+                        ${item.variant.size ? ' Size: '+item.variant.size : ''}
+                    </span><br>
+                    <span style='font-size:1rem;'>${item.qty} × <b>${item.price.toLocaleString('vi-VN')}₫</b></span>
+                </div>
+                <form method='POST' action='/client/cart/remove/${item.id}' style='display:inline;'>
+                    @csrf
+                    <input type='hidden' name='_method' value='DELETE'>
+                    <button type='submit' 
+                            style='background:none;border:none;color:#c00;font-size:1.3rem;position:absolute;top:0;right:0;cursor:pointer;' 
+                            title='Xóa'>&times;</button>
+                </form>
+            </div>`;
         });
-        html += `<div style='border-top:1px solid #eee;margin:18px 0 10px;'></div>`;
-        html += `<div style='font-size:1.1rem;font-weight:600;margin-bottom:18px;'>Tạm tính: <span style='float:right;'>${data.subtotal.toLocaleString('vi-VN')}</span></div>`;
-        html += `<a href='{{ route('client.cart.index') }}' class='btn btn-gray btn-block view-cart' style='width:100%;margin-bottom:10px;'>XEM GIỎ HÀNG</a>`;
-        html += `<a href='{{ route('client.checkout.show') }}' class='btn btn-dark btn-block' style='width:100%;'>THANH TOÁN</a>`;
+        
+        html += `
+        <div style='border-top:1px solid #eee;margin:18px 0 10px;'></div>
+        <div style='font-size:1.1rem;font-weight:600;margin-bottom:18px;'>
+            Tạm tính: <span style='float:right;'>${data.subtotal.toLocaleString('vi-VN')}₫</span>
+        </div>
+        <a href='{{ route('client.cart.index') }}' class='btn btn-gray btn-block view-cart' style='width:100%;margin-bottom:10px;'>XEM GIỎ HÀNG</a>
+        <a href='{{ route('client.checkout.show') }}' class='btn btn-dark btn-block' style='width:100%;'>THANH TOÁN</a>`;
     }
+    
     content.innerHTML = html;
     overlay.style.display = 'block';
     setTimeout(() => overlay.classList.add('open'), 10);

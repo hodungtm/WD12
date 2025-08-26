@@ -55,34 +55,7 @@
 
                     <div class="col-lg-7 col-md-6 product-single-details">
                         <h1 class="product-title">{{ $product->name }}</h1>
-                        <div class="product-nav">
-                            <div class="product-prev">
-                                <a href="#">
-                                    <span class="product-link"></span>
-                                    <span class="product-popup">
-                                        <span class="box-content">
-                                            <img alt="product" width="150" height="150"
-                                                src="{{ asset('assets/images/demoes/demo27/products/product-3.jpg') }}"
-                                                style="padding-top: 0px;">
-                                            <span>Sản phẩm trước</span>
-                                        </span>
-                                    </span>
-                                </a>
-                            </div>
-                            <div class="product-next">
-                                <a href="#">
-                                    <span class="product-link"></span>
-                                    <span class="product-popup">
-                                        <span class="box-content">
-                                            <img alt="product" width="150" height="150"
-                                                src="{{ asset('assets/images/demoes/demo27/products/product-4.jpg') }}"
-                                                style="padding-top: 0px;">
-                                            <span>Sản phẩm tiếp</span>
-                                        </span>
-                                    </span>
-                                </a>
-                            </div>
-                        </div>
+                        
                         <div class="ratings-container">
                             <div class="product-ratings">
                                 @php
@@ -95,23 +68,21 @@
                         </div>
                         <hr class="short-divider">
                         <div class="price-box">
-                            @php
-                                $min_sale_price = $product->variants->where('sale_price', '>', 0)->min('sale_price');
-                                $max_sale_price = $product->variants->where('sale_price', '>', 0)->max('sale_price');
-                                $min_price = $product->variants->min('price');
-                                $max_price = $product->variants->max('price');
-                            @endphp
-                            @if($product->variants->isNotEmpty())
-                                @if($min_sale_price && $min_sale_price < $min_price)
-                                   
-                                    <div class="product-price">₫{{ number_format($min_sale_price) }} – ₫{{ number_format($max_sale_price ?: $max_price) }}</div>
+                                @php
+                                    $variant = $product->variants->first();
+                                @endphp
+                                @if($variant)
+                                    @if($variant->sale_price && $variant->sale_price < $variant->price)
+                                        
+                                        <span class="product-price">{{ number_format($variant->sale_price) }}₫</span>
+                                        <span class="old-price">{{ number_format($variant->price) }}₫</span>
+                                    @else
+                                        <span class="product-price">{{ number_format($variant->price) }}₫</span>
+                                    @endif
                                 @else
-                                    <div class="product-price">₫{{ number_format($min_price) }} – ₫{{ number_format($max_price) }}</div>
+                                    <span class="product-price">Liên hệ</span>
                                 @endif
-                            @else
-                                <div class="product-price">Liên hệ</div>
-                            @endif
-                        </div>
+                            </div>
                         <ul class="single-info-list">
                             <li>
                                 SKU: <strong>{{ $product->product_code }}</strong>

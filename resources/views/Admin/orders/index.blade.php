@@ -12,18 +12,19 @@
             </ul>
         </div>
         @if (session('success'))
-                <div class="alert"
-                    style="background: #d4edda; color: #155724; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 600;">
-                    <i class="icon-check-circle" style="margin-right: 6px;"></i> {{ session('success') }}
-                </div>
-            @endif
+            <div class="alert"
+                style="background: #d4edda; color: #155724; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 600;">
+                <i class="icon-check-circle" style="margin-right: 6px;"></i> {{ session('success') }}
+            </div>
+        @endif
 
-            @if (session('error'))
-                <div class="alert"
-                    style="background: #f8d7da; color: #721c24; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 600;">
-                    <i class="icon-alert-triangle" style="margin-right: 6px;"></i> {{ session('error') }}
-                </div>
-            @endif
+        @if (session('error'))
+            <div class="alert"
+                style="background: #f8d7da; color: #721c24; padding: 12px 16px; border-radius: 8px; margin-bottom: 15px; font-weight: 600;">
+                <i class="icon-alert-triangle" style="margin-right: 6px;"></i> {{ session('error') }}
+            </div>
+        @endif
+
         <div class="wg-box">
             <div class="title-box">
                 <i class="icon-book-open"></i>
@@ -51,7 +52,7 @@
                                 <option value="Đã hủy" {{ request('status') == 'Đã hủy' ? 'selected' : '' }}>Đã hủy</option>
                             </select>
                             <select name="payment_method" class="form-select" style="width: 140px;">
-                                <option value="">-- Thanh toán --</option>
+                                <option value="">-- Phương thức --</option>
                                 <option value="Tiền mặt" {{ request('payment_method') == 'Tiền mặt' ? 'selected' : '' }}>Tiền mặt</option>
                                 <option value="Chuyển khoản ngân hàng" {{ request('payment_method') == 'Chuyển khoản ngân hàng' ? 'selected' : '' }}>Chuyển khoản ngân hàng</option>
                                 <option value="Momo" {{ request('payment_method') == 'Momo' ? 'selected' : '' }}>Momo</option>
@@ -69,7 +70,7 @@
                                 <option value="asc" {{ request('sort_created') === 'asc' ? 'selected' : '' }}>Cũ nhất</option>
                             </select>
                             <select name="sort_total" class="form-select" style="width: 120px;">
-                                <option value="">-- Tổng tiền --</option>
+                                <option value="">-- Thanh toán --</option>
                                 <option value="asc" {{ request('sort_total') === 'asc' ? 'selected' : '' }}>Tăng dần</option>
                                 <option value="desc" {{ request('sort_total') === 'desc' ? 'selected' : '' }}>Giảm dần</option>
                             </select>
@@ -82,63 +83,82 @@
             </div>
             <div class="wg-table table-product-list mt-3">
                 <ul class="table-title flex mb-14" style="gap: 2px;">
-                    <li style="flex-basis: 150px;"><div class="body-title">Mã đơn hàng</div></li>
-                    <li style="flex-basis: 150px;"><div class="body-title">Khách hàng</div></li>
-                    <li style="flex-basis: 120px;"><div class="body-title">Tổng tiền</div></li>
-                    <li style="flex-basis: 140px;"><div class="body-title">PT Thanh toán</div></li>
-                    <li style="flex-basis: 140px;"><div class="body-title">Vận chuyển</div></li>
-                    <li style="flex-basis: 120px;"><div class="body-title">Trạng thái</div></li>
-                    <li style="flex-basis: 160px;"><div class="body-title">Hành động</div></li>
+                    <li style="flex-basis: 120px;"><div class="body-title">Mã đơn hàng</div></li>
+                    
+                    <li style="flex-basis: 140px;"><div class="body-title">Khách hàng</div></li>
+                    <li style="flex-basis: 120px;"><div class="body-title">SĐT</div></li>
+                    <li style="flex-basis: 120px;"><div class="body-title">Thanh toán</div></li>
+                    <li style="flex-basis: 130px;"><div class="body-title">Phương thức Thanh toán</div></li>
+                    <li style="flex-basis: 130px;"><div class="body-title">Trạng thái thanh toán</div></li>
+                    <li style="flex-basis: 120px;"><div class="body-title">Trạng thái đơn hàng</div></li>
+                    <li style="flex-basis: 120px;"><div class="body-title">Ngày đặt</div></li>
+                    <li style="flex-basis: 120px;"><div class="body-title">Hành động</div></li>
                 </ul>
                 <ul class="flex flex-column">
                     @forelse($orders as $order)
                         <li class="wg-product item-row flex" style="gap: 2px; align-items: center;">
-                            <div class="body-text mt-4" style="flex-basis: 150px;">{{ $order->order_code }}</div>
-                            <div class="body-text mt-4" style="flex-basis: 150px;">{{ $order->receiver->name ?? $order->user->name ?? 'N/A' }}</div>
+                            <div class="body-text mt-4" style="flex-basis: 120px;">{{ $order->order_code }}</div>
+                            
+                            <div class="body-text mt-4" style="flex-basis: 140px;">{{ $order->receiver_name ?? $order->user->name ?? 'N/A' }}</div>
+                            <div class="body-text mt-4" style="flex-basis: 120px;">{{ $order->receiver_phone ?? '---' }}</div>
                             <div class="body-text mt-4" style="flex-basis: 120px;">{{ number_format($order->final_amount ?? 0, 0, ',', '.') }}₫</div>
-                            <div class="body-text mt-4" style="flex-basis: 140px;">
-                                @switch($order->payment_method)
-                                    @case('Tiền mặt') Tiền mặt @break
-                                    @case('Chuyển khoản ngân hàng') Chuyển khoản ngân hàng @break
-                                    @case('Momo') Momo @break
-                                    @case('ZaloPay') ZaloPay @break
-                                    @default {{ ucfirst($order->payment_method) }}
-                                @endswitch
-                            </div>
-                            <div class="body-text mt-4" style="flex-basis: 140px;">{{ $order->shippingMethod->name ?? '---' }}</div>
-                            <div style="flex-basis: 150px;">
+                            <div class="body-text mt-4" style="flex-basis: 130px;">{{ $order->payment_method ?? '---' }}</div>
+                            {{-- Trạng thái thanh toán --}}
+                            <div style="flex-basis: 130px;">
                                 @php
-                                    $statusColors = [
-                                        'Đang chờ' => ['bg' => '#fff3cd', 'color' => '#856404', 'border' => '#ffeaa7'],           // Vàng
-                                        'Xác nhận đơn' => ['bg' => '#cce5ff', 'color' => '#004085', 'border' => '#74b9ff'],     // Xanh dương
-                                        'Đang giao hàng' => ['bg' => '#e1c8ff', 'color' => '#5a2d82', 'border' => '#a29bfe'],   // Tím
-                                        'Hoàn thành' => ['bg' => '#d1f2eb', 'color' => '#155724', 'border' => '#00b894'],       // Xanh lá
-                                        'Đã hủy' => ['bg' => '#f8d7da', 'color' => '#721c24', 'border' => '#fd79a8']            // Đỏ
+                                    $payColors = [
+                                        'Đã thanh toán' => ['bg' => '#d1f2eb', 'color' => '#155724', 'border' => '#00b894'], // xanh lá
+                                        'Chưa thanh toán' => ['bg' => '#fff3cd', 'color' => '#856404', 'border' => '#ffeaa7'], // vàng
+                                        'Hoàn tiền' => ['bg' => '#f8d7da', 'color' => '#721c24', 'border' => '#fd79a8'], // đỏ
                                     ];
-                                    $currentStatus = $statusColors[$order->status] ?? ['bg' => '#f8f9fa', 'color' => '#6c757d', 'border' => '#dee2e6'];
+                                    $payStatus = $payColors[$order->payment_status] ?? ['bg' => '#f8f9fa','color'=>'#6c757d','border'=>'#dee2e6'];
                                 @endphp
-                                <div style="display: inline-block; 
-                                           min-width: 90px; 
-                                           text-align: center; 
-                                           border-radius: 8px; 
-                                           padding: 8px 12px; 
-                                           font-size: 13px; 
-                                           font-weight: 600; 
-                                           background: {{ $currentStatus['bg'] }}; 
-                                           color: {{ $currentStatus['color'] }}; 
-                                           border: 2px solid {{ $currentStatus['border'] }}; 
-                                           letter-spacing: 0.3px; 
-                                           vertical-align: middle; 
+                                <div style="display: inline-block;
+                                           min-width: 90px;
+                                           text-align: center;
+                                           border-radius: 8px;
+                                           padding: 8px 12px;
+                                           font-size: 13px;
+                                           font-weight: 600;
+                                           background: {{ $payStatus['bg'] }};
+                                           color: {{ $payStatus['color'] }};
+                                           border: 2px solid {{ $payStatus['border'] }};
                                            margin-top: 2px;
-                                           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                                           transition: all 0.3s ease;">
-                                    {{ $order->status }}
+                                           box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                    {{ $order->payment_status ?? '---' }}
                                 </div>
                             </div>
-                            <div class="list-icon-function" style="flex-basis: 160px;">
-                                <a href="{{ route('admin.orders.show', $order->id) }}" class="item eye"><i class="icon-eye"></i></a>
-                                <a href="{{ route('admin.orders.edit', $order->id) }}" class="item edit"><i class="icon-edit-3"></i></a>
+                            {{-- Trạng thái đơn hàng --}}
+                            <div style="flex-basis: 120px;">
+                                @php
+                                    $statusColors = [
+                                        'Đang chờ' => ['bg' => '#fff3cd', 'color' => '#856404', 'border' => '#ffeaa7'],
+                                        'Xác nhận đơn' => ['bg' => '#cce5ff', 'color' => '#004085', 'border' => '#74b9ff'],
+                                        'Đang giao hàng' => ['bg' => '#e1c8ff', 'color' => '#5a2d82', 'border' => '#a29bfe'],
+                                        'Hoàn thành' => ['bg' => '#d1f2eb', 'color' => '#155724', 'border' => '#00b894'],
+                                        'Đã hủy' => ['bg' => '#f8d7da', 'color' => '#721c24', 'border' => '#fd79a8'],
+                                    ];
+                                    $currentStatus = $statusColors[$order->status] ?? ['bg' => '#f8f9fa','color'=>'#6c757d','border'=>'#dee2e6'];
+                                @endphp
+                                <div style="display: inline-block;
+                                           min-width: 90px;
+                                           text-align: center;
+                                           border-radius: 8px;
+                                           padding: 8px 12px;
+                                           font-size: 13px;
+                                           font-weight: 600;
+                                           background: {{ $currentStatus['bg'] }};
+                                           color: {{ $currentStatus['color'] }};
+                                           border: 2px solid {{ $currentStatus['border'] }};
+                                           margin-top: 2px;
+                                           box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                    {{ $order->status }}
+                                </div>
                                 
+                            </div>
+                            <div class="body-text mt-4" style="flex-basis: 120px;">{{ \Carbon\Carbon::parse($order->order_date)->format('d/m/Y H:i') }}</div>
+                            <div class="list-icon-function" style="flex-basis: 120px;">
+                                <a href="{{ route('admin.orders.show', $order->id) }}" class="item eye"><i class="icon-eye"></i></a>
                             </div>
                         </li>
                     @empty
@@ -154,12 +174,4 @@
         </div>
     </div>
 </div>
-
-{{-- CSS cho hover effect --}}
-<style>
-.order-status:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
-}
-</style>
 @endsection

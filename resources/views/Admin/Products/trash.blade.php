@@ -100,7 +100,7 @@
                                                 {{ $product->created_at ? $product->created_at->format('d/m/Y H:i') : 'N/A' }}
                                             </div>
                                             <div class="list-icon-function">
-                                                <a href="{{ route('restore', $product->id) }}" class="item restore" title="Khôi phục sản phẩm"
+                                                <a href="{{ route('admin.products.restore', $product->id) }}" class="item restore" title="Khôi phục sản phẩm"
                                                    style="margin-right: 5px; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px;   ">
                                                     <i class="fas fa-undo" style="color: #28a745; font-size: 20px;"></i>
                                                 </a>

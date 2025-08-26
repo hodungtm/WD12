@@ -54,7 +54,7 @@ class CommentController extends Controller
         $comment->trang_thai = $request->trang_thai;
         $comment->save();
 
-        return redirect()->route('Admin.comments.index')->with('success', 'Cập nhật bình luận thành công!');
+        return redirect()->route('admin.comments.index')->with('success', 'Cập nhật bình luận thành công!');
     }
 
     public function show($id)

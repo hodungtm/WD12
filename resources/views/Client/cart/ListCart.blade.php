@@ -43,7 +43,13 @@
                                         @php
                                             $variant = $item->variant;
                                             $product = $item->product;
-                                            $imagePath = $product->images->first()->image ?? 'no-image.jpg';
+                                            // Tìm ảnh theo màu của variant
+                                            $productImage = $product->images
+                                                ->where('color_id', $variant->color_id)
+                                                ->first();
+                                            // Nếu không có ảnh theo màu thì lấy ảnh đầu tiên của sản phẩm
+                                            $imagePath = $productImage ? $productImage->image : 
+                                                ($product->images->first()->image ?? 'no-image.jpg');
                                             $price = $variant->sale_price;
                                             $total = $price * $item->quantity;
                                         @endphp
@@ -55,8 +61,9 @@
                                             <td>
                                                 <div class="cart-item-img-wrapper">
                                                     <a href="{{ route('client.product.detail', $product->id) }}">
-                                                        <img src="{{ asset('storage/' . $imagePath) }}" alt="{{ $product->name }}"
-                                                            width="80">
+                                                        <img src="{{ asset('storage/' . $imagePath) }}" 
+                                                             alt="{{ $product->name }} - {{ $variant->color->name ?? '' }}"
+                                                             width="80">
                                                     </a>
                                                     <button type="button" class="btn-remove icon-cancel" title="Xoá"
                                                         onclick="confirmDelete({{ $item->id }})"></button>

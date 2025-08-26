@@ -33,7 +33,11 @@ class CheckoutController extends Controller
             $cartQuery->whereIn('id', $selectedIds);
         }
 
-        $cartItems = $cartQuery->get();
+        $cartItems = Cart::with([
+            'product.images',
+            'variant.color',
+            'variant.size'
+        ])->where('user_id', auth()->id())->get();
 
         if ($cartItems->isEmpty()) {
             return redirect()->route('client.cart.index')->with('error', 'Vui lòng chọn sản phẩm để thanh toán.');
@@ -129,6 +133,15 @@ class CheckoutController extends Controller
                 ]);
 
                 foreach ($cartItems as $item) {
+                    // Tìm ảnh theo màu của variant
+                    $productImage = $item->product->images
+                        ->where('color_id', $item->variant->color_id)
+                        ->first();
+                    
+                    // Nếu không có ảnh theo màu thì lấy ảnh đầu tiên của sản phẩm
+                    $imagePath = $productImage ? $productImage->image : 
+                        ($item->product->images->first()->image ?? 'no-image.jpg');
+
                     Order_items::create([
                         'order_id' => $order->id,
                         'product_id' => $item->product->id,
@@ -138,7 +151,7 @@ class CheckoutController extends Controller
                         'total_price' => $item->variant->sale_price * $item->quantity,
                         'product_name' => $item->product->name,
                         'variant_name' => ($item->variant->color->name ?? '') . ' / ' . ($item->variant->size->name ?? ''),
-                        'product_image' => optional($item->product->images->first())->image,
+                        'product_image' => $imagePath, // Lưu đúng ảnh theo màu của biến thể
                     ]);
                 }
 
@@ -181,6 +194,15 @@ class CheckoutController extends Controller
             ]);
 
             foreach ($cartItems as $item) {
+                // Tìm ảnh theo màu của variant
+                $productImage = $item->product->images
+                    ->where('color_id', $item->variant->color_id)
+                    ->first();
+                
+                // Nếu không có ảnh theo màu thì lấy ảnh đầu tiên của sản phẩm
+                $imagePath = $productImage ? $productImage->image : 
+                    ($item->product->images->first()->image ?? 'no-image.jpg');
+
                 Order_items::create([
                     'order_id' => $order->id,
                     'product_id' => $item->product->id,
@@ -190,7 +212,7 @@ class CheckoutController extends Controller
                     'total_price' => $item->variant->sale_price * $item->quantity,
                     'product_name' => $item->product->name,
                     'variant_name' => ($item->variant->color->name ?? '') . ' / ' . ($item->variant->size->name ?? ''),
-                    'product_image' => optional($item->product->images->first())->image,
+                    'product_image' => $imagePath, // Lưu đúng ảnh theo màu của biến thể
                 ]);
 
                 // Trừ kho ngay lập tức

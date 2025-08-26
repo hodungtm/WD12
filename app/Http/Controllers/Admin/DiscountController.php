@@ -172,17 +172,7 @@ class DiscountController extends Controller
         return redirect()->back()->with('error', 'Có lỗi xảy ra khi xóa mã giảm giá!');
     }
 
-    public function report()
-    {
-        $usages = DiscountUsage::with(['discount', 'user'])->latest()->paginate(20);
-        return view('admin.discounts.report', compact('usages'));
-    }
-
-    public function exportExcel()
-    {
-        return Excel::download(new DiscountsExport, 'discounts.xlsx');
-    }
-
+    
     public function show($id)
     {
         $discount = Discount::findOrFail($id);

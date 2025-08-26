@@ -29,12 +29,10 @@
                     <div class="w-full md:w-1/2">
                         <label class="body-title">Loại mã:</label>
                         <p>
-                            @if($discount->type === 'order')
-                                <span class="badge-status badge-instock">Đơn hàng</span>
-                            @elseif($discount->type === 'shipping')
-                                <span class="badge-status badge-outstock">Vận chuyển</span>
-                            @elseif($discount->type === 'product')
-                                <span class="badge-status badge-instock">Sản phẩm</span>
+                            @if($discount->type === 'fixed')
+                                <span class="badge-status badge-instock">Cố định</span>
+                            @elseif($discount->type === 'percent')
+                                <span class="badge-status badge-outstock">Phần trăm</span>
                             @else
                                 <span class="badge-status badge-outstock">Khác</span>
                             @endif
@@ -67,10 +65,7 @@
                             @endif
                         </p>
                     </div>
-                    <div class="w-full md:w-1/2">
-                        <label class="body-title">Giảm tối đa:</label>
-                        <p>{{ $discount->max_discount_amount ? number_format($discount->max_discount_amount) . ' VNĐ' : 'Không giới hạn' }}</p>
-                    </div>
+                    
                     <div class="w-full md:w-1/2">
                         <label class="body-title">Đơn hàng tối thiểu:</label>
                         <p>{{ $discount->min_order_amount ? number_format($discount->min_order_amount) . ' VNĐ' : '-' }}</p>

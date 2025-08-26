@@ -1028,6 +1028,16 @@
                         <div class="main-content-inner">
                             <!-- main-content-wrap -->
                             <div class="main-content-wrap">
+                                <!-- Thêm ngay đây, trước content chính -->
+                                @if ($errors->any())
+                                    <div class="admin-errors">
+                                        <ul>
+                                            @foreach ($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
                                 @yield('main')
                             </div>
                             <!-- /main-content-wrap -->
@@ -1090,9 +1100,6 @@
                 $('.custom-alert').alert('close');
             }, 3500);
         });
-    </script>
-
-    <script>
         $(document).ready(function () {
             $('#alert-stack .custom-alert').each(function (i, el) {
                 setTimeout(function () {
@@ -1101,6 +1108,8 @@
             });
         });
     </script>
+
+
 </body>
 
 

@@ -33,14 +33,14 @@ class PostController extends Controller
     $posts = $query->orderBy('created_at', 'desc')->paginate($perPage)->withQueryString();
 
     // Trả về view với biến $posts
-    return view('Admin.Posts.index', compact('posts'));
+    return view('admin.Posts.index', compact('posts'));
 }
 
 
 
     public function create()
     {
-        return view('Admin.posts.create');
+        return view('admin.posts.create');
     }
 
    public function store(Request $request)
@@ -71,17 +71,17 @@ class PostController extends Controller
     Post::create($data);
 
     // Redirect kèm thông báo
-    return redirect()->route('posts.index')->with('success', 'Bài viết đã được tạo thành công.');
+    return redirect()->route('admin.posts.index')->with('success', 'Bài viết đã được tạo thành công.');
 }
 
     public function show(Post $post)
     {
-        return view('Admin.posts.show', compact('post'));
+        return view('admin.posts.show', compact('post'));
     }
 
     public function edit(Post $post)
     {
-        return view('Admin.posts.edit', compact('post'));
+        return view('admin.posts.edit', compact('post'));
     }
 
     public function update(Request $request, Post $post)
@@ -109,7 +109,7 @@ class PostController extends Controller
     $post->update($data);
 
     // Chuyển hướng về trang danh sách
-    return redirect()->route('posts.index')->with('success', 'Bài viết đã được cập nhật thành công.');
+    return redirect()->route('admin.posts.index')->with('success', 'Bài viết đã được cập nhật thành công.');
 }
 
     
@@ -126,7 +126,7 @@ public function destroy(Post $post)
     $post->delete();
 
     // Chuyển hướng và thông báo
-    return redirect()->route('posts.index')->with('success', 'Bài viết đã được xóa cùng với ảnh.');
+    return redirect()->route('admin.posts.index')->with('success', 'Bài viết đã được xóa cùng với ảnh.');
 }
 
 }

@@ -69,22 +69,8 @@ class OrderController extends Controller
 
     public function edit($id)
     {
-        $order = Order::with([
-            'user',               // Người đặt
-            'orderItems',         // Danh sách sản phẩm snapshot
-            'shippingMethod',     // Phương thức vận chuyển
-            // 'discount',           // Mã giảm giá (nếu có)
-        ])->findOrFail($id);
-        $users = User::all(); // Lấy danh sách người dùng
-
-        $shippingMethods = ShippingMethod::all(); // Lấy tất cả phương thức vận chuyển
-
-        return view('admin.orders.edit', compact(
-            'order',
-            'users',
-            'shippingMethods',
-            // 'discounts'
-        ));
+        // Chuyển hướng edit sang show — form chỉnh trạng thái đã được dời vào view show
+        return redirect()->route('admin.orders.show', $id);
     }
 
     public function update(Request $request, $id)
@@ -125,6 +111,13 @@ class OrderController extends Controller
                     'status' => "Không thể chuyển từ \"$originalStatus\" sang \"$validatedData[status]\"."
                 ])->withInput();
             }
+
+            // Thêm kiểm tra trạng thái thanh toán khi chuyển sang Hoàn thành
+            if ($validatedData['status'] === 'Hoàn thành' && $validatedData['payment_status'] === 'Chờ thanh toán') {
+                return redirect()->back()->withErrors([
+                    'status' => 'Không thể hoàn thành đơn hàng khi chưa thanh toán.'
+                ])->withInput();
+            }
         }
 
         // Kiểm tra thanh toán (tách biệt với trạng thái đơn hàng)
@@ -154,7 +147,7 @@ class OrderController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('admin.orders.edit', $order->id)
+            return redirect()->route('admin.orders.show', $order->id)
                 ->with('success', 'Cập nhật đơn hàng thành công!');
         } catch (\Exception $e) {
             DB::rollBack();

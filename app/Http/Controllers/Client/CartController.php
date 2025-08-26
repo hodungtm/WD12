@@ -15,12 +15,13 @@ class CartController extends Controller
     // note: Hiển thị trang giỏ hàng
     public function index()
     {
-        // note: Lấy tất cả sản phẩm trong giỏ hàng của user hiện tại với relationships
-        $cartItems = Cart::with(['variant.color', 'variant.size', 'product.images'])
-            ->where('user_id', Auth::id())
-            ->get();
+        $cartItems = Cart::with([
+            'product.images',
+            'variant.color',
+            'variant.size'
+        ])->where('user_id', auth()->id())->get();
 
-        return view('Client.cart.ListCart', compact('cartItems'));
+        return view('client.cart.ListCart', compact('cartItems'));
     }
 
     // note: Thêm sản phẩm vào giỏ hàng
@@ -124,7 +125,6 @@ public function updateAll(Request $request)
     // note: API trả về dữ liệu mini cart (giỏ hàng nhỏ)
     public function miniCart()
     {
-        // note: Lấy sản phẩm trong giỏ hàng với relationships
         $cartItems = Cart::with(['variant.color', 'variant.size', 'product.images'])
             ->where('user_id', Auth::id())
             ->get();
@@ -133,19 +133,29 @@ public function updateAll(Request $request)
         $subtotal = 0;
 
         foreach ($cartItems as $item) {
-            // note: Tính giá (ưu tiên giá sale nếu có)
+            // Tính giá (ưu tiên giá sale nếu có)
             $price = $item->variant->sale_price && $item->variant->sale_price < $item->variant->price
                 ? $item->variant->sale_price
                 : $item->variant->price;
+
+            // Tìm ảnh theo màu của variant
+            $productImage = $item->product->images
+                ->where('color_id', $item->variant->color_id)
+                ->first();
+            
+            // Nếu không có ảnh theo màu thì lấy ảnh đầu tiên của sản phẩm
+            $image = $productImage 
+                ? asset('storage/' . $productImage->image)
+                : ($item->product->images->first()
+                    ? asset('storage/' . $item->product->images->first()->image)
+                    : asset('assets/images/no-image.png'));
 
             $items[] = [
                 'id'      => $item->id,
                 'name'    => $item->product->name,
                 'qty'     => $item->quantity,
                 'price'   => $price,
-                'image'   => $item->product->images->first()
-                    ? asset('storage/' . $item->product->images->first()->image)
-                    : asset('assets/images/no-image.png'),
+                'image'   => $image,
                 'link'    => route('client.product.detail', $item->product_id),
                 'variant' => [
                     'color' => $item->variant->color->name ?? null,
@@ -157,9 +167,9 @@ public function updateAll(Request $request)
         }
 
         return response()->json([
-            'items'   => $items,
+            'items'    => $items,
             'subtotal' => $subtotal,
-            'count'   => $cartItems->count(),
+            'count'    => $cartItems->count(),
         ]);
     }
 

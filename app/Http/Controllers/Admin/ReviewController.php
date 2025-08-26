@@ -64,20 +64,20 @@ class ReviewController extends Controller
         $review->trang_thai = $request->trang_thai;
         $review->save();
 
-        return redirect()->route('Admin.reviews.index')->with('success', 'Cập nhật đánh giá thành công!');
+        return redirect()->route('admin.reviews.index')->with('success', 'Cập nhật đánh giá thành công!');
     }
 
     public function show($id)
     {
         $review = Review::with('product')->findOrFail($id);
-        return view('Admin.reviews.show', compact('review'));
+        return view('admin.reviews.show', compact('review'));
     }
 
     public function destroy($id)
     {
         $review = Review::findOrFail($id);
         $review->delete();
-        return redirect()->route('Admin.reviews.index')->with('success', 'Xóa đánh giá thành công (xóa mềm).');
+        return redirect()->route('admin.reviews.index')->with('success', 'Xóa đánh giá thành công (xóa mềm).');
     }
 
     

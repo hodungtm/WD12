@@ -111,9 +111,8 @@
                             </div>
                             <div style="flex-basis: 100px; text-align:center;">
                                 @switch($discount->type)
-                                    @case('order') <span class="badge-status badge-instock">Đơn</span> @break
-                                    @case('shipping') <span class="badge-status badge-outstock">Ship</span> @break
-                                    @case('product') <span class="badge-status badge-instock">Sản phẩm</span> @break
+                                    @case('fixed') <span class="badge-status badge-instock">Cố định</span> @break
+                                    @case('percent') <span class="badge-status badge-outstock">Phần trăm</span> @break
                                     @default <span class="badge-status badge-outstock">Khác</span>
                                 @endswitch
                             </div>

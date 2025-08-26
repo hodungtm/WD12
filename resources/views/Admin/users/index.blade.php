@@ -104,9 +104,9 @@
                             <li class="wg-product item-row flex" style="align-items: center; gap: 2px;">
                                 <div class="body-text mt-4" style="flex-basis: 40px;">{{ $loop->iteration + ($users->currentPage() - 1) * $users->perPage() }}</div>
                                 <div style="flex-basis: 80px;">
-                                    <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : asset('default-avatar.png') }}"
-class="border border-3 border-white shadow profile-avatar"
-                                    alt="Avatar" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                                    <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : asset('images/avatar/default.png') }}"
+     alt="Avatar" width="50" height="50" style="object-fit: cover; border-radius: 4px;">
+
                                 </div>
                                 <div class="title line-clamp-2 mb-0" style="flex-basis: 180px;">
                                     <a href="{{ route('admin.users.show', $user->id) }}" class="body-text">{{ $user->name }}</a>

@@ -106,14 +106,21 @@
                                         @php
                                             $variant = $item->variant;
                                             $product = $item->product;
-                                            $imagePath = $product->images->first()->image ?? 'no-image.jpg';
+                                            // Tìm ảnh theo màu của variant
+                                            $productImage = $product->images
+                                                ->where('color_id', $variant->color_id)
+                                                ->first();
+                                            // Nếu không có ảnh theo màu thì lấy ảnh đầu tiên của sản phẩm
+                                            $imagePath = $productImage ? $productImage->image : 
+                                                ($product->images->first()->image ?? 'no-image.jpg');
                                             $lineTotal = $variant->sale_price * $item->quantity;
                                             $subtotal += $lineTotal;
                                         @endphp
                                         <li class="list-group-item d-flex align-items-center justify-content-between">
                                             <div class="d-flex align-items-center gap-2">
-                                                <img src="{{ asset('storage/' . $imagePath) }}" alt="ảnh" width="70"
-                                                    class="img-thumbnail me-2">
+                                                <img src="{{ asset('storage/' . $imagePath) }}" 
+                                                             alt="{{ $product->name }} - {{ $variant->color->name ?? '' }}"
+                                                             width="80">
                                                 <div>
                                                     <div>{{ $product->name }}</div>
                                                     <small>{{ $variant->color->name ?? '-' }} /

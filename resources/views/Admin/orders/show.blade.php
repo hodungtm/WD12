@@ -175,22 +175,48 @@
 
                                                 <div class="row">
                                                     <div class="col-md-6">
-                                                        <p style="font-size: 15px; font-weight: bold;">Phương thức thanh
-                                                            toán: <span
-                                                                style="padding: 5px;">{{ $order->payment_method }}</span>
-                                                        </p>
-                                                        <p style="font-size: 15px; font-weight: bold;">Trạng thái thanh
-                                                            toán: <span
-                                                                style="padding: 5px;">{{ $order->payment_status }}</span>
-                                                        </p>
+                                                        <form action="{{ route('admin.orders.update', $order->id) }}"
+                                                            method="POST">
+                                                            @csrf
+                                                            @method('PUT')
 
-                                                        {{-- Thêm trạng thái đơn hàng --}}
-                                                        <p style="font-size: 15px; font-weight: bold;">
-                                                            Trạng thái đơn hàng:
-                                                            <span>
-                                                                {{ $order->status }}
-                                                            </span>
-                                                        </p>
+                                                            <div class="mb-3">
+                                                                <label style="font-weight: bold;">Trạng thái đơn
+                                                                    hàng:</label>
+                                                                <select name="status" class="form-select">
+                                                                    @foreach (['Đang chờ', 'Xác nhận đơn', 'Đang giao hàng', 'Hoàn thành', 'Đã hủy'] as $status)
+                                                                        <option value="{{ $status }}" {{ $order->status === $status ? 'selected' : '' }}>
+                                                                            {{ $status }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+                                                                @error('status')
+                                                                    <small class="text-danger">{{ $message }}</small>
+                                                                @enderror
+                                                            </div>
+
+                                                            <div class="mb-3">
+                                                                <label style="font-weight: bold;">Trạng thái thanh
+                                                                    toán:</label>
+                                                                <select name="payment_status" class="form-select">
+                                                                    @foreach (['Chờ thanh toán', 'Đã thanh toán'] as $payment)
+                                                                        <option value="{{ $payment }}" {{ $order->payment_status === $payment ? 'selected' : '' }}>
+                                                                            {{ $payment }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+                                                                @error('payment_status')
+                                                                    <small class="text-danger">{{ $message }}</small>
+                                                                @enderror
+                                                            </div>
+
+                                                           
+
+                                                            <button type="submit" class="btn btn-primary">Cập nhật</button>
+                                                        </form>
+
+
+                                                        
 
                                                         @if($order->discount_code)
                                                             <p style="font-size: 15px; font-weight: bold;">Mã giảm giá: <span
@@ -201,12 +227,13 @@
                                                     <div class="col-md-6">
                                                         @php $totalItemsPrice = $order->orderItems->sum('total_price'); @endphp
                                                         <p style="font-size: 15px;">Tổng tiền sản phẩm:
-                                                            {{ number_format($totalItemsPrice, 0, ',', '.') }} VNĐ</p>
-                                                        @php
-                                                            $totalItemsPrice = $order->orderItems->sum('total_price');
-                                                            $shippingFee = optional($order->shippingMethod)->fee ?? 0;
-                                                            $isFreeShip = $totalItemsPrice >= 300000;
-                                                        @endphp
+                                                            {{ number_format($totalItemsPrice, 0, ',', '.') }} VNĐ
+                                                        </p>
+                               @php
+                                $totalItemsPrice = $order->orderItems->sum('total_price');
+                                $shippingFee = optional($order->shippingMethod)->fee ?? 0;
+                                $isFreeShip = $totalItemsPrice >= 300000;
+                            @endphp
 
                                                         <p style="font-size: 15px;">
                                                             Phí vận chuyển:

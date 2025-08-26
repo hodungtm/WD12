@@ -60,14 +60,14 @@ class UserController extends Controller
 
         $users = $query->paginate($perPage)->appends($request->query());
 
-        return view('Admin.Users.index', compact('users'));
+        return view('admin.Users.index', compact('users'));
     }
 
 
 
     public function show(User $user)
     {
-        return view('Admin.Users.show', compact('user'));
+        return view('admin.Users.show', compact('user'));
     }
 
     public function edit(User $user)
@@ -76,7 +76,7 @@ class UserController extends Controller
 
         // Admin chỉ được sửa chính mình
         if ($auth->role === 'admin' && $auth->id === $user->id) {
-            return view('Admin.Users.edit', compact('user'));
+            return view('admin.Users.edit', compact('user'));
         }
 
         // Các trường hợp khác thì không cho phép
@@ -125,7 +125,7 @@ return redirect()->route('admin.users.index')->with('error', 'Bạn chỉ có th
             return redirect()->route('admin.users.index')->with('error', 'Bạn chỉ có thể đổi mật khẩu của chính mình.');
         }
 
-        return view('Admin.Users.change_password', compact('user'));
+        return view('admin.Users.change_password', compact('user'));
     }
 
     public function updatePassword(Request $request, User $user)

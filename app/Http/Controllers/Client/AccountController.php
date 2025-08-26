@@ -15,17 +15,19 @@ class AccountController extends Controller
     {
         $user = \Auth::user();
         $orders = Order::where('user_id', $user->id)
-                      ->with(['orderItems.product.images', 'orderItems.variant'])
-                      ->orderBy('created_at', 'desc')
-                      ->get();
-        $wishlists = $user->wishlist()->with([
-            'product.images',
-            'product.variants.size',
-            'product.variants.color',
-        ])->get();
+            ->with(['orderItems.product.images', 'orderItems.variant'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+        $wishlists = $user->wishlist()
+            ->with([
+                'product.images',
+                'product.variants.size',
+                'product.variants.color',
+            ])
+            ->get();
         return view('Client.users.dashboard', compact('user', 'orders', 'wishlists'));
     }
- public function updateInfo(Request $request)
+    public function updateInfo(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -43,7 +45,7 @@ class AccountController extends Controller
         if ($request->hasFile('avatar')) {
             $file = $request->file('avatar');
             $path = $file->store('avatars', 'public');
-            $user->avatar = '/storage/' . $path;
+            $user->avatar = $path; // ✅ Chỉ lưu "avatars/xxx.jpg"
         }
         $user->save();
 
@@ -73,18 +75,51 @@ class AccountController extends Controller
 
 
 
-public function saveAddress(Request $request)
-{
-    $validated = $request->validate([
-        'address' => 'required|string|max:255',
-    ]);
+    public function saveAddress(Request $request)
+    {
+        $validated = $request->validate([
+            'address' => 'required|string|max:255',
+        ]);
 
-    /** @var User $user */
-    $user = Auth::user();
-    $user->address = $validated['address'];
-    $user->save();
+        /** @var User $user */
+        $user = Auth::user();
+        $user->address = $validated['address'];
+        $user->save();
 
-    return back()->with('success_address', 'Cập nhật địa chỉ giao hàng thành công!');
-}
+        return back()->with('success_address', 'Cập nhật địa chỉ giao hàng thành công!');
+    }
 
+    /**
+     * Continue MoMo payment for an existing order created earlier.
+     * Sets checkout data in session and redirects to existing momo.payment flow.
+     */
+    public function continueMomo(Order $order)
+    {
+        $user = Auth::user();
+
+        if (!$user || $order->user_id !== $user->id) {
+            abort(403);
+        }
+
+        $paymentMethod = trim(mb_strtolower($order->payment_method ?? ''));
+        $paymentStatus = trim(mb_strtolower($order->payment_status ?? ''));
+
+        if (!str_contains($paymentMethod, 'momo')) {
+            return back()->with('error', 'Phương thức thanh toán không phải MoMo.');
+        }
+
+        // Nếu đã rõ ràng là đã thanh toán thì không cho tiếp tục
+        if (preg_match('/(đã\s*thanh\s*toán|paid|thành\s*công|success|completed)/iu', $paymentStatus)) {
+            return back()->with('info', 'Đơn hàng đã được thanh toán.');
+        }
+
+        // lưu data cần thiết cho flow checkout momo
+        session(['checkout_data' => [
+            'order_id'     => $order->id,
+            'final_amount' => $order->final_amount ?? $order->total_price ?? 0,
+            'order_code'   => $order->order_code ?? null,
+        ]]);
+
+        return redirect()->route('momo.payment');
+    }
 }
