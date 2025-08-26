@@ -134,15 +134,15 @@
                             <div class="cols-lg gap22">
                                 <fieldset>
                                     <div class="body-title mb-10">Giá mặc định</div>
-                                    <input type="number" id="default_price" class="form-control">
+                                    <input type="number" id="default_price" min="0" class="form-control">
                                 </fieldset>
                                 <fieldset>
                                     <div class="body-title mb-10">Giá sale mặc định</div>
-                                    <input type="number" id="default_saleprice" class="form-control">
+                                    <input type="number" id="default_saleprice" min="0" class="form-control">
                                 </fieldset>
                                 <fieldset>
                                     <div class="body-title mb-10">Số lượng mặc định</div>
-                                    <input type="number" id="default_quantity" class="form-control">
+                                    <input type="number" id="default_quantity" min="1" class="form-control">
                                 </fieldset>
                             </div>
                             <br>
@@ -232,9 +232,9 @@
                             <td><input type="checkbox" class="variant_checkbox"></td>
                             <td><input type="hidden" name="variant_sizes[]" value="${size.value}">${size.parentElement.textContent.trim()}</td>
                             <td><input type="hidden" name="variant_colors[]" value="${color.value}">${color.parentElement.textContent.trim()}</td>
-                            <td><input type="number" name="variant_prices[]" class="form-control" value="${price}" required></td>
-                            <td><input type="number" name="variant_sale_prices[]" class="form-control" value="${sale}" required></td>
-                            <td><input type="number" name="variant_quantities[]" class="form-control" value="${qty}" required></td>
+                            <td><input type="number" min="0" name="variant_prices[]" class="form-control" value="${price}" required></td>
+                            <td><input type="number" min="0" name="variant_sale_prices[]" class="form-control" value="${sale}" required></td>
+                            <td><input type="number" min="1" name="variant_quantities[]" class="form-control" value="${qty}" required></td>
                             <td><button type="button" class="btn btn-outline-danger btn-sm" onclick="this.closest('tr').remove()">Xoá</button></td>
                         </tr>
                     `);

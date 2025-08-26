@@ -1,0 +1,445 @@
+/* ===== CẢI THIỆN UI/UX CHO TOÀN BỘ WEBSITE ===== */
+
+/* 1. CẢI THIỆN SIDEBAR ADMIN - THÊM FOCUS STATE RÕ RÀNG */
+.layout-wrap .section-menu-left .menu-item {
+    position: relative;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    margin: 2px 8px;
+}
+
+.layout-wrap .section-menu-left .menu-item a {
+    position: relative;
+    padding: 12px 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background: transparent;
+}
+
+/* Focus state cho sidebar */
+.layout-wrap .section-menu-left .menu-item a:focus {
+    outline: 2px solid #1abc9c;
+    outline-offset: 2px;
+    background: rgba(26, 188, 156, 0.1);
+    box-shadow: 0 0 0 3px rgba(26, 188, 156, 0.2);
+}
+
+/* Active state cải thiện */
+.layout-wrap .section-menu-left .menu-item:not(.has-children).active {
+    background: linear-gradient(135deg, rgba(26, 188, 156, 0.15), rgba(26, 188, 156, 0.05));
+    border-left: 4px solid #1abc9c;
+    box-shadow: 0 2px 8px rgba(26, 188, 156, 0.2);
+}
+
+.layout-wrap .section-menu-left .menu-item:not(.has-children).active::before {
+    display: none;
+}
+
+.layout-wrap .section-menu-left .menu-item:not(.has-children).active a {
+    color: #1abc9c !important;
+    font-weight: 600;
+}
+
+/* Hover state cải thiện */
+.layout-wrap .section-menu-left .menu-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    transform: translateX(4px);
+}
+
+.layout-wrap .section-menu-left .menu-item:hover a {
+    color: #1abc9c !important;
+}
+
+/* Submenu active state */
+.layout-wrap .section-menu-left .menu-item.has-children .sub-menu .sub-menu-item.active {
+    background: linear-gradient(135deg, rgba(26, 188, 156, 0.15), rgba(26, 188, 156, 0.05));
+    border-radius: 6px;
+    margin: 2px 8px;
+    border-left: 3px solid #1abc9c;
+}
+
+.layout-wrap .section-menu-left .menu-item.has-children .sub-menu .sub-menu-item.active::after {
+    display: none;
+}
+
+/* Đảm bảo submenu hiển thị đúng với logic cũ */
+.layout-wrap .section-menu-left .menu-item.has-children.active > .sub-menu {
+    display: block !important;
+}
+
+/* Cải thiện animation cho submenu */
+.layout-wrap .section-menu-left .menu-item.has-children .sub-menu {
+    transition: all 0.3s ease;
+}
+
+/* Focus state cho submenu items */
+.layout-wrap .section-menu-left .menu-item.has-children .sub-menu .sub-menu-item a:focus {
+    outline: 2px solid #1abc9c;
+    outline-offset: 2px;
+    background: rgba(26, 188, 156, 0.1);
+}
+
+
+
+/* 3. CẢI THIỆN FORM VÀ INPUT */
+.form-control:focus,
+.form-select:focus,
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #1abc9c !important;
+    box-shadow: 0 0 0 0.2rem rgba(26, 188, 156, 0.25) !important;
+    outline: none !important;
+}
+
+/* 4. CẢI THIỆN BUTTON */
+.btn-primary {
+    background: linear-gradient(135deg, #1abc9c, #16a085);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(26, 188, 156, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #16a085, #138d75);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(26, 188, 156, 0.4);
+}
+
+.btn-primary:focus {
+    box-shadow: 0 0 0 0.2rem rgba(26, 188, 156, 0.5);
+}
+
+/* 5. CẢI THIỆN CARD VÀ BOX */
+.card {
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.wg-box {
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.wg-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* 6. CẢI THIỆN TABLE */
+.table {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.table thead th {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border: none;
+    font-weight: 600;
+    color: #495057;
+    padding: 16px 12px;
+}
+
+.table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(26, 188, 156, 0.05);
+}
+
+/* 7. CẢI THIỆN NAVIGATION */
+.navbar-nav .nav-link {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #1abc9c !important;
+}
+
+.navbar-nav .nav-link.active {
+    color: #1abc9c !important;
+    font-weight: 600;
+}
+
+.navbar-nav .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 3px;
+    background: #1abc9c;
+    border-radius: 2px;
+}
+
+/* 8. CẢI THIỆN DROPDOWN */
+.dropdown-menu {
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 8px 0;
+}
+
+.dropdown-item {
+    padding: 10px 16px;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    margin: 2px 8px;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(26, 188, 156, 0.1);
+    color: #1abc9c;
+}
+
+/* 9. CẢI THIỆN PAGINATION */
+.pagination .page-link {
+    border-radius: 6px;
+    margin: 0 2px;
+    border: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.pagination .page-link:hover {
+    background-color: #1abc9c;
+    border-color: #1abc9c;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, #1abc9c, #16a085);
+    border-color: #1abc9c;
+    box-shadow: 0 2px 8px rgba(26, 188, 156, 0.3);
+}
+
+/* 10. CẢI THIỆN MODAL */
+.modal-content {
+    border-radius: 12px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+    border: none;
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 0 0 12px 12px;
+}
+
+/* 11. CẢI THIỆN BADGE */
+.badge {
+    border-radius: 6px;
+    font-weight: 500;
+    padding: 6px 10px;
+}
+
+.badge-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.badge-danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.badge-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.badge-info {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+/* 12. CẢI THIỆN PROGRESS BAR */
+.progress {
+    border-radius: 8px;
+    height: 8px;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    background: linear-gradient(135deg, #1abc9c, #16a085);
+    border-radius: 8px;
+}
+
+/* 13. CẢI THIỆN TOOLTIP */
+.tooltip-inner {
+    background: #1abc9c;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.tooltip.bs-tooltip-top .tooltip-arrow::before {
+    border-top-color: #1abc9c;
+}
+
+.tooltip.bs-tooltip-bottom .tooltip-arrow::before {
+    border-bottom-color: #1abc9c;
+}
+
+.tooltip.bs-tooltip-start .tooltip-arrow::before {
+    border-left-color: #1abc9c;
+}
+
+.tooltip.bs-tooltip-end .tooltip-arrow::before {
+    border-right-color: #1abc9c;
+}
+
+/* 14. CẢI THIỆN SCROLLBAR */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #1abc9c, #16a085);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #16a085, #138d75);
+}
+
+/* 15. CẢI THIỆN LOADING SPINNER */
+.spinner-border {
+    color: #1abc9c;
+}
+
+/* 16. CẢI THIỆN RESPONSIVE */
+@media (max-width: 768px) {
+    #alert-stack {
+        top: 16px;
+        right: 16px;
+        left: 16px;
+        min-width: auto;
+        max-width: none;
+    }
+    
+    .custom-alert {
+        min-width: auto;
+        max-width: none;
+        margin: 0;
+        padding: 14px 48px 14px 24px;
+        min-height: 50px;
+        font-size: 1rem;
+    }
+    
+    
+    
+    .custom-alert .close {
+        right: 14px;
+        font-size: 1.1em;
+        width: 20px;
+        height: 20px;
+    }
+    
+    .custom-alert .alert-text {
+        font-size: 0.95rem;
+        line-height: 1.4;
+        margin-right: 50px;
+    }
+    
+    .layout-wrap .section-menu-left .menu-item a {
+        padding: 10px 12px;
+    }
+}
+
+/* 17. CẢI THIỆN DARK MODE SUPPORT */
+@media (prefers-color-scheme: dark) {
+    .custom-alert[data-type="success"] {
+        background: linear-gradient(135deg, #059669, #047857);
+        border-color: #065f46;
+    }
+    
+    .custom-alert[data-type="error"] {
+        background: linear-gradient(135deg, #dc2626, #b91c1c);
+        border-color: #991b1b;
+    }
+    
+    .custom-alert[data-type="warning"] {
+        background: linear-gradient(135deg, #d97706, #b45309);
+        border-color: #92400e;
+    }
+    
+    .custom-alert[data-type="info"] {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        border-color: #1e40af;
+    }
+}
+
+/* 18. CẢI THIỆN ACCESSIBILITY */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Focus visible cho keyboard navigation */
+*:focus-visible {
+    outline: 2px solid #1abc9c;
+    outline-offset: 2px;
+}
+
+/* 19. CẢI THIỆN ANIMATION */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* 20. CẢI THIỆN UTILITY CLASSES */
+.text-gradient {
+    background: linear-gradient(135deg, #1abc9c, #16a085);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #1abc9c, #16a085);
+}
+
+.border-gradient {
+    border: 2px solid;
+    border-image: linear-gradient(135deg, #1abc9c, #16a085) 1;
+} 

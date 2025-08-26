@@ -123,8 +123,8 @@
                                     $size = '---';
                                     if (!empty($variantName)) {
                                         $parts = preg_split('/\s*[-\/]\s*/', $variantName);
-                                        $size = $parts[0] ?? '---';
-                                        $color = $parts[1] ?? '---';
+                                        $size = $parts[1] ?? '---';
+                                        $color = $parts[0] ?? '---';
                                     }
                                 @endphp
                                 <tr>

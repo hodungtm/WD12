@@ -108,6 +108,7 @@
                                 <label>Tình trạng đơn hàng</label>
                                 <select class="form-control @error('status') is-invalid @enderror" name="status">
                                     <option value="Đang chờ" {{ old('status', $order->status) === 'Đang chờ' ? 'selected' : '' }}>Đang chờ</option>
+                                    <option value="Xác nhận đơn" {{ old('status', $order->status) === 'Xác nhận đơn' ? 'selected' : '' }}>Xác nhận đơn hàng</option>
                                     <option value="Đang giao hàng" {{ old('status', $order->status) === 'Đang giao hàng' ? 'selected' : '' }}>Đang giao hàng</option>
                                     <option value="Hoàn thành" {{ old('status', $order->status) === 'Hoàn thành' ? 'selected' : '' }}>Hoàn thành</option>
                                     <option value="Đã hủy" {{ old('status', $order->status) === 'Đã hủy' ? 'selected' : '' }}>Đã hủy</option>
@@ -148,12 +149,12 @@
                                 @php $totalItemsPrice = 0; @endphp
                                 @foreach ($order->orderItems as $index => $item)
                                     @php
-                                        $color = '---';
                                         $size = '---';
+                                        $color = '---';
                                         if (!empty($item->variant_name)) {
                                             $parts = preg_split('/\s*[-\/]\s*/', $item->variant_name);
-                                            $size = $parts[0] ?? '---';
-                                            $color = $parts[1] ?? '---';
+                                            $size = $parts[1] ?? '---';
+                                            $color = $parts[0] ?? '---';
                                         }
                                     @endphp
                                     <tr>
