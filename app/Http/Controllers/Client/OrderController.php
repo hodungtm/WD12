@@ -12,19 +12,6 @@ use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
-    public function index(Request $request)
-    {
-        $status = $request->query('status', '');
-
-        $query = Order::where('user_id', Auth::id());
-        if (!empty($status)) {
-            $query->where('status', $status);
-        }
-
-        $orders = $query->latest()->paginate(10);
-
-        return view('client.order.index', compact('orders', 'status'));
-    }
 
     public function show(Order $order)
     {
@@ -35,7 +22,6 @@ class OrderController extends Controller
         return view('client.order.show', compact('order', 'items'));
     }
 
-
 public function cancel(Request $request)
 {
     $request->validate([
@@ -43,41 +29,38 @@ public function cancel(Request $request)
         'cancel_reason' => 'required|string|max:255',
     ]);
 
-    $order = Order::with('orderItems.productVariant')
-        ->where('user_id', Auth::id()) // ✅ Chỉ hủy đơn của chính mình
-        ->findOrFail($request->order_id);
+    $order = Order::with('orderItems.productVariant')->findOrFail($request->order_id);
 
-    // ✅ Chỉ cho hủy nếu đơn chưa chuyển qua giai đoạn giao hàng
-    if (!in_array($order->status, ['Đang chờ', 'Xác nhận đơn'])) {
-        return back()->with('error', 'Đơn hàng đã xử lý, không thể hủy.');
+    // Kiểm tra quyền (nếu có)
+    $this->authorizeOrder($order); 
+
+    if ($order->status !== 'Đang chờ') {
+        return back()->with('error', 'Không thể hủy đơn hàng này.');
     }
 
-    // ✅ Trả lại số lượng sản phẩm
-    foreach ($order->orderItems as $item) {
-        $variant = $item->productVariant;
-        if ($variant) {
-            $variant->increment('quantity', $item->quantity);
+        // ✅ Trả lại số lượng sản phẩm
+        foreach ($order->orderItems as $item) {
+            $variant = $item->productVariant;
+            if ($variant) {
+                $variant->increment('quantity', $item->quantity);
+            }
         }
-    }
 
-    // ✅ Hoàn lại lượt dùng mã giảm giá
-    if ($order->discount_code) {
-        $discount = Discount::where('code', $order->discount_code)->first();
-        if ($discount) {
-            $discount->increment('max_usage');
+        // ✅ Hoàn lại lượt dùng mã giảm giá
+        if ($order->discount_code) {
+            $discount = Discount::where('code', $order->discount_code)->first();
+            if ($discount) {
+                $discount->increment('max_usage');
+            }
         }
-    }
 
-    // ✅ Cập nhật trạng thái & lý do
-    $order->update([
-        'status' => 'Đã hủy',
-        'cancel_reason' => $request->cancel_reason,
-    ]);
+        // ✅ Cập nhật trạng thái & lý do
+        $order->update([
+            'status' => 'Đã hủy',
+            'cancel_reason' => $request->cancel_reason,
+        ]);
 
-    // ✅ (Tuỳ chọn) Gửi email thông báo cho khách
-    Mail::to($order->receiver_email)->send(new OrderCancelledMail($order));
-
-    return back()->with('success', 'Đơn hàng của bạn đã được hủy thành công.');
+    return back()->with('success', 'Đơn hàng đã được hủy thành công.');
 }
 
 
