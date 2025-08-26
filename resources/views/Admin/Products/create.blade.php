@@ -6,11 +6,11 @@
             <div class="flex items-center flex-wrap justify-between gap20 mb-30">
                 <h3>Thêm sản phẩm mới</h3>
                 <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
-                    <li><a href="{{ route('products.index') }}">
+                    <li><a href="{{ route('admin.products.index') }}">
                             <div class="text-tiny">Dashboard</div>
                         </a></li>
                     <li><i class="icon-chevron-right"></i></li>
-                    <li><a href="{{ route('products.index') }}">
+                    <li><a href="{{ route('admin.products.index') }}">
                             <div class="text-tiny">Ecommerce</div>
                         </a></li>
                     <li><i class="icon-chevron-right"></i></li>
@@ -19,7 +19,7 @@
                     </li>
                 </ul>
             </div>
-            <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+            <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
                 @csrf
 
                 <div class="wg-box mb-30">
@@ -184,7 +184,7 @@
                     <button type="submit" class="tf-button btn-sm w-auto px-3 py-2">
                         <i class="icon-save"></i> Lưu sản phẩm
                     </button>
-                    <a href="{{ route('products.index') }}" class="tf-button style-3 btn-sm w-auto px-3 py-2">
+                    <a href="{{ route('admin.products.index') }}" class="tf-button style-3 btn-sm w-auto px-3 py-2">
                         <i class="icon-x"></i> Hủy bỏ
                     </a>
                 </div>

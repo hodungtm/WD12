@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 // note: Import các model cần thiết cho trang chủ
+
+use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\Banner;
 use App\Models\Category;
-use App\Models\Products;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 // note: Controller xử lý trang chủ và các trang liên quan đến hiển thị sản phẩm
@@ -25,14 +27,14 @@ class HomeController extends Controller
         ->orderBy('ten_danh_muc')
         ->get();
 
-    $products = Products::with(['images', 'variants.color', 'variants.size', 'reviews'])
+    $products = Product::with(['images', 'variants.color', 'variants.size', 'reviews'])
         ->where('status', 1)
         ->withAvg('reviews', 'so_sao')
         ->orderByDesc('reviews_avg_so_sao')
         ->take(5)
         ->get();
 
-    $trendingProducts = Products::with(['images', 'variants.color', 'variants.size', 'reviews'])
+    $trendingProducts = Product::with(['images', 'variants.color', 'variants.size', 'reviews'])
         ->where('status', 1)
         ->orderByDesc('sold')
         ->take(5)
@@ -52,7 +54,7 @@ class HomeController extends Controller
     // note: Hiển thị trang sản phẩm bán chạy (sắp xếp theo số lượng đơn hàng)
     public function bestSellers()
 {
-    $products = Products::withCount('orderItems')
+    $products = Product::withCount('orderItems')
         ->with(['category', 'images', 'variants.color', 'variants.size'])
         ->orderByDesc('order_items_count')
         ->paginate(20);
@@ -67,7 +69,7 @@ class HomeController extends Controller
 
 public function featured()
 {
-    $products = Products::withAvg('reviews', 'so_sao')
+    $products = Product::withAvg('reviews', 'so_sao')
         ->with(['category', 'images', 'variants.color', 'variants.size'])
         ->orderByDesc('reviews_avg_so_sao')
         ->paginate(20);

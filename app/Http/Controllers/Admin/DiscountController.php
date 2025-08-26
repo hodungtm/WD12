@@ -85,18 +85,31 @@ class DiscountController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate(
-            $this->getValidationRules(),
-            $this->getValidationMessages()
-        );
+{
+    $validated = $request->validate(
+        $this->getValidationRules(),
+        $this->getValidationMessages()
+    );
 
-        if (Discount::create($validated)) {
-            return redirect()->route('admin.discounts.index')->with('success', 'Tạo mã giảm giá thành công!');
-        }
-
-        return redirect()->back()->with('error', 'Có lỗi xảy ra khi tạo mã giảm giá!');
+    // Chỉ kiểm tra nếu cả hai giá trị đều được nhập
+    if (
+        !is_null($request->min_order_amount) &&
+        !is_null($request->max_discount_amount) &&
+        $request->min_order_amount > 0 &&
+        $request->max_discount_amount > $request->min_order_amount
+    ) {
+        return back()
+            ->withErrors(['max_discount_amount' => 'Giá trị giảm tối đa không được lớn hơn giá trị đơn hàng tối thiểu.'])
+            ->withInput();
     }
+
+    if (Discount::create($validated)) {
+        return redirect()->route('admin.discounts.index')->with('success', 'Tạo mã giảm giá thành công!');
+    }
+
+    return redirect()->back()->with('error', 'Có lỗi xảy ra khi tạo mã giảm giá!');
+}
+
 
     public function edit(Discount $discount)
     {
@@ -104,20 +117,32 @@ class DiscountController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        $discount = Discount::findOrFail($id);
+{
+    $discount = Discount::findOrFail($id);
 
-        $validated = $request->validate(
-            $this->getValidationRules(true, $discount->id),
-            $this->getValidationMessages()
-        );
+    $validated = $request->validate(
+        $this->getValidationRules(true, $discount->id),
+        $this->getValidationMessages()
+    );
 
-        if ($discount->update($validated)) {
-            return redirect()->route('admin.discounts.index')->with('success', 'Cập nhật mã giảm giá thành công!');
-        }
-
-        return redirect()->back()->with('error', 'Có lỗi xảy ra khi cập nhật mã giảm giá!');
+    // Chỉ kiểm tra nếu cả hai giá trị đều được nhập
+    if (
+        !is_null($request->min_order_amount) &&
+        !is_null($request->max_discount_amount) &&
+        $request->min_order_amount > 0 &&
+        $request->max_discount_amount > $request->min_order_amount
+    ) {
+        return back()
+            ->withErrors(['max_discount_amount' => 'Giá trị giảm tối đa không được lớn hơn giá trị đơn hàng tối thiểu.'])
+            ->withInput();
     }
+
+    if ($discount->update($validated)) {
+        return redirect()->route('admin.discounts.index')->with('success', 'Cập nhật mã giảm giá thành công!');
+    }
+
+    return redirect()->back()->with('error', 'Có lỗi xảy ra khi cập nhật mã giảm giá!');
+}
 
     public function destroy(Discount $discount)
     {
@@ -144,51 +169,6 @@ class DiscountController extends Controller
         $discount = Discount::findOrFail($id);
         return view('admin.discounts.show', compact('discount'));
     }
-
-    public function importExcel(Request $request)
-    {
-        $request->validate([
-            'import_file' => 'required|mimes:xlsx,xls'
-        ]);
-
-        try {
-            Excel::import(new DiscountsImport, $request->file('import_file'));
-            return redirect()->route('admin.discounts.index')->with('success', 'Import dữ liệu thành công!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Lỗi khi import: ' . $e->getMessage());
-        }
-    }
-
-    public function deleteAll()
-    {
-        Discount::query()->delete();
-        return redirect()->route('admin.discounts.index')->with('success', 'Đã xóa tất cả mã giảm giá');
-    }
-
-public function bulkDelete(Request $request)
-{
-    if ($request->filled('selected_discounts')) {
-        Discount::whereIn('id', $request->selected_discounts)->delete();
-
-        return back()->with('success', 'Đã xóa các mã được chọn.');
-    }
-
-    // Nếu chọn xóa tất cả hiển thị
-    if ($request->filled('delete_all')) {
-        $query = Discount::query();
-
-        if ($request->filled('search')) {
-            $query->where('code', 'like', '%' . $request->search . '%');
-        }
-
-        $idsToDelete = $query->pluck('id');
-        Discount::whereIn('id', $idsToDelete)->delete();
-
-        return back()->with('success', 'Đã xóa tất cả mã đang hiển thị.');
-    }
-
-    return back()->with('success', 'Không có mã nào được chọn để xóa.');
-}
 
 
 }

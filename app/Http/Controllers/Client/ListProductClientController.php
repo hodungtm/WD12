@@ -5,10 +5,9 @@ namespace App\Http\Controllers\Client;
 use App\Models\Size;
 use App\Models\Color;
 use App\Models\Category;
-use App\Models\Products;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\ProductVariant;
-use Illuminate\Support\Collection;
 use App\Http\Controllers\Controller;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -17,7 +16,7 @@ class ListProductClientController extends Controller
     public function index(Request $request)
     {
         // Query sản phẩm kèm quan hệ
-        $query = Products::query()
+        $query = Product::query()
             ->with(['category', 'images', 'variants.color', 'variants.size']) // Dòng này đã được sửa
             ->where('status', 1);
 

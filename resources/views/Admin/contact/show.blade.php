@@ -9,7 +9,7 @@
       <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
         <li><a href="#"><div class="text-tiny">Bảng điều khiển</div></a></li>
         <li><i class="icon-chevron-right"></i></li>
-        <li><a href="{{ route('Admin.contacts.index') }}"><div class="text-tiny">Liên hệ</div></a></li>
+        <li><a href="{{ route('admin.contacts.index') }}"><div class="text-tiny">Liên hệ</div></a></li>
         <li><i class="icon-chevron-right"></i></li>
         <li><div class="text-tiny">Chi tiết</div></li>
       </ul>
@@ -64,7 +64,7 @@
     </div>
 
     <div class="flex gap10 mt-4">
-      <a href="{{ route('Admin.contacts.index') }}" class="tf-button style-1">Quay lại danh sách</a>
+      <a href="{{ route('admin.contacts.index') }}" class="tf-button style-1">Quay lại danh sách</a>
     </div>
 
   </div>

@@ -49,8 +49,8 @@
               <div class="body-text" style="flex: 1;">{{ Str::limit($contact->message, 80) }}</div>
               <div class="body-text" style="width: 140px; text-align: center;">{{ $contact->created_at->format('d/m/Y') }}</div>
               <div class="list-icon-function" style="width: 100px; text-align: center;">
-                <a href="{{ route('Admin.contacts.show', $contact->id) }}" class="item eye" title="Xem chi tiết"><i class="icon-eye"></i></a>
-                <form action="{{ route('Admin.contacts.destroy', $contact->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa?');" style="display:inline">
+                <a href="{{ route('admin.contacts.show', $contact->id) }}" class="item eye" title="Xem chi tiết"><i class="icon-eye"></i></a>
+                <form action="{{ route('admin.contacts.destroy', $contact->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xóa?');" style="display:inline">
                   @csrf
                   @method('DELETE')
                   <button type="submit" title="Xoá" style="background: none; border: none;">

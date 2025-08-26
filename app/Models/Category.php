@@ -24,6 +24,6 @@ class Category extends Model
     // Tạo mối qua hệ với bảng product (1 - N)
     public function products()
     {
-        return $this->hasMany(Products::class, 'category_id');
+        return $this->hasMany(Product::class, 'category_id');
     }
 }

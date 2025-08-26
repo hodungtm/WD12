@@ -28,7 +28,7 @@
 
                         <h3 class="mb-3">Danh sách Size</h3>
 
-                        <form method="POST" action="{{ route('catalog.size.store') }}" class="form-style-1 mb-4">
+                        <form method="POST" action="{{ route('admin.catalog.size.store') }}" class="form-style-1 mb-4">
                             @csrf
                             <fieldset class="name">
                                 <div class="body-title visually-hidden">Thêm Size</div>
@@ -58,7 +58,7 @@
                                     <li class="wg-product item-row" style="gap: 10px;">
                                         <div class="body-text mt-4" style="flex-basis: 60px;">{{ $item->id }}</div>
                                         <div style="flex-basis: calc(100% - 210px);">
-                                            <form method="POST" action="{{ route('catalog.size.update', $item->id) }}" class="d-flex">
+                                            <form method="POST" action="{{ route('admin.catalog.size.update', $item->id) }}" class="d-flex">
                                                 @csrf
                                                 @method('PUT')
                                                 <input type="text" name="name" value="{{ $item->name }}" class="flex-grow me-2" required>
@@ -66,7 +66,7 @@
                                             </form>
                                         </div>
                                         <div class="list-icon-function" style="flex-basis: 150px;">
-                                            <form method="POST" action="{{ route('catalog.size.destroy', $item->id) }}" onsubmit="return confirm('Bạn có chắc muốn xóa?')" class="d-inline">
+                                            <form method="POST" action="{{ route('admin.catalog.size.destroy', $item->id) }}" onsubmit="return confirm('Bạn có chắc muốn xóa?')" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="tf-button danger sm">
@@ -84,7 +84,7 @@
 
                         <h3 class="mb-3">Danh sách Color</h3>
 
-                        <form method="POST" action="{{ route('catalog.color.store') }}" class="form-style-1 mb-4">
+                        <form method="POST" action="{{ route('admin.catalog.color.store') }}" class="form-style-1 mb-4">
                             @csrf
                             <fieldset class="name">
                                 <div class="body-title visually-hidden">Thêm Color</div>
@@ -113,7 +113,7 @@
                                     <li class="wg-product item-row" style="gap: 10px;">
                                         <div class="body-text mt-4" style="flex-basis: 60px;">{{ $item->id }}</div>
                                         <div style="flex-basis: calc(100% - 210px);">
-                                            <form method="POST" action="{{ route('catalog.color.update', $item->id) }}" class="d-flex">
+                                            <form method="POST" action="{{ route('admin.catalog.color.update', $item->id) }}" class="d-flex">
                                                 @csrf
                                                 @method('PUT')
                                                 <input type="text" name="name" value="{{ $item->name }}" class="flex-grow me-2" required>
@@ -121,7 +121,7 @@
                                             </form>
                                         </div>
                                         <div class="list-icon-function" style="flex-basis: 150px;">
-                                            <form method="POST" action="{{ route('catalog.color.destroy', $item->id) }}" onsubmit="return confirm('Bạn có chắc muốn xóa?')" class="d-inline">
+                                            <form method="POST" action="{{ route('admin.catalog.color.destroy', $item->id) }}" onsubmit="return confirm('Bạn có chắc muốn xóa?')" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="tf-button danger sm">

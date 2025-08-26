@@ -45,6 +45,8 @@
                             <select name="status" class="form-select" style="width: 140px;">
                                 <option value="">-- Trạng thái --</option>
                                 <option value="Đang chờ" {{ request('status') == 'Đang chờ' ? 'selected' : '' }}>Đang chờ</option>
+                                <option value="Xác nhận đơn" {{ request('status') == 'Xác nhận đơn' ? 'selected' : '' }}>Xác nhận đơn</option>
+                                <option value="Đang giao hàng" {{ request('status') == 'Đang giao hàng' ? 'selected' : '' }}>Đang giao hàng</option>
                                 <option value="Hoàn thành" {{ request('status') == 'Hoàn thành' ? 'selected' : '' }}>Hoàn thành</option>
                                 <option value="Đã hủy" {{ request('status') == 'Đã hủy' ? 'selected' : '' }}>Đã hủy</option>
                             </select>
@@ -104,8 +106,32 @@
                                 @endswitch
                             </div>
                             <div class="body-text mt-4" style="flex-basis: 140px;">{{ $order->shippingMethod->name ?? '---' }}</div>
-                            <div style="flex-basis: 120px;">
-                                <div class="{{ $order->status === 'Hoàn thành' ? 'block-available' : ($order->status === 'Đang chờ' ? 'block-stock' : ($order->status === 'Đã hủy' ? 'block-stock' : 'block-available')) }} bg-1 fw-7" style="display: inline-block; min-width: 80px; text-align: center; border-radius: 8px; padding: 6px 18px; font-size: 15px; font-weight: 600; background: #f3f7f6; color: {{ $order->status === 'Hoàn thành' ? '#1abc9c' : ($order->status === 'Đang chờ' ? '#e67e22' : ($order->status === 'Đã hủy' ? '#e74c3c' : '#1abc9c')) }}; letter-spacing: 0.5px; vertical-align: middle; margin-top: 2px;">
+                            <div style="flex-basis: 150px;">
+                                @php
+                                    $statusColors = [
+                                        'Đang chờ' => ['bg' => '#fff3cd', 'color' => '#856404', 'border' => '#ffeaa7'],           // Vàng
+                                        'Xác nhận đơn' => ['bg' => '#cce5ff', 'color' => '#004085', 'border' => '#74b9ff'],     // Xanh dương
+                                        'Đang giao hàng' => ['bg' => '#e1c8ff', 'color' => '#5a2d82', 'border' => '#a29bfe'],   // Tím
+                                        'Hoàn thành' => ['bg' => '#d1f2eb', 'color' => '#155724', 'border' => '#00b894'],       // Xanh lá
+                                        'Đã hủy' => ['bg' => '#f8d7da', 'color' => '#721c24', 'border' => '#fd79a8']            // Đỏ
+                                    ];
+                                    $currentStatus = $statusColors[$order->status] ?? ['bg' => '#f8f9fa', 'color' => '#6c757d', 'border' => '#dee2e6'];
+                                @endphp
+                                <div style="display: inline-block; 
+                                           min-width: 90px; 
+                                           text-align: center; 
+                                           border-radius: 8px; 
+                                           padding: 8px 12px; 
+                                           font-size: 13px; 
+                                           font-weight: 600; 
+                                           background: {{ $currentStatus['bg'] }}; 
+                                           color: {{ $currentStatus['color'] }}; 
+                                           border: 2px solid {{ $currentStatus['border'] }}; 
+                                           letter-spacing: 0.3px; 
+                                           vertical-align: middle; 
+                                           margin-top: 2px;
+                                           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                                           transition: all 0.3s ease;">
                                     {{ $order->status }}
                                 </div>
                             </div>
@@ -128,4 +154,12 @@
         </div>
     </div>
 </div>
+
+{{-- CSS cho hover effect --}}
+<style>
+.order-status:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+}
+</style>
 @endsection

@@ -8,13 +8,13 @@
                 <ul class="breadcrumbs flex items-center flex-wrap justify-start gap10">
                     <li><a href="#"><div class="text-tiny">Dashboard</div></a></li>
                     <li><i class="icon-chevron-right"></i></li>
-                    <li><a href="{{ route('posts.index') }}"><div class="text-tiny">Bài viết</div></a></li>
+                    <li><a href="{{ route('admin.posts.index') }}"><div class="text-tiny">Bài viết</div></a></li>
                     <li><i class="icon-chevron-right"></i></li>
                     <li><div class="text-tiny">Tạo bài viết</div></li>
                 </ul>
             </div>
             <div class="wg-box">
-                <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('admin.posts.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <fieldset class="mb-4">
                         <div class="body-title mb-2">Tiêu đề</div>
@@ -57,7 +57,7 @@
                         <button type="submit" class="tf-button btn-sm w-auto px-3 py-2">
                             <i class="icon-save"></i> Lưu Bài Viết
                         </button>
-                        <a href="{{ route('posts.index') }}" class="tf-button style-3 btn-sm w-auto px-3 py-2">
+                        <a href="{{ route('admin.posts.index') }}" class="tf-button style-3 btn-sm w-auto px-3 py-2">
                             <i class="icon-x"></i> Hủy bỏ
                         </a>
                     </div>
