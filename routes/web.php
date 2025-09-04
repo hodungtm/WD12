@@ -182,3 +182,5 @@ Auth::routes();
 
 // ---------- HOME ----------
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/vnpay/payment', [CheckoutController::class, 'vnpayPayment'])->name('vnpay.payment');
+Route::get('/vnpay/return', [CheckoutController::class, 'vnpayReturn'])->name('vnpay.return');
