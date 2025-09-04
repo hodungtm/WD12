@@ -85,6 +85,7 @@
                                     <option value="Chuyển khoản">Chuyển khoản ngân hàng</option>
                                     <option value="Momo">MoMo</option>
                                     <option value="ZaloPay">ZaloPay</option>
+                                    <option value="Vnpay">VnPay</option>
                                 </select>
                             </div>
 
